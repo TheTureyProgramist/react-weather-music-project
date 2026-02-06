@@ -1,12 +1,16 @@
 import { Component } from 'react';
 import './App.css';
 import styled from 'styled-components'
+import byesun from './photos/hero-header/byesun.webp';
 const Header = styled.div``
 
 //------------------------------
 const Hero = styled.div`
   width: 100%;
-  height: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px 0;
 `
 const Image = styled.img`
  width: 100%;
@@ -37,16 +41,18 @@ class App extends Component {
   render () {
   return (
     <div className="App">
-     <Header></Header>
-     <Hero>
-      <Image src="./photos/hero-header/byesun.webp"/>
-     </Hero>
-     <Main></Main>
-     <Graphic></Graphic>
-     <MusicPhoto></MusicPhoto>
-     <Slider></Slider>
-     <Footer></Footer>
-     <Modal></Modal>
+     <div className="container">
+      <Header></Header>
+      <Hero>
+       <Image src={byesun} />
+      </Hero>
+      <Main></Main>
+      <Graphic></Graphic>
+      <MusicPhoto></MusicPhoto>
+      <Slider></Slider>
+      <Footer></Footer>
+      <Modal></Modal>
+     </div>
     </div>
   );
 }
