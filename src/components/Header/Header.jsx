@@ -7,6 +7,9 @@ const HeaderDiv = styled.div`
   align-items: center;
   justify-content: space-between;
   padding: 0 30px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
 `;
 
 const HeaderImage = styled.img`

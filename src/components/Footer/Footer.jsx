@@ -66,63 +66,87 @@ const changeColor = keyframes`
 97% { background: yellow; }
 98% { background: skyblue; }
 100% { background: yellow; }
-`
+`;
 const FooterDiv = styled.div`
 background: yellow;
 width: 100%;
-padding-bottom: 64px;
 display: flex;
-gap: 100px;
+flex-direction: column;
+align-items: center;
 justify-content: center;
+gap: 30px;
 padding-top: 40px;
+padding-bottom: 32px;
+margin-top: 80px;
 animation: ${changeColor} 15s infinite ease-in-out;
-`
+
+@media (min-width: 768px) {
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 60px;
+  padding-bottom: 48px;
+}
+  @media (min-width: 1200px) {
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 100px;
+  padding-bottom: 64px;
+}
+`;
 const FooterImage = styled.img`
-`
+`;
 const FooterContacts = styled.div`
 display: flex;
 flex-direction: column;
 gap: 10px;
-`
+`;
 const FooterAdress = styled.div`
 display: flex;
 flex-direction: column;
 gap: 10px;
-`
+`;
 const FooterAdressText = styled.h1`
 font-family: var(--second-family);
 font-weight: 500;
+text-align: center;
 font-size: 16px;
-`
+@media (min-width: 768px) {
+  text-align: start;
+}
+`;
 const FooterAdressInfo = styled.h1`
 font-family: var(--second-family);
 font-weight: 500;
 font-size: 12px;
-`
+`;
 const FooterContactsText = styled.h2`
 font-family: var(--second-family);
 font-weight: 500;
+text-align: center;
 font-size: 16px;
-`
+@media (min-width: 768px) {
+  text-align: start;
+}
+`;
 const FooterContactsFix = styled.div`
 display: flex;
 gap: 20px;
-`
+`;
 const Instagram = styled.button`
 height: 40px;
 width: 40px;
 background: url(${istagram}) center no-repeat;
-`
+`;
 const Facebook = styled.button`
 height: 40px;
 width: 40px;
 background: url(${facebok}) center no-repeat;
-`
+`;
 const Whatsapp = styled.button`
 background: url(${whatsap}) center no-repeat;
 height: 40px;
 width: 40px;
-`
+`;
 const Footer = () => {
   return <FooterDiv>
 <FooterImage src={logo} alt="Logo" />
@@ -140,5 +164,4 @@ const Footer = () => {
 </FooterContacts>
   </FooterDiv>;
 };
-
 export default Footer;
