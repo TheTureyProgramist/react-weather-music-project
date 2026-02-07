@@ -1,12 +1,12 @@
 import styled from 'styled-components';
 import byesun from '../../photos/hero-header/byesun.webp';
 import search from '../../photos/hero-header/search.webp';
-
 const HeroDiv = styled.div`
   position: relative;
   width: 100%;
   min-height: 620px;
   gap: 80px;
+  margin-bottom: 80px;
   display: flex;
   background-size: cover;
   background-image: linear-gradient(to right, rgba(47, 48, 58, 0.4), rgba(47, 48, 58, 0.4)), url(${byesun});
@@ -42,7 +42,7 @@ const HeroDate = styled.div`
   text-align: center;
   margin-top: 8px;
   display: block;
-  width: 375px;
+  width: 355px;
   font-family: var(--font-family);
   font-size: 24px;
   font-weight: 500;

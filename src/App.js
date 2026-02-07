@@ -3,9 +3,10 @@ import './App.css';
 import Header from './components/Header/Header.jsx';
 import Hero from './components/Hero/Hero.jsx';
 import Main from './components/Main/Main.jsx';
-import Graphic from './components/Graphic/Graphic.jsx';
+import GraphicDaily from './components/Graphics/GraphicWeekly.jsx';
+import GraphicWeekly from './components/Graphics/GraphicWeekly.jsx';
+import GraphicAtTheMoment from './components/Graphics/GraphicAtTheMoment.jsx';
 import MusicPhoto from './components/MusicPhoto/MusicPhoto.jsx';
-import Slider from './components/Slider/Slider.jsx';
 import Footer from './components/Footer/Footer.jsx';
 import Modal from './components/Modals/Modal.jsx';
 import InfoModal from './components/Modals/InfoModal.jsx';
@@ -23,7 +24,7 @@ class App extends Component {
     render () {
   const now = this.state.now;
   const capitalize = (s) => s.charAt(0).toUpperCase() + s.slice(1);
-  const month = capitalize(new Intl.DateTimeFormat('uk', { month: 'long' }).format(now));
+  const month = capitalize(new Intl.DateTimeFormat('uk', { month: '2-digit' }).format(now));
   const weekday = capitalize(new Intl.DateTimeFormat('uk', { weekday: 'long' }).format(now));
   const year = now.getFullYear();
   const day = now.getDate();
@@ -31,20 +32,23 @@ class App extends Component {
   const hour = pad(now.getHours());
   const minute = pad(now.getMinutes());
   const second = pad(now.getSeconds());
-  const heroDateString = `${hour}:${minute}:${second} ${weekday}, ${day} ${month} ${year}`;
+  const heroDateString = `${hour}:${minute}:${second} ${weekday}, ${day}.${month}.${year}`;
   return (
     <div className="App">
      <div className="container">
       <Header />
+      </div>
       <Hero heroDateString={heroDateString} />
+       <div className="container">
       <Main />
-      <Graphic />
+      <GraphicAtTheMoment></GraphicAtTheMoment>
+      <GraphicDaily />
+      <GraphicWeekly />
       <MusicPhoto />
-      <Slider />
+      </div>
       <Footer />
       <Modal />
       <InfoModal />
-     </div>
     </div>
   );
 }
