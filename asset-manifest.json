@@ -1,8 +1,16 @@
 {
   "files": {
     "main.css": "/react-weather-music-project/static/css/main.96b5926f.css",
-    "main.js": "/react-weather-music-project/static/js/main.50c2c5cf.js",
+    "main.js": "/react-weather-music-project/static/js/main.65e96cbf.js",
+    "static/media/thefatrat-monody.mp3": "/react-weather-music-project/static/media/thefatrat-monody.c51de64d7aa6397fbf66.mp3",
+    "static/media/turkeys.mp3": "/react-weather-music-project/static/media/turkeys.5ee500cbac0f4bc3213f.mp3",
+    "static/media/dinofroz-mondo-tv.mp3": "/react-weather-music-project/static/media/dinofroz-mondo-tv.26c945799f499d867a2c.mp3",
+    "static/media/wind.mp3": "/react-weather-music-project/static/media/wind.b1b5f8028768e8a5b78d.mp3",
     "static/media/byesun.webp": "/react-weather-music-project/static/media/byesun.d8126a9cd367f67a5f08.webp",
+    "static/media/ultra-vip-turkeys.webp": "/react-weather-music-project/static/media/ultra-vip-turkeys.6b502c6c764249db098f.webp",
+    "static/media/vip-dinofroz.webp": "/react-weather-music-project/static/media/vip-dinofroz.9fc027dd2e3835eca9f4.webp",
+    "static/media/vip-forest.webp": "/react-weather-music-project/static/media/vip-forest.69ffd24a27908071ce6a.webp",
+    "static/media/vip-desert.webp": "/react-weather-music-project/static/media/vip-desert.31c68b7fb6f7292d03b9.webp",
     "static/media/logo.webp": "/react-weather-music-project/static/media/logo.95aa76ccad53b1a49f95.webp",
     "index.html": "/react-weather-music-project/index.html",
     "static/media/instagram.webp": "/react-weather-music-project/static/media/instagram.400dcf5cca0ee2690937.webp",
@@ -10,10 +18,10 @@
     "static/media/facebook.webp": "/react-weather-music-project/static/media/facebook.28eb08603ff39d6f831c.webp",
     "static/media/search.webp": "/react-weather-music-project/static/media/search.aa0aed371ca317289398.webp",
     "main.96b5926f.css.map": "/react-weather-music-project/static/css/main.96b5926f.css.map",
-    "main.50c2c5cf.js.map": "/react-weather-music-project/static/js/main.50c2c5cf.js.map"
+    "main.65e96cbf.js.map": "/react-weather-music-project/static/js/main.65e96cbf.js.map"
   },
   "entrypoints": [
     "static/css/main.96b5926f.css",
-    "static/js/main.50c2c5cf.js"
+    "static/js/main.65e96cbf.js"
   ]
 }
