@@ -4,8 +4,8 @@ import search from '../../photos/hero-header/search.webp';
 const HeroDiv = styled.div`
   position: relative;
   width: 100%;
-  min-height: 620px;
-  gap: 80px;
+  min-height: 360px;
+  gap: 40px;
   margin-bottom: 80px;
   display: flex;
   background-size: cover;
@@ -16,6 +16,13 @@ const HeroDiv = styled.div`
   justify-content: center;
   align-items: center;
   overflow: hidden;
+    @media (min-width: 768px) {
+   gap: 60px;
+  }
+    @media (min-width: 1200px) {
+ gap: 80px;
+   min-height: 620px;
+  }  
 `;
 
 const HeroText = styled.h2`
@@ -24,26 +31,30 @@ const HeroText = styled.h2`
   font-family: var(--font-family);
   font-size: 10px;
   font-weight: 500;
-  width: 136px;
+  width: 166px;
   display: block;
   margin: 0;
 
   @media (min-width: 768px) {
     font-size: 14px;
-    width: 172px;
+    width: 229px;
   }
     @media (min-width: 1200px) {
     font-size: 24px;
-    width: 345px;
+    width: 395px;
   }  
 `;
 
 const HeroFix = styled.div`
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   align-items: center;
   gap: 52px;
   flex-wrap: wrap;
+  
+  @media (min-width: 768px) {
+      flex-direction: row;
+  }
 `;
 
 const HeroDate = styled.div`
@@ -58,7 +69,7 @@ const HeroDate = styled.div`
   
   @media (min-width: 768px) {
     font-size: 14px;
-    width: 172px;
+    width: 192px;
   }
     @media (min-width: 1200px) {
     font-size: 24px;
@@ -83,7 +94,7 @@ const HeroLineMobile = styled.div`
   @media (min-width: 768px) {
     display: none;
   }
-  height: 95px;
+  height: 100px;
   background: rgba(255, 255, 255, 0.95);
   border-radius: 1px;
   flex-shrink: 0;
@@ -117,7 +128,7 @@ const HeroInput = styled.input`
   width: 173px;
 @media (min-width: 768px) {
 width: 402px;
-height: 31px;
+height:25px;
 font-size: 14px;
   }
     @media (min-width: 1200px) {
@@ -131,19 +142,35 @@ const HeroFormater = styled.div`
 `;
 const HeroDecor = styled.div`
 display: flex;
+gap: 23px;
 `;
 const HeroButton = styled.button`
-  border-left: 2px solid #000;
   border-radius: 0 10px 10px 0;
-  width: 45px;
-  height: 50px;
+  width: 25px;
+  height: 27px;
   padding: 0;
-  background: #ffb36c url(${search}) center/60% no-repeat;
+  background: #ffb36c url(${search}) center/50% no-repeat;
+  border: 2px solid black;
+  // border-style: dotted dashed solid double;
+  transition: background 0.5s cubic-bezier(1,-1.84,.31,1.84);
   background-repeat: no-repeat;
   background-position: center;
   background-size: 60%;
   display: inline-block;
   cursor: pointer;
+
+  &: hover {
+   background: green url(${search}) center/50% no-repeat;
+
+  }
+   @media (min-width: 768px) {
+             width: 28px;
+        height: 31px;
+  }
+    @media (min-width: 1200px) {
+        width: 45px;
+        height: 48px;
+  } 
 `;
 
 const Hero = ({ heroDateString }) => {
