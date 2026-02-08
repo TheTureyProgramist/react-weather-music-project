@@ -8,7 +8,7 @@ const MainTitle = styled.h2`
     font-size: 20px;
   }
     @media (min-width: 1200px) {
-    font-size: 40px;
+    font-size: 30px;
   } 
 `
 const MainDiv = styled.div``;

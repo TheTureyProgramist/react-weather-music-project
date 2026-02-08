@@ -8,6 +8,7 @@ const HeaderDiv = styled.div`
   justify-content: space-between;
   padding: 0 30px;
   position: sticky;
+  background: white;
   top: 0;
   z-index: 100;
 `;
@@ -25,7 +26,8 @@ const Header = () => {
   return (
     <HeaderDiv>
       <HeaderImage src={logo} alt="Logo" />
-      <HeaderContacts>Контакти</HeaderContacts>
+      <HeaderContacts>Меню</HeaderContacts>
+      
     </HeaderDiv>
   );
 };
