@@ -137,12 +137,12 @@ height: 40px;
 width: 40px;
 background: url(${istagram}) center no-repeat;
 `;
-const Facebook = styled.button`
+const Facebook = styled.a`
 height: 40px;
 width: 40px;
 background: url(${facebok}) center no-repeat;
 `;
-const Whatsapp = styled.button`
+const Whatsapp = styled.a`
 background: url(${whatsap}) center no-repeat;
 height: 40px;
 width: 40px;
@@ -152,14 +152,14 @@ const Footer = () => {
 <FooterImage src={logo} alt="Logo" />
 <FooterAdress>
 <FooterAdressText>Адреса</FooterAdressText>
-<FooterAdressInfo>Вулиця Свободи, 35. Київ. Україна</FooterAdressInfo>
+<FooterAdressInfo>Київ. Україна</FooterAdressInfo>
 </FooterAdress>
 <FooterContacts>
 <FooterContactsText>Наші контакти</FooterContactsText>
 <FooterContactsFix>
 <Instagram></Instagram>
-<Facebook></Facebook>
-<Whatsapp></Whatsapp>
+<Facebook href='https://www.facebook.com/share/g/15cVdicVtGc/'></Facebook>
+<Whatsapp href='https://chat.whatsapp.com/KvCMirZC8Hz34ObSTiwRaR'></Whatsapp>
 </FooterContactsFix>
 </FooterContacts>
   </FooterDiv>;
