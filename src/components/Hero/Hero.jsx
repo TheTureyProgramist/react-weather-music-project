@@ -1,28 +1,32 @@
-import styled from 'styled-components';
-import byesun from '../../photos/hero-header/byesun.webp';
-import search from '../../photos/hero-header/search.webp';
+import styled from "styled-components";
+import byesun from "../../photos/hero-header/byesun.webp";
+import search from "../../photos/hero-header/search.webp";
 const HeroDiv = styled.div`
   position: relative;
   width: 100%;
   min-height: 360px;
   gap: 40px;
-  margin-bottom: 80px;
+  margin-bottom: 35px;
   display: flex;
   background-size: cover;
-  background-image: linear-gradient(to right, rgba(47, 48, 58, 0.4), rgba(47, 48, 58, 0.4)), url(${byesun});
+  background-image:
+    linear-gradient(to right, rgba(47, 48, 58, 0.4), rgba(47, 48, 58, 0.4)),
+    url(${byesun});
   background-color: #2f303a;
   background-repeat: no-repeat;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   overflow: hidden;
-    @media (min-width: 768px) {
-   gap: 60px;
+  @media (min-width: 768px) {
+    gap: 60px;
+    margin-bottom: 50px;
   }
-    @media (min-width: 1200px) {
- gap: 80px;
-   min-height: 620px;
-  }  
+  @media (min-width: 1200px) {
+    gap: 80px;
+    min-height: 620px;
+    margin-bottom: 80px;
+  }
 `;
 
 const HeroText = styled.h2`
@@ -39,10 +43,10 @@ const HeroText = styled.h2`
     font-size: 14px;
     width: 229px;
   }
-    @media (min-width: 1200px) {
+  @media (min-width: 1200px) {
     font-size: 24px;
     width: 395px;
-  }  
+  }
 `;
 
 const HeroFix = styled.div`
@@ -51,9 +55,9 @@ const HeroFix = styled.div`
   align-items: center;
   gap: 52px;
   flex-wrap: wrap;
-  
+
   @media (min-width: 768px) {
-      flex-direction: row;
+    flex-direction: row;
   }
 `;
 
@@ -62,30 +66,30 @@ const HeroDate = styled.div`
   text-align: center;
   margin-top: 8px;
   display: block;
-  width: 155px;
+  width: 175px;
   font-family: var(--font-family);
   font-size: 10px;
   font-weight: 500;
-  
+
   @media (min-width: 768px) {
     font-size: 14px;
-    width: 192px;
+    width: 262px;
   }
-    @media (min-width: 1200px) {
+  @media (min-width: 1200px) {
     font-size: 24px;
-    width: 355px;
-  } 
+    width: 395px;
+  }
 `;
 
 const HeroLine = styled.div`
   display: none;
-    @media (min-width: 768px) {
-     width: 2px;
-  height: 95px;
-  background: rgba(255, 255, 255, 0.95);
-  border-radius: 1px;
-  display: flex;
-  flex-shrink: 0;
+  @media (min-width: 768px) {
+    width: 2px;
+    height: 95px;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 1px;
+    display: flex;
+    flex-shrink: 0;
   }
 `;
 
@@ -107,12 +111,12 @@ const HeroTitle = styled.h1`
   font-size: 14px;
   color: #fff;
   margin: 0;
-    @media (min-width: 768px) {
+  @media (min-width: 768px) {
     font-size: 20px;
   }
-    @media (min-width: 1200px) {
+  @media (min-width: 1200px) {
     font-size: 40px;
-  } 
+  }
 `;
 
 const HeroInput = styled.input`
@@ -126,33 +130,32 @@ const HeroInput = styled.input`
   background: #d9d9d9;
   border-radius: 10px 0 0 10px;
   width: 173px;
-@media (min-width: 768px) {
-width: 402px;
-height:25px;
-font-size: 14px;
+  @media (min-width: 768px) {
+    width: 402px;
+    height: 25px;
+    font-size: 14px;
   }
-    @media (min-width: 1200px) {
-      width: 629px;
-      height: 42px;
-  } 
+  @media (min-width: 1200px) {
+    width: 629px;
+    height: 42px;
+  }
 `;
 
 const HeroFormater = styled.div`
   display: flex;
 `;
 const HeroDecor = styled.div`
-display: flex;
-gap: 23px;
+  display: flex;
+  gap: 23px;
 `;
 const HeroButton = styled.button`
   border-radius: 0 10px 10px 0;
-  width: 25px;
-  height: 27px;
+  width: 20px;
+  height: 22px;
   padding: 0;
-  background: #ffb36c url(${search}) center/50% no-repeat;
+  background: #ffb36c url(${search}) center/20% no-repeat;
   border: 2px solid black;
-  // border-style: dotted dashed solid double;
-  transition: background 0.5s cubic-bezier(1,-1.84,.31,1.84);
+  transition: background 0.5s cubic-bezier(1, -1.84, 0.31, 1.84);
   background-repeat: no-repeat;
   background-position: center;
   background-size: 60%;
@@ -160,17 +163,16 @@ const HeroButton = styled.button`
   cursor: pointer;
 
   &: hover {
-   background: green url(${search}) center/50% no-repeat;
-
+    background: green url(${search}) center/50% no-repeat;
   }
-   @media (min-width: 768px) {
-             width: 28px;
-        height: 31px;
+  @media (min-width: 768px) {
+    width: 28px;
+    height: 26px;
   }
-    @media (min-width: 1200px) {
-        width: 45px;
-        height: 48px;
-  } 
+  @media (min-width: 1200px) {
+    width: 40px;
+    height: 43px;
+  }
 `;
 
 const Hero = ({ heroDateString }) => {
@@ -178,12 +180,15 @@ const Hero = ({ heroDateString }) => {
     <HeroDiv>
       <HeroTitle>Приладова панель погоди</HeroTitle>
       <HeroDecor>
-       <HeroLineMobile/>
-      <HeroFix>
-        <HeroText>Створіть свій особистий список улюблених міст і завжди будьте в курсі погоди.</HeroText>
-        <HeroLine/>
-        <HeroDate>{heroDateString}</HeroDate>
-      </HeroFix>
+        <HeroLineMobile />
+        <HeroFix>
+          <HeroText>
+            Створіть свій особистий список улюблених міст і завжди будьте в
+            курсі погоди.
+          </HeroText>
+          <HeroLine />
+          <HeroDate>{heroDateString}</HeroDate>
+        </HeroFix>
       </HeroDecor>
       <HeroFormater>
         <HeroInput placeholder="Уведіть місто, яке вам треба" />

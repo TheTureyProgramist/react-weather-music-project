@@ -82,7 +82,7 @@ body {
 ol,
 ul {
   list-style: none;
-} 
+}
 table {
   border-collapse: separate;
   border-spacing: 0;
@@ -106,7 +106,7 @@ q {
 
 .container {
   width: 100%;
-  max-width: 320px; 
+  max-width: 320px;
   margin: 0 auto;
   padding: 0 0px;
   box-sizing: border-box;
@@ -114,21 +114,21 @@ q {
 
 @media (min-width: 321px) and (max-width: 480px) {
   .container {
-    max-width: 480px; 
-        padding: 0 0px;
+    max-width: 480px;
+    padding: 0 0px;
   }
 }
 
 @media (min-width: 481px) and (max-width: 1199px) {
   .container {
-    max-width: 768px; 
+    max-width: 768px;
     padding: 0 0px;
   }
 }
 
 @media (min-width: 1200px) {
   .container {
-    max-width: 1200px; 
+    max-width: 1200px;
     padding: 0 0px;
   }
 }
