@@ -1,5 +1,5 @@
 import styled, { keyframes } from "styled-components";
-import logo from "../../photos/hero-header/logo.webp";
+import logo from "../../photos/hero-header/logo.png";
 import facebok from "../../photos/footer/facebook.webp";
 import istagram from "../../photos/footer/instagram.webp";
 import whatsap from "../../photos/footer/whatsapp.webp";
@@ -95,7 +95,16 @@ const FooterDiv = styled.div`
     padding-bottom: 64px;
   }
 `;
-const FooterImage = styled.img``;
+const FooterImage = styled.img`
+height: 85px;
+  border-radius: 100%;
+  @media (min-width: 768px) {
+    height: 95px;
+  }
+    @media (min-width: 1200px) {
+    height: 105px;
+  }
+`;
 const FooterContacts = styled.div`
   display: flex;
   flex-direction: column;

@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import byesun from "../../photos/hero-header/byesun.webp";
+import hills from "../../photos/hero-header/hiils.jpg";
 import search from "../../photos/hero-header/search.webp";
 const HeroDiv = styled.div`
   position: relative;
@@ -11,7 +11,7 @@ const HeroDiv = styled.div`
   background-size: cover;
   background-image:
     linear-gradient(to right, rgba(47, 48, 58, 0.4), rgba(47, 48, 58, 0.4)),
-    url(${byesun});
+    url(${hills});
   background-color: #2f303a;
   background-repeat: no-repeat;
   flex-direction: column;
@@ -144,9 +144,40 @@ const HeroInput = styled.input`
 const HeroFormater = styled.div`
   display: flex;
 `;
+const HeroDecors = styled.div`
+  display: flex;
+`;
 const HeroDecor = styled.div`
   display: flex;
   gap: 23px;
+`;
+const HeroBlue = styled.div`
+    text-align: center;
+  font-family: var(--font-family);
+  font-weight: 600;
+  font-size: 14px;
+  color: skyblue;
+  margin: 0;
+  @media (min-width: 768px) {
+    font-size: 20px;
+  }
+  @media (min-width: 1200px) {
+    font-size: 40px;
+  }
+`;
+const HeroYellow = styled.div`
+    text-align: center;
+  font-family: var(--font-family);
+  font-weight: 600;
+  font-size: 14px;
+  color: gold;
+  margin: 0;
+  @media (min-width: 768px) {
+    font-size: 20px;
+  }
+  @media (min-width: 1200px) {
+    font-size: 40px;
+  }
 `;
 const HeroButton = styled.button`
   border-radius: 0 10px 10px 0;
@@ -178,13 +209,15 @@ const HeroButton = styled.button`
 const Hero = ({ heroDateString }) => {
   return (
     <HeroDiv>
+      <HeroDecors>
+      <HeroBlue>Сти</HeroBlue><HeroYellow>хія</HeroYellow>
+      </HeroDecors>
       <HeroTitle>Приладова панель погоди</HeroTitle>
       <HeroDecor>
         <HeroLineMobile />
         <HeroFix>
           <HeroText>
-            Створіть свій особистий список улюблених міст і завжди будьте в
-            курсі погоди.
+            Створіть свій особистий список погодних умов у багатьох точках світу.
           </HeroText>
           <HeroLine />
           <HeroDate>{heroDateString}</HeroDate>

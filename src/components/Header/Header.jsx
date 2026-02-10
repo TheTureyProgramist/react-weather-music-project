@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import logo from "../../photos/hero-header/logo.webp";
+import logo from "../../photos/hero-header/logo.png";
 import user from "../../photos/hero-header/user.webp";
 const HeaderDiv = styled.div`
   height: 50px;
@@ -21,11 +21,15 @@ const HeaderDiv = styled.div`
 `;
 
 const HeaderImage = styled.img`
-  height: 35px;
+  height: 45px;
+  border-radius: 100%;
   @media (min-width: 768px) {
-    height: 50px;
+    height: 65px;
   }
-`;
+    @media (min-width: 1200px) {
+    height: 75px;
+  }
+  `;
 
 const HeaderFix = styled.button`
   display: flex;
