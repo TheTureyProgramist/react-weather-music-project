@@ -7,9 +7,13 @@ const HeaderDiv = styled.div`
   align-items: center;
   justify-content: space-between;
   padding: 0 0px;
-  position: sticky;
+  width: 100%;
+  border-bottom: 1px solid black;
+  position: fixed;
   background: white;
   top: 0;
+  left: 0;
+  right: 0;
   z-index: 100;
   @media (min-width: 768px) {
     height: 70px;
@@ -38,20 +42,21 @@ const HeaderFix = styled.button`
   background: white;
   @media (min-width: 768px) {
     gap: 30px;
+      height: 60px;
   }
 `;
-const HeaderContacts = styled.span`
-  font-family: var(--second-family);
-  font-weight: 500;
-  font-size: 9px;
-  color: #000;
-  @media (min-width: 768px) {
-    font-size: 12px;
-  }
-`;
+// const HeaderContacts = styled.span`
+//   font-family: var(--second-family);
+//   font-weight: 500;
+//   font-size: 9px;
+//   color: #000;
+//   @media (min-width: 768px) {
+//     font-size: 12px;
+//   }
+// `;
 const HeaderButton = styled.button`
   font-family: var(--second-family);
-  font-weight: 500;
+  font-weight: 600;
   font-size: 9px;
   border-radius: 10px;
   padding: 1px 1px;
@@ -65,35 +70,43 @@ const HeaderButton = styled.button`
     height: 35px;
     font-size: 12px;
   }
+  @media (min-width: 1200px) {
+    width: 170px;
+    padding: 5px 10px;
+    height: 40px;
+    font-size: 15px;
+  }
 `;
 const HeaderAvatar = styled.img`
-  @media (min-width: 1200px) {
-    width: 50px;
-    height: 50px;
-  }
-  @media (min-width: 768px) {
+width: 30px;
+  height: 30px;
+    @media (min-width: 768px) {
     width: 40px;
     height: 40px;
   }
-  width: 30px;
-  height: 30px;
+  @media (min-width: 1200px) {
+    width: 53px;
+    height: 53px;
+  }
 `;
 const HeaderAboutUs = styled.span`
   font-size: 9px;
   cursor: pointer;
   font-family: var(--second-family);
-  font-weight: 500;
+  font-weight: 600;
   @media (min-width: 768px) {
     font-size: 12px;
   }
-`;
+   @media (min-width: 1200px) {
+    font-size: 15px;
+  }
+  `;
 
 const Header = () => {
   return (
     <HeaderDiv>
       <HeaderFix>
         <HeaderImage src={logo} alt="Logo" />
-        <HeaderContacts>Контакти</HeaderContacts>
         <HeaderAboutUs>Про нас</HeaderAboutUs>
       </HeaderFix>
       <HeaderFix>

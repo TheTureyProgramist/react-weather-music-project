@@ -6,6 +6,7 @@ const HeroDiv = styled.div`
   width: 100%;
   min-height: 360px;
   gap: 40px;
+   margin-top: 50px;
   margin-bottom: 35px;
   display: flex;
   background-size: cover;
@@ -21,11 +22,13 @@ const HeroDiv = styled.div`
   @media (min-width: 768px) {
     gap: 35px;
     margin-bottom: 50px;
+     margin-top: 70px;
   }
   @media (min-width: 1200px) {
     gap: 80px;
     min-height: 620px;
     margin-bottom: 80px;
+    margin-top: 80px;
   }
 `;
 
