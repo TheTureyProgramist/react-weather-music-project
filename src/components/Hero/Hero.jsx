@@ -19,7 +19,7 @@ const HeroDiv = styled.div`
   align-items: center;
   overflow: hidden;
   @media (min-width: 768px) {
-    gap: 60px;
+    gap: 35px;
     margin-bottom: 50px;
   }
   @media (min-width: 1200px) {

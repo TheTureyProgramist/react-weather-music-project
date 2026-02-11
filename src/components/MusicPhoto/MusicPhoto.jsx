@@ -122,7 +122,7 @@ const LoopButton = styled.button`
   background-color: ${props => props.$active ? "#333" : "transparent"};
   font-size: 10px;
   padding: 4px 8px;
-  
+
   cursor: pointer;
   align-self: center; 
   transition: all 0.2s;
@@ -203,7 +203,7 @@ audioRef.current.currentTime = time;
             />
           )}
           <LoopButton $active={isLooping} onClick={toggleLoop}>
-             {isLooping ? "Автопов.ON" : "Автопов.OFF"}
+             {isLooping ? "Автоповтор увімкнутий" : "Автоповтор вимкнений"}
           </LoopButton>
         </ControlsContainer>
       )}
