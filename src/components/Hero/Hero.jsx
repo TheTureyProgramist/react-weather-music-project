@@ -11,9 +11,7 @@ const HeroDiv = styled.div`
   display: flex;
   background-size: cover;
   background-image:
-    linear-gradient(to right, rgba(47, 48, 58, 0.4), rgba(47, 48, 58, 0.4)),
-    url(${hills});
-  background-color: #2f303a;
+    linear-gradient(to right, rgba(47, 48, 58, 0), rgba(47, 48, 58, 0)), url(${hills});
   background-repeat: no-repeat;
   flex-direction: column;
   justify-content: center;

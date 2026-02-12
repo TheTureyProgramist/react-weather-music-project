@@ -68,7 +68,7 @@ const MusicText = styled.div`
   color: #333;
   text-align: center;
   font-family: var(--font-family);
-  font-size: 9px;
+  font-size: 12px;
   font-weight: 500;
   width: 100%;
   margin-top: 10px;
