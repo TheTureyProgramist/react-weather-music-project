@@ -149,7 +149,7 @@ const Modal = ({ onClose, onRegister, availableAvatars }) => {
                 </AvatarOption>
             ))}
         </ImageSelectionContainer>
-        <Input type="password" name="password" placeholder="Пароль" onChange={handleChange} />
+        <Input type="password" name="password" placeholder="Пароль (власний придумайте, не акаунтний)" onChange={handleChange} />
         <Input type="password" name="confirmPassword" placeholder="Підтвердіть пароль" onChange={handleChange} />
         {error && <ErrorMsg>{error}</ErrorMsg>}
         <SubmitButton onClick={handleSubmit}>Зареєструватися</SubmitButton>

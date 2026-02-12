@@ -227,7 +227,7 @@ const UserSettingsModal = ({ onClose, user, currentAvatar, availableAvatars, onU
           </ImageSelectionContainer>
         </Section>
         <Section>
-          <Label>Змінити пароль (необов'язково):</Label>
+          <Label>Змінити пароль (необов'язково, не акаунтний уводьте):</Label>
           <Input
             type="password"
             name="currentPassword"
