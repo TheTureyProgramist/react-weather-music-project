@@ -22,7 +22,7 @@ const ModalContent = styled.div`
   display: flex;
   flex-direction: column;
   gap: 15px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 `;
 const CloseButton = styled.button`
   position: absolute;
@@ -60,19 +60,34 @@ const Label = styled.label`
 const ImageSelectionContainer = styled.div`
   display: flex;
   gap: 15px;
-  justify-content: center;
+  justify-content: flex-start;
+  width: 100%;
+  box-sizing: border-box;
   margin: 10px 0;
+  overflow-x: auto;
+  padding: 5px 2px;
+  &::-webkit-scrollbar { 
+    height: 6px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: #ffb36c;
+    border-radius: 10px;
+  }
+  &::-webkit-scrollbar-track {
+    background: #f1f1f1;
+  }
 `;
 const AvatarOption = styled.div`
   width: 60px;
   height: 60px;
   border-radius: 50%;
-  border: ${props => props.$isSelected ? '3px solid #ffb36c' : '2px solid transparent'};
+  border: 2px solid ${props => props.$isSelected ? '#ffb36c' : 'transparent'};
   cursor: pointer;
   overflow: hidden;
-  transition: transform 0.2s;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
   &:hover {
-    transform: scale(1.1);
+    transform: scale(1.05);
   }
   img {
     width: 100%;
@@ -111,12 +126,12 @@ const Modal = ({ onClose, onRegister, availableAvatars }) => {
   const [error, setError] = useState("");
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
-    setError(""); 
+    setError("");
   };
   const handleSubmit = () => {
-    if (!formData.account || !formData.firstName || !formData.lastName || !formData.password) {
-        setError("Заповніть всі поля!");
-        return;
+    if (!formData.account || !formData.firstName || !formData.password) {
+      setError("Заповніть всі поля!");
+      return;
     }
     if (formData.password !== formData.confirmPassword) {
       setError("Паролі не співпадають!");
@@ -126,6 +141,7 @@ const Modal = ({ onClose, onRegister, availableAvatars }) => {
       account: formData.account,
       firstName: formData.firstName,
       lastName: formData.lastName,
+      password: formData.password, 
       avatar: availableAvatars[formData.avatarIndex]
     });
     onClose();
@@ -139,18 +155,28 @@ const Modal = ({ onClose, onRegister, availableAvatars }) => {
         <Input name="firstName" placeholder="Ім'я та прізвище" onChange={handleChange} />
         <Label>Оберіть аватар:</Label>
         <ImageSelectionContainer>
-            {availableAvatars.map((imgSrc, index) => (
-                <AvatarOption 
-                    key={index} 
-                    $isSelected={formData.avatarIndex === index}
-                    onClick={() => setFormData({...formData, avatarIndex: index})}
-                >
-                   <img src={imgSrc} alt={`Опції аватара ${index}`} />
-                </AvatarOption>
-            ))}
+          {availableAvatars.map((imgSrc, index) => (
+            <AvatarOption
+              key={index}
+              $isSelected={formData.avatarIndex === index}
+              onClick={() => setFormData({ ...formData, avatarIndex: index })}
+            >
+              <img src={imgSrc} alt={`Опції аватара ${index}`} />
+            </AvatarOption>
+          ))}
         </ImageSelectionContainer>
-        <Input type="password" name="password" placeholder="Пароль (власний придумайте, не акаунтний)" onChange={handleChange} />
-        <Input type="password" name="confirmPassword" placeholder="Підтвердіть пароль" onChange={handleChange} />
+        <Input 
+          type="password" 
+          name="password" 
+          placeholder="Пароль (власний придумайте, не акаунтний)" 
+          onChange={handleChange} 
+        />
+        <Input 
+          type="password" 
+          name="confirmPassword" 
+          placeholder="Підтвердіть пароль" 
+          onChange={handleChange} 
+        />
         {error && <ErrorMsg>{error}</ErrorMsg>}
         <SubmitButton onClick={handleSubmit}>Зареєструватися</SubmitButton>
       </ModalContent>

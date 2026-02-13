@@ -10,13 +10,13 @@ import GraphicAtTheMoment from "./components/Graphics/GraphicAtTheMoment.jsx";
 import MusicPhoto from "./components/MusicPhoto/MusicPhoto.jsx";
 import Footer from "./components/Footer/Footer.jsx";
 import Modal from "./components/Modals/Modal.jsx";
+import LoginModal from "./components/Modals/LoginModal.jsx";
 import InfoModal from "./components/Modals/InfoModal.jsx";
 import UserSettingsModal from "./components/Modals/UserSettingsModal.jsx";
 import userDefault from "./photos/hero-header/user.webp";
 const AVAILABLE_AVATARS = [
-  userDefault, 
-  userDefault, 
-  userDefault  
+  userDefault, userDefault, userDefault, 
+  userDefault, userDefault, userDefault, userDefault 
 ];
 const ThemeWrapper = styled.div`
   background-color: ${props => props.$isDarkMode ? '#121212' : 'transparent'};
@@ -28,13 +28,14 @@ const ThemeWrapper = styled.div`
 const App = () => {
   const [now, setNow] = useState(new Date());
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(() => {
     const saved = localStorage.getItem('isDarkMode');
     return saved !== null ? JSON.parse(saved) : false;
   });
   const [user, setUser] = useState(() => {
-    const saved = localStorage.getItem('user');
+    const saved = localStorage.getItem('registered_user');
     return saved ? JSON.parse(saved) : null;
   });
   const [currentAvatar, setCurrentAvatar] = useState(() => {
@@ -50,50 +51,61 @@ const App = () => {
   }, [isDarkMode]);
   useEffect(() => {
     if (user) {
-      localStorage.setItem('user', JSON.stringify(user));
+      localStorage.setItem('registered_user', JSON.stringify(user));
+    } else {
+      localStorage.removeItem('user');
     }
   }, [user]);
   useEffect(() => {
     localStorage.setItem('currentAvatar', currentAvatar);
   }, [currentAvatar]);
-  const capitalize = (s) => s.charAt(0).toUpperCase() + s.slice(1);
-  const month = capitalize(new Intl.DateTimeFormat("uk", { month: "2-digit" }).format(now));
-  const weekday = capitalize(new Intl.DateTimeFormat("uk", { weekday: "long" }).format(now));
-  const year = now.getFullYear();
-  const day = now.getDate();
-  const pad = (n) => String(n).padStart(2, "0");
-  const hour = pad(now.getHours());
-  const minute = pad(now.getMinutes());
-  const second = pad(now.getSeconds());
-  const heroDateString = `${hour}:${minute}:${second} ${weekday}, ${day}.${month}.${year}`;
   const handleRegister = (userData) => {
-    setUser({
+    const newUser = {
+      account: userData.account,
       firstName: userData.firstName,
-      lastName: userData.lastName
-    });
+      lastName: userData.lastName,
+      password: userData.password,
+      avatar: userData.avatar
+    };
+    setUser(newUser);
     setCurrentAvatar(userData.avatar);
+    localStorage.setItem('registered_user', JSON.stringify(newUser));
+  };
+  const handleLogin = (savedUser) => {
+    setUser(savedUser);
+    setCurrentAvatar(savedUser.avatar);
+    setIsLoginOpen(false);
   };
   const handleUpdateUser = (userData) => {
-    setUser({
-      firstName: userData.firstName,
-      lastName: userData.lastName
-    });
+    const updated = { ...user, ...userData };
+    setUser(updated);
     setCurrentAvatar(userData.avatar);
+    localStorage.setItem('registered_user', JSON.stringify(updated));
   };
-  const toggleTheme = () => {
-    setIsDarkMode(!isDarkMode);
+  const handleLogout = () => {
+    setUser(null);
+    setCurrentAvatar(userDefault);
+    localStorage.removeItem('user');
+    setIsSettingsModalOpen(false);
   };
- return (
+  const toggleTheme = () => setIsDarkMode(!isDarkMode);
+  const capitalize = (s) => s.charAt(0).toUpperCase() + s.slice(1);
+  const month = new Intl.DateTimeFormat("uk", { month: "2-digit" }).format(now);
+  const weekday = capitalize(new Intl.DateTimeFormat("uk", { weekday: "long" }).format(now));
+  const heroDateString = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}:${String(now.getSeconds()).padStart(2, "0")} ${weekday}, ${now.getDate()}.${month}.${now.getFullYear()}`;
+  return (
     <ThemeWrapper $isDarkMode={isDarkMode}>
       <div className="App">
         <div className="container">
           <Header 
-            onOpenModal={() => setIsModalOpen(true)} 
+            onOpenRegister={() => setIsModalOpen(true)} 
+            onOpenLogin={() => setIsLoginOpen(true)}
             onOpenSettings={() => setIsSettingsModalOpen(true)}
             user={user}
             isDarkMode={isDarkMode}
             toggleTheme={toggleTheme}
             currentAvatar={currentAvatar}
+            onLogout={handleLogout}
           />
         </div>
         <Hero heroDateString={heroDateString} toggleTheme={toggleTheme}/>
@@ -112,6 +124,12 @@ const App = () => {
             availableAvatars={AVAILABLE_AVATARS}
           />
         )}
+        {isLoginOpen && (
+          <LoginModal 
+            onClose={() => setIsLoginOpen(false)} 
+            onLogin={handleLogin} 
+          />
+        )}        
         {isSettingsModalOpen && user && (
           <UserSettingsModal
             onClose={() => setIsSettingsModalOpen(false)}

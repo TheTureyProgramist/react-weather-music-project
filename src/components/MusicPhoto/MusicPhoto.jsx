@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 const MusicPhotoDiv = styled.div`
   background: #e8e8e8;
   border-radius: 20px;
@@ -25,6 +25,7 @@ const MusicPhotoText = styled.div`
   text-align: center;
   font-family: var(--font-family);
   font-weight: 600;
+  color: ${props => props.$isDarkMode ? 'black' : 'black'};
   margin-bottom: 35px;
   @media (min-width: 768px) {
     font-size: 20px;
@@ -40,20 +41,24 @@ const CardWrapper = styled.div`
   flex-direction: column;
   align-items: center;
   width: 285px;
+  background: #fff;
+  border-radius: 15px;
+  padding-bottom: 15px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.05);
 `;
 const MusicImageContainer = styled.div`
   position: relative;
   width: 285px;
   height: 168px;
-  border-radius: 15px;
+  border-radius: 15px 15px 0 0;
   background-color: #a5a5a5;
   overflow: hidden;
   flex-shrink: 0;
 `;
 const MusicImage = styled.img`
   width: 285px;
-  height: auto;
-  border-radius: 15px;
+  object-fit: cover;
+  border-radius: 15px 15px 0 0;
   cursor: pointer;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   &:hover {
@@ -72,7 +77,9 @@ const MusicText = styled.div`
   font-weight: 500;
   width: 100%;
   margin-top: 10px;
+  padding: 0 10px;
   line-height: 1.4;
+  box-sizing: border-box;
 `;
 const LoadMoreButton = styled.button`
   background-color: #333;
@@ -94,7 +101,7 @@ const ControlsContainer = styled.div`
   flex-direction: column;
   width: 100%;
   margin-top: 8px;
-  padding: 0 5px;
+  padding: 0 10px;
   box-sizing: border-box;
 `;
 const SeekBar = styled.input`
@@ -105,7 +112,8 @@ const SeekBar = styled.input`
   border-radius: 2px;
   outline: none;
   cursor: pointer;
-  margin-bottom: 5px; &::-webkit-slider-thumb {
+  margin-bottom: 5px; 
+  &::-webkit-slider-thumb {
     -webkit-appearance: none;
     width: 12px;
     height: 12px;
@@ -122,59 +130,166 @@ const LoopButton = styled.button`
   background-color: ${props => props.$active ? "#333" : "transparent"};
   font-size: 10px;
   padding: 4px 8px;
-
   cursor: pointer;
   align-self: center; 
   transition: all 0.2s;
+  margin-bottom: 10px;
   &:hover {
     opacity: 0.8;
   }
 `;
-const MusicCard = ({ image, audio, id, text }) => {
+const ActionButtonsContainer = styled.div`
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 10px;
+  padding: 0 10px;
+`;
+const ActionButton = styled.button`
+  background: #f0f0f0;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  padding: 5px 10px;
+  font-size: 11px;
+  cursor: pointer;
+  transition: 0.2s;
+  &:hover {
+    background: #e0e0e0;
+  }
+`;
+const ModalOverlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+`;
+const ModalContent = styled.div`
+  background: white;
+  padding: 20px;
+  border-radius: 15px;
+  width: 90%;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  text-align: center;
+`;
+const CloseButton = styled.button`
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  background: none;
+  border: none;
+  font-size: 20px;
+  font-weight: bold;
+  cursor: pointer;
+`;
+const ModalInfo = styled.div`
+  margin-top: 15px;
+  text-align: left;
+`;
+const ModalLink = styled.a`
+  display: block;
+  color: #007bff;
+  margin-bottom: 15px;
+  text-decoration: none;
+  word-break: break-all;
+  &:hover {
+    text-decoration: underline;
+  }
+`;
+const LyricsContainer = styled.div`
+  background: #f9f9f9;
+  padding: 15px;
+  border-radius: 8px;
+  font-size: 14px;
+  white-space: pre-line; 
+  border: 1px solid #eee;
+`;
+const MusicCard = ({ cardData, onOpenModal, onTrackToggle, forcePause }) => {
+  const { id, image, audio, text } = cardData;
   const audioRef = useRef(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [isLooping, setIsLooping] = useState(false);
-  const showSeekBar = [1, 3, 6].includes(id);
+  const showSeekBar = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].includes(id);
   const hasAudio = !!audio;
+  useEffect(() => {
+    if (forcePause && isPlaying) {
+      if (audioRef.current) audioRef.current.pause();
+      setIsPlaying(false);
+    }
+  }, [forcePause, isPlaying]);
   const handleImageClick = () => {
     if (audioRef.current) {
       if (isPlaying) {
         audioRef.current.pause();
         setIsPlaying(false);
+        onTrackToggle(id, false);
       } else {
         audioRef.current.play();
         setIsPlaying(true);
+        onTrackToggle(id, true);
       }
     }
   };
   const handleAudioEnd = () => {
     if (!isLooping) {
       setIsPlaying(false);
+      onTrackToggle(id, false);
     }
   };
   const onTimeUpdate = () => {
-    if (audioRef.current) { setCurrentTime(audioRef.current.currentTime);
-    }
+    if (audioRef.current) setCurrentTime(audioRef.current.currentTime);
   };
   const onLoadedMetadata = () => {
-    if (audioRef.current) { setDuration(audioRef.current.duration);
-    }
+    if (audioRef.current) setDuration(audioRef.current.duration);
   };
   const handleSeek = (e) => {
     const time = parseFloat(e.target.value);
     if (audioRef.current) {
-audioRef.current.currentTime = time;
+      audioRef.current.currentTime = time;
       setCurrentTime(time);
     }
   };
   const toggleLoop = () => {
     const newLoopState = !isLooping;
     setIsLooping(newLoopState);
-    if (audioRef.current) {
-      audioRef.current.loop = newLoopState;
-    }
+    if (audioRef.current) audioRef.current.loop = newLoopState;
+  };
+  const handleDownload = () => {
+    const fileUrl = audio || image;
+    const link = document.createElement("a");
+    link.href = fileUrl;
+    link.download = audio ? `audio-${id}.mp3` : `image-${id}.jpg`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+  const handlePrint = () => {
+    const printWindow = window.open("", "_blank");
+    printWindow.document.write(`
+      <html>
+        <head><title>Друк - ${id}</title></head>
+        <body style="text-align: center; font-family: sans-serif;">
+          <img src="${image}" style="max-width: 100%; height: auto; border-radius: 15px;" />
+          <p style="margin-top: 20px; font-size: 18px;">${text}</p>
+        </body>
+      </html>
+    `);
+    printWindow.document.close();
+    printWindow.onload = () => {
+      printWindow.focus();
+      printWindow.print();
+    };
   };
   return (
     <CardWrapper>
@@ -184,9 +299,9 @@ audioRef.current.currentTime = time;
           <audio 
             ref={audioRef} 
             src={audio} 
-       onEnded={handleAudioEnd}        
-         onTimeUpdate={onTimeUpdate}          
-          onLoadedMetadata={onLoadedMetadata}
+            onEnded={handleAudioEnd}        
+            onTimeUpdate={onTimeUpdate}          
+            onLoadedMetadata={onLoadedMetadata}
             loop={isLooping} 
           />
         )}
@@ -203,97 +318,103 @@ audioRef.current.currentTime = time;
             />
           )}
           <LoopButton $active={isLooping} onClick={toggleLoop}>
-             {isLooping ? "Автоповтор увімкнутий" : "Автоповтор вимкнений"}
+             {isLooping ? "Автоповтор увімкнено" : "Автоповтор вимкнено"}
           </LoopButton>
         </ControlsContainer>
       )}
       {text && <MusicText>{text}</MusicText>}
+      <ActionButtonsContainer>
+        <ActionButton onClick={handleDownload}>Скачати</ActionButton>
+        <ActionButton onClick={handlePrint}>Роздрукувати</ActionButton>
+        <ActionButton onClick={() => onOpenModal(cardData)}>Текст пісні</ActionButton>
+      </ActionButtonsContainer>
     </CardWrapper>
   );
 };
 const MusicPhoto = () => {
+  const [isMobile, setIsMobile] = useState(false);
+  const [showAll, setShowAll] = useState(false);
+  const [modalData, setModalData] = useState(null); 
+  const [playingTracks, setPlayingTracks] = useState([]); 
   const musicCards = [
     {
       id: 1,
-      image: require("../../photos/vip-images/vip-dinofroz.webp"),
-      audio: require("../../mp3/dinofroz-mondo-tv.mp3"),
-      text: "Легендарний мультфільм на малятко ТВ(нажаль закритий) розповідає про боротьбу з драконами(Імператор Ніцерон) Mondo TV - Динофроз.",
+      image: require("../../photos/hero-header/hiils.jpg"),
+      text: "Це тематична картинка в честь виходу гри, епічної новини, або свята, без музики(Поки). Тут зображене бажання побувати в горах.",
+      originalLink: "https://example.com/original-source-1",
+      lyrics: "Тут немає тексту."
     },
     {
       id: 2,
-      image: require("../../photos/vip-images/ultra-vip-turkeys.webp"),
-      audio: require("../../mp3/turkeys.mp3"),
-      text: "Насолоджуйтеся звуками індиків, їхніх бундючих характерів, насолождуйтеся дитинства моментів. Авторське спостереження - звуки самців.",
+      image: require("../../photos/vip-images/vip-dinofroz.webp"),
+      audio: require("../../mp3/dinofroz-mondo-tv.mp3"),
+      text: "Легендарний мультфільм на малятко ТВ(нажаль закритий) розповідає про боротьбу з драконами(Імператор Ніцерон) Mondo TV - Динофроз.",
+      originalLink: "https://example.com/dinofroz-original",
+      lyrics: "Текст пісні Dinofroz...\nРядок 2...\nРядок 3..."
     },
     {
-      id: 3,
-      image: require("../../photos/vip-images/vip-forest.webp"),
-      audio: require("../../mp3/thefatrat-monody.mp3"),
-      text: "Цей казковий нічний ліс наповнений сакурами, казковим туманом, світлячками,але хащами, тернами та соснами. TheFatRat - Monody.",
+      id: 3, image: require("../../photos/vip-images/ultra-vip-turkeys.webp"),
+       audio: require("../../mp3/turkeys.mp3"), text: "Насолоджуйтеся звуками індиків. Авторське спостереження.",
+       lyrics: "Тут немає тексту."
     },
     {
-      id: 4,
-      image: require("../../photos/vip-images/vip-desert.webp"),
-      audio: require("../../mp3/wind.mp3"),
-      text: "Пустеля розділенна вічно грозовою і сонячною зоною, на скелі позначені різні тварини та локації, місце загадкове. Невідомий автор - звуки пустелі.",
+      id: 4, image: require("../../photos/vip-images/vip-forest.webp"), audio: require("../../mp3/thefatrat-monody.mp3"),
+       text: "Цей казковий нічний ліс наповнений сакурами, казковим туманом, світлячками,але хащами, тернами та соснами. TheFatRat - Monody."
     },
     {
-      id: 5,
-      image: require("../../photos/vip-images/fire.jpg"),
-      audio: require("../../mp3/wind.mp3"),
-      text: "Виверження вулкана є небезпечною подією, хоча про синю лаву так не скажеш. Співзвучить з музикою динофроз(Дракони жили у вулкані). Мій друг прислав це з інстаграму.",
+      id: 5, image: require("../../photos/vip-images/vip-desert.webp"), audio: require("../../mp3/wind.mp3"), 
+      text: "Пустеля розділенна вічно грозовою і сонячною зоною, на скелі позначені різні тварини та локації, місце загадкове. Невідомий автор.",
+       lyrics: "Тут немає тексту."
     },
     {
-      id: 6,
-      image: require("../../photos/vip-images/horror.jpg"),
-      audio: require("../../mp3/horror.mp3"),
-      text: "Ви дивилися моторошне кіно. І засинаєте. Прокинувись ви опиняєтеся в зруйнованому будинку. І чуєте моторошні звуки. В дім щось зайшло, ви тікаєте і це щось переслідує і ловить вас. Ніхто не знає де ви, і не дізнається. Склеювання кількох звукозаписів.",
+      id: 6, image: require("../../photos/vip-images/fire.jpg"), audio: require("../../mp3/wind.mp3"), text: "Виверження вулкана є небезпечною подією, хоча про синю лаву так не скажеш. Співзвучить з музикою динофроз. Мій друг прислав це з інстаграму"
     },
     {
-      id: 7,
-      image: require("../../photos/vip-images/horse.jpg"),
-      audio: require("../../mp3/horse.mp3"),
-      text: "Кінь друг людини(козаків, татаринів та армій). Можете послухати цю мужню тварину, обирайте наш сайт. Телеканал мега(автор звуку).",
+      id: 7, image: require("../../photos/vip-images/horror.jpg"), audio: require("../../mp3/horror.mp3"), text: "Ви дивилися моторошне кіно..."
     },
     {
-      id: 8,
-      image: require("../../photos/vip-images/vip-lebid.jpg"),
-      audio: require("../../mp3/lebid.mp3"),
-      text: "Лебеді символ кохання, на день Святого Валентика послуйте цю мелодію. Амурна стріла буде сильнішою. ",
+      id: 8, image: require("../../photos/vip-images/horse.jpg"), audio: require("../../mp3/horse.mp3"),
+       text: "Кінь друг людини. Можете послухати цю мужню тварину, обирайте наш сайт. Телеканал мега(автор звуку).", lyrics: "Тут немає тексту."
     },
     {
-      id: 9,
-      image: require("../../photos/vip-images/vip-dragons.jpg"),
-      audio: require("../../mp3/dragon.mp3"),
-text: "І знову дракони, для дослідників це хороше джерело звуку, а для нас ще одна мелодія. Картина взята з мультфільму Динофроз.",
+      id: 9, image: require("../../photos/vip-images/vip-lebid.jpg"), audio: require("../../mp3/lebid.mp3"),
+       text: "Лебеді символ кохання...", 
     },
     {
-      id: 10,
-      image: require("../../photos/vip-images/vip-soloveyko.jpg"),
-      audio: require("../../mp3/soloveyko.mp3"),
-      text: "Голосування хто кращий по звукам індик, соловейко чи лебеді. Зроблено за ідеї сім'ї(без поради тут було б щось інше).",
+      id: 10, image: require("../../photos/vip-images/vip-dragons.jpg"), audio: require("../../mp3/dragon.mp3"),
+       text: "І знову дракони, для дослідників це хороше джерело звуку, а для нас ще одна мелодія. Картина взята з мультфільму Динофроз.", lyrics: "Тут немає тексту."
     },
     {
-      id: 11,
-      image: require("../../photos/vip-images/vip-rooster.jpg"),
-      audio: require("../../mp3/rooster.mp3"),
-      text: "Одвічна боротьба, добро-зло, коти та миші, проте індик-півень, це страшніше ніж Усик-Ф'юрі, ці бої у книжках конкурують з Доном Кіхoтом.",
+      id: 11, image: require("../../photos/vip-images/vip-soloveyko.jpg"), audio: require("../../mp3/soloveyko.mp3"),
+       text: "Голосування хто кращий по звукам індик, соловейко чи лебеді. Зроблено за ідеї сім'ї(без поради тут було б щось інше).", lyrics: "Тут немає тексту."
     },
     {
-      id: 12,
-      image: require("../../photos/hero-header/hiils.jpg"),
-      text: "Це тематична картинка в честь виходу гри, епічної новини, або свята, без музики(Поки). Тут зображене бажання побувати в горах.",
+      id: 12, image: require("../../photos/vip-images/vip-rooster.jpg"), audio: require("../../mp3/rooster.mp3"),
+       text: "Одвічна боротьба, добро-зло..."
     },
   ];
-  const [isMobile, setIsMobile] = useState(false);
-  const [showAll, setShowAll] = useState(false);
   useEffect(() => {
-    const checkScreenSize = () => {  setIsMobile(window.innerWidth < 768);
+    const checkScreenSize = () => {  
+      setIsMobile(window.innerWidth < 768);
     };
-    checkScreenSize();    window.addEventListener('resize', checkScreenSize);
+    checkScreenSize();    
+    window.addEventListener('resize', checkScreenSize);
     return () => window.removeEventListener('resize', checkScreenSize);
   }, []);
-  const visibleCards = (isMobile && !showAll) ? musicCards.slice(0, 6) : musicCards;
+  const handleTrackToggle = useCallback((id, startPlaying) => {
+    setPlayingTracks(prev => {
+      if (startPlaying) {
+        const newQueue = [...prev, id];
+        if (newQueue.length > 2) {
+          return newQueue.slice(1);
+        }
+        return newQueue;
+      } else {
+        return prev.filter(trackId => trackId !== id);
+      }
+    });
+  }, []);
+  const visibleCards = (isMobile && !showAll) ? musicCards.slice(0, 8) : musicCards;
   return (
     <MusicPhotoDiv>
       <MusicPhotoText>
@@ -303,10 +424,10 @@ text: "І знову дракони, для дослідників це хоро
         {visibleCards.map((card) => (
           <MusicCard
             key={card.id}
-            id={card.id}
-            image={card.image}
-            audio={card.audio}
-            text={card.text}
+            cardData={card}
+            onOpenModal={setModalData}
+            onTrackToggle={handleTrackToggle}
+            forcePause={!playingTracks.includes(card.id)}
           />
         ))}
       </MusicPhotoFix>
@@ -314,6 +435,33 @@ text: "І знову дракони, для дослідників це хоро
         <LoadMoreButton onClick={() => setShowAll(true)}>
           Завантажити ще
         </LoadMoreButton>
+      )}
+      {modalData && (
+        <ModalOverlay onClick={() => setModalData(null)}>
+          <ModalContent onClick={e => e.stopPropagation()}>
+            <CloseButton onClick={() => setModalData(null)}>&times;</CloseButton>
+            <MusicImageContainer style={{ margin: '0 auto' }}>
+              <MusicImage src={modalData.image} alt="Modal Music" />
+            </MusicImageContainer>
+            {modalData.audio && (
+              <audio src={modalData.audio} controls style={{ width: '100%', marginTop: '15px' }} />
+            )}
+            <ModalInfo>
+              <p><strong>Оригінальне джерело:</strong></p>
+              {modalData.originalLink ? (
+                <ModalLink href={modalData.originalLink} target="_blank" rel="noopener noreferrer">
+                  {modalData.originalLink}
+                </ModalLink>
+              ) : (
+                <p>Посилання не вказано</p>
+              )}
+              <p><strong>Текст:</strong></p>
+              <LyricsContainer>
+                {modalData.lyrics ? modalData.lyrics : "Текст для цієї композиції ще не додано."}
+              </LyricsContainer>
+            </ModalInfo>
+          </ModalContent>
+        </ModalOverlay>
       )}
     </MusicPhotoDiv>
   );

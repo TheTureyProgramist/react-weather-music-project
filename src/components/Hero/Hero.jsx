@@ -36,16 +36,16 @@ const HeroText = styled.h2`
   font-family: var(--font-family);
   font-size: 10px;
   font-weight: 500;
-  width: 166px;
+  width: 206px;
   display: block;
   margin: 0;
 
   @media (min-width: 768px) {
-    font-size: 14px;
+    font-size: 11px;
     width: 229px;
   }
   @media (min-width: 1200px) {
-    font-size: 24px;
+    font-size: 19px;
     width: 395px;
   }
 `;
@@ -73,11 +73,11 @@ const HeroDate = styled.div`
   font-weight: 500;
 
   @media (min-width: 768px) {
-    font-size: 14px;
+    font-size: 11px;
     width: 262px;
   }
   @media (min-width: 1200px) {
-    font-size: 24px;
+    font-size: 19px;
     width: 395px;
   }
 `;
@@ -86,7 +86,7 @@ const HeroLine = styled.div`
   display: none;
   @media (min-width: 768px) {
     width: 2px;
-    height: 95px;
+    height: 75px;
     background: rgba(255, 255, 255, 0.95);
     border-radius: 1px;
     display: flex;
@@ -109,14 +109,14 @@ const HeroTitle = styled.h1`
   text-align: center;
   font-family: var(--font-family);
   font-weight: 600;
-  font-size: 14px;
+  font-size: 12px;
   color: #fff;
   margin: 0;
   @media (min-width: 768px) {
-    font-size: 20px;
+    font-size: 17px;
   }
   @media (min-width: 1200px) {
-    font-size: 40px;
+    font-size: 26px;
   }
 `;
 
@@ -213,12 +213,12 @@ const Hero = ({ heroDateString }) => {
       <HeroDecors>
       <HeroBlue>Сти</HeroBlue><HeroYellow>хія</HeroYellow>
       </HeroDecors>
-      <HeroTitle>Приладова панель погоди</HeroTitle>
+      <HeroTitle>Безкоштовна приладова панель погоди</HeroTitle>
       <HeroDecor>
         <HeroLineMobile />
         <HeroFix>
           <HeroText>
-            Створіть свій особистий список погодних умов у багатьох точках світу.
+            Створіть свій особистий список погодних умов у 3 точках світу.
           </HeroText>
           <HeroLine />
           <HeroDate>{heroDateString}</HeroDate>

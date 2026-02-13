@@ -1,7 +1,6 @@
 import styled, { keyframes } from "styled-components";
 import logo from "../../photos/hero-header/logo.png";
 import facebok from "../../photos/footer/facebook.webp";
-import istagram from "../../photos/footer/instagram.webp";
 import whatsap from "../../photos/footer/whatsapp.webp";
 const changeColor = keyframes`
 0% { background: skyblue; }
@@ -75,6 +74,7 @@ const FooterDiv = styled.div`
   align-items: center;
   justify-content: center;
   gap: 30px;
+  margin-bottom: -15px;
   padding-top: 40px;
   padding-bottom: 32px;
   margin-top: 35px;
@@ -109,17 +109,20 @@ const FooterContacts = styled.div`
   display: flex;
   flex-direction: column;
   gap: 10px;
+  color: ${props => props.$isDarkMode ? 'black' : 'black'};
 `;
 const FooterAdress = styled.div`
   display: flex;
   flex-direction: column;
   gap: 10px;
+  color: ${props => props.$isDarkMode ? 'black' : 'black'};
 `;
 const FooterAdressText = styled.h1`
   font-family: var(--second-family);
   font-weight: 500;
   text-align: center;
   font-size: 16px;
+  color: ${props => props.$isDarkMode ? 'black' : 'black'};
   @media (min-width: 768px) {
     text-align: start;
   }
@@ -146,11 +149,6 @@ const FooterContactsFix = styled.div`
   display: flex;
   gap: 20px;
 `;
-const Instagram = styled.button`
-  height: 40px;
-  width: 40px;
-  background: url(${istagram}) center no-repeat;
-`;
 const Facebook = styled.a`
   height: 40px;
   width: 40px;
@@ -167,12 +165,11 @@ const Footer = () => {
       <FooterImage src={logo} alt="Logo" />
       <FooterAdress>
         <FooterAdressText>Адреса</FooterAdressText>
-        <FooterAdressInfo>Київ. Україна</FooterAdressInfo>
+        <FooterAdressInfo>Конотоп. Україна</FooterAdressInfo>
       </FooterAdress>
       <FooterContacts>
         <FooterContactsText>Наші контакти</FooterContactsText>
         <FooterContactsFix>
-          <Instagram></Instagram>
           <Facebook href="https://www.facebook.com/share/g/15cVdicVtGc/"></Facebook>
           <Whatsapp href="https://chat.whatsapp.com/KvCMirZC8Hz34ObSTiwRaR"></Whatsapp>
         </FooterContactsFix>

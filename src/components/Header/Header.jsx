@@ -1,167 +1,176 @@
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
 import logo from "../../photos/hero-header/logo.png";
+const flow = keyframes`
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+`;
+const AnimatedText = styled.h1`
+  font-family: 'Inter', sans-serif;
+  font-size: 9px;
+  font-weight: bold;
+  background: linear-gradient(270deg, #ff7eb3, #ff758c, #7afcff, #feffb7, #58e2c2);
+  background-size: 400% 400%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: ${flow} 5s ease infinite;
+  @media (min-width: 768px) { 
+  font-size: 15px; 
+  }
+`;
 const HeaderDiv = styled.div`
   height: 50px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 2px; 
   width: 100%;
   border-bottom: 1px solid ${props => props.$isDarkMode ? '#444' : 'black'};
   position: fixed;
-  background: ${props => props.$isDarkMode ? '#1a1a1a' : 'white'}; 
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 100;
-  transition: background 0.3s ease;
+  background: ${props => props.$isDarkMode ? '#1a1a1a' : 'white'};
+  top: 0; left: 0; right: 0; z-index: 100;
+  transition: background-color 0.3s ease;
   @media (min-width: 768px) {
-    height: 70px;
-    padding: 0 30px;
+   height: 70px; padding: 0 30px; 
   }
-  @media (min-width: 1200px) {
-    height: 80px;
-  }
-`;
-const HeaderImage = styled.img`
-  height: 45px;
-  border-radius: 100%;
   @media (min-width: 768px) {
-    height: 65px;
-  }
-  @media (min-width: 1200px) {
-    height: 75px;
+   height: 80px; 
   }
 `;
 const HeaderFix = styled.div`
   display: flex;
   align-items: center;
   gap: 10px;
-  background: transparent;
-  border: none;
-  @media (min-width: 768px) {
-    gap: 30px;
-    height: 60px;
-  }
-`;
-const HeaderButton = styled.button`
-  font-family: var(--second-family);
-  font-weight: 600;
-  font-size: 9px;
-  border-radius: 10px;
-  padding: 1px 1px;
-  width: 90px;
-  height: 28px;
-  background: #ffb36c;
-  cursor: pointer;
-  border: none;
-  @media (min-width: 768px) {
-    width: 130px;
-    padding: 5px 10px;
-    height: 35px;
-    font-size: 12px;
-  }
-  @media (min-width: 1200px) {
-    width: 170px;
-    padding: 5px 10px;
-    height: 40px;
-    font-size: 15px;
-  }
-`;
-const UserNameText = styled.span`
-  font-family: var(--second-family);
-  font-weight: 600;
-  font-size: 9px;
-   color: ${props => props.$isDarkMode ? 'white' : 'black'};
-  margin-right: 10px;
-    @media (min-width: 768px) {
-    font-size: 12px;
-  }
-   @media (min-width: 1200px) {
-    font-size: 15px;
-  }
-`;
-const HeaderAvatar = styled.img`
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  object-fit: cover;
-  @media (min-width: 768px) {
-    width: 40px;
-    height: 40px;
-  }
-  @media (min-width: 1200px) {
-    width: 53px;
-    height: 53px;
-  }
-`;
-
-const SettingsButton = styled.button`
-  background: transparent;
-  color: #333;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 15px;
-  font-family: var(--second-family);
-  font-weight: 600;
-  @media (min-width: 768px) {
-    font-size: 18px;
-  }
-  @media (min-width: 1200px) {
-    font-size: 22px;
-  }
-`;
-const HeaderAboutUs = styled.p`
-  font-size: 9px;
-  cursor: pointer;
-  font-family: var(--second-family);
-  font-weight: 600;
-  color: ${props => props.$isDarkMode ? '#ddd' : 'black'};
-  @media (min-width: 768px) {
-    font-size: 12px;
-  }
-   @media (min-width: 1200px) {
-    font-size: 15px;
+  @media (min-width: 768px) { 
+  gap: 20px; 
   }
 `;
 const ThemeButton = styled.button`
   background: transparent;
-  color: ${props => props.$isDarkMode ? '#ffb36c' : '#333'};
-  border-radius: 5px;
+  border: none;
   cursor: pointer;
-  padding: 5px;
-  width: 30px;
-  font-size: 15px;
-  margin-right: 5px;
-       @media (min-width: 768px) {
-    font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: ${props => props.$isDarkMode ? '13px' : '12px'};
+  transition: transform 0.2s ease;
+  &:hover { transform: scale(1.1); }
+  @media (min-width: 1200px) { 
+   font-size: ${props => props.$isDarkMode ? '21px' : '18px'};
   }
-  @media (min-width: 1200px) {
-    font-size: 22px;
+  @media (min-width: 1200px) { 
+   font-size: ${props => props.$isDarkMode ? '23px' : '20px'};
   }
 `;
-const Header = ({ onOpenModal, onOpenSettings, user, isDarkMode, toggleTheme, currentAvatar }) => {
+const LoginLink = styled.span`
+  font-size: 12px;
+  cursor: pointer;
+  padding: 9px 18px;
+    background: #e0e0e0;
+      border-radius: 8px;
+  text-decoration: underline;
+  color: ${props => props.$isDarkMode ? '#ffb36c' : '#555'};
+  font-weight: 600;
+  &:hover { opacity: 0.8; }
+  @media (min-width: 768px) { 
+  font-size: 15px; 
+  }
+`;
+const HeaderButton = styled.button`
+  background: #ffb36c;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  border-radius: 8px;
+  padding: 9px 18px;
+  font-size: 11px;
+  transition: background 0.2s;
+  &:hover { background: #ffa04d; }
+  @media (min-width: 768px) { 
+  font-size: 15px; 
+  }
+`;
+const IconButton = styled.button`
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+    @media (min-width: 768px) { 
+  font-size: 16px; 
+  }
+    @media (min-width: 768px) { 
+  font-size: 19px; 
+  }
+`;
+const HeaderLogo = styled.img`
+height: 45px;
+border-radius: 50%;
+  @media (min-width: 768px) { 
+  height: 65px;
+  }
+   @media (min-width: 1200px) { 
+  height: 75px;
+  }
+`;
+const HeaderAvatar = styled.img`
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid #ddd;
+  @media (min-width: 768px) { 
+  width: 40px; height: 40px; 
+  }
+  @media (min-width: 768px) { 
+  width: 50px; height: 50px; 
+  }
+`;
+const UserName = styled.span`
+  font-size: 9px;
+  font-weight: 500;
+  color: ${props => props.$isDarkMode ? '#fff' : '#333'};
+  margin-right: 5px;
+  @media (min-width: 768px) { 
+  font-size: 15px; 
+  }
+`;
+const Header = ({ 
+  onOpenRegister, 
+  onOpenLogin, 
+  onOpenSettings, 
+  user, 
+  isDarkMode, 
+  toggleTheme, 
+  currentAvatar, 
+  onLogout 
+}) => {
   return (
     <HeaderDiv $isDarkMode={isDarkMode}>
       <HeaderFix>
-        <HeaderImage src={logo} alt="Logo" />
-        <HeaderAboutUs $isDarkMode={isDarkMode}>Про нас</HeaderAboutUs>
+        <HeaderLogo src={logo}/>
+        {user && <AnimatedText>Стихія+</AnimatedText>}
       </HeaderFix>
       <HeaderFix>
         <ThemeButton onClick={toggleTheme} $isDarkMode={isDarkMode}>
-            {isDarkMode ? '☀︎' : ' 🌑'}
+          {isDarkMode ? '☀️' : '🌑'}
         </ThemeButton>
         {user ? (
-            <>
-              <UserNameText $isDarkMode={isDarkMode}>
-                  {user.firstName} {user.lastName}
-              </UserNameText>
-              <SettingsButton onClick={onOpenSettings}>⚙️</SettingsButton>
-            </>
+          <>
+            <IconButton onClick={onOpenSettings} title="Налаштування">⚙️</IconButton>
+            <IconButton onClick={onLogout} title="Вийти">🚪</IconButton>
+            <UserName $isDarkMode={isDarkMode}>
+              {user.firstName} {user.lastName}
+            </UserName>
+            <HeaderAvatar src={currentAvatar} alt="User" />
+          </>
         ) : (
-            <HeaderButton onClick={onOpenModal}>Зареєструватися</HeaderButton>
+          <>
+            <LoginLink onClick={onOpenLogin}>Увійти</LoginLink>
+            <HeaderButton onClick={onOpenRegister}>Реєстрація</HeaderButton>
+          </>
         )}
-        <HeaderAvatar src={currentAvatar}></HeaderAvatar>
       </HeaderFix>
     </HeaderDiv>
   );
