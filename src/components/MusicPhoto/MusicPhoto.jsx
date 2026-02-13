@@ -41,6 +41,7 @@ const CardWrapper = styled.div`
   flex-direction: column;
   align-items: center;
   width: 285px;
+    height: 356px;
   background: #fff;
   border-radius: 15px;
   padding-bottom: 15px;
@@ -143,7 +144,7 @@ const ActionButtonsContainer = styled.div`
   gap: 5px;
   flex-wrap: wrap;
   justify-content: center;
-  margin-top: 10px;
+  margin-top: auto;
   padding: 0 10px;
 `;
 const ActionButton = styled.button`
@@ -318,7 +319,7 @@ const MusicCard = ({ cardData, onOpenModal, onTrackToggle, forcePause }) => {
             />
           )}
           <LoopButton $active={isLooping} onClick={toggleLoop}>
-             {isLooping ? "Автоповтор увімкнено" : "Автоповтор вимкнено"}
+              {isLooping ? "Автоповтор увімкнено" : "Автоповтор вимкнено"}
           </LoopButton>
         </ControlsContainer>
       )}
@@ -332,7 +333,6 @@ const MusicCard = ({ cardData, onOpenModal, onTrackToggle, forcePause }) => {
   );
 };
 const MusicPhoto = () => {
-  const [isMobile, setIsMobile] = useState(false);
   const [showAll, setShowAll] = useState(false);
   const [modalData, setModalData] = useState(null); 
   const [playingTracks, setPlayingTracks] = useState([]); 
@@ -350,57 +350,80 @@ const MusicPhoto = () => {
       audio: require("../../mp3/dinofroz-mondo-tv.mp3"),
       text: "Легендарний мультфільм на малятко ТВ(нажаль закритий) розповідає про боротьбу з драконами(Імператор Ніцерон) Mondo TV - Динофроз.",
       originalLink: "https://example.com/dinofroz-original",
-      lyrics: "Текст пісні Dinofroz...\nРядок 2...\nРядок 3..."
+      lyrics: "Dinofroze...dinofroze. Четверо друзів знайшли дивну гру. В доісторичну пішли давнину. Там динозаврами мтали вони"
     },
     {
-      id: 3, image: require("../../photos/vip-images/ultra-vip-turkeys.webp"),
-       audio: require("../../mp3/turkeys.mp3"), text: "Насолоджуйтеся звуками індиків. Авторське спостереження.",
-       lyrics: "Тут немає тексту."
+      id: 3, 
+      image: require("../../photos/vip-images/ultra-vip-turkeys.webp"),
+      audio: require("../../mp3/turkeys.mp3"), 
+      text: "Насолоджуйтеся звуками індиків. Авторське спостереження.",
+      lyrics: "Тут немає тексту. Лише звуки природи."
     },
     {
-      id: 4, image: require("../../photos/vip-images/vip-forest.webp"), audio: require("../../mp3/thefatrat-monody.mp3"),
-       text: "Цей казковий нічний ліс наповнений сакурами, казковим туманом, світлячками,але хащами, тернами та соснами. TheFatRat - Monody."
+      id: 4, 
+      image: require("../../photos/vip-images/vip-forest.webp"), 
+      audio: require("../../mp3/thefatrat-monody.mp3"),
+      text: "Цей казковий нічний ліс наповнений сакурами, казковим туманом, світлячками,але хащами, тернами та соснами. TheFatRat - Monody.",
+      lyrics: "Текст пісні TheFatRat - Monody:\n\nSummer in the hills\nThose hazy days I do remember\nWe were running still\nHad the whole world at our feet..."
     },
     {
-      id: 5, image: require("../../photos/vip-images/vip-desert.webp"), audio: require("../../mp3/wind.mp3"), 
+      id: 5, 
+      image: require("../../photos/vip-images/vip-desert.webp"), 
+      audio: require("../../mp3/wind.mp3"), 
       text: "Пустеля розділенна вічно грозовою і сонячною зоною, на скелі позначені різні тварини та локації, місце загадкове. Невідомий автор.",
-       lyrics: "Тут немає тексту."
+      lyrics: "Тут немає тексту. Звуки вітру."
     },
     {
-      id: 6, image: require("../../photos/vip-images/fire.jpg"), audio: require("../../mp3/wind.mp3"), text: "Виверження вулкана є небезпечною подією, хоча про синю лаву так не скажеш. Співзвучить з музикою динофроз. Мій друг прислав це з інстаграму"
+      id: 6, 
+      image: require("../../photos/vip-images/fire.jpg"), 
+      audio: require("../../mp3/wind.mp3"), 
+      text: "Виверження вулкана є небезпечною подією, хоча про синю лаву так не скажеш. Співзвучить з музикою динофроз. Мій друг прислав це з інстаграму",
+      lyrics: "Текст відсутній."
     },
     {
-      id: 7, image: require("../../photos/vip-images/horror.jpg"), audio: require("../../mp3/horror.mp3"), text: "Ви дивилися моторошне кіно..."
+      id: 7, 
+      image: require("../../photos/vip-images/horror.jpg"), 
+      audio: require("../../mp3/horror.mp3"), 
+      text: "Ви дивилися моторошне кіно...",
+      lyrics: "Текст відсутній. Атмосферні звуки."
     },
     {
-      id: 8, image: require("../../photos/vip-images/horse.jpg"), audio: require("../../mp3/horse.mp3"),
-       text: "Кінь друг людини. Можете послухати цю мужню тварину, обирайте наш сайт. Телеканал мега(автор звуку).", lyrics: "Тут немає тексту."
+      id: 8, 
+      image: require("../../photos/vip-images/horse.jpg"), 
+      audio: require("../../mp3/horse.mp3"),
+      text: "Кінь друг людини. Можете послухати цю мужню тварину, обирайте наш сайт. Телеканал мега(автор звуку).", 
+      lyrics: "Тут немає тексту."
     },
     {
-      id: 9, image: require("../../photos/vip-images/vip-lebid.jpg"), audio: require("../../mp3/lebid.mp3"),
-       text: "Лебеді символ кохання...", 
+      id: 9, 
+      image: require("../../photos/vip-images/vip-lebid.jpg"), 
+      audio: require("../../mp3/lebid.mp3"),
+      text: "Лебеді символ кохання...", 
+      lyrics: "Текст відсутній."
     },
     {
-      id: 10, image: require("../../photos/vip-images/vip-dragons.jpg"), audio: require("../../mp3/dragon.mp3"),
-       text: "І знову дракони, для дослідників це хороше джерело звуку, а для нас ще одна мелодія. Картина взята з мультфільму Динофроз.", lyrics: "Тут немає тексту."
+      id: 10, 
+      image: require("../../photos/vip-images/vip-dragons.jpg"), 
+      audio: require("../../mp3/dragon.mp3"),
+      text: "І знову дракони, для дослідників це хороше джерело звуку, а для нас ще одна мелодія. Картина взята з мультфільму Динофроз.", 
+      lyrics: "Тут немає тексту."
     },
     {
-      id: 11, image: require("../../photos/vip-images/vip-soloveyko.jpg"), audio: require("../../mp3/soloveyko.mp3"),
-       text: "Голосування хто кращий по звукам індик, соловейко чи лебеді. Зроблено за ідеї сім'ї(без поради тут було б щось інше).", lyrics: "Тут немає тексту."
+      id: 11, 
+      image: require("../../photos/vip-images/vip-soloveyko.jpg"), 
+      audio: require("../../mp3/soloveyko.mp3"),
+      text: "Голосування хто кращий по звукам індик, соловейко чи лебеді. Зроблено за ідеї сім'ї(без поради тут було б щось інше).", 
+      lyrics: "Тут немає тексту. Спів соловейка."
     },
     {
-      id: 12, image: require("../../photos/vip-images/vip-rooster.jpg"), audio: require("../../mp3/rooster.mp3"),
-       text: "Одвічна боротьба, добро-зло..."
+      id: 12, 
+      image: require("../../photos/vip-images/vip-rooster.jpg"), 
+      audio: require("../../mp3/rooster.mp3"),
+      text: "Одвічна боротьба, добро-зло...",
+      lyrics: "Текст відсутній."
     },
   ];
-  useEffect(() => {
-    const checkScreenSize = () => {  
-      setIsMobile(window.innerWidth < 768);
-    };
-    checkScreenSize();    
-    window.addEventListener('resize', checkScreenSize);
-    return () => window.removeEventListener('resize', checkScreenSize);
-  }, []);
+
   const handleTrackToggle = useCallback((id, startPlaying) => {
     setPlayingTracks(prev => {
       if (startPlaying) {
@@ -414,7 +437,7 @@ const MusicPhoto = () => {
       }
     });
   }, []);
-  const visibleCards = (isMobile && !showAll) ? musicCards.slice(0, 8) : musicCards;
+  const visibleCards = !showAll ? musicCards.slice(0, 8) : musicCards;
   return (
     <MusicPhotoDiv>
       <MusicPhotoText>
@@ -431,7 +454,8 @@ const MusicPhoto = () => {
           />
         ))}
       </MusicPhotoFix>
-      {isMobile && !showAll && (
+      
+      {!showAll && musicCards.length > 8 && (
         <LoadMoreButton onClick={() => setShowAll(true)}>
           Завантажити ще
         </LoadMoreButton>

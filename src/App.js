@@ -14,6 +14,7 @@ import LoginModal from "./components/Modals/LoginModal.jsx";
 import InfoModal from "./components/Modals/InfoModal.jsx";
 import UserSettingsModal from "./components/Modals/UserSettingsModal.jsx";
 import userDefault from "./photos/hero-header/user.webp";
+// import VipModal from "./components/Modals/VipModal.jsx";
 const AVAILABLE_AVATARS = [
   userDefault, userDefault, userDefault, 
   userDefault, userDefault, userDefault, userDefault 

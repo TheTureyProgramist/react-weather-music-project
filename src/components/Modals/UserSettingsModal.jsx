@@ -15,66 +15,90 @@ const ModalOverlay = styled.div`
 const ModalContent = styled.div`
   background: white;
   padding: 30px;
-  border-radius: 15px;
+  border-radius: 20px;
   width: 90%;
   max-width: 450px;
   position: relative;
   display: flex;
   flex-direction: column;
   gap: 15px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
   max-height: 90vh;
   overflow-y: auto;
 `;
 const CloseButton = styled.button`
   position: absolute;
-  top: 10px;
+  top: 15px;
   right: 15px;
   background: none;
   border: none;
-  font-size: 24px;
+  font-size: 28px;
   cursor: pointer;
-  color: #333;
+  color: #999;
+  &:hover { color: #333; }
 `;
 const Title = styled.h3`
   text-align: center;
-  margin: 0;
+  margin: 0 0 10px 0;
   color: #333;
+`;
+const Section = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #f0f0f0;
+  &:last-of-type { border-bottom: none; }
+`;
+const Label = styled.label`
+  font-size: 13px;
+  font-weight: 700;
+  color: #666;
 `;
 const Input = styled.input`
   padding: 12px;
   border: 1px solid #ddd;
-  border-radius: 8px;
+  border-radius: 10px;
   width: 100%;
   box-sizing: border-box;
   font-size: 14px;
+  transition: border-color 0.2s;
   &:focus {
     outline: none;
     border-color: #ffb36c;
   }
 `;
-const Label = styled.label`
-  font-size: 12px;
-  font-weight: bold;
-  color: #555;
-  margin-bottom: -10px;
-`;
-const ImageSelectionContainer = styled.div`
+const AvatarSlider = styled.div`
   display: flex;
   gap: 15px;
-  justify-content: center;
-  margin: 10px 0;
+  overflow-x: auto;
+  padding: 10px 5px;
+  scroll-behavior: smooth;
+  &::-webkit-scrollbar {
+    height: 4px;
+  }
+  &::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: #ffb36c;
+    border-radius: 10px;
+  }
 `;
 const AvatarOption = styled.div`
-  width: 60px;
-  height: 60px;
+  width: 70px;
+  height: 70px;
+  flex: 0 0 70px; 
   border-radius: 50%;
-  border: ${props => props.$isSelected ? '3px solid #ffb36c' : '2px solid transparent'};
+  border: ${props => props.$isSelected ? '4px solid #ffb36c' : '2px solid #eee'};
   cursor: pointer;
   overflow: hidden;
-  transition: transform 0.2s;
+  transition: all 0.2s ease-in-out;
+  box-sizing: border-box;
   &:hover {
-    transform: scale(1.1);
+    transform: translateY(-3px);
+    border-color: #ffb36c;
   }
   img {
     width: 100%;
@@ -82,65 +106,36 @@ const AvatarOption = styled.div`
     object-fit: cover;
   }
 `;
-const Button = styled.button`
-  background: #ffb36c;
-  color: black;
-  font-weight: bold;
-  border-radius: 8px;
-  cursor: pointer;
-  border: none;
-    padding: 1px 0px 0px 3px;
-   height: 40px;
-   flex: 1;
-  font-size: 14px;
-  &:hover {
-    background: #ffa04d;
-  }
-`;
 const ButtonGroup = styled.div`
   display: flex;
-  gap: 10px;
+  gap: 12px;
   margin-top: 10px;
 `;
-const CancelButton = styled.button`
-  background: #ddd;
-  color: black;
-  font-weight: bold;
-  padding: 1px 1px 0 6px;
-  border-radius: 8px;
-  cursor: pointer;
-  border: none; 
-  height: 40px;
-  font-size: 14px;
+const BaseButton = styled.button`
+  height: 45px;
   flex: 1;
-  &:hover {
-    background: #ccc;
-  }
+  border-radius: 10px;
+  font-weight: bold;
+  font-size: 14px;
+  cursor: pointer;
+  border: none;
+  transition: opacity 0.2s;
+  &:hover { opacity: 0.9; }
 `;
-const ErrorMsg = styled.div`
-  color: red;
-  font-size: 12px;
-  text-align: center;
+const SaveButton = styled(BaseButton)`
+  background: #ffb36c;
+  color: #000;
 `;
-const SuccessMsg = styled.div`
-  color: green;
-  font-size: 12px;
-  text-align: center;
+const CancelButton = styled(BaseButton)`
+  background: #eee;
+  color: #555;
 `;
-const Section = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  padding-bottom: 15px;
-  border-bottom: 1px solid #eee;
-  &:last-child {
-    border-bottom: none;
-  }
-`;
+const ErrorMsg = styled.div` color: #e74c3c; font-size: 12px; text-align: center; font-weight: 500; `;
+const SuccessMsg = styled.div` color: #27ae60; font-size: 12px; text-align: center; font-weight: 500; `;
 const UserSettingsModal = ({ onClose, user, currentAvatar, availableAvatars, onUpdate }) => {
+  const fullName = [user?.firstName, user?.lastName].filter(Boolean).join(" ");
   const [formData, setFormData] = useState({
-    firstName: user?.firstName || "",
-    lastName: user?.lastName || "",
+    name: fullName || "",
     currentPassword: "",
     newPassword: "",
     confirmPassword: "",
@@ -151,110 +146,79 @@ const UserSettingsModal = ({ onClose, user, currentAvatar, availableAvatars, onU
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
     setError("");
-    setSuccess("");
-  };
-  const handleAvatarChange = (index) => {
-    setFormData({ ...formData, avatarIndex: index });
-    setError("");
-    setSuccess("");
   };
   const handleSubmit = () => {
     setError("");
-    setSuccess("");
-    if (!formData.firstName || !formData.lastName) {
-      setError("Ім'я та прізвище не можуть бути порожніми!");
-      return;
+    if (!formData.name.trim()) return setError("Введіть ім'я!");
+    if (formData.newPassword || formData.currentPassword) {
+      if (!formData.currentPassword) return setError("Потрібен поточний пароль!");
+      if (formData.newPassword.length < 6) return setError("Мінімум 6 символів для нового пароля!");
+      if (formData.newPassword !== formData.confirmPassword) return setError("Паролі не збігаються!");
     }
-    if (formData.newPassword || formData.confirmPassword || formData.currentPassword) {
-      if (!formData.currentPassword) {
-        setError("Введіть поточний пароль!");
-        return;
-      }
-      if (!formData.newPassword) {
-        setError("Введіть новий пароль!");
-        return;
-      }
-      if (formData.newPassword !== formData.confirmPassword) {
-        setError("Новий пароль та підтвердження не співпадають!");
-        return;
-      }
-      if (formData.newPassword.length < 6) {
-        setError("Новий пароль повинен містити мінімум 6 символів!");
-        return;
-      }
-    }
-    const updatedData = {
-      firstName: formData.firstName,
-      lastName: formData.lastName,
-      avatar: availableAvatars[formData.avatarIndex]
-    };
-    if (formData.newPassword) {
-      updatedData.newPassword = formData.newPassword;
-    }
-    onUpdate(updatedData);
-    setSuccess("Зміни збережені!");
-    setTimeout(() => {
-      onClose();
-    }, 1500);
+    const [firstName, ...lastNameArr] = formData.name.trim().split(" ");
+    onUpdate({
+      firstName,
+      lastName: lastNameArr.join(" "),
+      avatar: availableAvatars[formData.avatarIndex],
+      ...(formData.newPassword && { newPassword: formData.newPassword })
+    });
+    setSuccess("Оновлено!");
+    setTimeout(onClose, 1200);
   };
   return (
     <ModalOverlay onClick={onClose}>
       <ModalContent onClick={(e) => e.stopPropagation()}>
         <CloseButton onClick={onClose}>&times;</CloseButton>
-        <Title>Налаштування профілю</Title>
+        <Title>Профіль</Title>
         <Section>
-          <Label>Ім'я та прізвище:</Label>
-          <Input
-            type="text"
-            name="firstName"
-            placeholder="Ім'я та прізвище"
-            value={formData.firstName}
-            onChange={handleChange}
+          <Label>Як вас звати?</Label>
+          <Input 
+            name="name" 
+            value={formData.name} 
+            onChange={handleChange} 
+            placeholder="Ім'я та Прізвище" 
           />
         </Section>
         <Section>
-          <Label>Оберіть аватар:</Label>
-          <ImageSelectionContainer>
-            {availableAvatars.map((imgSrc, index) => (
-              <AvatarOption
-                key={index}
-                $isSelected={formData.avatarIndex === index}
-                onClick={() => handleAvatarChange(index)}
+          <Label>Оберіть образ:</Label>
+          <AvatarSlider>
+            {availableAvatars.map((img, i) => (
+              <AvatarOption 
+                key={i} 
+                $isSelected={formData.avatarIndex === i}
+                onClick={() => setFormData({...formData, avatarIndex: i})}
               >
-                <img src={imgSrc} alt={`Опції аватара ${index}`} />
+                <img src={img} alt="avatar" />
               </AvatarOption>
             ))}
-          </ImageSelectionContainer>
+          </AvatarSlider>
         </Section>
         <Section>
-          <Label>Змінити пароль (необов'язково, не акаунтний уводьте):</Label>
-          <Input
-            type="password"
-            name="currentPassword"
-            placeholder="Поточний пароль"
-            value={formData.currentPassword}
-            onChange={handleChange}
+          <Label>Безпека (пароль):</Label>
+          <Input 
+            type="password" 
+            name="currentPassword" 
+            placeholder="Поточний пароль" 
+            onChange={handleChange} 
           />
-          <Input
-            type="password"
-            name="newPassword"
-            placeholder="Новий пароль"
-            value={formData.newPassword}
-            onChange={handleChange}
+          <Input 
+            type="password" 
+            name="newPassword" 
+            placeholder="Новий пароль" 
+            onChange={handleChange} 
           />
-          <Input
-            type="password"
-            name="confirmPassword"
-            placeholder="Підтвердіть новий пароль"
-            value={formData.confirmPassword}
-            onChange={handleChange}
+          <Input 
+            type="password" 
+            name="confirmPassword" 
+            placeholder="Повторіть пароль" 
+            onChange={handleChange} 
           />
         </Section>
         {error && <ErrorMsg>{error}</ErrorMsg>}
         {success && <SuccessMsg>{success}</SuccessMsg>}
         <ButtonGroup>
-          <CancelButton onClick={onClose}>Скасувати</CancelButton>
-          <Button onClick={handleSubmit}>Зберегти зміни</Button>
+          <CancelButton onClick={onClose}>Назад</CancelButton>
+          <SaveButton onClick={handleSubmit}>Зберегти</SaveButton>
         </ButtonGroup>
       </ModalContent>
     </ModalOverlay>
