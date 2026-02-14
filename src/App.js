@@ -6,7 +6,6 @@ import Hero from "./components/Hero/Hero.jsx";
 import Main from "./components/Main/Main.jsx";
 import GraphicDaily from "./components/Graphics/GraphicDaily.jsx";
 import GraphicWeekly from "./components/Graphics/GraphicWeekly.jsx";
-import GraphicAtTheMoment from "./components/Graphics/GraphicAtTheMoment.jsx";
 import MusicPhoto from "./components/MusicPhoto/MusicPhoto.jsx";
 import Footer from "./components/Footer/Footer.jsx";
 import Modal from "./components/Modals/Modal.jsx";
@@ -14,10 +13,21 @@ import LoginModal from "./components/Modals/LoginModal.jsx";
 import InfoModal from "./components/Modals/InfoModal.jsx";
 import UserSettingsModal from "./components/Modals/UserSettingsModal.jsx";
 import userDefault from "./photos/hero-header/user.webp";
-// import VipModal from "./components/Modals/VipModal.jsx";
+import VipModal from "./components/Modals/VipModal.jsx";
+import Aihelp from "./components/Aihelp.jsx/Aihelp.jsx";
+//-----------------------------------------------------
+import turkeys from "./photos/vip-images/ultra-vip-turkeys.webp";
+import dragons from "./photos/vip-images/vip-dragons.jpg";
+import horrordog from "./photos/vip-images/horror.jpg";
+import horse from "./photos/vip-images/horse.jpg";
+import lebid from "./photos/vip-images/vip-lebid.jpg";
+import rooster from "./photos/vip-images/vip-rooster.jpg";
+import nicerone from "./photos/vip-images/vip-dinofroz.webp";
+import soloveyko from "./photos/vip-images/vip-soloveyko.jpg";
+import monody from "./photos/vip-images/vip-forest.webp";
 const AVAILABLE_AVATARS = [
-  userDefault, userDefault, userDefault, 
-  userDefault, userDefault, userDefault, userDefault 
+  monody, turkeys, nicerone, horrordog, 
+  horse, lebid, dragons, rooster, soloveyko,
 ];
 const ThemeWrapper = styled.div`
   background-color: ${props => props.$isDarkMode ? '#121212' : 'transparent'};
@@ -64,7 +74,6 @@ const App = () => {
     const newUser = {
       account: userData.account,
       firstName: userData.firstName,
-      lastName: userData.lastName,
       password: userData.password,
       avatar: userData.avatar
     };
@@ -112,10 +121,10 @@ const App = () => {
         <Hero heroDateString={heroDateString} toggleTheme={toggleTheme}/>
         <div className="container">
           <Main />
-          <GraphicAtTheMoment />
           <GraphicDaily />
           <GraphicWeekly />
           <MusicPhoto />
+          <Aihelp></Aihelp>
         </div>
         <Footer toggleTheme={toggleTheme}/>
         {isModalOpen && (
@@ -141,6 +150,7 @@ const App = () => {
           />
         )}
         <InfoModal />
+        <VipModal />
       </div>
     </ThemeWrapper>
   );

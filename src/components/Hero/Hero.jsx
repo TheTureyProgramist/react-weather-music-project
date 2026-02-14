@@ -181,32 +181,51 @@ const HeroYellow = styled.div`
   }
 `;
 const HeroButton = styled.button`
+  position: relative; /* ОБОВ'ЯЗКОВО для роботи absolute у псевдоелементах */
   border-radius: 0 10px 10px 0;
   width: 20px;
   height: 22px;
   padding: 0;
-  background: #ffb36c url(${search}) center/20% no-repeat;
+  background: yellow url(${search}) center/60% no-repeat; 
   border: 2px solid black;
-  transition: background 0.5s cubic-bezier(1, -1.84, 0.31, 1.84);
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: 60%;
+  transition: all 0.5s cubic-bezier(1, -1.84, 0.31, 1.84);
   display: inline-block;
   cursor: pointer;
+  overflow: hidden;
+  &::after {
+    content: '+';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%) scale(0.5); 
+    opacity: 0;
+    transition: opacity 200ms ease, transform 200ms ease;
+    pointer-events: none;
+    z-index: 2;
+    font-size: 18px;
+    font-weight: bold;
+    color: #000;
+  }
 
-  &: hover {
-    background: green url(${search}) center/50% no-repeat;
+  &:hover {
+    background-image: none; 
+    background-color: skyblue;
+  }
+  &:hover::after {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.1);
   }
   @media (min-width: 768px) {
     width: 28px;
     height: 26px;
+    &::after { font-size: 20px; }
   }
   @media (min-width: 1200px) {
     width: 40px;
     height: 43px;
+    &::after { font-size: 24px; }
   }
 `;
-
 const Hero = ({ heroDateString }) => {
   return (
     <HeroDiv>
@@ -231,5 +250,4 @@ const Hero = ({ heroDateString }) => {
     </HeroDiv>
   );
 };
-
 export default Hero;

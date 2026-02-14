@@ -12,7 +12,6 @@ const MainTitle = styled.h2`
   }
 `;
 const MainDiv = styled.div``;
-
 const Main = () => {
   return (
     <MainDiv>
@@ -20,5 +19,4 @@ const Main = () => {
     </MainDiv>
   );
 };
-
 export default Main;

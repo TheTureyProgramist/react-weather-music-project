@@ -1,5 +1,24 @@
 import React, { useState } from "react";
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
+const flow = keyframes`
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+`;
+const AnimatedText = styled.h1`
+  font-family: 'Inter', sans-serif;
+  font-size: 9px;
+  font-weight: bold;
+  background: linear-gradient(270deg, #ff7eb3, #ff758c, #7afcff, #feffb7, #58e2c2);
+  background-size: 400% 400%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: ${flow} 5s ease infinite;
+  @media (min-width: 768px) { 
+  font-size: 15px; 
+  }
+`;
 const ModalOverlay = styled.div`
   position: fixed;
   top: 0;
@@ -40,7 +59,7 @@ const Title = styled.h3`
   color: #333;
 `;
 const Input = styled.input`
-  padding: 12px;
+  padding: 10px;
   border: 1px solid #ddd;
   border-radius: 8px;
   width: 100%;
@@ -80,11 +99,18 @@ const ImageSelectionContainer = styled.div`
 const AvatarOption = styled.div`
   width: 60px;
   height: 60px;
+  min-width: 60px; 
+  min-height: 60px; 
+  box-sizing: border-box; 
   border-radius: 50%;
-  border: 2px solid ${props => props.$isSelected ? '#ffb36c' : 'transparent'};
+  border: 2px solid ${props => (props.$isSelected ? "#ffb36c" : "transparent")};
   cursor: pointer;
-  overflow: hidden;
+  overflow: hidden; 
+  position: relative;
+  isolation: isolate;
   flex-shrink: 0;
+  flex-grow: 0;
+  -webkit-mask-image: -webkit-radial-gradient(white, black);
   transition: all 0.2s ease;
   &:hover {
     transform: scale(1.05);
@@ -93,6 +119,8 @@ const AvatarOption = styled.div`
     width: 100%;
     height: 100%;
     object-fit: cover;
+    display: block;
+    border-radius: 50%;
   }
 `;
 const SubmitButton = styled.button`
@@ -118,7 +146,6 @@ const Modal = ({ onClose, onRegister, availableAvatars }) => {
   const [formData, setFormData] = useState({
     account: "",
     firstName: "",
-    lastName: "",
     password: "",
     confirmPassword: "",
     avatarIndex: 0
@@ -140,7 +167,6 @@ const Modal = ({ onClose, onRegister, availableAvatars }) => {
     onRegister({
       account: formData.account,
       firstName: formData.firstName,
-      lastName: formData.lastName,
       password: formData.password, 
       avatar: availableAvatars[formData.avatarIndex]
     });
@@ -153,7 +179,7 @@ const Modal = ({ onClose, onRegister, availableAvatars }) => {
         <Title>Реєстрація</Title>
         <Input name="account" placeholder="Gmail" onChange={handleChange} />
         <Input name="firstName" placeholder="Ім'я та прізвище" onChange={handleChange} />
-        <Label>Оберіть аватар:</Label>
+        <Label>Оберіть аватар, примітка для вкористання першого треба<AnimatedText>Стихія+</AnimatedText></Label>
         <ImageSelectionContainer>
           {availableAvatars.map((imgSrc, index) => (
             <AvatarOption

@@ -1,5 +1,24 @@
 import React, { useState } from "react";
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
+const flow = keyframes`
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+`;
+const AnimatedText = styled.h1`
+  font-family: 'Inter', sans-serif;
+  font-size: 9px;
+  font-weight: bold;
+  background: linear-gradient(270deg, #ff7eb3, #ff758c, #7afcff, #feffb7, #58e2c2);
+  background-size: 400% 400%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: ${flow} 5s ease infinite;
+  @media (min-width: 768px) { 
+  font-size: 15px; 
+  }
+`;
 const ModalOverlay = styled.div`
   position: fixed;
   top: 0;
@@ -53,7 +72,7 @@ const Section = styled.div`
 const Label = styled.label`
   font-size: 13px;
   font-weight: 700;
-  color: #666;
+  color: #777;
 `;
 const Input = styled.input`
   padding: 12px;
@@ -87,23 +106,30 @@ const AvatarSlider = styled.div`
   }
 `;
 const AvatarOption = styled.div`
-  width: 70px;
-  height: 70px;
-  flex: 0 0 70px; 
+  width: 60px;
+  height: 60px;
+  min-width: 60px; 
+  min-height: 60px; 
+  box-sizing: border-box; 
   border-radius: 50%;
-  border: ${props => props.$isSelected ? '4px solid #ffb36c' : '2px solid #eee'};
+  border: 2px solid ${props => (props.$isSelected ? "#ffb36c" : "transparent")};
   cursor: pointer;
-  overflow: hidden;
-  transition: all 0.2s ease-in-out;
-  box-sizing: border-box;
+  overflow: hidden; 
+  position: relative;
+  isolation: isolate;
+  flex-shrink: 0;
+  flex-grow: 0;
+  -webkit-mask-image: -webkit-radial-gradient(white, black);
+  transition: all 0.2s ease;
   &:hover {
-    transform: translateY(-3px);
-    border-color: #ffb36c;
+    transform: scale(1.05);
   }
   img {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    display: block;
+    border-radius: 50%;
   }
 `;
 const ButtonGroup = styled.div`
@@ -130,8 +156,16 @@ const CancelButton = styled(BaseButton)`
   background: #eee;
   color: #555;
 `;
-const ErrorMsg = styled.div` color: #e74c3c; font-size: 12px; text-align: center; font-weight: 500; `;
-const SuccessMsg = styled.div` color: #27ae60; font-size: 12px; text-align: center; font-weight: 500; `;
+const ErrorMsg = styled.div` color: #e74c3c;
+ font-size: 12px; 
+ text-align: center;
+  font-weight: 500; 
+  `;
+const SuccessMsg = styled.div` 
+color: #27ae60; font-size: 12px; 
+text-align: center; 
+font-weight: 500; 
+`;
 const UserSettingsModal = ({ onClose, user, currentAvatar, availableAvatars, onUpdate }) => {
   const fullName = [user?.firstName, user?.lastName].filter(Boolean).join(" ");
   const [formData, setFormData] = useState({
@@ -139,7 +173,7 @@ const UserSettingsModal = ({ onClose, user, currentAvatar, availableAvatars, onU
     currentPassword: "",
     newPassword: "",
     confirmPassword: "",
-    avatarIndex: availableAvatars.indexOf(currentAvatar)
+    avatarIndex: availableAvatars.indexOf(currentAvatar) !== -1 ? availableAvatars.indexOf(currentAvatar) : 0
   });
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -150,18 +184,27 @@ const UserSettingsModal = ({ onClose, user, currentAvatar, availableAvatars, onU
   const handleSubmit = () => {
     setError("");
     if (!formData.name.trim()) return setError("Введіть ім'я!");
-    if (formData.newPassword || formData.currentPassword) {
-      if (!formData.currentPassword) return setError("Потрібен поточний пароль!");
-      if (formData.newPassword.length < 6) return setError("Мінімум 6 символів для нового пароля!");
-      if (formData.newPassword !== formData.confirmPassword) return setError("Паролі не збігаються!");
+     if (formData.newPassword.trim() !== "") {
+      if (!formData.currentPassword) {
+        return setError("Потрібен поточний пароль для встановлення нового!");
+      }
+      if (formData.newPassword.length < 6) {
+        return setError("Мінімум 6 символів для нового пароля!");
+      }
+      if (formData.newPassword !== formData.confirmPassword) {
+        return setError("Паролі не збігаються!");
+      }
     }
     const [firstName, ...lastNameArr] = formData.name.trim().split(" ");
-    onUpdate({
+    const updatedData = {
       firstName,
       lastName: lastNameArr.join(" "),
       avatar: availableAvatars[formData.avatarIndex],
-      ...(formData.newPassword && { newPassword: formData.newPassword })
-    });
+    };
+    if (formData.newPassword.trim() !== "") {
+      updatedData.password = formData.newPassword;
+    }
+    onUpdate(updatedData);
     setSuccess("Оновлено!");
     setTimeout(onClose, 1200);
   };
@@ -180,7 +223,7 @@ const UserSettingsModal = ({ onClose, user, currentAvatar, availableAvatars, onU
           />
         </Section>
         <Section>
-          <Label>Оберіть образ:</Label>
+          <Label>Оберіть аватар, примітка для вкористання першого треба <AnimatedText>Стихія+</AnimatedText></Label>
           <AvatarSlider>
             {availableAvatars.map((img, i) => (
               <AvatarOption 
@@ -198,19 +241,22 @@ const UserSettingsModal = ({ onClose, user, currentAvatar, availableAvatars, onU
           <Input 
             type="password" 
             name="currentPassword" 
-            placeholder="Поточний пароль" 
+            value={formData.currentPassword}
+            placeholder="Поточний пароль (тільки для зміни)" 
             onChange={handleChange} 
           />
           <Input 
             type="password" 
             name="newPassword" 
+            value={formData.newPassword}
             placeholder="Новий пароль" 
             onChange={handleChange} 
           />
           <Input 
             type="password" 
             name="confirmPassword" 
-            placeholder="Повторіть пароль" 
+            value={formData.confirmPassword}
+            placeholder="Повторіть новий пароль" 
             onChange={handleChange} 
           />
         </Section>
