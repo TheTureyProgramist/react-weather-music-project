@@ -1,10 +1,12 @@
 import styled, { keyframes } from "styled-components";
 import logo from "../../photos/hero-header/logo.png";
+
 const flow = keyframes`
   0% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
   100% { background-position: 0% 50%; }
 `;
+
 const AnimatedText = styled.h1`
   font-family: 'Inter', sans-serif;
   font-size: 9px;
@@ -15,10 +17,13 @@ const AnimatedText = styled.h1`
   -webkit-text-fill-color: transparent;
   background-clip: text;
   animation: ${flow} 5s ease infinite;
+  cursor: pointer; 
+  
   @media (min-width: 768px) { 
-  font-size: 15px; 
+    font-size: 15px; 
   }
 `;
+
 const HeaderDiv = styled.div`
   height: 50px;
   display: flex;
@@ -31,20 +36,22 @@ const HeaderDiv = styled.div`
   top: 0; left: 0; right: 0; z-index: 100;
   transition: background-color 0.3s ease;
   @media (min-width: 768px) {
-   height: 70px; padding: 0 30px; 
+    height: 70px; padding: 0 30px; 
   }
   @media (min-width: 768px) {
-   height: 80px; 
+    height: 80px; 
   }
 `;
+
 const HeaderFix = styled.div`
   display: flex;
   align-items: center;
   gap: 10px;
   @media (min-width: 768px) { 
-  gap: 20px; 
+    gap: 20px; 
   }
 `;
+
 const ThemeButton = styled.button`
   background: transparent;
   border: none;
@@ -56,26 +63,28 @@ const ThemeButton = styled.button`
   transition: transform 0.2s ease;
   &:hover { transform: scale(1.1); }
   @media (min-width: 1200px) { 
-   font-size: ${props => props.$isDarkMode ? '21px' : '18px'};
+    font-size: ${props => props.$isDarkMode ? '21px' : '18px'};
   }
   @media (min-width: 1200px) { 
-   font-size: ${props => props.$isDarkMode ? '23px' : '20px'};
+    font-size: ${props => props.$isDarkMode ? '23px' : '20px'};
   }
 `;
+
 const LoginLink = styled.span`
   font-size: 12px;
   cursor: pointer;
   padding: 9px 18px;
-    background: #e0e0e0;
-      border-radius: 8px;
+  background: #e0e0e0;
+  border-radius: 8px;
   text-decoration: underline;
   color: ${props => props.$isDarkMode ? '#ffb36c' : '#555'};
   font-weight: 600;
   &:hover { opacity: 0.8; }
   @media (min-width: 768px) { 
-  font-size: 15px; 
+    font-size: 15px; 
   }
 `;
+
 const HeaderButton = styled.button`
   background: #ffb36c;
   font-weight: 600;
@@ -87,9 +96,10 @@ const HeaderButton = styled.button`
   transition: background 0.2s;
   &:hover { background: #ffa04d; }
   @media (min-width: 768px) { 
-  font-size: 15px; 
+    font-size: 15px; 
   }
 `;
+
 const IconButton = styled.button`
   background: transparent;
   border: none;
@@ -97,23 +107,25 @@ const IconButton = styled.button`
   font-size: 13px;
   display: flex;
   align-items: center;
-    @media (min-width: 768px) { 
-  font-size: 16px; 
-  }
-    @media (min-width: 768px) { 
-  font-size: 19px; 
-  }
-`;
-const HeaderLogo = styled.img`
-height: 45px;
-border-radius: 50%;
   @media (min-width: 768px) { 
-  height: 65px;
+    font-size: 16px; 
   }
-   @media (min-width: 1200px) { 
-  height: 75px;
+  @media (min-width: 768px) { 
+    font-size: 19px; 
   }
 `;
+
+const HeaderLogo = styled.img`
+  height: 45px;
+  border-radius: 50%;
+  @media (min-width: 768px) { 
+    height: 65px;
+  }
+  @media (min-width: 1200px) { 
+    height: 75px;
+  }
+`;
+
 const HeaderAvatar = styled.img`
   width: 32px;
   height: 32px;
@@ -121,25 +133,28 @@ const HeaderAvatar = styled.img`
   object-fit: cover;
   border: 1px solid #ddd;
   @media (min-width: 768px) { 
-  width: 40px; height: 40px; 
+    width: 40px; height: 40px; 
   }
   @media (min-width: 768px) { 
-  width: 50px; height: 50px; 
+    width: 50px; height: 50px; 
   }
 `;
+
 const UserName = styled.span`
   font-size: 9px;
   font-weight: 500;
   color: ${props => props.$isDarkMode ? '#fff' : '#333'};
   margin-right: 5px;
   @media (min-width: 768px) { 
-  font-size: 15px; 
+    font-size: 15px; 
   }
 `;
+
 const Header = ({ 
   onOpenRegister, 
   onOpenLogin, 
   onOpenSettings, 
+  onOpenVip, 
   user, 
   isDarkMode, 
   toggleTheme, 
@@ -150,7 +165,7 @@ const Header = ({
     <HeaderDiv $isDarkMode={isDarkMode}>
       <HeaderFix>
         <HeaderLogo src={logo}/>
-        {user && <AnimatedText>Стихія+</AnimatedText>}
+        {user && <AnimatedText onClick={onOpenVip}>Стихія+</AnimatedText>}
       </HeaderFix>
       <HeaderFix>
         <ThemeButton onClick={toggleTheme} $isDarkMode={isDarkMode}>

@@ -10,12 +10,11 @@ import MusicPhoto from "./components/MusicPhoto/MusicPhoto.jsx";
 import Footer from "./components/Footer/Footer.jsx";
 import Modal from "./components/Modals/Modal.jsx";
 import LoginModal from "./components/Modals/LoginModal.jsx";
-import InfoModal from "./components/Modals/InfoModal.jsx";
 import UserSettingsModal from "./components/Modals/UserSettingsModal.jsx";
 import userDefault from "./photos/hero-header/user.webp";
 import VipModal from "./components/Modals/VipModal.jsx";
 import Aihelp from "./components/Aihelp.jsx/Aihelp.jsx";
-//-----------------------------------------------------
+// Імпорт аватарів
 import turkeys from "./photos/vip-images/ultra-vip-turkeys.webp";
 import dragons from "./photos/vip-images/vip-dragons.jpg";
 import horrordog from "./photos/vip-images/horror.jpg";
@@ -41,6 +40,7 @@ const App = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
+  const [isVipModalOpen, setIsVipModalOpen] = useState(false); // Стейт для VIP модалки
   const [isDarkMode, setIsDarkMode] = useState(() => {
     const saved = localStorage.getItem('isDarkMode');
     return saved !== null ? JSON.parse(saved) : false;
@@ -64,22 +64,24 @@ const App = () => {
     if (user) {
       localStorage.setItem('registered_user', JSON.stringify(user));
     } else {
-      localStorage.removeItem('user');
+      localStorage.removeItem('registered_user');
     }
   }, [user]);
   useEffect(() => {
-    localStorage.setItem('currentAvatar', currentAvatar);
+    if (currentAvatar) {
+      localStorage.setItem('currentAvatar', currentAvatar);
+    }
   }, [currentAvatar]);
   const handleRegister = (userData) => {
     const newUser = {
       account: userData.account,
       firstName: userData.firstName,
       password: userData.password,
-      avatar: userData.avatar
+      avatar: userData.avatar,
+      birthDate: userData.birthDate 
     };
     setUser(newUser);
     setCurrentAvatar(userData.avatar);
-    localStorage.setItem('registered_user', JSON.stringify(newUser));
   };
   const handleLogin = (savedUser) => {
     setUser(savedUser);
@@ -90,12 +92,10 @@ const App = () => {
     const updated = { ...user, ...userData };
     setUser(updated);
     setCurrentAvatar(userData.avatar);
-    localStorage.setItem('registered_user', JSON.stringify(updated));
   };
   const handleLogout = () => {
     setUser(null);
     setCurrentAvatar(userDefault);
-    localStorage.removeItem('user');
     setIsSettingsModalOpen(false);
   };
   const toggleTheme = () => setIsDarkMode(!isDarkMode);
@@ -111,6 +111,7 @@ const App = () => {
             onOpenRegister={() => setIsModalOpen(true)} 
             onOpenLogin={() => setIsLoginOpen(true)}
             onOpenSettings={() => setIsSettingsModalOpen(true)}
+            onOpenVip={() => setIsVipModalOpen(true)} // Передаємо функцію відкриття
             user={user}
             isDarkMode={isDarkMode}
             toggleTheme={toggleTheme}
@@ -123,8 +124,8 @@ const App = () => {
           <Main />
           <GraphicDaily />
           <GraphicWeekly />
-          <MusicPhoto />
-          <Aihelp></Aihelp>
+          <MusicPhoto user={user} />
+          <Aihelp />
         </div>
         <Footer toggleTheme={toggleTheme}/>
         {isModalOpen && (
@@ -134,6 +135,7 @@ const App = () => {
             availableAvatars={AVAILABLE_AVATARS}
           />
         )}
+
         {isLoginOpen && (
           <LoginModal 
             onClose={() => setIsLoginOpen(false)} 
@@ -144,13 +146,13 @@ const App = () => {
           <UserSettingsModal
             onClose={() => setIsSettingsModalOpen(false)}
             user={user}
-            currentAvatar={currentAvatar}
             availableAvatars={AVAILABLE_AVATARS}
             onUpdate={handleUpdateUser}
           />
         )}
-        <InfoModal />
-        <VipModal />
+        {isVipModalOpen && (
+          <VipModal onClose={() => setIsVipModalOpen(false)} />
+        )}
       </div>
     </ThemeWrapper>
   );

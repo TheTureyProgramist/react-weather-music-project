@@ -181,7 +181,7 @@ const HeroYellow = styled.div`
   }
 `;
 const HeroButton = styled.button`
-  position: relative; /* ОБОВ'ЯЗКОВО для роботи absolute у псевдоелементах */
+  position: relative; 
   border-radius: 0 10px 10px 0;
   width: 20px;
   height: 22px;
