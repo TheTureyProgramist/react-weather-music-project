@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useState} from "react";
 import styled, { keyframes } from "styled-components";
 import turkeys from "../../photos/vip-images/ultra-vip-turkeys.webp";
 import dinofroz from "../../photos/vip-images/vip-dinofroz.webp";
@@ -22,6 +22,10 @@ transform: translateY(100%) scale(0.5);
 transform: translateY(0%)
 scale(1);
 }
+`;
+const slideOut = keyframes`
+  0% { transform: translateY(0%) scale(1); opacity: 1; }
+  100% { transform: translateY(100%) scale(0.5); opacity: 0; }
 `;
 const flow = keyframes`
   0% { background-position: 0% 50%; }
@@ -82,7 +86,7 @@ const VipModalDiv = styled.div`
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
   border: 2px solid #ffb36c;
   overflow-y: auto;
-  animation: ${slideIn} 1s ease-out forwards;
+  animation: ${props => (props.$isClosing ? slideOut : slideIn)} 0.5s ease-out forwards;
   @media (max-width: 480px) {
     padding: 10px;
     padding-top: 35px;
@@ -255,10 +259,21 @@ const VipWarning = styled.p`
   margin-bottom: 2px;
 `;
 const VipModal = ({ onClose }) => {
-  return (
-    <Overlay onClick={onClose}>
-      <VipModalDiv onClick={(e) => e.stopPropagation()}>
-        <CloseButton onClick={onClose}>&times;</CloseButton>
+  const [isClosing, setIsClosing] = useState(false);
+  const handleClose = (e) => {
+    if (e) e.stopPropagation();
+    setIsClosing(true);
+    setTimeout(() => {
+      onClose();
+    }, 500);
+  };
+ return (
+    <Overlay $isClosing={isClosing} onClick={handleClose}>
+      <VipModalDiv 
+        $isClosing={isClosing} 
+        onClick={(e) => e.stopPropagation()}
+      >
+        <CloseButton onClick={handleClose}>&times;</CloseButton>
         <AnimatedText>Стихія+</AnimatedText>
         <VipBlock>
           <VipFixScroll>

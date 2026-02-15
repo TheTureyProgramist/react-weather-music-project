@@ -10,7 +10,10 @@ const flow = keyframes`
   50% { background-position: 100% 50%; }
   100% { background-position: 0% 50%; }
 `;
-
+const slideOut = keyframes`
+  0% { transform: translateY(0%) scale(1); opacity: 1; }
+  100% { transform: translateY(100%) scale(0.5); opacity: 0; }
+`;
 const AnimatedText = styled.span`
   font-family: "Inter", sans-serif;
   font-size: 11px;

@@ -9,6 +9,10 @@ transform: translateY(0%)
 scale(1);
 }
 `;
+const slideOut = keyframes`
+  0% { transform: translateY(0%) scale(1); opacity: 1; }
+  100% { transform: translateY(100%) scale(0.5); opacity: 0; }
+`;
 const ModalOverlay = styled.div`
   position: fixed;
   top: 0;
