@@ -1,15 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import styled, { keyframes } from "styled-components";
 import InfoModal from "./InfoModal";
 const slideIn = keyframes`
-0% {
-transform: translateY(100%) scale(0.5);
-}
-100% {
-transform: translateY(0%)
-scale(1);
-}
-`
+0% { transform: translateY(100%) scale(0.5); }
+100% { transform: translateY(0%) scale(1); }
+`;
 const flow = keyframes`
   0% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
@@ -62,10 +57,9 @@ const ModalContent = styled.div`
   gap: 15px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
   animation: ${slideIn} 1s ease-out forwards;
+  @media (min-width: 768px) {
+    padding: 30px 30px;
   }
-  @media (min-width: 768px) { 
-  padding: 30px 30px;
-   }
 `;
 
 const CloseButton = styled.button`
@@ -98,15 +92,25 @@ const Input = styled.input`
   }
 `;
 
+const Select = styled.select`
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  width: 100%;
+  box-sizing: border-box;
+  font-size: 14px;
+  background: white;
+  cursor: pointer;
+  &:focus {
+    outline: none;
+    border-color: #ffb36c;
+  }
+`;
+
 const DateRow = styled.div`
   display: flex;
   gap: 10px;
   justify-content: space-between;
-`;
-
-const DateInput = styled(Input)`
-  flex: 1;
-  text-align: center;
 `;
 
 const CheckboxRow = styled.div`
@@ -183,6 +187,42 @@ const Modal = ({ onClose, onRegister, availableAvatars }) => {
   const [showTerms, setShowTerms] = useState(false);
   const [error, setError] = useState("");
 
+  const months = [
+    "Січень",
+    "Лютий",
+    "Березень",
+    "Квітень",
+    "Травень",
+    "Червень",
+    "Липень",
+    "Серпень",
+    "Вересень",
+    "Жовтень",
+    "Листопад",
+    "Грудень",
+  ];
+  const years = Array.from(
+    { length: new Date().getFullYear() - 1909 + 1 },
+    (_, i) => 1909 + i,
+  ).reverse();
+  const days = Array.from({ length: 31 }, (_, i) => i + 1);
+
+  const isInvalidDate = useMemo(() => {
+    const { day, month, year } = birthDate;
+    if (!day || !month || !year) return false;
+
+    const d = parseInt(day);
+    const m = parseInt(month);
+    const y = parseInt(year);
+
+    const dateCheck = new Date(y, m - 1, d);
+    return (
+      dateCheck.getFullYear() !== y ||
+      dateCheck.getMonth() !== m - 1 ||
+      dateCheck.getDate() !== d
+    );
+  }, [birthDate]);
+
   const calculateAge = (d, m, y) => {
     const today = new Date();
     const birth = new Date(y, m - 1, d);
@@ -203,12 +243,17 @@ const Modal = ({ onClose, onRegister, availableAvatars }) => {
     ) {
       return setError("Заповніть всі поля!");
     }
+    if (isInvalidDate) return setError("Такої дати не існує!");
     if (formData.password !== formData.confirmPassword)
       return setError("Паролі не співпадають!");
     if (!accepted) return setError("Прийміть угоду!");
 
-    const age = calculateAge(birthDate.day, birthDate.month, birthDate.year);
-    if (age < 9) return setError("Реєстрація дозволена лише з 9 років!");
+    const age = calculateAge(
+      parseInt(birthDate.day),
+      parseInt(birthDate.month),
+      parseInt(birthDate.year),
+    );
+    if (age < 12) return setError("Реєстрація дозволена лише з 12 років!");
 
     onRegister({
       ...formData,
@@ -237,28 +282,67 @@ const Modal = ({ onClose, onRegister, availableAvatars }) => {
         />
 
         <DateRow>
-          <DateInput
-            placeholder="День"
-            type="number"
+          <Select
+            value={birthDate.day}
             onChange={(e) =>
               setBirthDate({ ...birthDate, day: e.target.value })
             }
-          />
-          <DateInput
-            placeholder="Місяць"
-            type="number"
+          >
+            <option value="" disabled>
+              День
+            </option>
+            {days.map((d) => (
+              <option key={d} value={d}>
+                {d}
+              </option>
+            ))}
+          </Select>
+
+          <Select
+            value={birthDate.month}
             onChange={(e) =>
               setBirthDate({ ...birthDate, month: e.target.value })
             }
-          />
-          <DateInput
-            placeholder="Рік"
-            type="number"
+          >
+            <option value="" disabled>
+              Місяць
+            </option>
+            {months.map((m, i) => (
+              <option key={i} value={i + 1}>
+                {m}
+              </option>
+            ))}
+          </Select>
+
+          <Select
+            value={birthDate.year}
             onChange={(e) =>
               setBirthDate({ ...birthDate, year: e.target.value })
             }
-          />
+          >
+            <option value="" disabled>
+              Рік
+            </option>
+            {years.map((y) => (
+              <option key={y} value={y}>
+                {y}
+              </option>
+            ))}
+          </Select>
         </DateRow>
+
+        {isInvalidDate && (
+          <div
+            style={{
+              color: "red",
+              fontSize: "11px",
+              textAlign: "center",
+              marginTop: "-10px",
+            }}
+          >
+            Такої дати не існує!
+          </div>
+        )}
 
         <div style={{ fontSize: "11px", fontWeight: "bold", color: "grey" }}>
           Аватар оберіть, 1-ий доступний з<AnimatedText>Стихія+</AnimatedText>
@@ -307,7 +391,11 @@ const Modal = ({ onClose, onRegister, availableAvatars }) => {
             {error}
           </div>
         )}
-        <SubmitButton onClick={handleSubmit} disabled={!accepted}>
+
+        <SubmitButton
+          onClick={handleSubmit}
+          disabled={!accepted || isInvalidDate}
+        >
           Зареєструватися
         </SubmitButton>
         {showTerms && <InfoModal onClose={() => setShowTerms(false)} />}

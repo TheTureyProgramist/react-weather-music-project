@@ -22,7 +22,7 @@ transform: translateY(100%) scale(0.5);
 transform: translateY(0%)
 scale(1);
 }
-`
+`;
 const flow = keyframes`
   0% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
@@ -297,8 +297,9 @@ const VipModal = ({ onClose }) => {
             <BenefitCard>
               <BenefitImage src={monody} />
               <VipBonus>
-                Музичний файл, фан-арт та текст пісні Monody-TheFatRat та VIP-аватар (Нічний ліс) доступні одразу після реєстрації, не через
-                24год. 
+                Музичний файл, фан-арт та текст пісні Monody-TheFatRat та
+                VIP-аватар (Нічний ліс) доступні одразу після реєстрації, не
+                через 24год.
               </VipBonus>
             </BenefitCard>
             <SectionTitle>Система</SectionTitle>
@@ -337,7 +338,7 @@ const VipModal = ({ onClose }) => {
               <Input placeholder="Номер картки"></Input>
               <Input placeholder="CVC2/CVV2 - 3 цифри позаду картки"></Input>
               <Input placeholder="Термін дії(Н-д: 05/29)"></Input>
-              <VipBonus>Бундюча вигода!</VipBonus>
+              <SectionTitle>Бундюча вигода!</SectionTitle>
               <VipImage src={turkeys} />
               <VipButton>2,99грн/місяць</VipButton>
               <VipText>З передоплатою 7,99грн/тиждень</VipText>

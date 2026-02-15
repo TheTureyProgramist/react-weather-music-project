@@ -37,24 +37,24 @@ const FanArtTitle = styled.div`
 const FanBlock = styled.div`
   display: flex;
   overflow-x: auto;
-  scroll-snap-type: x mandatory; 
+  scroll-snap-type: x mandatory;
   gap: 15px;
-  padding: 10px 10px 20px 10px; 
+  padding: 10px 10px 20px 10px;
   &::-webkit-scrollbar {
-    height: 8px; 
+    height: 8px;
     display: block;
   }
   &::-webkit-scrollbar-track {
-    background: rgba(128, 0, 128, 0.1); 
+    background: rgba(128, 0, 128, 0.1);
     border-radius: 10px;
   }
   &::-webkit-scrollbar-thumb {
-    background: #8a2be2; 
+    background: #8a2be2;
     border-radius: 10px;
-    border: 2px solid transparent; 
+    border: 2px solid transparent;
   }
   &::-webkit-scrollbar-thumb:hover {
-    background: #7b1fa2; 
+    background: #7b1fa2;
   }
   scrollbar-width: auto;
   scrollbar-color: #8a2be2 rgba(128, 0, 128, 0.1);
@@ -63,13 +63,13 @@ const FanBlock = styled.div`
 const BenefitImage = styled.img`
   flex: 0 0 85%;
   width: 85%;
-  scroll-snap-align: center; 
+  scroll-snap-align: center;
   border-radius: 15px;
   object-fit: cover;
   height: 300px;
 
   @media (min-width: 768px) {
-    flex: 0 0 45%; 
+    flex: 0 0 45%;
     width: 45%;
     height: 400px;
   }
@@ -82,8 +82,15 @@ const BenefitImage = styled.img`
 `;
 const FanArt = ({ isDarkMode }) => {
   const images = [
-    turkeys, nicerone, dragons, horse, lebid, 
-    monody, horrordog, rooster, soloveyko
+    turkeys,
+    nicerone,
+    dragons,
+    horse,
+    lebid,
+    monody,
+    horrordog,
+    rooster,
+    soloveyko,
   ];
   return (
     <FanArtDiv>

@@ -1,5 +1,5 @@
 import React from "react";
-import styled, {keyframes} from "styled-components";
+import styled, { keyframes } from "styled-components";
 const slideIn = keyframes`
 0% {
 transform: translateY(100%) scale(0.5);
@@ -8,7 +8,7 @@ transform: translateY(100%) scale(0.5);
 transform: translateY(0%)
 scale(1);
 }
-`
+`;
 const Overlay = styled.div`
   position: fixed;
   top: 0;

@@ -1,21 +1,15 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import styled, { keyframes } from "styled-components";
 import InfoModal from "./InfoModal";
 const slideIn = keyframes`
-0% {
-transform: translateY(100%) scale(0.5);
-}
-100% {
-transform: translateY(0%)
-scale(1);
-}
-`
+0% { transform: translateY(100%) scale(0.5); }
+100% { transform: translateY(0%) scale(1); }
+`;
 const flow = keyframes`
   0% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
   100% { background-position: 0% 50%; }
 `;
-
 const AnimatedText = styled.span`
   font-family: "Inter", sans-serif;
   font-size: 11px;
@@ -80,15 +74,23 @@ const Input = styled.input`
   width: 100%;
   box-sizing: border-box;
 `;
+const Select = styled.select`
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  flex: 1;
+  background: white;
+  font-size: 14px;
+  cursor: pointer;
+  &:focus {
+    outline: none;
+    border-color: #ffb36c;
+  }
+`;
 
 const DateRow = styled.div`
   display: flex;
   gap: 10px;
-`;
-
-const DateInput = styled(Input)`
-  flex: 1;
-  text-align: center;
 `;
 
 const CheckboxRow = styled.div`
@@ -127,6 +129,13 @@ const AvatarSlider = styled.div`
   gap: 15px;
   overflow-x: auto;
   padding: 10px 0;
+  &::-webkit-scrollbar {
+    height: 6px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: #ffb36c;
+    border-radius: 10px;
+  }
 `;
 
 const SaveButton = styled.button`
@@ -137,8 +146,11 @@ const SaveButton = styled.button`
   font-weight: bold;
   border: none;
   cursor: pointer;
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
 `;
-
 const CancelButton = styled.button`
   background: #eee;
   height: 45px;
@@ -148,42 +160,54 @@ const CancelButton = styled.button`
   border: none;
   cursor: pointer;
 `;
-
 const UserSettingsModal = ({ onClose, user, availableAvatars, onUpdate }) => {
   const [y, m, d] = user?.birthDate ? user.birthDate.split("-") : ["", "", ""];
-
   const [formData, setFormData] = useState({
     name: user?.firstName || "",
-    day: d || "",
-    month: m || "",
-    year: y || "",
+    day: parseInt(d) || "",
+    month: parseInt(m) || "",
+    year: parseInt(y) || "",
     oldPassword: "",
     newPassword: "",
     confirmPassword: "",
     avatarIndex: availableAvatars.indexOf(user?.avatar) || 0,
   });
   const [showTerms, setShowTerms] = useState(false);
-  const [accepted] = useState(true);
-  //const [accepted, setAccepted] = useState(true);
-  const isValidDate = (day, month, year) => {
-    const dVal = parseInt(day);
-    const mVal = parseInt(month);
-    const yVal = parseInt(year);
-    if (isNaN(dVal) || isNaN(mVal) || isNaN(yVal)) return false;
-    if (yVal < 1904 || yVal > new Date().getFullYear()) return false;
-    if (mVal < 1 || mVal > 12) return false;
-    const daysInMonth = new Date(yVal, mVal, 0).getDate();
-    return dVal >= 1 && dVal <= daysInMonth;
-  };
-
+  const accepted = true;
+  const days = Array.from({ length: 31 }, (_, i) => i + 1);
+  const months = [
+    "Січень",
+    "Лютий",
+    "Березень",
+    "Квітень",
+    "Травень",
+    "Червень",
+    "Липень",
+    "Серпень",
+    "Вересень",
+    "Жовтень",
+    "Листопад",
+    "Грудень",
+  ];
+  const currentYear = new Date().getFullYear();
+  const years = Array.from(
+    { length: currentYear - 1909 + 1 },
+    (_, i) => currentYear - i,
+  );
+  const isInvalidDate = useMemo(() => {
+    if (!formData.day || !formData.month || !formData.year) return false;
+    const date = new Date(formData.year, formData.month - 1, formData.day);
+    return (
+      date.getFullYear() !== parseInt(formData.year) ||
+      date.getMonth() !== parseInt(formData.month) - 1 ||
+      date.getDate() !== parseInt(formData.day)
+    );
+  }, [formData.day, formData.month, formData.year]);
   const handleSubmit = () => {
-    if (formData.year || formData.month || formData.day) {
-      if (!isValidDate(formData.day, formData.month, formData.year)) {
-        alert("Введена некоректна дата! (Рік від 1904)");
-        return;
-      }
+    if (isInvalidDate) {
+      alert("Введена некоректна дата!");
+      return;
     }
-
     if (formData.newPassword) {
       if (formData.newPassword !== formData.confirmPassword) {
         alert("Нові паролі не збігаються!");
@@ -194,7 +218,6 @@ const UserSettingsModal = ({ onClose, user, availableAvatars, onUpdate }) => {
         return;
       }
     }
-
     onUpdate({
       firstName: formData.name,
       avatar: availableAvatars[formData.avatarIndex],
@@ -208,12 +231,10 @@ const UserSettingsModal = ({ onClose, user, availableAvatars, onUpdate }) => {
     });
     onClose();
   };
-
   return (
     <ModalOverlay onClick={onClose}>
       <ModalContent onClick={(e) => e.stopPropagation()}>
         <h3 style={{ textAlign: "center" }}>Налаштування</h3>
-
         <Section>
           <label style={{ fontSize: "13px", fontWeight: "bold" }}>Ім'я</label>
           <Input
@@ -221,36 +242,57 @@ const UserSettingsModal = ({ onClose, user, availableAvatars, onUpdate }) => {
             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
           />
         </Section>
-
         <Section>
           <label style={{ fontSize: "13px", fontWeight: "bold" }}>
             Дата народження
           </label>
           <DateRow>
-            <DateInput
+            <Select
               value={formData.day}
-              placeholder="День"
               onChange={(e) =>
                 setFormData({ ...formData, day: e.target.value })
               }
-            />
-            <DateInput
+            >
+              <option value="">День</option>
+              {days.map((d) => (
+                <option key={d} value={d}>
+                  {d}
+                </option>
+              ))}
+            </Select>
+            <Select
               value={formData.month}
-              placeholder="Місяць"
               onChange={(e) =>
                 setFormData({ ...formData, month: e.target.value })
               }
-            />
-            <DateInput
+            >
+              <option value="">Місяць</option>
+              {months.map((m, i) => (
+                <option key={i} value={i + 1}>
+                  {m}
+                </option>
+              ))}
+            </Select>
+            <Select
               value={formData.year}
-              placeholder="Рік"
               onChange={(e) =>
                 setFormData({ ...formData, year: e.target.value })
               }
-            />
+            >
+              <option value="">Рік</option>
+              {years.map((y) => (
+                <option key={y} value={y}>
+                  {y}
+                </option>
+              ))}
+            </Select>
           </DateRow>
+          {isInvalidDate && (
+            <span style={{ color: "red", fontSize: "11px" }}>
+              Такої дати не існує!
+            </span>
+          )}
         </Section>
-
         <Section>
           <label style={{ fontSize: "13px", fontWeight: "bold" }}>
             Безпека
@@ -279,7 +321,6 @@ const UserSettingsModal = ({ onClose, user, availableAvatars, onUpdate }) => {
             }
           />
         </Section>
-
         <Section>
           <div style={{ fontSize: "12px", fontWeight: "bold", color: "grey" }}>
             Оберіть аватар, 1-ий доступний з<AnimatedText>Стихія+</AnimatedText>
@@ -296,7 +337,6 @@ const UserSettingsModal = ({ onClose, user, availableAvatars, onUpdate }) => {
             ))}
           </AvatarSlider>
         </Section>
-
         <CheckboxRow>
           <input
             type="checkbox"
@@ -309,15 +349,15 @@ const UserSettingsModal = ({ onClose, user, availableAvatars, onUpdate }) => {
             <TermsBtn onClick={() => setShowTerms(true)}>Угодою</TermsBtn>
           </label>
         </CheckboxRow>
-
         <div style={{ display: "flex", gap: "10px", marginTop: "10px" }}>
           <CancelButton onClick={onClose}>Назад</CancelButton>
-          <SaveButton onClick={handleSubmit}>Зберегти</SaveButton>
+          <SaveButton onClick={handleSubmit} disabled={isInvalidDate}>
+            Зберегти
+          </SaveButton>
         </div>
         {showTerms && <InfoModal onClose={() => setShowTerms(false)} />}
       </ModalContent>
     </ModalOverlay>
   );
 };
-
 export default UserSettingsModal;
