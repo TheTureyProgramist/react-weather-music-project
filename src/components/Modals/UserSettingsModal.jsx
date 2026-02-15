@@ -1,19 +1,39 @@
 import React, { useState, useMemo } from "react";
 import styled, { keyframes } from "styled-components";
 import InfoModal from "./InfoModal";
+
 const slideIn = keyframes`
-0% { transform: translateY(100%) scale(0.5); }
-100% { transform: translateY(0%) scale(1); }
+  0% { 
+    transform: translateY(100%) scale(0.5);
+    opacity: 0;
+  }
+  100% { 
+    transform: translateY(0%) scale(1);
+    opacity: 1;
+  }
+`;
+
+const slideOut = keyframes`
+  0% { 
+    transform: translateY(0%) scale(1); 
+    opacity: 1; 
+  }
+  100% { 
+    transform: translateY(100%) scale(0.5); 
+    opacity: 0; 
+  }
+`;
+
+const fadeOut = keyframes`
+  0% { opacity: 1; }
+  100% { opacity: 0; }
 `;
 const flow = keyframes`
   0% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
   100% { background-position: 0% 50%; }
 `;
-const slideOut = keyframes`
-  0% { transform: translateY(0%) scale(1); opacity: 1; }
-  100% { transform: translateY(100%) scale(0.5); opacity: 0; }
-`;
+
 const AnimatedText = styled.span`
   font-family: "Inter", sans-serif;
   font-size: 11px;
@@ -46,6 +66,7 @@ const ModalOverlay = styled.div`
   justify-content: center;
   align-items: center;
   z-index: 1000;
+  animation: ${props => (props.$isClosing ? fadeOut : "none")} 0.5s ease-out forwards;
 `;
 
 const ModalContent = styled.div`
@@ -60,7 +81,21 @@ const ModalContent = styled.div`
   gap: 15px;
   max-height: 90vh;
   overflow-y: auto;
-  animation: ${slideIn} 1s ease-out forwards;
+  animation: ${props => (props.$isClosing ? slideOut : slideIn)} 0.5s ease-out forwards;
+`;
+
+const CloseButton = styled.button`
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #333;
+  &:hover {
+    color: #ffb36c;
+  }
 `;
 
 const Section = styled.div`
@@ -177,7 +212,15 @@ const UserSettingsModal = ({ onClose, user, availableAvatars, onUpdate }) => {
     avatarIndex: availableAvatars.indexOf(user?.avatar) || 0,
   });
   const [showTerms, setShowTerms] = useState(false);
-  const accepted = true;
+  const [isClosing, setIsClosing] = useState(false);
+
+  const handleClose = (e) => {
+    if (e) e.stopPropagation();
+    setIsClosing(true);
+    setTimeout(() => {
+      onClose();
+    }, 500);
+  };
   const days = Array.from({ length: 31 }, (_, i) => i + 1);
   const months = [
     "Січень",
@@ -233,11 +276,14 @@ const UserSettingsModal = ({ onClose, user, availableAvatars, onUpdate }) => {
           }
         : {}),
     });
-    onClose();
+    handleClose();
   };
+
+  const accepted = true;
   return (
-    <ModalOverlay onClick={onClose}>
-      <ModalContent onClick={(e) => e.stopPropagation()}>
+    <ModalOverlay $isClosing={isClosing} onClick={handleClose}>
+      <ModalContent $isClosing={isClosing} onClick={(e) => e.stopPropagation()}>
+        <CloseButton onClick={handleClose}>&times;</CloseButton>
         <h3 style={{ textAlign: "center" }}>Налаштування</h3>
         <Section>
           <label style={{ fontSize: "13px", fontWeight: "bold" }}>Ім'я</label>
@@ -354,7 +400,7 @@ const UserSettingsModal = ({ onClose, user, availableAvatars, onUpdate }) => {
           </label>
         </CheckboxRow>
         <div style={{ display: "flex", gap: "10px", marginTop: "10px" }}>
-          <CancelButton onClick={onClose}>Назад</CancelButton>
+          <CancelButton onClick={handleClose}>Назад</CancelButton>
           <SaveButton onClick={handleSubmit} disabled={isInvalidDate}>
             Зберегти
           </SaveButton>

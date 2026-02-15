@@ -25,6 +25,7 @@ import rooster from "./photos/vip-images/vip-rooster.jpg";
 import nicerone from "./photos/vip-images/vip-dinofroz.webp";
 import soloveyko from "./photos/vip-images/vip-soloveyko.jpg";
 import monody from "./photos/vip-images/vip-forest.webp";
+
 const AVAILABLE_AVATARS = [
   monody,
   turkeys,
@@ -36,6 +37,7 @@ const AVAILABLE_AVATARS = [
   rooster,
   soloveyko,
 ];
+
 const ThemeWrapper = styled.div`
   background-color: ${(props) =>
     props.$isDarkMode ? "#121212" : "transparent"};
@@ -44,6 +46,7 @@ const ThemeWrapper = styled.div`
   transition: background-color 0.3s ease;
   padding-bottom: 20px;
 `;
+
 const App = () => {
   const [now, setNow] = useState(new Date());
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -62,13 +65,16 @@ const App = () => {
     const saved = localStorage.getItem("currentAvatar");
     return saved || userDefault;
   });
+
   useEffect(() => {
     const timer = setInterval(() => setNow(new Date()), 1000);
     return () => clearInterval(timer);
   }, []);
+
   useEffect(() => {
     localStorage.setItem("isDarkMode", JSON.stringify(isDarkMode));
   }, [isDarkMode]);
+
   useEffect(() => {
     if (user) {
       localStorage.setItem("registered_user", JSON.stringify(user));
@@ -76,11 +82,13 @@ const App = () => {
       localStorage.removeItem("registered_user");
     }
   }, [user]);
+
   useEffect(() => {
     if (currentAvatar) {
       localStorage.setItem("currentAvatar", currentAvatar);
     }
   }, [currentAvatar]);
+
   const handleRegister = (userData) => {
     const newUser = {
       account: userData.account,
@@ -92,28 +100,34 @@ const App = () => {
     setUser(newUser);
     setCurrentAvatar(userData.avatar);
   };
+
   const handleLogin = (savedUser) => {
     setUser(savedUser);
     setCurrentAvatar(savedUser.avatar);
     setIsLoginOpen(false);
   };
+
   const handleUpdateUser = (userData) => {
     const updated = { ...user, ...userData };
     setUser(updated);
     setCurrentAvatar(userData.avatar);
   };
+
   const handleLogout = () => {
     setUser(null);
     setCurrentAvatar(userDefault);
     setIsSettingsModalOpen(false);
   };
+
   const toggleTheme = () => setIsDarkMode(!isDarkMode);
+
   const capitalize = (s) => s.charAt(0).toUpperCase() + s.slice(1);
   const month = new Intl.DateTimeFormat("uk", { month: "2-digit" }).format(now);
   const weekday = capitalize(
     new Intl.DateTimeFormat("uk", { weekday: "long" }).format(now),
   );
   const heroDateString = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}:${String(now.getSeconds()).padStart(2, "0")} ${weekday}, ${now.getDate()}.${month}.${now.getFullYear()}`;
+
   return (
     <ThemeWrapper $isDarkMode={isDarkMode}>
       <div className="App">
@@ -136,8 +150,8 @@ const App = () => {
           <GraphicDaily />
           <GraphicWeekly />
           <Aihelp isDarkMode={isDarkMode} />
-          <MusicPhoto user={user} />
-          <FanArt isDarkMode={isDarkMode}></FanArt>
+          <MusicPhoto user={user} onOpenRegister={() => setIsModalOpen(true)} />
+          <FanArt isDarkMode={isDarkMode} user={user} onOpenRegister={() => setIsModalOpen(true)} />
         </div>
         <Footer toggleTheme={toggleTheme} />
         {isModalOpen && (

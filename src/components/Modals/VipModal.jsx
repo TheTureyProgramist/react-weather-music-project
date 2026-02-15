@@ -297,12 +297,12 @@ const VipModal = ({ onClose }) => {
             <SectionTitle>Музика та Арт</SectionTitle>
             <BenefitCard>
               <BenefitImage src={dinofroz} />
-              <VipBonus>36 скачувань музики на добу, замість 9.</VipBonus>
+              <VipBonus>30 скачувань музики на добу, замість 7.</VipBonus>
             </BenefitCard>
             <BenefitCard>
               <BenefitImage src={rooster} />
               <VipBonus>
-                40 роздруківок фан-артів та муз. карток на добу, замість 10.
+                45 роздруківок фан-артів та муз. карток на добу, замість 9.
               </VipBonus>
             </BenefitCard>
             <BenefitCard>
@@ -332,10 +332,6 @@ const VipModal = ({ onClose }) => {
             <BenefitCard>
               <BenefitImage src={what} />
               <VipBonus>Вигідніша угода користувача.</VipBonus>
-            </BenefitCard>
-            <BenefitCard>
-              <BenefitImage src={monody} />
-              <VipBonus></VipBonus>
             </BenefitCard>
             <BenefitCard>
               <BenefitImage src={buton} />

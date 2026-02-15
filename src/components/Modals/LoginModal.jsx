@@ -1,18 +1,33 @@
 import React, { useState } from "react";
 import styled, { keyframes } from "styled-components";
+
 const slideIn = keyframes`
-0% {
-transform: translateY(100%) scale(0.5);
-}
-100% {
-transform: translateY(0%)
-scale(1);
-}
+  0% {
+    transform: translateY(100%) scale(0.5);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0%) scale(1);
+    opacity: 1;
+  }
 `;
+
 const slideOut = keyframes`
-  0% { transform: translateY(0%) scale(1); opacity: 1; }
-  100% { transform: translateY(100%) scale(0.5); opacity: 0; }
+  0% { 
+    transform: translateY(0%) scale(1); 
+    opacity: 1; 
+  }
+  100% { 
+    transform: translateY(100%) scale(0.5); 
+    opacity: 0; 
+  }
 `;
+
+const fadeOut = keyframes`
+  0% { opacity: 1; }
+  100% { opacity: 0; }
+`;
+
 const ModalOverlay = styled.div`
   position: fixed;
   top: 0;
@@ -24,7 +39,9 @@ const ModalOverlay = styled.div`
   justify-content: center;
   align-items: center;
   z-index: 1000;
+  animation: ${props => (props.$isClosing ? fadeOut : "none")} 0.5s ease-out forwards;
 `;
+
 const ModalContent = styled.form`
   background: white;
   padding: 30px;
@@ -35,7 +52,7 @@ const ModalContent = styled.form`
   flex-direction: column;
   gap: 15px;
   position: relative;
-  animation: ${slideIn} 1s ease-out forwards;
+  animation: ${props => (props.$isClosing ? slideOut : slideIn)} 0.5s ease-out forwards;
 `;
 const Input = styled.input`
   padding: 12px;
@@ -44,6 +61,7 @@ const Input = styled.input`
   width: 100%;
   box-sizing: border-box;
 `;
+
 const SubmitButton = styled.button`
   background: #ffb36c;
   color: black;
@@ -56,10 +74,34 @@ const SubmitButton = styled.button`
     background: #ffa04d;
   }
 `;
+
+const CloseButton = styled.button`
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #333;
+  &:hover {
+    color: #ffb36c;
+  }
+`;
 const LoginModal = ({ onClose, onLogin }) => {
   const [email, setEmail] = useState("");
   const [pass, setPass] = useState("");
   const [error, setError] = useState("");
+  const [isClosing, setIsClosing] = useState(false);
+
+  const handleClose = (e) => {
+    if (e) e.stopPropagation();
+    setIsClosing(true);
+    setTimeout(() => {
+      onClose();
+    }, 500);
+  };
+
   const handleLogin = (e) => {
     e.preventDefault();
     const savedUser = JSON.parse(localStorage.getItem("registered_user"));
@@ -69,14 +111,15 @@ const LoginModal = ({ onClose, onLogin }) => {
       savedUser.password === pass
     ) {
       onLogin(savedUser);
-      onClose();
+      handleClose();
     } else {
       setError("Невірний Gmail або пароль!");
     }
   };
   return (
-    <ModalOverlay onClick={onClose}>
-      <ModalContent onClick={(e) => e.stopPropagation()} onSubmit={handleLogin}>
+    <ModalOverlay $isClosing={isClosing} onClick={handleClose}>
+      <ModalContent $isClosing={isClosing} onClick={(e) => e.stopPropagation()} onSubmit={handleLogin}>
+        <CloseButton onClick={handleClose}>&times;</CloseButton>
         <h3 style={{ textAlign: "center" }}>Вхід</h3>
         <Input
           name="email"

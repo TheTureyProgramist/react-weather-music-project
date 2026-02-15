@@ -1,13 +1,14 @@
 import styled from "styled-components";
+// import { useState } from "react";
 import turkeys from "../../photos/vip-images/ultra-vip-turkeys.webp";
 import dragons from "../../photos/vip-images/vip-dragons.jpg";
-import horrordog from "../../photos/vip-images/horror.jpg";
 import horse from "../../photos/vip-images/horse.jpg";
 import lebid from "../../photos/vip-images/vip-lebid.jpg";
 import rooster from "../../photos/vip-images/vip-rooster.jpg";
 import nicerone from "../../photos/vip-images/vip-dinofroz.webp";
 import soloveyko from "../../photos/vip-images/vip-soloveyko.jpg";
 import monody from "../../photos/vip-images/vip-forest.webp";
+import volcano from "../../photos/vip-images/fire.jpg";
 const FanArtDiv = styled.div`
   margin-top: 35px;
   @media (min-width: 768px) {
@@ -66,12 +67,19 @@ const BenefitImage = styled.img`
   scroll-snap-align: center;
   border-radius: 15px;
   object-fit: cover;
-  height: 300px;
+  height: auto;
+  cursor: pointer;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+
+  &:hover {
+    transform: scale(1.05);
+    opacity: 0.9;
+  }
 
   @media (min-width: 768px) {
     flex: 0 0 45%;
     width: 45%;
-    height: 400px;
+    height: auto;
   }
 
   @media (min-width: 1200px) {
@@ -80,7 +88,7 @@ const BenefitImage = styled.img`
     height: auto;
   }
 `;
-const FanArt = ({ isDarkMode }) => {
+const FanArt = ({ isDarkMode, user, onOpenRegister }) => {
   const images = [
     turkeys,
     nicerone,
@@ -88,16 +96,34 @@ const FanArt = ({ isDarkMode }) => {
     horse,
     lebid,
     monody,
-    horrordog,
     rooster,
     soloveyko,
+    volcano,
   ];
+
+  const handleImageClick = (imgSrc) => {
+    if (!user) {
+      onOpenRegister();
+      return;
+    }
+    const printWindow = window.open("", "_blank");
+    printWindow.document.write(
+      `<html><head><title>Print Fan Art</title></head><body style="text-align:center;"><img src="${imgSrc}" style="max-width:100%;" onload="window.print();window.close()" /></body></html>`,
+    );
+    printWindow.document.close();
+  };
   return (
     <FanArtDiv>
-      <FanArtTitle $isDarkMode={isDarkMode}>Фан-арти</FanArtTitle>
+      <FanArtTitle $isDarkMode={isDarkMode}>Фан-арти(Клікніть на картинку, для друку)</FanArtTitle>
       <FanBlock>
         {images.map((img, index) => (
-          <BenefitImage key={index} src={img} alt="Fan art" />
+          <BenefitImage
+            key={index}
+            src={img}
+            alt="Fan art"
+            onClick={() => handleImageClick(img)}
+            title={user ? "Клік для друку" : "Необхідна реєстрація для друку"}
+          />
         ))}
       </FanBlock>
     </FanArtDiv>

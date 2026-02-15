@@ -1,19 +1,39 @@
 import React, { useState, useMemo } from "react";
 import styled, { keyframes } from "styled-components";
 import InfoModal from "./InfoModal";
+
 const slideIn = keyframes`
-0% { transform: translateY(100%) scale(0.5); }
-100% { transform: translateY(0%) scale(1); }
+  0% { 
+    transform: translateY(100%) scale(0.5);
+    opacity: 0;
+  }
+  100% { 
+    transform: translateY(0%) scale(1);
+    opacity: 1;
+  }
+`;
+
+const slideOut = keyframes`
+  0% { 
+    transform: translateY(0%) scale(1); 
+    opacity: 1; 
+  }
+  100% { 
+    transform: translateY(100%) scale(0.5); 
+    opacity: 0; 
+  }
+`;
+
+const fadeOut = keyframes`
+  0% { opacity: 1; }
+  100% { opacity: 0; }
 `;
 const flow = keyframes`
   0% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
   100% { background-position: 0% 50%; }
 `;
-const slideOut = keyframes`
-  0% { transform: translateY(0%) scale(1); opacity: 1; }
-  100% { transform: translateY(100%) scale(0.5); opacity: 0; }
-`;
+
 const AnimatedText = styled.span`
   font-family: "Inter", sans-serif;
   font-size: 11px;
@@ -46,6 +66,7 @@ const ModalOverlay = styled.div`
   justify-content: center;
   align-items: center;
   z-index: 1000;
+  animation: ${props => (props.$isClosing ? fadeOut : "none")} 0.5s ease-out forwards;
 `;
 
 const ModalContent = styled.div`
@@ -59,7 +80,7 @@ const ModalContent = styled.div`
   flex-direction: column;
   gap: 15px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-  animation: ${slideIn} 1s ease-out forwards;
+  animation: ${props => (props.$isClosing ? slideOut : slideIn)} 0.5s ease-out forwards;
   @media (min-width: 768px) {
     padding: 30px 30px;
   }
@@ -74,6 +95,9 @@ const CloseButton = styled.button`
   font-size: 24px;
   cursor: pointer;
   color: #333;
+  &:hover {
+    color: #ffb36c;
+  }
 `;
 
 const Title = styled.h3`
@@ -189,6 +213,15 @@ const Modal = ({ onClose, onRegister, availableAvatars }) => {
   const [accepted, setAccepted] = useState(false);
   const [showTerms, setShowTerms] = useState(false);
   const [error, setError] = useState("");
+  const [isClosing, setIsClosing] = useState(false);
+
+  const handleClose = (e) => {
+    if (e) e.stopPropagation();
+    setIsClosing(true);
+    setTimeout(() => {
+      onClose();
+    }, 500);
+  };
 
   const months = [
     "Січень",
@@ -263,13 +296,13 @@ const Modal = ({ onClose, onRegister, availableAvatars }) => {
       avatar: availableAvatars[formData.avatarIndex],
       birthDate: `${birthDate.year}-${birthDate.month.padStart(2, "0")}-${birthDate.day.padStart(2, "0")}`,
     });
-    onClose();
+    handleClose();
   };
 
   return (
-    <ModalOverlay onClick={onClose}>
-      <ModalContent onClick={(e) => e.stopPropagation()}>
-        <CloseButton onClick={onClose}>&times;</CloseButton>
+    <ModalOverlay $isClosing={isClosing} onClick={handleClose}>
+      <ModalContent $isClosing={isClosing} onClick={(e) => e.stopPropagation()}>
+        <CloseButton onClick={handleClose}>&times;</CloseButton>
         <Title>Реєстрація</Title>
         <Input
           placeholder="Gmail"
