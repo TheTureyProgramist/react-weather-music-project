@@ -294,22 +294,22 @@ const VipModal = ({ onClose }) => {
         <AnimatedText>Стихія+</AnimatedText>
         <VipBlock>
           <VipFixScroll>
-            <SectionTitle>Gemini</SectionTitle>
+            <SectionTitle>ШІ</SectionTitle>
             <BenefitCard>
               <BenefitImage src={texts} />
-              <VipBonus>15 повідомлень на день, замість 5.</VipBonus>
+              <VipBonus>15 безкоштовних повідомлень/день, замість 5. Після вичерпування ліміту ціна повідомлення 0,36грн, не 0,6грн</VipBonus>
             </BenefitCard>
             <BenefitCard>
               <BenefitImage src={lebid} />
-              <VipBonus>2 зображення/міс по 2,99грн, далі 3,99грн.</VipBonus>
+              <VipBonus>2 (не 1) зображення/міс по 3,99грн, далі 4,99грн.</VipBonus>
             </BenefitCard>
             <BenefitCard>
               <BenefitImage src={clip} />
-              <VipBonus>Відео 48грн/с (замість 60грн/с).</VipBonus>
+              <VipBonus>Відео 56грн/с (замість 70грн/с).</VipBonus>
             </BenefitCard>
             <BenefitCard>
               <BenefitImage src={music} />
-              <VipBonus>Знижка на mp3 30% (в розробці).</VipBonus>
+              <VipBonus>mp3 2,5грн/хв, не 3,5грн/хв</VipBonus>
             </BenefitCard>
             <SectionTitle>Музика та Арт</SectionTitle>
             <BenefitCard>
@@ -324,7 +324,7 @@ const VipModal = ({ onClose }) => {
             </BenefitCard>
             <BenefitCard>
               <BenefitImage src={dragons} />
-              <VipBonus>Джойстики звуку та швидкості для карток.</VipBonus>
+              <VipBonus>Джойстики звуку, швидкості та промотовучі 10с вперед/назад для муз. карток.</VipBonus>
             </BenefitCard>
             <BenefitCard>
               <BenefitImage src={monody} />
@@ -349,7 +349,7 @@ const VipModal = ({ onClose }) => {
             <BenefitCard>
               <BenefitImage src={buton} />
               <VipBonus>
-                Пошук міста/Оновлення картки має перезарядку 0с замість 1хв.
+                Пошук міста/Оновлення картки має перезарядку 5с замість 1хв.
               </VipBonus>
             </BenefitCard>
             <BenefitCard>

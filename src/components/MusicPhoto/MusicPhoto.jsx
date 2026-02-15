@@ -87,7 +87,7 @@ const MusicImage = styled.img`
   width: 285px;
   object-fit: cover;
   border-radius: 15px 15px 0 0;
-  cursor: pointer;
+   cursor: pointer; 
   transition: transform 0.3s ease;
   &:hover {
     transform: scale(1.02);
@@ -123,15 +123,56 @@ const ControlsContainer = styled.div`
   padding: 0 10px;
   box-sizing: border-box;
 `;
-const SeekBar = styled.input`
+
+const PlayerRow = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
   width: 100%;
+  margin-bottom: 5px;
+`;
+
+const PlayButton = styled.button`
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+
+  svg {
+    width: 100%;
+    height: 100%;
+    fill: #333;
+    transition: fill 0.2s;
+  }
+
+  &:hover svg {
+    fill: orange;
+  }
+`;
+
+const TimeDisplay = styled.span`
+  font-size: 10px;
+  color: #555;
+  font-family: monospace;
+  white-space: nowrap;
+  min-width: 65px;
+  text-align: right;
+`;
+
+const SeekBar = styled.input`
+  flex-grow: 1; 
   height: 4px;
   -webkit-appearance: none;
   background: #ccc;
   border-radius: 2px;
   outline: none;
   cursor: pointer;
-  margin-bottom: 5px;
+
   &::-webkit-slider-thumb {
     -webkit-appearance: none;
     width: 12px;
@@ -179,7 +220,8 @@ const ModalOverlay = styled.div`
   justify-content: center;
   align-items: center;
   z-index: 1000;
-  animation: ${props => (props.$isClosing ? fadeOut : "none")} 0.5s ease-out forwards;
+  animation: ${(props) => (props.$isClosing ? fadeOut : "none")} 0.5s ease-out
+    forwards;
 `;
 const ModalContent = styled.div`
   background: white;
@@ -190,9 +232,10 @@ const ModalContent = styled.div`
   max-height: 85vh;
   overflow-y: auto;
   position: relative;
-  animation: ${props => (props.$isClosing ? slideOut : slideIn)} 0.5s ease-out forwards;
+  animation: ${(props) => (props.$isClosing ? slideOut : slideIn)} 0.5s ease-out
+    forwards;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-  
+
   &::-webkit-scrollbar {
     width: 6px;
   }
@@ -230,7 +273,6 @@ const LyricsContainer = styled.div`
   color: #333;
   max-height: 300px;
   overflow-y: auto;
-  
   &::-webkit-scrollbar {
     width: 6px;
   }
@@ -242,7 +284,6 @@ const LyricsContainer = styled.div`
     background: #f0f0f0;
   }
 `;
-
 const MusicCard = ({
   cardData,
   onOpenModal,
@@ -258,15 +299,19 @@ const MusicCard = ({
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [isLooping, setIsLooping] = useState(false);
-
   useEffect(() => {
     if (forcePause && isPlaying) {
       if (audioRef.current) audioRef.current.pause();
       setIsPlaying(false);
     }
   }, [forcePause, isPlaying]);
-
-  const handleImageClick = () => {
+  const formatTime = (time) => {
+    if (isNaN(time)) return "0:00";
+    const minutes = Math.floor(time / 60);
+    const seconds = Math.floor(time % 60);
+    return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+  };
+  const togglePlayPause = () => {
     if (audioRef.current) {
       if (isPlaying) {
         audioRef.current.pause();
@@ -279,7 +324,6 @@ const MusicCard = ({
       }
     }
   };
-
   const handleDownload = () => {
     if (!user) {
       onOpenRegister();
@@ -290,7 +334,6 @@ const MusicCard = ({
     a.download = "file";
     a.click();
   };
-
   const handlePrint = () => {
     if (!user) {
       onOpenRegister();
@@ -302,11 +345,10 @@ const MusicCard = ({
     );
     printWindow.document.close();
   };
-
   return (
     <CardWrapper>
       <MusicImageContainer>
-        <MusicImage src={image} alt="Music" onClick={handleImageClick} />
+        <MusicImage src={image} alt="Music" />
         {audio && (
           <audio
             ref={audioRef}
@@ -321,13 +363,32 @@ const MusicCard = ({
       {audio && (
         <ControlsContainer>
           {[2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 14].includes(id) && (
-            <SeekBar
-              type="range"
-              min="0"
-              max={duration || 0}
-              value={currentTime}
-              onChange={(e) => (audioRef.current.currentTime = e.target.value)}
-            />
+            <PlayerRow>
+              <PlayButton onClick={togglePlayPause}>
+                {isPlaying ? (
+                  <svg viewBox="0 0 24 24">
+                    <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
+                  </svg>
+                ) : (
+                  <svg viewBox="0 0 24 24">
+                    <path d="M8 5v14l11-7z" />
+                  </svg>
+                )}
+              </PlayButton>
+              <SeekBar
+                type="range"
+                min="0"
+                max={duration || 0}
+                value={currentTime}
+                onChange={(e) =>
+                  (audioRef.current.currentTime = e.target.value)
+                }
+              />
+
+              <TimeDisplay>
+                {formatTime(currentTime)} / {formatTime(duration)}
+              </TimeDisplay>
+            </PlayerRow>
           )}
           <LoopButton
             $active={isLooping}
@@ -339,9 +400,7 @@ const MusicCard = ({
       )}
       {text && <MusicText>{text}</MusicText>}
       <ActionButtonsContainer>
-        <ActionButton onClick={handleDownload}>
-          Скачати
-        </ActionButton>
+        <ActionButton onClick={handleDownload}>Скачати</ActionButton>
         <ActionButton onClick={handlePrint}>Роздрукувати</ActionButton>
         <ActionButton onClick={() => onOpenModal(cardData)}>
           Текст пісні
@@ -350,13 +409,11 @@ const MusicCard = ({
     </CardWrapper>
   );
 };
-
 const MusicPhoto = ({ user, onOpenRegister }) => {
   const [showAll, setShowAll] = useState(false);
   const [modalData, setModalData] = useState(null);
   const [playingTracks, setPlayingTracks] = useState([]);
   const [isClosing, setIsClosing] = useState(false);
-
   const calculateUserAge = (birthDate) => {
     if (!birthDate) return 0;
     const today = new Date();
@@ -366,7 +423,6 @@ const MusicPhoto = ({ user, onOpenRegister }) => {
     if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) age--;
     return age;
   };
-
   const handleCloseModal = (e) => {
     if (e) e.stopPropagation();
     setIsClosing(true);
@@ -375,7 +431,6 @@ const MusicPhoto = ({ user, onOpenRegister }) => {
       setIsClosing(false);
     }, 500);
   };
-
   const userAge = calculateUserAge(user?.birthDate);
   const musicCards = [
     {
@@ -389,7 +444,8 @@ const MusicPhoto = ({ user, onOpenRegister }) => {
       image: require("../../photos/vip-images/vip-dinofroz.webp"),
       audio: require("../../mp3/dinofroz-mondo-tv.mp3"),
       text: "Легендарний мультфільм на малятко ТВ(нажаль закритий) Mondo TV - Динофроз. Зображено Імператора дрконів Ніцерона.",
-      lyrics: "Dinofroze...dinofroze. Четверо друзів знайшли дивну гру. В доісторичну пішли давнину. Там динозаврами стали вони. В цьому карти їм допомогли. У давнині небезпечні дракони. Та з ними впорались наші герої. До бою готові всюди і завжди. І утілюють мірії свої в боротьбі. Dinofroze... Дружні, завзяті, зброя в руках. Dinofroze... Вони Ніцерону не по зубах. Dinofroze... Дружні, завзяті, зброя в руках. Вони Ніцерону не по зубах. Друзі б'ються завзято. Дракони тікають. Четверо друзів майбутнє спасають. До бою завжди готові вони. Ховайтеся, вороги! Dinofroze...",
+      lyrics:
+        "Dinofroze...dinofroze. Четверо друзів знайшли дивну гру. В доісторичну пішли давнину. Там динозаврами стали вони. В цьому карти їм допомогли. У давнині небезпечні дракони. Та з ними впорались наші герої. До бою готові всюди і завжди. І утілюють мірії свої в боротьбі. Dinofroze... Дружні, завзяті, зброя в руках. Dinofroze... Вони Ніцерону не по зубах. Dinofroze... Дружні, завзяті, зброя в руках. Вони Ніцерону не по зубах. Друзі б'ються завзято. Дракони тікають. Четверо друзів майбутнє спасають. До бою завжди готові вони. Ховайтеся, вороги! Dinofroze...",
     },
     {
       id: 3,
@@ -460,7 +516,7 @@ const MusicPhoto = ({ user, onOpenRegister }) => {
       text: "My little universe. Спокійна і прекрасна музика в японському стилі.",
       lyrics: "Текст відсутній.",
     },
-     {
+    {
       id: 13,
       image: require("../../photos/vip-images/mechannic.jpg"),
       audio: require("../../mp3/mechanik-kindom.mp3"),
@@ -501,25 +557,28 @@ const MusicPhoto = ({ user, onOpenRegister }) => {
       )}
       {modalData && (
         <ModalOverlay $isClosing={isClosing} onClick={handleCloseModal}>
-          <ModalContent $isClosing={isClosing} onClick={(e) => e.stopPropagation()}>
-            <CloseButton onClick={handleCloseModal}>
-              &times;
-            </CloseButton>
+          <ModalContent
+            $isClosing={isClosing}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <CloseButton onClick={handleCloseModal}>&times;</CloseButton>
             <img
               src={modalData.image}
-              style={{ 
-                width: "100%", 
+              style={{
+                width: "100%",
                 borderRadius: "15px",
-                marginBottom: "15px"
+                marginBottom: "15px",
               }}
               alt="Music"
             />
-            <h4 style={{ 
-              textAlign: "center",
-              color: "#333",
-              marginBottom: "10px",
-              marginTop: 0
-            }}>
+            <h4
+              style={{
+                textAlign: "center",
+                color: "#333",
+                marginBottom: "10px",
+                marginTop: 0,
+              }}
+            >
               Текст пісні:
             </h4>
             <LyricsContainer>{modalData.lyrics}</LyricsContainer>
