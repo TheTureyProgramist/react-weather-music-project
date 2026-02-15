@@ -1,7 +1,15 @@
 import React, { useState } from "react";
 import styled, { keyframes } from "styled-components";
 import InfoModal from "./InfoModal";
-
+const slideIn = keyframes`
+0% {
+transform: translateY(100%) scale(0.5);
+}
+100% {
+transform: translateY(0%)
+scale(1);
+}
+`
 const flow = keyframes`
   0% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
@@ -53,10 +61,7 @@ const ModalContent = styled.div`
   flex-direction: column;
   gap: 15px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-    @keyframes test {
-    0% {
-      transform: translateX(100%);
-    }
+  animation: ${slideIn} 1s ease-out forwards;
   }
   @media (min-width: 768px) { 
   padding: 30px 30px;

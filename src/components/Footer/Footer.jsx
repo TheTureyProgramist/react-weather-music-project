@@ -117,7 +117,7 @@ const Footer = () => {
       </FooterContacts>
       <FooterAdress>
         <FooterAdressText>Версія</FooterAdressText>
-        <FooterAdressInfo>1.9.1</FooterAdressInfo>
+        <FooterAdressInfo>1.9.5</FooterAdressInfo>
       </FooterAdress>
     </FooterDiv>
   );

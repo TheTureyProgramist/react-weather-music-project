@@ -14,7 +14,15 @@ import lebid from "../../photos/vip-images/vip-lebid.jpg";
 import buton from "../../photos/vip-modal/buton.jpg";
 import texts from "../../photos/vip-modal/texts.jpg";
 import what from "../../photos/vip-modal/what.jpg";
-
+const slideIn = keyframes`
+0% {
+transform: translateY(100%) scale(0.5);
+}
+100% {
+transform: translateY(0%)
+scale(1);
+}
+`
 const flow = keyframes`
   0% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
@@ -74,7 +82,7 @@ const VipModalDiv = styled.div`
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
   border: 2px solid #ffb36c;
   overflow-y: auto;
-
+  animation: ${slideIn} 1s ease-out forwards;
   @media (max-width: 480px) {
     padding: 10px;
     padding-top: 35px;
@@ -289,8 +297,8 @@ const VipModal = ({ onClose }) => {
             <BenefitCard>
               <BenefitImage src={monody} />
               <VipBonus>
-                Monody-TheFatRat доступна одразу після реєстрації, не через
-                24год після реєстрації
+                Музичний файл, фан-арт та текст пісні Monody-TheFatRat та VIP-аватар (Нічний ліс) доступні одразу після реєстрації, не через
+                24год. 
               </VipBonus>
             </BenefitCard>
             <SectionTitle>Система</SectionTitle>
@@ -311,7 +319,7 @@ const VipModal = ({ onClose }) => {
             </BenefitCard>
             <BenefitCard>
               <BenefitImage src={monody} />
-              <VipBonus>VIP-аватар (Нічний ліс).</VipBonus>
+              <VipBonus></VipBonus>
             </BenefitCard>
             <BenefitCard>
               <BenefitImage src={buton} />

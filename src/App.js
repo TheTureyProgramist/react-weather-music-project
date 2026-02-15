@@ -49,7 +49,7 @@ const App = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
-  const [isVipModalOpen, setIsVipModalOpen] = useState(false); // Стейт для VIP модалки
+  const [isVipModalOpen, setIsVipModalOpen] = useState(false); 
   const [isDarkMode, setIsDarkMode] = useState(() => {
     const saved = localStorage.getItem("isDarkMode");
     return saved !== null ? JSON.parse(saved) : false;
@@ -122,7 +122,7 @@ const App = () => {
             onOpenRegister={() => setIsModalOpen(true)}
             onOpenLogin={() => setIsLoginOpen(true)}
             onOpenSettings={() => setIsSettingsModalOpen(true)}
-            onOpenVip={() => setIsVipModalOpen(true)} // Передаємо функцію відкриття
+            onOpenVip={() => setIsVipModalOpen(true)} 
             user={user}
             isDarkMode={isDarkMode}
             toggleTheme={toggleTheme}
@@ -135,9 +135,9 @@ const App = () => {
           <Main />
           <GraphicDaily />
           <GraphicWeekly />
-                  <Aihelp />
+                  <Aihelp isDarkMode={isDarkMode}/>
           <MusicPhoto user={user} />
-          <FanArt></FanArt>
+          <FanArt isDarkMode={isDarkMode}></FanArt>
         </div>
         <Footer toggleTheme={toggleTheme} />
         {isModalOpen && (

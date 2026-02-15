@@ -1,5 +1,14 @@
 import React, { useState } from "react";
-import styled from "styled-components";
+import styled, {keyframes} from "styled-components";
+const slideIn = keyframes`
+0% {
+transform: translateY(100%) scale(0.5);
+}
+100% {
+transform: translateY(0%)
+scale(1);
+}
+`
 const ModalOverlay = styled.div`
   position: fixed;
   top: 0;
@@ -22,12 +31,7 @@ const ModalContent = styled.form`
   flex-direction: column;
   gap: 15px;
   position: relative;
-  animation: test 1s linear;
-  @keyframes test {
-    0% {
-      transform: translateX(100%);
-    }
-  }
+  animation: ${slideIn} 1s ease-out forwards;
 `;
 const Input = styled.input`
   padding: 12px;
