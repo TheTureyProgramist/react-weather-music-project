@@ -13,7 +13,6 @@ import stars from "../../photos/vip-images/stars.jpg";
 import lebid from "../../photos/vip-images/vip-lebid.jpg";
 import buton from "../../photos/vip-modal/buton.jpg";
 import texts from "../../photos/vip-modal/texts.jpg";
-import what from "../../photos/vip-modal/what.jpg";
 const slideIn = keyframes`
 0% {
 transform: translateY(100%) scale(0.5);
@@ -328,10 +327,6 @@ const VipModal = ({ onClose }) => {
             <BenefitCard>
               <BenefitImage src={stars} />
               <VipBonus>Плавніший регулятор темної теми.</VipBonus>
-            </BenefitCard>
-            <BenefitCard>
-              <BenefitImage src={what} />
-              <VipBonus>Вигідніша угода користувача.</VipBonus>
             </BenefitCard>
             <BenefitCard>
               <BenefitImage src={buton} />
