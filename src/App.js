@@ -25,7 +25,8 @@ import rooster from "./photos/vip-images/vip-rooster.jpg";
 import nicerone from "./photos/vip-images/vip-dinofroz.webp";
 import soloveyko from "./photos/vip-images/vip-soloveyko.jpg";
 import monody from "./photos/vip-images/vip-forest.webp";
-
+import dizel from "./photos/vip-images/dizel.webp";
+import flame from "./photos/vip-images/flame.jpg";
 const AVAILABLE_AVATARS = [
   monody,
   turkeys,
@@ -36,6 +37,8 @@ const AVAILABLE_AVATARS = [
   dragons,
   rooster,
   soloveyko,
+  dizel,
+  flame,
 ];
 
 const ThemeWrapper = styled.div`

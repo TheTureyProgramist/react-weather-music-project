@@ -1,13 +1,13 @@
 import React, {useState} from "react";
 import styled, { keyframes } from "styled-components";
-import turkeys from "../../photos/vip-images/ultra-vip-turkeys.webp";
+import turkeys from "../../photos/vip-images/collectors-edition.jpg";
 import dinofroz from "../../photos/vip-images/vip-dinofroz.webp";
 import monody from "../../photos/vip-images/vip-forest.webp";
 import dragons from "../../photos/vip-images/vip-dragons.jpg";
 import rooster from "../../photos/vip-images/vip-rooster.jpg";
 import vip from "../../photos/hero-header/vip.jpg";
 import music from "../../photos/vip-modal/music.jpg";
-import time from "../../photos/vip-modal/time.jpg";
+import time from "../../photos/vip-images/mechannic.jpg";
 import clip from "../../photos/vip-images/clip.png";
 import stars from "../../photos/vip-images/stars.jpg";
 import lebid from "../../photos/vip-images/vip-lebid.jpg";
@@ -239,6 +239,13 @@ const VipText = styled.p`
   display: flex;
   justify-content: flex-end;
   color: #ffb36c;
+    @media (max-width: 768px) {
+    justify-content: flex-end;
+    max-width: 72%;
+  }
+      @media (max-width: 1200px) {
+  justify-content: flex-end;
+  }
 `;
 const RedLine = styled.div`
   background: red;
@@ -253,10 +260,21 @@ const VipFormater = styled.form`
 `;
 const VipWarning = styled.p`
   color: red;
-  font-size: 10px;
+  font-size: 12px;
   word-wrap: break-word;
   margin-bottom: 2px;
 `;
+const InputBlock = styled.div`
+display: flex;
+gap: 10px;
+flex-direction: column;
+   @media (max-width: 768px) {
+flex-direction: row;
+  }
+  @media (max-width: 1200px) {
+flex-direction: column;
+  }
+`
 const VipModal = ({ onClose }) => {
   const [isClosing, setIsClosing] = useState(false);
   const handleClose = (e) => {
@@ -341,10 +359,12 @@ const VipModal = ({ onClose }) => {
           </VipFixScroll>
           <VipFix>
             <VipFormater>
+              <InputBlock>
               <Input placeholder="Номер картки"></Input>
               <Input placeholder="CVC2/CVV2 - 3 цифри позаду картки"></Input>
               <Input placeholder="Термін дії(Н-д: 05/29)"></Input>
-              <SectionTitle>Бундюча вигода!</SectionTitle>
+              </InputBlock>
+              <SectionTitle>TurkeyStudio VIP!</SectionTitle>
               <VipImage src={turkeys} />
               <VipButton>2,99грн/місяць</VipButton>
               <VipText>З передоплатою 7,99грн/тиждень</VipText>
@@ -365,5 +385,4 @@ const VipModal = ({ onClose }) => {
     </Overlay>
   );
 };
-
 export default VipModal;

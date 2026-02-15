@@ -437,7 +437,7 @@ const MusicPhoto = ({ user, onOpenRegister }) => {
       id: 9,
       image: require("../../photos/vip-images/vip-dragons.jpg"),
       audio: require("../../mp3/dragon.mp3"),
-      text: "І знову дракони, музика доісторичного світу. Картина взята з мультфільму Динофроз, а музика з гри (My Litle Universe-Drаgonora)",
+      text: "І знову дракони, музика доісторичного світу. Картина взята з мультфільму Динофроз, а музика з гри (My Little Universe-Drаgonora)",
       lyrics: "Тут немає тексту.",
     },
     {
@@ -457,14 +457,14 @@ const MusicPhoto = ({ user, onOpenRegister }) => {
       id: 12,
       image: require("../../photos/vip-images/asium.jpg"),
       audio: require("../../mp3/harmonic-japan.mp3"),
-      text: "My litle universe. Спокійна і прекрасна музика в японському стилі.",
+      text: "My little universe. Спокійна і прекрасна музика в японському стилі.",
       lyrics: "Текст відсутній.",
     },
      {
       id: 13,
       image: require("../../photos/vip-images/mechannic.jpg"),
       audio: require("../../mp3/mechanik-kindom.mp3"),
-      text: "My litle universe. Спокійна і прекрасна музика в механічному стилі.",
+      text: "My little universe. Спокійна і прекрасна музика в механічному стилі.",
       lyrics: "Текст відсутній.",
     },
   ];
