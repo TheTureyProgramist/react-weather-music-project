@@ -22,10 +22,17 @@ const flow = keyframes`
 `;
 
 const AnimatedText = styled.h1`
-  font-family: 'Inter', sans-serif;
+  font-family: "Inter", sans-serif;
   font-size: 20px;
   font-weight: bold;
-  background: linear-gradient(270deg, #ff7eb3, #ff758c, #7afcff, #feffb7, #58e2c2);
+  background: linear-gradient(
+    270deg,
+    #ff7eb3,
+    #ff758c,
+    #7afcff,
+    #feffb7,
+    #58e2c2
+  );
   background-size: 400% 400%;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -43,17 +50,20 @@ const AnimatedText = styled.h1`
 
 const Overlay = styled.div`
   position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   background-color: rgba(0, 0, 0, 0.85);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 1000;
-  padding: 5px; 
+  padding: 5px;
 `;
 
 const VipModalDiv = styled.div`
-  background-color: #3e2723; 
+  background-color: #3e2723;
   color: #fff;
   width: 98%;
   max-width: 950px;
@@ -73,14 +83,17 @@ const VipModalDiv = styled.div`
 
 const CloseButton = styled.button`
   position: absolute;
-  top: 10px; right: 10px;
+  top: 10px;
+  right: 10px;
   background: transparent;
   border: none;
   color: #ffb36c;
   font-size: 22px;
   cursor: pointer;
   z-index: 1010;
-  &:hover { color: #fff; }
+  &:hover {
+    color: #fff;
+  }
 `;
 
 const VipBlock = styled.div`
@@ -97,9 +110,9 @@ const VipBlock = styled.div`
 
 const VipFixScroll = styled.div`
   flex: 1;
-  height: 420px; 
+  height: 420px;
   min-width: 280px;
-  overflow-y: auto; 
+  overflow-y: auto;
   padding-right: 8px;
 
   @media (max-width: 768px) {
@@ -107,8 +120,13 @@ const VipFixScroll = styled.div`
     height: 300px;
   }
 
-  &::-webkit-scrollbar { width: 4px; }
-  &::-webkit-scrollbar-thumb { background: #ffb36c; border-radius: 10px; }
+  &::-webkit-scrollbar {
+    width: 4px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: #ffb36c;
+    border-radius: 10px;
+  }
 `;
 
 const BenefitCard = styled.div`
@@ -137,7 +155,7 @@ const BenefitImage = styled.img`
 `;
 
 const VipBonus = styled.div`
-  font-size: 11px; 
+  font-size: 11px;
   line-height: 1.3;
   color: #ffb36c;
   flex: 1;
@@ -167,15 +185,22 @@ const Input = styled.input`
   color: #fff;
   width: 260px;
   font-size: 12px;
-  @media (max-width: 768px) { width: 100%; }
-  &::placeholder { color: rgba(255, 179, 108, 0.5); font-size: 10px; }
+  @media (max-width: 768px) {
+    width: 100%;
+  }
+  &::placeholder {
+    color: rgba(255, 179, 108, 0.5);
+    font-size: 10px;
+  }
 `;
 
 const VipImage = styled.img`
   width: 260px;
   border-radius: 6px;
   border: 1px solid #ffb36c;
-  @media (max-width: 768px) { width: 100%; }
+  @media (max-width: 768px) {
+    width: 100%;
+  }
 `;
 
 const VipButton = styled.button`
@@ -188,8 +213,13 @@ const VipButton = styled.button`
   font-size: 14px;
   font-weight: bold;
   border-radius: 4px;
-  &:hover { background: #ffb36c; color: #3e2723; }
-  @media (max-width: 768px) { width: 100%; }
+  &:hover {
+    background: #ffb36c;
+    color: #3e2723;
+  }
+  @media (max-width: 768px) {
+    width: 100%;
+  }
 `;
 const VipText = styled.p`
   width: 100%;
@@ -248,7 +278,9 @@ const VipModal = ({ onClose }) => {
             </BenefitCard>
             <BenefitCard>
               <BenefitImage src={rooster} />
-              <VipBonus>40 роздруківок фан-артів та муз. карток на добу, замість 10.</VipBonus>
+              <VipBonus>
+                40 роздруківок фан-артів та муз. карток на добу, замість 10.
+              </VipBonus>
             </BenefitCard>
             <BenefitCard>
               <BenefitImage src={dragons} />
@@ -256,12 +288,18 @@ const VipModal = ({ onClose }) => {
             </BenefitCard>
             <BenefitCard>
               <BenefitImage src={monody} />
-              <VipBonus>Monody-TheFatRat доступна одразу після реєстрації, не через 24год після реєстрації</VipBonus>
+              <VipBonus>
+                Monody-TheFatRat доступна одразу після реєстрації, не через
+                24год після реєстрації
+              </VipBonus>
             </BenefitCard>
             <SectionTitle>Система</SectionTitle>
             <BenefitCard>
               <BenefitImage src={vip} />
-              <VipBonus>Оновлений стиль сайту (з перемикачем лого вгорі, в лівому кутку).</VipBonus>
+              <VipBonus>
+                Оновлений стиль сайту (з перемикачем лого вгорі, в лівому
+                кутку).
+              </VipBonus>
             </BenefitCard>
             <BenefitCard>
               <BenefitImage src={stars} />
@@ -277,7 +315,9 @@ const VipModal = ({ onClose }) => {
             </BenefitCard>
             <BenefitCard>
               <BenefitImage src={buton} />
-              <VipBonus>Пошук міста/Оновлення картки має перезарядку 0с замість 1хв.</VipBonus>
+              <VipBonus>
+                Пошук міста/Оновлення картки має перезарядку 0с замість 1хв.
+              </VipBonus>
             </BenefitCard>
             <BenefitCard>
               <BenefitImage src={time} />
@@ -286,18 +326,26 @@ const VipModal = ({ onClose }) => {
           </VipFixScroll>
           <VipFix>
             <VipFormater>
-               <Input placeholder="Номер картки"></Input>
-                <Input placeholder="CVC2/CVV2 - 3 цифри позаду картки"></Input>
-                 <Input placeholder="Термін дії(Н-д: 05/29)"></Input>
-                 <VipImage src={turkeys}/>
-                 <VipButton>2,99грн/місяць</VipButton>
-                 <VipText>З передоплатою 7,99грн/тиждень</VipText>
+              <Input placeholder="Номер картки"></Input>
+              <Input placeholder="CVC2/CVV2 - 3 цифри позаду картки"></Input>
+              <Input placeholder="Термін дії(Н-д: 05/29)"></Input>
+              <VipBonus>Бундюча вигода!</VipBonus>
+              <VipImage src={turkeys} />
+              <VipButton>2,99грн/місяць</VipButton>
+              <VipText>З передоплатою 7,99грн/тиждень</VipText>
             </VipFormater>
           </VipFix>
         </VipBlock>
-        <RedLine/>
-        <VipWarning>Примітка: 1.Відмовишись від підписки, вам доведеться внести передоплату знову, якщо не передумаєте до кінця терміну тарифу.</VipWarning>
-              <VipWarning>Примітка: 2.Доступно з 14років, ціни не будуть мінятись, якщо економічний стан не зміниться. І коли підписка закінчиться привілегії зникнуть.</VipWarning>
+        <RedLine />
+        <VipWarning>
+          Примітка: 1.Відмовишись від підписки, вам доведеться внести
+          передоплату знову, якщо не передумаєте до кінця терміну тарифу.
+        </VipWarning>
+        <VipWarning>
+          Примітка: 2.Доступно з 14років, ціни не будуть мінятись, якщо
+          економічний стан не зміниться. І коли підписка закінчиться привілегії
+          зникнуть.
+        </VipWarning>
       </VipModalDiv>
     </Overlay>
   );

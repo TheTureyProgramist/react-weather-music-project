@@ -14,6 +14,7 @@ import UserSettingsModal from "./components/Modals/UserSettingsModal.jsx";
 import userDefault from "./photos/hero-header/user.webp";
 import VipModal from "./components/Modals/VipModal.jsx";
 import Aihelp from "./components/Aihelp.jsx/Aihelp.jsx";
+import FanArt from "./components/FanArt/FanArt.jsx";
 // Імпорт аватарів
 import turkeys from "./photos/vip-images/ultra-vip-turkeys.webp";
 import dragons from "./photos/vip-images/vip-dragons.jpg";
@@ -25,12 +26,20 @@ import nicerone from "./photos/vip-images/vip-dinofroz.webp";
 import soloveyko from "./photos/vip-images/vip-soloveyko.jpg";
 import monody from "./photos/vip-images/vip-forest.webp";
 const AVAILABLE_AVATARS = [
-  monody, turkeys, nicerone, horrordog, 
-  horse, lebid, dragons, rooster, soloveyko,
+  monody,
+  turkeys,
+  nicerone,
+  horrordog,
+  horse,
+  lebid,
+  dragons,
+  rooster,
+  soloveyko,
 ];
 const ThemeWrapper = styled.div`
-  background-color: ${props => props.$isDarkMode ? '#121212' : 'transparent'};
-  color: ${props => props.$isDarkMode ? '#ffffff' : 'inherit'};
+  background-color: ${(props) =>
+    props.$isDarkMode ? "#121212" : "transparent"};
+  color: ${(props) => (props.$isDarkMode ? "#ffffff" : "inherit")};
   min-height: 100vh;
   transition: background-color 0.3s ease;
   padding-bottom: 20px;
@@ -42,15 +51,15 @@ const App = () => {
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   const [isVipModalOpen, setIsVipModalOpen] = useState(false); // Стейт для VIP модалки
   const [isDarkMode, setIsDarkMode] = useState(() => {
-    const saved = localStorage.getItem('isDarkMode');
+    const saved = localStorage.getItem("isDarkMode");
     return saved !== null ? JSON.parse(saved) : false;
   });
   const [user, setUser] = useState(() => {
-    const saved = localStorage.getItem('registered_user');
+    const saved = localStorage.getItem("registered_user");
     return saved ? JSON.parse(saved) : null;
   });
   const [currentAvatar, setCurrentAvatar] = useState(() => {
-    const saved = localStorage.getItem('currentAvatar');
+    const saved = localStorage.getItem("currentAvatar");
     return saved || userDefault;
   });
   useEffect(() => {
@@ -58,18 +67,18 @@ const App = () => {
     return () => clearInterval(timer);
   }, []);
   useEffect(() => {
-    localStorage.setItem('isDarkMode', JSON.stringify(isDarkMode));
+    localStorage.setItem("isDarkMode", JSON.stringify(isDarkMode));
   }, [isDarkMode]);
   useEffect(() => {
     if (user) {
-      localStorage.setItem('registered_user', JSON.stringify(user));
+      localStorage.setItem("registered_user", JSON.stringify(user));
     } else {
-      localStorage.removeItem('registered_user');
+      localStorage.removeItem("registered_user");
     }
   }, [user]);
   useEffect(() => {
     if (currentAvatar) {
-      localStorage.setItem('currentAvatar', currentAvatar);
+      localStorage.setItem("currentAvatar", currentAvatar);
     }
   }, [currentAvatar]);
   const handleRegister = (userData) => {
@@ -78,7 +87,7 @@ const App = () => {
       firstName: userData.firstName,
       password: userData.password,
       avatar: userData.avatar,
-      birthDate: userData.birthDate 
+      birthDate: userData.birthDate,
     };
     setUser(newUser);
     setCurrentAvatar(userData.avatar);
@@ -101,14 +110,16 @@ const App = () => {
   const toggleTheme = () => setIsDarkMode(!isDarkMode);
   const capitalize = (s) => s.charAt(0).toUpperCase() + s.slice(1);
   const month = new Intl.DateTimeFormat("uk", { month: "2-digit" }).format(now);
-  const weekday = capitalize(new Intl.DateTimeFormat("uk", { weekday: "long" }).format(now));
+  const weekday = capitalize(
+    new Intl.DateTimeFormat("uk", { weekday: "long" }).format(now),
+  );
   const heroDateString = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}:${String(now.getSeconds()).padStart(2, "0")} ${weekday}, ${now.getDate()}.${month}.${now.getFullYear()}`;
   return (
     <ThemeWrapper $isDarkMode={isDarkMode}>
       <div className="App">
         <div className="container">
-          <Header 
-            onOpenRegister={() => setIsModalOpen(true)} 
+          <Header
+            onOpenRegister={() => setIsModalOpen(true)}
             onOpenLogin={() => setIsLoginOpen(true)}
             onOpenSettings={() => setIsSettingsModalOpen(true)}
             onOpenVip={() => setIsVipModalOpen(true)} // Передаємо функцію відкриття
@@ -119,29 +130,30 @@ const App = () => {
             onLogout={handleLogout}
           />
         </div>
-        <Hero heroDateString={heroDateString} toggleTheme={toggleTheme}/>
+        <Hero heroDateString={heroDateString} toggleTheme={toggleTheme} />
         <div className="container">
           <Main />
           <GraphicDaily />
           <GraphicWeekly />
+                  <Aihelp />
           <MusicPhoto user={user} />
-          <Aihelp />
+          <FanArt></FanArt>
         </div>
-        <Footer toggleTheme={toggleTheme}/>
+        <Footer toggleTheme={toggleTheme} />
         {isModalOpen && (
-          <Modal 
-            onClose={() => setIsModalOpen(false)} 
+          <Modal
+            onClose={() => setIsModalOpen(false)}
             onRegister={handleRegister}
             availableAvatars={AVAILABLE_AVATARS}
           />
         )}
 
         {isLoginOpen && (
-          <LoginModal 
-            onClose={() => setIsLoginOpen(false)} 
-            onLogin={handleLogin} 
+          <LoginModal
+            onClose={() => setIsLoginOpen(false)}
+            onLogin={handleLogin}
           />
-        )}        
+        )}
         {isSettingsModalOpen && user && (
           <UserSettingsModal
             onClose={() => setIsSettingsModalOpen(false)}

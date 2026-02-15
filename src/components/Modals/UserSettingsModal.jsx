@@ -9,10 +9,17 @@ const flow = keyframes`
 `;
 
 const AnimatedText = styled.span`
-  font-family: 'Inter', sans-serif;
+  font-family: "Inter", sans-serif;
   font-size: 11px;
   font-weight: bold;
-  background: linear-gradient(270deg, #ff7eb3, #ff758c, #7afcff, #feffb7, #58e2c2);
+  background: linear-gradient(
+    270deg,
+    #ff7eb3,
+    #ff758c,
+    #7afcff,
+    #feffb7,
+    #58e2c2
+  );
   background-size: 400% 400%;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -24,9 +31,14 @@ const AnimatedText = styled.span`
 
 const ModalOverlay = styled.div`
   position: fixed;
-  top: 0; left: 0; width: 100%; height: 100%;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   background: rgba(0, 0, 0, 0.6);
-  display: flex; justify-content: center; align-items: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   z-index: 1000;
 `;
 
@@ -42,68 +54,113 @@ const ModalContent = styled.div`
   gap: 15px;
   max-height: 90vh;
   overflow-y: auto;
+  @keyframes test {
+    0% {
+      transform: translateX(100%);
+    }
+  }
 `;
 
 const Section = styled.div`
-  display: flex; flex-direction: column; gap: 8px;
-  padding-bottom: 15px; border-bottom: 1px solid #f0f0f0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #f0f0f0;
 `;
 
 const Input = styled.input`
-  padding: 12px; border: 1px solid #ddd; border-radius: 10px; width: 100%; box-sizing: border-box;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  width: 100%;
+  box-sizing: border-box;
 `;
 
 const DateRow = styled.div`
-  display: flex; gap: 10px;
+  display: flex;
+  gap: 10px;
 `;
 
 const DateInput = styled(Input)`
-  flex: 1; text-align: center;
+  flex: 1;
+  text-align: center;
 `;
 
 const CheckboxRow = styled.div`
-  display: flex; align-items: center; gap: 8px; font-size: 12px; color: #555;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: #555;
 `;
 
 const TermsBtn = styled.span`
-  color: #ffb36c; text-decoration: underline; cursor: pointer; font-weight: bold;
+  color: #ffb36c;
+  text-decoration: underline;
+  cursor: pointer;
+  font-weight: bold;
 `;
 
 const AvatarOption = styled.div`
-  width: 60px; height: 60px; min-width: 60px; border-radius: 50%;
-  border: 2px solid ${props => (props.$isSelected ? "#ffb36c" : "transparent")};
-  cursor: pointer; overflow: hidden;
-  img { width: 100%; height: 100%; object-fit: cover; }
+  width: 60px;
+  height: 60px;
+  min-width: 60px;
+  border-radius: 50%;
+  border: 2px solid
+    ${(props) => (props.$isSelected ? "#ffb36c" : "transparent")};
+  cursor: pointer;
+  overflow: hidden;
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
 `;
 
 const AvatarSlider = styled.div`
-  display: flex; gap: 15px; overflow-x: auto; padding: 10px 0;
+  display: flex;
+  gap: 15px;
+  overflow-x: auto;
+  padding: 10px 0;
 `;
 
 const SaveButton = styled.button`
-  background: #ffb36c; height: 45px; flex: 1; border-radius: 10px; font-weight: bold; border: none; cursor: pointer;
+  background: #ffb36c;
+  height: 45px;
+  flex: 1;
+  border-radius: 10px;
+  font-weight: bold;
+  border: none;
+  cursor: pointer;
 `;
 
 const CancelButton = styled.button`
-  background: #eee; height: 45px; flex: 1; border-radius: 10px; font-weight: bold; border: none; cursor: pointer;
+  background: #eee;
+  height: 45px;
+  flex: 1;
+  border-radius: 10px;
+  font-weight: bold;
+  border: none;
+  cursor: pointer;
 `;
 
 const UserSettingsModal = ({ onClose, user, availableAvatars, onUpdate }) => {
   const [y, m, d] = user?.birthDate ? user.birthDate.split("-") : ["", "", ""];
-  
+
   const [formData, setFormData] = useState({
     name: user?.firstName || "",
-    day: d || "", 
-    month: m || "", 
+    day: d || "",
+    month: m || "",
     year: y || "",
     oldPassword: "",
     newPassword: "",
     confirmPassword: "",
-    avatarIndex: availableAvatars.indexOf(user?.avatar) || 0
+    avatarIndex: availableAvatars.indexOf(user?.avatar) || 0,
   });
   const [showTerms, setShowTerms] = useState(false);
-  const [accepted] = useState(true); 
-//const [accepted, setAccepted] = useState(true);
+  const [accepted] = useState(true);
+  //const [accepted, setAccepted] = useState(true);
   const isValidDate = (day, month, year) => {
     const dVal = parseInt(day);
     const mVal = parseInt(month);
@@ -134,11 +191,16 @@ const UserSettingsModal = ({ onClose, user, availableAvatars, onUpdate }) => {
       }
     }
 
-    onUpdate({ 
-      firstName: formData.name, 
+    onUpdate({
+      firstName: formData.name,
       avatar: availableAvatars[formData.avatarIndex],
-      birthDate: `${formData.year}-${formData.month.toString().padStart(2, '0')}-${formData.day.toString().padStart(2, '0')}`,
-      ...(formData.newPassword ? { oldPassword: formData.oldPassword, newPassword: formData.newPassword } : {})
+      birthDate: `${formData.year}-${formData.month.toString().padStart(2, "0")}-${formData.day.toString().padStart(2, "0")}`,
+      ...(formData.newPassword
+        ? {
+            oldPassword: formData.oldPassword,
+            newPassword: formData.newPassword,
+          }
+        : {}),
     });
     onClose();
   };
@@ -146,37 +208,85 @@ const UserSettingsModal = ({ onClose, user, availableAvatars, onUpdate }) => {
   return (
     <ModalOverlay onClick={onClose}>
       <ModalContent onClick={(e) => e.stopPropagation()}>
-        <h3 style={{textAlign:'center'}}>Налаштування</h3>
-        
+        <h3 style={{ textAlign: "center" }}>Налаштування</h3>
+
         <Section>
-          <label style={{fontSize:'13px', fontWeight:'bold'}}>Ім'я</label>
-          <Input value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} />
+          <label style={{ fontSize: "13px", fontWeight: "bold" }}>Ім'я</label>
+          <Input
+            value={formData.name}
+            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+          />
         </Section>
-        
+
         <Section>
-          <label style={{fontSize:'13px', fontWeight:'bold'}}>Дата народження</label>
+          <label style={{ fontSize: "13px", fontWeight: "bold" }}>
+            Дата народження
+          </label>
           <DateRow>
-            <DateInput value={formData.day} placeholder="День" onChange={(e) => setFormData({...formData, day: e.target.value})} />
-            <DateInput value={formData.month} placeholder="Місяць" onChange={(e) => setFormData({...formData, month: e.target.value})} />
-            <DateInput value={formData.year} placeholder="Рік" onChange={(e) => setFormData({...formData, year: e.target.value})} />
+            <DateInput
+              value={formData.day}
+              placeholder="День"
+              onChange={(e) =>
+                setFormData({ ...formData, day: e.target.value })
+              }
+            />
+            <DateInput
+              value={formData.month}
+              placeholder="Місяць"
+              onChange={(e) =>
+                setFormData({ ...formData, month: e.target.value })
+              }
+            />
+            <DateInput
+              value={formData.year}
+              placeholder="Рік"
+              onChange={(e) =>
+                setFormData({ ...formData, year: e.target.value })
+              }
+            />
           </DateRow>
         </Section>
 
         <Section>
-          <label style={{fontSize:'13px', fontWeight:'bold'}}>Безпека</label>
-          <Input type="password" placeholder="Поточний пароль" onChange={(e) => setFormData({...formData, oldPassword: e.target.value})} style={{marginBottom: '8px'}}/>
-          <Input type="password" placeholder="Новий пароль" onChange={(e) => setFormData({...formData, newPassword: e.target.value})} style={{marginBottom: '8px'}}/>
-          <Input type="password" placeholder="Підтвердіть новий пароль" onChange={(e) => setFormData({...formData, confirmPassword: e.target.value})} />
+          <label style={{ fontSize: "13px", fontWeight: "bold" }}>
+            Безпека
+          </label>
+          <Input
+            type="password"
+            placeholder="Поточний пароль"
+            onChange={(e) =>
+              setFormData({ ...formData, oldPassword: e.target.value })
+            }
+            style={{ marginBottom: "8px" }}
+          />
+          <Input
+            type="password"
+            placeholder="Новий пароль"
+            onChange={(e) =>
+              setFormData({ ...formData, newPassword: e.target.value })
+            }
+            style={{ marginBottom: "8px" }}
+          />
+          <Input
+            type="password"
+            placeholder="Підтвердіть новий пароль"
+            onChange={(e) =>
+              setFormData({ ...formData, confirmPassword: e.target.value })
+            }
+          />
         </Section>
-        
+
         <Section>
-          <div style={{fontSize:'12px', fontWeight:'bold', color:'grey'}}>
-            Оберіть аватар, 1-ий доступний з
-            <AnimatedText>Стихія+</AnimatedText>
+          <div style={{ fontSize: "12px", fontWeight: "bold", color: "grey" }}>
+            Оберіть аватар, 1-ий доступний з<AnimatedText>Стихія+</AnimatedText>
           </div>
           <AvatarSlider>
             {availableAvatars.map((img, i) => (
-              <AvatarOption key={i} $isSelected={formData.avatarIndex === i} onClick={() => setFormData({...formData, avatarIndex: i})}>
+              <AvatarOption
+                key={i}
+                $isSelected={formData.avatarIndex === i}
+                onClick={() => setFormData({ ...formData, avatarIndex: i })}
+              >
                 <img src={img} alt="avatar" />
               </AvatarOption>
             ))}
@@ -184,11 +294,19 @@ const UserSettingsModal = ({ onClose, user, availableAvatars, onUpdate }) => {
         </Section>
 
         <CheckboxRow>
-          <input type="checkbox" checked={accepted} readOnly style={{accentColor: '#ffb36c'}} />
-          <label>Ви погодились з <TermsBtn onClick={() => setShowTerms(true)}>Угодою</TermsBtn></label>
+          <input
+            type="checkbox"
+            checked={accepted}
+            readOnly
+            style={{ accentColor: "#ffb36c" }}
+          />
+          <label>
+            Ви погодились з{" "}
+            <TermsBtn onClick={() => setShowTerms(true)}>Угодою</TermsBtn>
+          </label>
         </CheckboxRow>
-        
-        <div style={{display:'flex', gap:'10px', marginTop: '10px'}}>
+
+        <div style={{ display: "flex", gap: "10px", marginTop: "10px" }}>
           <CancelButton onClick={onClose}>Назад</CancelButton>
           <SaveButton onClick={handleSubmit}>Зберегти</SaveButton>
         </div>

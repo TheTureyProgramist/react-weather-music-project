@@ -12,7 +12,7 @@ const ModalOverlay = styled.div`
   align-items: center;
   z-index: 1000;
 `;
-const ModalContent = styled.form` 
+const ModalContent = styled.form`
   background: white;
   padding: 30px;
   border-radius: 15px;
@@ -22,6 +22,12 @@ const ModalContent = styled.form`
   flex-direction: column;
   gap: 15px;
   position: relative;
+  animation: test 1s linear;
+  @keyframes test {
+    0% {
+      transform: translateX(100%);
+    }
+  }
 `;
 const Input = styled.input`
   padding: 12px;
@@ -47,9 +53,13 @@ const LoginModal = ({ onClose, onLogin }) => {
   const [pass, setPass] = useState("");
   const [error, setError] = useState("");
   const handleLogin = (e) => {
-    e.preventDefault(); 
-    const savedUser = JSON.parse(localStorage.getItem('registered_user'));
-    if (savedUser && savedUser.account === email && savedUser.password === pass) {
+    e.preventDefault();
+    const savedUser = JSON.parse(localStorage.getItem("registered_user"));
+    if (
+      savedUser &&
+      savedUser.account === email &&
+      savedUser.password === pass
+    ) {
       onLogin(savedUser);
       onClose();
     } else {
@@ -58,31 +68,32 @@ const LoginModal = ({ onClose, onLogin }) => {
   };
   return (
     <ModalOverlay onClick={onClose}>
-      <ModalContent 
-        onClick={e => e.stopPropagation()} 
-        onSubmit={handleLogin} 
-      >
-        <h3 style={{textAlign: 'center'}}>Вхід</h3>
-        <Input 
-          name="email" 
+      <ModalContent onClick={(e) => e.stopPropagation()} onSubmit={handleLogin}>
+        <h3 style={{ textAlign: "center" }}>Вхід</h3>
+        <Input
+          name="email"
           type="email"
-          placeholder="Gmail" 
-          value={email} 
-          onChange={e => setEmail(e.target.value)} 
-          autoComplete="username" 
+          placeholder="Gmail"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          autoComplete="username"
           required
         />
-        <Input 
-          name="password" 
-          type="password" 
-          placeholder="Пароль" 
-          value={pass} 
-          onChange={e => setPass(e.target.value)} 
-          autoComplete="current-password" 
+        <Input
+          name="password"
+          type="password"
+          placeholder="Пароль"
+          value={pass}
+          onChange={(e) => setPass(e.target.value)}
+          autoComplete="current-password"
           required
         />
-        {error && <p style={{color: 'red', fontSize: '12px', textAlign: 'center'}}>{error}</p>}
-        <SubmitButton type="submit">Увійти</SubmitButton> 
+        {error && (
+          <p style={{ color: "red", fontSize: "12px", textAlign: "center" }}>
+            {error}
+          </p>
+        )}
+        <SubmitButton type="submit">Увійти</SubmitButton>
       </ModalContent>
     </ModalOverlay>
   );

@@ -9,10 +9,17 @@ const flow = keyframes`
 `;
 
 const AnimatedText = styled.span`
-  font-family: 'Inter', sans-serif;
+  font-family: "Inter", sans-serif;
   font-size: 11px;
   font-weight: bold;
-  background: linear-gradient(270deg, #ff7eb3, #ff758c, #7afcff, #feffb7, #58e2c2);
+  background: linear-gradient(
+    270deg,
+    #ff7eb3,
+    #ff758c,
+    #7afcff,
+    #feffb7,
+    #58e2c2
+  );
   background-size: 400% 400%;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -24,9 +31,14 @@ const AnimatedText = styled.span`
 
 const ModalOverlay = styled.div`
   position: fixed;
-  top: 0; left: 0; width: 100%; height: 100%;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   background: rgba(0, 0, 0, 0.6);
-  display: flex; justify-content: center; align-items: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   z-index: 1000;
 `;
 
@@ -41,18 +53,31 @@ const ModalContent = styled.div`
   flex-direction: column;
   gap: 15px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-  @media (min-width: 768px) { padding: 30px 30px; }
+    @keyframes test {
+    0% {
+      transform: translateX(100%);
+    }
+  }
+  @media (min-width: 768px) { 
+  padding: 30px 30px;
+   }
 `;
 
 const CloseButton = styled.button`
   position: absolute;
-  top: 10px; right: 15px;
-  background: none; border: none;
-  font-size: 24px; cursor: pointer; color: #333;
+  top: 10px;
+  right: 15px;
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #333;
 `;
 
 const Title = styled.h3`
-  text-align: center; margin: 0; color: #333;
+  text-align: center;
+  margin: 0;
+  color: #333;
 `;
 
 const Input = styled.input`
@@ -62,7 +87,10 @@ const Input = styled.input`
   width: 100%;
   box-sizing: border-box;
   font-size: 14px;
-  &:focus { outline: none; border-color: #ffb36c; }
+  &:focus {
+    outline: none;
+    border-color: #ffb36c;
+  }
 `;
 
 const DateRow = styled.div`
@@ -92,17 +120,34 @@ const TermsBtn = styled.span`
 `;
 
 const AvatarOption = styled.div`
-  width: 60px; height: 60px; min-width: 60px;
+  width: 60px;
+  height: 60px;
+  min-width: 60px;
   border-radius: 50%;
-  border: 2px solid ${props => (props.$isSelected ? "#ffb36c" : "transparent")};
-  cursor: pointer; overflow: hidden; transition: all 0.2s ease;
-  img { width: 100%; height: 100%; object-fit: cover; }
+  border: 2px solid
+    ${(props) => (props.$isSelected ? "#ffb36c" : "transparent")};
+  cursor: pointer;
+  overflow: hidden;
+  transition: all 0.2s ease;
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
 `;
 
 const ImageSelectionContainer = styled.div`
-  display: flex; gap: 15px; overflow-x: auto; padding: 5px 2px;
-  &::-webkit-scrollbar { height: 6px; }
-  &::-webkit-scrollbar-thumb { background: #ffb36c; border-radius: 10px; }
+  display: flex;
+  gap: 15px;
+  overflow-x: auto;
+  padding: 5px 2px;
+  &::-webkit-scrollbar {
+    height: 6px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: #ffb36c;
+    border-radius: 10px;
+  }
 `;
 
 const SubmitButton = styled.button`
@@ -114,11 +159,20 @@ const SubmitButton = styled.button`
   cursor: pointer;
   border: none;
   font-size: 16px;
-  &:disabled { opacity: 0.5; cursor: not-allowed; }
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
 `;
 
 const Modal = ({ onClose, onRegister, availableAvatars }) => {
-  const [formData, setFormData] = useState({ account: "", firstName: "", password: "", confirmPassword: "", avatarIndex: 0 });
+  const [formData, setFormData] = useState({
+    account: "",
+    firstName: "",
+    password: "",
+    confirmPassword: "",
+    avatarIndex: 0,
+  });
   const [birthDate, setBirthDate] = useState({ day: "", month: "", year: "" });
   const [accepted, setAccepted] = useState(false);
   const [showTerms, setShowTerms] = useState(false);
@@ -134,19 +188,27 @@ const Modal = ({ onClose, onRegister, availableAvatars }) => {
   };
 
   const handleSubmit = () => {
-    if (!formData.account || !formData.firstName || !formData.password || !birthDate.day || !birthDate.month || !birthDate.year) {
+    if (
+      !formData.account ||
+      !formData.firstName ||
+      !formData.password ||
+      !birthDate.day ||
+      !birthDate.month ||
+      !birthDate.year
+    ) {
       return setError("Заповніть всі поля!");
     }
-    if (formData.password !== formData.confirmPassword) return setError("Паролі не співпадають!");
+    if (formData.password !== formData.confirmPassword)
+      return setError("Паролі не співпадають!");
     if (!accepted) return setError("Прийміть угоду!");
 
     const age = calculateAge(birthDate.day, birthDate.month, birthDate.year);
     if (age < 9) return setError("Реєстрація дозволена лише з 9 років!");
 
-    onRegister({ 
+    onRegister({
       ...formData,
       avatar: availableAvatars[formData.avatarIndex],
-      birthDate: `${birthDate.year}-${birthDate.month.padStart(2, '0')}-${birthDate.day.padStart(2, '0')}`
+      birthDate: `${birthDate.year}-${birthDate.month.padStart(2, "0")}-${birthDate.day.padStart(2, "0")}`,
     });
     onClose();
   };
@@ -156,34 +218,93 @@ const Modal = ({ onClose, onRegister, availableAvatars }) => {
       <ModalContent onClick={(e) => e.stopPropagation()}>
         <CloseButton onClick={onClose}>&times;</CloseButton>
         <Title>Реєстрація</Title>
-        <Input placeholder="Gmail" onChange={(e) => setFormData({...formData, account: e.target.value})} />
-        <Input placeholder="Ім'я та прізвище" onChange={(e) => setFormData({...formData, firstName: e.target.value})} />
-        
+        <Input
+          placeholder="Gmail"
+          onChange={(e) =>
+            setFormData({ ...formData, account: e.target.value })
+          }
+        />
+        <Input
+          placeholder="Ім'я та прізвище"
+          onChange={(e) =>
+            setFormData({ ...formData, firstName: e.target.value })
+          }
+        />
+
         <DateRow>
-          <DateInput placeholder="День" type="number" onChange={(e) => setBirthDate({...birthDate, day: e.target.value})} />
-          <DateInput placeholder="Місяць" type="number" onChange={(e) => setBirthDate({...birthDate, month: e.target.value})} />
-          <DateInput placeholder="Рік" type="number" onChange={(e) => setBirthDate({...birthDate, year: e.target.value})} />
+          <DateInput
+            placeholder="День"
+            type="number"
+            onChange={(e) =>
+              setBirthDate({ ...birthDate, day: e.target.value })
+            }
+          />
+          <DateInput
+            placeholder="Місяць"
+            type="number"
+            onChange={(e) =>
+              setBirthDate({ ...birthDate, month: e.target.value })
+            }
+          />
+          <DateInput
+            placeholder="Рік"
+            type="number"
+            onChange={(e) =>
+              setBirthDate({ ...birthDate, year: e.target.value })
+            }
+          />
         </DateRow>
 
-        <div style={{fontSize: '11px', fontWeight: 'bold', color: 'grey'}}>Аватар оберіть, 1-ий доступний з<AnimatedText>Стихія+</AnimatedText></div>
+        <div style={{ fontSize: "11px", fontWeight: "bold", color: "grey" }}>
+          Аватар оберіть, 1-ий доступний з<AnimatedText>Стихія+</AnimatedText>
+        </div>
         <ImageSelectionContainer>
           {availableAvatars.map((imgSrc, index) => (
-            <AvatarOption key={index} $isSelected={formData.avatarIndex === index} onClick={() => setFormData({ ...formData, avatarIndex: index })}>
+            <AvatarOption
+              key={index}
+              $isSelected={formData.avatarIndex === index}
+              onClick={() => setFormData({ ...formData, avatarIndex: index })}
+            >
               <img src={imgSrc} alt="avatar" />
             </AvatarOption>
           ))}
         </ImageSelectionContainer>
-        
-        <Input type="password" placeholder="Пароль" onChange={(e) => setFormData({...formData, password: e.target.value})} />
-        <Input type="password" placeholder="Підтвердіть пароль" onChange={(e) => setFormData({...formData, confirmPassword: e.target.value})} />
-      
+
+        <Input
+          type="password"
+          placeholder="Пароль"
+          onChange={(e) =>
+            setFormData({ ...formData, password: e.target.value })
+          }
+        />
+        <Input
+          type="password"
+          placeholder="Підтвердіть пароль"
+          onChange={(e) =>
+            setFormData({ ...formData, confirmPassword: e.target.value })
+          }
+        />
+
         <CheckboxRow>
-          <input type="checkbox" checked={accepted} onChange={(e) => setAccepted(e.target.checked)} />
-          <label>Я погоджуюсь з <TermsBtn onClick={() => setShowTerms(true)}>Угодою</TermsBtn></label>
+          <input
+            type="checkbox"
+            checked={accepted}
+            onChange={(e) => setAccepted(e.target.checked)}
+          />
+          <label>
+            Я погоджуюсь з{" "}
+            <TermsBtn onClick={() => setShowTerms(true)}>Угодою</TermsBtn>
+          </label>
         </CheckboxRow>
-        
-        {error && <div style={{color:'red', fontSize:'12px', textAlign:'center'}}>{error}</div>}
-        <SubmitButton onClick={handleSubmit} disabled={!accepted}>Зареєструватися</SubmitButton>
+
+        {error && (
+          <div style={{ color: "red", fontSize: "12px", textAlign: "center" }}>
+            {error}
+          </div>
+        )}
+        <SubmitButton onClick={handleSubmit} disabled={!accepted}>
+          Зареєструватися
+        </SubmitButton>
         {showTerms && <InfoModal onClose={() => setShowTerms(false)} />}
       </ModalContent>
     </ModalOverlay>

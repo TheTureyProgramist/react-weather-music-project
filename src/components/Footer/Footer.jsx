@@ -37,12 +37,12 @@ const FooterDiv = styled.div`
   }
 `;
 const FooterImage = styled.img`
-height: 85px;
+  height: 85px;
   border-radius: 100%;
   @media (min-width: 768px) {
     height: 95px;
   }
-    @media (min-width: 1200px) {
+  @media (min-width: 1200px) {
     height: 105px;
   }
 `;
@@ -50,20 +50,20 @@ const FooterContacts = styled.div`
   display: flex;
   flex-direction: column;
   gap: 10px;
-  color: ${props => props.$isDarkMode ? 'black' : 'black'};
+  color: ${(props) => (props.$isDarkMode ? "black" : "black")};
 `;
 const FooterAdress = styled.div`
   display: flex;
   flex-direction: column;
   gap: 10px;
-  color: ${props => props.$isDarkMode ? 'black' : 'black'};
+  color: ${(props) => (props.$isDarkMode ? "black" : "black")};
 `;
 const FooterAdressText = styled.h1`
   font-family: var(--second-family);
   font-weight: 500;
   text-align: center;
   font-size: 16px;
-  color: ${props => props.$isDarkMode ? 'black' : 'black'};
+  color: ${(props) => (props.$isDarkMode ? "black" : "black")};
   @media (min-width: 768px) {
     text-align: start;
   }
@@ -73,7 +73,7 @@ const FooterAdressInfo = styled.h1`
   font-weight: 500;
   font-size: 12px;
   text-align: center;
-    @media (min-width: 768px) {
+  @media (min-width: 768px) {
     text-align: start;
   }
 `;

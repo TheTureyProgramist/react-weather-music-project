@@ -6,12 +6,13 @@ const HeroDiv = styled.div`
   width: 100%;
   min-height: 360px;
   gap: 40px;
-   margin-top: 50px;
+  margin-top: 50px;
   margin-bottom: 35px;
   display: flex;
   background-size: cover;
   background-image:
-    linear-gradient(to right, rgba(47, 48, 58, 0), rgba(47, 48, 58, 0)), url(${hills});
+    linear-gradient(to right, rgba(47, 48, 58, 0), rgba(47, 48, 58, 0)),
+    url(${hills});
   background-repeat: no-repeat;
   flex-direction: column;
   justify-content: center;
@@ -20,7 +21,7 @@ const HeroDiv = styled.div`
   @media (min-width: 768px) {
     gap: 35px;
     margin-bottom: 50px;
-     margin-top: 70px;
+    margin-top: 70px;
   }
   @media (min-width: 1200px) {
     gap: 80px;
@@ -153,7 +154,7 @@ const HeroDecor = styled.div`
   gap: 23px;
 `;
 const HeroBlue = styled.div`
-    text-align: center;
+  text-align: center;
   font-family: var(--font-family);
   font-weight: 600;
   font-size: 14px;
@@ -167,7 +168,7 @@ const HeroBlue = styled.div`
   }
 `;
 const HeroYellow = styled.div`
-    text-align: center;
+  text-align: center;
   font-family: var(--font-family);
   font-weight: 600;
   font-size: 14px;
@@ -181,25 +182,27 @@ const HeroYellow = styled.div`
   }
 `;
 const HeroButton = styled.button`
-  position: relative; 
+  position: relative;
   border-radius: 0 10px 10px 0;
   width: 20px;
   height: 22px;
   padding: 0;
-  background: yellow url(${search}) center/60% no-repeat; 
+  background: yellow url(${search}) center/60% no-repeat;
   border: 2px solid black;
   transition: all 0.5s cubic-bezier(1, -1.84, 0.31, 1.84);
   display: inline-block;
   cursor: pointer;
   overflow: hidden;
   &::after {
-    content: '+';
+    content: "+";
     position: absolute;
     left: 50%;
     top: 50%;
-    transform: translate(-50%, -50%) scale(0.5); 
+    transform: translate(-50%, -50%) scale(0.5);
     opacity: 0;
-    transition: opacity 200ms ease, transform 200ms ease;
+    transition:
+      opacity 200ms ease,
+      transform 200ms ease;
     pointer-events: none;
     z-index: 2;
     font-size: 18px;
@@ -208,7 +211,7 @@ const HeroButton = styled.button`
   }
 
   &:hover {
-    background-image: none; 
+    background-image: none;
     background-color: skyblue;
   }
   &:hover::after {
@@ -218,19 +221,24 @@ const HeroButton = styled.button`
   @media (min-width: 768px) {
     width: 28px;
     height: 26px;
-    &::after { font-size: 20px; }
+    &::after {
+      font-size: 20px;
+    }
   }
   @media (min-width: 1200px) {
     width: 40px;
     height: 43px;
-    &::after { font-size: 24px; }
+    &::after {
+      font-size: 24px;
+    }
   }
 `;
 const Hero = ({ heroDateString }) => {
   return (
     <HeroDiv>
       <HeroDecors>
-      <HeroBlue>Сти</HeroBlue><HeroYellow>хія</HeroYellow>
+        <HeroBlue>Сти</HeroBlue>
+        <HeroYellow>хія</HeroYellow>
       </HeroDecors>
       <HeroTitle>Безкоштовна приладова панель погоди</HeroTitle>
       <HeroDecor>
