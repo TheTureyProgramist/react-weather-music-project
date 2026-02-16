@@ -1,6 +1,37 @@
 import styled, { keyframes } from "styled-components";
 import logo from "../../photos/hero-header/logo.png";
 
+const pulse = keyframes`
+  0% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.3); opacity: 0.8; }
+  100% { transform: scale(1); opacity: 1; }
+`;
+
+const IconWrapper = styled.div`
+  position: relative;
+  display: flex;
+  align-items: center;
+`;
+
+const NotificationBadge = styled.div`
+  position: absolute;
+  top: -5px;
+  right: -2px;
+  background-color: #ff4444;
+  color: white;
+  font-size: 10px;
+  font-weight: bold;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid white;
+  animation: ${pulse} 1.5s infinite ease-in-out;
+  pointer-events: none;
+`;
+
 const flow = keyframes`
   0% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
@@ -49,7 +80,7 @@ const HeaderDiv = styled.div`
     height: 70px;
     padding: 0 30px;
   }
-  @media (min-width: 768px) {
+  @media (min-width: 1200px) {
     height: 80px;
   }
 `;
@@ -57,9 +88,12 @@ const HeaderDiv = styled.div`
 const HeaderFix = styled.div`
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 3px;
   @media (min-width: 768px) {
-    gap: 20px;
+    gap: 20px; 
+  }
+  @media (min-width: 1200px) {
+    gap: 29px;
   }
 `;
 
@@ -75,7 +109,7 @@ const ThemeButton = styled.button`
   &:hover {
     transform: scale(1.1);
   }
-  @media (min-width: 1200px) {
+  @media (min-width: 768px) {
     font-size: ${(props) => (props.$isDarkMode ? "21px" : "18px")};
   }
   @media (min-width: 1200px) {
@@ -123,12 +157,21 @@ const IconButton = styled.button`
   cursor: pointer;
   font-size: 13px;
   display: flex;
+  color: ${(props) => (props.$isDarkMode ? "#fff" : "#1a1a1a")}; /* Пофіксив колір тексту */
   align-items: center;
   @media (min-width: 768px) {
     font-size: 16px;
   }
-  @media (min-width: 768px) {
+  @media (min-width: 1200px) {
     font-size: 19px;
+  }
+`;
+const CounterText = styled.span`
+  font-size: 6px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  @media (min-width: 768px) {
+    font-size: 10px;
   }
 `;
 
@@ -153,7 +196,7 @@ const HeaderAvatar = styled.img`
     width: 40px;
     height: 40px;
   }
-  @media (min-width: 768px) {
+  @media (min-width: 1200px) {
     width: 50px;
     height: 50px;
   }
@@ -162,10 +205,11 @@ const HeaderAvatar = styled.img`
 const UserName = styled.span`
   font-size: 9px;
   font-weight: 500;
-  color: ${(props) => (props.$isDarkMode ? "#fff" : "#333")};
   margin-right: 5px;
+  color: ${(props) => (props.$isDarkMode ? "#fff" : "#333")};
   @media (min-width: 768px) {
     font-size: 15px;
+     margin-right: 5px;
   }
 `;
 
@@ -174,9 +218,11 @@ const Header = ({
   onOpenLogin,
   onOpenSettings,
   onOpenVip,
+  onOpenShop,
   user,
   isDarkMode,
   toggleTheme,
+  onOpenAchievements,
   currentAvatar,
   onLogout,
 }) => {
@@ -192,10 +238,20 @@ const Header = ({
         </ThemeButton>
         {user ? (
           <>
-            <IconButton onClick={onOpenSettings} title="Налаштування">
+            <IconWrapper>
+              <IconButton onClick={onOpenShop} title="Магазин конвертів" $isDarkMode={isDarkMode}>
+                <CounterText>1000/1000</CounterText>🧧
+              </IconButton>
+              <NotificationBadge>!</NotificationBadge>
+            </IconWrapper>
+
+            <IconButton title="Досягнення" onClick={onOpenAchievements} $isDarkMode={isDarkMode}>
+              🏆
+            </IconButton>
+            <IconButton onClick={onOpenSettings} title="Налаштування" $isDarkMode={isDarkMode}>
               ⚙️
             </IconButton>
-            <IconButton onClick={onLogout} title="Вийти">
+            <IconButton onClick={onLogout} title="Вийти" $isDarkMode={isDarkMode}>
               🚪
             </IconButton>
             <UserName $isDarkMode={isDarkMode}>
@@ -213,4 +269,5 @@ const Header = ({
     </HeaderDiv>
   );
 };
+
 export default Header;

@@ -15,6 +15,8 @@ import userDefault from "./photos/hero-header/user.webp";
 import VipModal from "./components/Modals/VipModal.jsx";
 import Aihelp from "./components/Aihelp.jsx/Aihelp.jsx";
 import FanArt from "./components/FanArt/FanArt.jsx";
+import ShopModal from "./components/Modals/ShopModal.jsx";
+import AchivmentsModal from "./components/Modals/AchivmentsModal.jsx";
 // Імпорт аватарів
 import turkeys from "./photos/vip-images/ultra-vip-turkeys.webp";
 import dragons from "./photos/vip-images/vip-dragons.jpg";
@@ -27,6 +29,7 @@ import soloveyko from "./photos/vip-images/vip-soloveyko.jpg";
 import monody from "./photos/vip-images/vip-forest.webp";
 import dizel from "./photos/vip-images/dizel.webp";
 import flame from "./photos/vip-images/flame.jpg";
+
 const AVAILABLE_AVATARS = [
   monody,
   turkeys,
@@ -56,14 +59,19 @@ const App = () => {
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   const [isVipModalOpen, setIsVipModalOpen] = useState(false);
+  const [isShopOpen, setIsShopOpen] = useState(false);
+  const [isAchivmentsOpen, setIsAchivmentsOpen] = useState(false); // Стан для досягнень
+
   const [isDarkMode, setIsDarkMode] = useState(() => {
     const saved = localStorage.getItem("isDarkMode");
     return saved !== null ? JSON.parse(saved) : false;
   });
+
   const [user, setUser] = useState(() => {
     const saved = localStorage.getItem("registered_user");
     return saved ? JSON.parse(saved) : null;
   });
+
   const [currentAvatar, setCurrentAvatar] = useState(() => {
     const saved = localStorage.getItem("currentAvatar");
     return saved || userDefault;
@@ -129,7 +137,9 @@ const App = () => {
   const weekday = capitalize(
     new Intl.DateTimeFormat("uk", { weekday: "long" }).format(now),
   );
-  const heroDateString = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}:${String(now.getSeconds()).padStart(2, "0")} ${weekday}, ${now.getDate()}.${month}.${now.getFullYear()}`;
+  const heroDateString = `${String(now.getHours()).padStart(2, "0")}:${String(
+    now.getMinutes(),
+  ).padStart(2, "0")}:${String(now.getSeconds()).padStart(2, "0")} ${weekday}, ${now.getDate()}.${month}.${now.getFullYear()}`;
 
   return (
     <ThemeWrapper $isDarkMode={isDarkMode}>
@@ -140,6 +150,8 @@ const App = () => {
             onOpenLogin={() => setIsLoginOpen(true)}
             onOpenSettings={() => setIsSettingsModalOpen(true)}
             onOpenVip={() => setIsVipModalOpen(true)}
+            onOpenShop={() => setIsShopOpen(true)}
+            onOpenAchievements={() => setIsAchivmentsOpen(true)} // Передача функції для досягнень
             user={user}
             isDarkMode={isDarkMode}
             toggleTheme={toggleTheme}
@@ -154,9 +166,14 @@ const App = () => {
           <GraphicWeekly />
           <Aihelp isDarkMode={isDarkMode} />
           <MusicPhoto user={user} onOpenRegister={() => setIsModalOpen(true)} />
-          <FanArt isDarkMode={isDarkMode} user={user} onOpenRegister={() => setIsModalOpen(true)} />
+          <FanArt
+            isDarkMode={isDarkMode}
+            user={user}
+            onOpenRegister={() => setIsModalOpen(true)}
+          />
         </div>
         <Footer toggleTheme={toggleTheme} />
+
         {isModalOpen && (
           <Modal
             onClose={() => setIsModalOpen(false)}
@@ -171,6 +188,7 @@ const App = () => {
             onLogin={handleLogin}
           />
         )}
+
         {isSettingsModalOpen && user && (
           <UserSettingsModal
             onClose={() => setIsSettingsModalOpen(false)}
@@ -179,11 +197,26 @@ const App = () => {
             onUpdate={handleUpdateUser}
           />
         )}
+
         {isVipModalOpen && (
           <VipModal onClose={() => setIsVipModalOpen(false)} />
+        )}
+
+        {isShopOpen && (
+          <ShopModal
+            onClose={() => setIsShopOpen(false)}
+            hasVip={!!user} 
+          />
+        )}
+        {isAchivmentsOpen && (
+          <AchivmentsModal 
+            onClose={() => setIsAchivmentsOpen(false)} 
+            isDarkMode={isDarkMode}
+          />
         )}
       </div>
     </ThemeWrapper>
   );
 };
+
 export default App;

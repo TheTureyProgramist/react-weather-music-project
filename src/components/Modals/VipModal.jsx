@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, { useState } from "react";
 import styled, { keyframes } from "styled-components";
 import turkeys from "../../photos/vip-images/collectors-edition.jpg";
 import dinofroz from "../../photos/vip-images/vip-dinofroz.webp";
@@ -13,6 +13,7 @@ import stars from "../../photos/vip-images/stars.jpg";
 import lebid from "../../photos/vip-images/vip-lebid.jpg";
 import buton from "../../photos/vip-modal/buton.jpg";
 import texts from "../../photos/vip-modal/texts.jpg";
+import horrordog from "../../photos/vip-images/horror.jpg";
 const slideIn = keyframes`
 0% {
 transform: translateY(100%) scale(0.5);
@@ -85,7 +86,8 @@ const VipModalDiv = styled.div`
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
   border: 2px solid #ffb36c;
   overflow-y: auto;
-  animation: ${props => (props.$isClosing ? slideOut : slideIn)} 0.5s ease-out forwards;
+  animation: ${(props) => (props.$isClosing ? slideOut : slideIn)} 0.5s ease-out
+    forwards;
   @media (max-width: 480px) {
     padding: 10px;
     padding-top: 35px;
@@ -166,7 +168,7 @@ const BenefitImage = styled.img`
 `;
 
 const VipBonus = styled.div`
-  font-size: 11px;
+  font-size: 9.9px;
   line-height: 1.3;
   color: #ffb36c;
   flex: 1;
@@ -239,12 +241,12 @@ const VipText = styled.p`
   display: flex;
   justify-content: flex-end;
   color: #ffb36c;
-    @media (max-width: 768px) {
+  @media (max-width: 768px) {
     justify-content: flex-end;
     max-width: 72%;
   }
-      @media (max-width: 1200px) {
-  justify-content: flex-end;
+  @media (max-width: 1200px) {
+    justify-content: flex-end;
   }
 `;
 const RedLine = styled.div`
@@ -265,16 +267,16 @@ const VipWarning = styled.p`
   margin-bottom: 2px;
 `;
 const InputBlock = styled.div`
-display: flex;
-gap: 10px;
-flex-direction: column;
-   @media (max-width: 768px) {
-flex-direction: row;
+  display: flex;
+  gap: 10px;
+  flex-direction: column;
+  @media (max-width: 768px) {
+    flex-direction: row;
   }
   @media (max-width: 1200px) {
-flex-direction: column;
+    flex-direction: column;
   }
-`
+`;
 const VipModal = ({ onClose }) => {
   const [isClosing, setIsClosing] = useState(false);
   const handleClose = (e) => {
@@ -284,12 +286,9 @@ const VipModal = ({ onClose }) => {
       onClose();
     }, 500);
   };
- return (
+  return (
     <Overlay $isClosing={isClosing} onClick={handleClose}>
-      <VipModalDiv 
-        $isClosing={isClosing} 
-        onClick={(e) => e.stopPropagation()}
-      >
+      <VipModalDiv $isClosing={isClosing} onClick={(e) => e.stopPropagation()}>
         <CloseButton onClick={handleClose}>&times;</CloseButton>
         <AnimatedText>Стихія+</AnimatedText>
         <VipBlock>
@@ -297,11 +296,18 @@ const VipModal = ({ onClose }) => {
             <SectionTitle>ШІ</SectionTitle>
             <BenefitCard>
               <BenefitImage src={texts} />
-              <VipBonus>15 безкоштовних повідомлень/день, замість 5. Після вичерпування ліміту ціна повідомлення 0,36грн, не 0,6грн</VipBonus>
+              <VipBonus>
+                10 безкоштовних повідомлень/день + за конверти 5, замість 3
+                безкоштовних повідомлень/день + за конверти 2. Після
+                вичерпування ліміту ціна повідомлення 0,1грн, не 0,12грн +
+                5конвертів.
+              </VipBonus>
             </BenefitCard>
             <BenefitCard>
               <BenefitImage src={lebid} />
-              <VipBonus>2 (не 1) зображення/міс по 3,99грн, далі 4,99грн.</VipBonus>
+              <VipBonus>
+                2 (не 1) зображення/міс по 3,99грн, далі 4,99грн.
+              </VipBonus>
             </BenefitCard>
             <BenefitCard>
               <BenefitImage src={clip} />
@@ -309,7 +315,7 @@ const VipModal = ({ onClose }) => {
             </BenefitCard>
             <BenefitCard>
               <BenefitImage src={music} />
-              <VipBonus>mp3 2,5грн/хв, не 3,5грн/хв</VipBonus>
+              <VipBonus>mp3 2,5грн/хв, не 3,5грн/хв.</VipBonus>
             </BenefitCard>
             <SectionTitle>Музика та Арт</SectionTitle>
             <BenefitCard>
@@ -323,8 +329,15 @@ const VipModal = ({ onClose }) => {
               </VipBonus>
             </BenefitCard>
             <BenefitCard>
+              <BenefitImage src={horrordog} />
+              <VipBonus>
+                Джойстики звуку, швидкості та промотовучі 10с вперед/назад для
+                муз. карток.{" "}
+              </VipBonus>
+            </BenefitCard>
+            <BenefitCard>
               <BenefitImage src={dragons} />
-              <VipBonus>Джойстики звуку, швидкості та промотовучі 10с вперед/назад для муз. карток.</VipBonus>
+              <VipBonus>Автоповтор дешевший удвічі. А діапазон цін екслюзивних аватарів дешевший: 20-30конвертів, замість 20-40.</VipBonus>
             </BenefitCard>
             <BenefitCard>
               <BenefitImage src={monody} />
@@ -347,9 +360,20 @@ const VipModal = ({ onClose }) => {
               <VipBonus>Плавніший регулятор темної теми.</VipBonus>
             </BenefitCard>
             <BenefitCard>
+              <BenefitImage src={dragons} />
+              <VipBonus>
+                Знижка 50% у магазині конвертів, досягнення дають додатково до
+                20конвертів, якщо їх к-сть у досягненнях &lt; 40шт. У сумі вийде
+                40шт. Навіть, якщо ви вже виконали досягнення вони будуть після
+                оплати автоматично відправлені + Сплата тарифу переодоплатою та
+                місячним тарифом дає 50шт. Ліміт наборів конвертів*2.
+              </VipBonus>
+            </BenefitCard>
+            <BenefitCard>
               <BenefitImage src={buton} />
               <VipBonus>
-                Пошук міста/Оновлення картки має перезарядку 5с замість 1хв.
+                Кнопки Пошук міста/Оновлення картки має перезарядку 12с замість
+                1хв.
               </VipBonus>
             </BenefitCard>
             <BenefitCard>
@@ -360,9 +384,9 @@ const VipModal = ({ onClose }) => {
           <VipFix>
             <VipFormater>
               <InputBlock>
-              <Input placeholder="Номер картки"></Input>
-              <Input placeholder="CVC2/CVV2 - 3 цифри позаду картки"></Input>
-              <Input placeholder="Термін дії(Н-д: 05/29)"></Input>
+                <Input placeholder="Номер картки"></Input>
+                <Input placeholder="CVC2/CVV2 - 3 цифри позаду картки"></Input>
+                <Input placeholder="Термін дії(Н-д: 05/29)"></Input>
               </InputBlock>
               <SectionTitle>TurkeyStudio VIP!</SectionTitle>
               <VipImage src={turkeys} />

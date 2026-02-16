@@ -362,7 +362,7 @@ const MusicCard = ({
       </MusicImageContainer>
       {audio && (
         <ControlsContainer>
-          {[2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 14].includes(id) && (
+          {[2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14].includes(id) && (
             <PlayerRow>
               <PlayButton onClick={togglePlayPause}>
                 {isPlaying ? (
