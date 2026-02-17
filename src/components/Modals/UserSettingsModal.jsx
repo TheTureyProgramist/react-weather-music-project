@@ -79,6 +79,7 @@ const ModalContent = styled.div`
   display: flex;
   flex-direction: column;
   gap: 15px;
+  background: #d3b0d3;
   max-height: 90vh;
   overflow-y: auto;
   animation: ${props => (props.$isClosing ? slideOut : slideIn)} 0.5s ease-out forwards;
@@ -90,11 +91,11 @@ const CloseButton = styled.button`
   right: 15px;
   background: none;
   border: none;
-  font-size: 24px;
+  font-size: 34px;
   cursor: pointer;
-  color: #333;
+  color: #000000;
   &:hover {
-    color: #ffb36c;
+    color: #00e1ff;
   }
 `;
 
@@ -103,19 +104,21 @@ const Section = styled.div`
   flex-direction: column;
   gap: 8px;
   padding-bottom: 15px;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid #000000;
 `;
 
 const Input = styled.input`
   padding: 12px;
-  border: 1px solid #ddd;
+  border: 1px solid #000000;
   border-radius: 10px;
   width: 100%;
+  background: transparent;
   box-sizing: border-box;
 `;
 const Select = styled.select`
   padding: 12px;
-  border: 1px solid #ddd;
+  border: 1px solid #000000;
+    background: transparent;
   border-radius: 10px;
   flex: 1;
   background: white;
@@ -129,22 +132,24 @@ const Select = styled.select`
 
 const DateRow = styled.div`
   display: flex;
-  gap: 10px;
+  flex-wrap: wrap;
+  gap: 5px;
 `;
 
 const CheckboxRow = styled.div`
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 12px;
-  color: #555;
+  font-size: 14px;
+  color: #5a5a5a;
 `;
 
 const TermsBtn = styled.span`
-  color: #ffb36c;
+  color: #ff7b00;
   text-decoration: underline;
   cursor: pointer;
   font-weight: bold;
+  font-size: 14px;
 `;
 
 const AvatarOption = styled.div`
@@ -180,10 +185,10 @@ const AvatarSlider = styled.div`
 const SaveButton = styled.button`
   background: #ffb36c;
   height: 45px;
+  border: 2px solid black;
   flex: 1;
   border-radius: 10px;
   font-weight: bold;
-  border: none;
   cursor: pointer;
   &:disabled {
     opacity: 0.5;
@@ -191,14 +196,18 @@ const SaveButton = styled.button`
   }
 `;
 const CancelButton = styled.button`
-  background: #eee;
+  background: transparent;
   height: 45px;
   flex: 1;
   border-radius: 10px;
   font-weight: bold;
-  border: none;
+    border: 2px solid black;
   cursor: pointer;
 `;
+const Title = styled.h3`
+font-weight: 900;
+color: black;
+`
 const UserSettingsModal = ({ onClose, user, availableAvatars, onUpdate }) => {
   const [y, m, d] = user?.birthDate ? user.birthDate.split("-") : ["", "", ""];
   const [formData, setFormData] = useState({
@@ -284,7 +293,7 @@ const UserSettingsModal = ({ onClose, user, availableAvatars, onUpdate }) => {
     <ModalOverlay $isClosing={isClosing} onClick={handleClose}>
       <ModalContent $isClosing={isClosing} onClick={(e) => e.stopPropagation()}>
         <CloseButton onClick={handleClose}>&times;</CloseButton>
-        <h3 style={{ textAlign: "center" }}>Налаштування</h3>
+        <Title style={{ textAlign: "center" }}>Налаштування</Title>
         <Section>
           <label style={{ fontSize: "13px", fontWeight: "bold" }}>Ім'я</label>
           <Input

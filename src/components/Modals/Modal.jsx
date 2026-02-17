@@ -92,9 +92,9 @@ const CloseButton = styled.button`
   right: 15px;
   background: none;
   border: none;
-  font-size: 24px;
+  font-size: 34px;
   cursor: pointer;
-  color: #333;
+  color: #000000;
   &:hover {
     color: #ffb36c;
   }
@@ -103,7 +103,8 @@ const CloseButton = styled.button`
 const Title = styled.h3`
   text-align: center;
   margin: 0;
-  color: #333;
+  font-weight: 900;
+  color: #000000;
 `;
 
 const Input = styled.input`

@@ -1,21 +1,66 @@
-import React from "react";
-import styled, { keyframes } from "styled-components";
+import React, { useState } from "react";
+import styled, { keyframes, css } from "styled-components";
 import horse from "../../photos/vip-images/horse.jpg";
-
+import asium from "../../photos/vip-images/asium.jpg";
+import chess from "../../photos/fan-art/chess.webp";
+import time from "../../photos/vip-images/mechannic.jpg";
+import puzzle1 from "../../photos/fan-art/puzzle-1.webp";
+import puzzle2 from "../../photos/fan-art/puzzle-2.webp";
+import puzzle3 from "../../photos/fan-art/puzzle-3.webp";
+import puzzle4 from "../../photos/fan-art/puzzle-4.webp";
+import puzzle5 from "../../photos/fan-art/puzzle-5.webp";
+import letters from "../../photos/fan-art/letters.webp";
+import niceron from "../../photos/vip-images/vip-dinofroz.webp";
+import christmas from "../../photos/vip-images/christmas.jpg";
+import telegram from "../../photos/fan-art/telegram.webp";
+import clip from "../../photos/vip-images/clip.png";
+import horrordog from "../../photos/vip-images/horror.jpg";
+import dragons from "../../photos/vip-images/vip-dragons.jpg";
+import stars from "../../photos/vip-images/stars.jpg";
+import macduck from "../../photos/fan-art/macduck.webp";
+import matrix from "../../photos/fan-art/matrix.webp";
+import impossible from "../../photos/fan-art/impossible.jpg";
+import impossible2 from "../../photos/fan-art/impossible2.webp";
+import matrix2 from "../../photos/fan-art/matrix2.jpg";
+import virus from "../../photos/fan-art/virus.webp";
+import kolada from "../../photos/fan-art/kolada.webp";
+import document from "../../photos/fan-art/document.webp";
+import anchor from "../../photos/fan-art/anchor.webp";
+import parol from "../../photos/fan-art/parol.jpg";
+import password from "../../photos/fan-art/password.webp";
+import returns from "../../photos/fan-art/returns.webp";
+import money from "../../photos/fan-art/money.webp";
+import marks from "../../photos/fan-art/marks.webp";
+import grafity from "../../photos/fan-art/grafiti.webp";
+import finances from "../../photos/fan-art/finance.jpg";
+import text from "../../photos/vip-modal/texts.jpg";
+import rooster from "../../photos/vip-images/vip-rooster.jpg";
+import turkeys from "../../photos/vip-images/collectors-edition.jpg";
+import cloud from "../../photos/fan-art/strangecloud.webp";
+import threedprinter from "../../photos/fan-art/threed-printer.webp";
+import dizel from "../../photos/vip-images/dizel.webp";
+import wall from "../../photos/fan-art/wall.webp";
+import cycle from "../../photos/fan-art/cycle.webp";
+import masons from "../../photos/fan-art/masons.webp";
+import texting from "../../photos/fan-art/text.jpg";
 const fadeIn = keyframes`
   from { opacity: 0; }
   to { opacity: 1; }
 `;
 
 const slideIn = keyframes`
-  0% {
-    transform: translateY(100%) scale(0.5);
-    opacity: 0;
-  }
-  100% {
-    transform: translateY(0%) scale(1);
-    opacity: 1;
-  }
+  0% { transform: translateY(100%) scale(0.5); opacity: 0; }
+  100% { transform: translateY(0%) scale(1); opacity: 1; }
+`;
+
+const fadeOut = keyframes`
+  from { opacity: 1; }
+  to { opacity: 0; }
+`;
+
+const slideOut = keyframes`
+  0% { transform: translateY(0%) scale(1); opacity: 1; }
+  100% { transform: translateY(100%) scale(0.5); opacity: 0; }
 `;
 
 const ModalOverlay = styled.div`
@@ -24,12 +69,13 @@ const ModalOverlay = styled.div`
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.8);
+  background: rgba(0, 0, 0, 0.85);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 1000;
-  animation: ${fadeIn} 0.3s ease-out;
+  animation: ${(props) => (props.isClosing ? fadeOut : fadeIn)} 0.3s ease-out
+    forwards;
 `;
 
 const ModalContent = styled.div`
@@ -37,21 +83,29 @@ const ModalContent = styled.div`
   color: #2eb813;
   padding: 20px;
   border-radius: 15px;
-  width: 90%;
-  max-width: 500px;
-  max-height: 80vh; 
+  width: 95%;
+  max-width: 550px;
+  max-height: 85vh;
   border: 2px solid #2eb813;
   position: relative;
   display: flex;
   flex-direction: column;
-  animation: ${slideIn} 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+  animation: ${(props) =>
+    props.isClosing
+      ? css`
+          ${slideOut} 0.3s ease-in forwards
+        `
+      : css`
+          ${slideIn} 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards
+        `};
 `;
+
 const ScrollContainer = styled.div`
   overflow-y: auto;
   padding-right: 10px;
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 20px;
   &::-webkit-scrollbar {
     width: 6px;
   }
@@ -63,13 +117,77 @@ const ScrollContainer = styled.div`
     background: #2eb813;
     border-radius: 10px;
   }
-  &::-webkit-scrollbar-thumb:hover {
-    background: #a2ff6c;
-  }
-
-  /* Для Firefox */
   scrollbar-width: thin;
   scrollbar-color: #2eb813 #051a00;
+`;
+
+const CategorySection = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+`;
+
+const CategoryTitle = styled.div`
+  font-size: 14px;
+  letter-spacing: 1.5px;
+  color: #a2ff6c;
+  border-bottom: 1px solid rgba(162, 255, 108, 0.3);
+  padding-bottom: 5px;
+  margin-bottom: 5px;
+  font-weight: 900;
+`;
+
+const AchivmentItem = styled.div`
+  display: flex;
+  align-items: center;
+  background: rgba(162, 255, 108, 0.05);
+  border-radius: 12px;
+  padding: 12px;
+  gap: 15px;
+  border: ${(props) =>
+    props.isSpecial ? "2px solid #ff0000" : "1px solid #a2ff6c"};
+  transition: transform 0.2s;
+  &:hover {
+    background: rgba(162, 255, 108, 0.1);
+  }
+`;
+
+const AchivmentImagePlace = styled.img`
+  width: 50px;
+  height: 50px;
+  border-radius: 8px;
+  object-fit: cover;
+  border: 1px solid #2eb813;
+  background: #051a00;
+`;
+
+const AchivmentName = styled.h3`
+  margin: 0;
+  font-size: 15px;
+  color: #ffb36c;
+`;
+
+const AchivmentGoal = styled.p`
+  margin: 3px 0 0;
+  font-size: 11px;
+  line-height: 1.3;
+  opacity: 0.8;
+  color: ${(props) => (props.isBlue ? "#00a2ff" : "#a2ff6c")};
+`;
+
+const RewardField = styled.div`
+  width: 60px;
+  height: 35px;
+  background: rgba(46, 184, 19, 0.2);
+  border-radius: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 13px;
+  border: 1px dashed #ffb36c;
+  color: #ffb36c;
+  flex-shrink: 0;
 `;
 
 const CloseButton = styled.button`
@@ -81,285 +199,344 @@ const CloseButton = styled.button`
   font-size: 28px;
   cursor: pointer;
   color: #2eb813;
-  line-height: 1;
   z-index: 10;
   &:hover {
     color: #a2ff6c;
+    transform: rotate(90deg);
   }
-`;
-
-const AchivmentsTitle = styled.h2`
-  text-align: center;
-  margin-top: 0;
-  margin-bottom: 20px;
-  font-family: "Inter", sans-serif;
-  letter-spacing: 2px;
-  flex-shrink: 0;
-`;
-
-const AchivmentItem = styled.div`
-  display: flex;
-  align-items: center;
-  background: rgba(162, 255, 108, 0.05);
-  border-radius: 12px;
-  padding: 12px;
-  gap: 15px;
-  border: 1px solid #a2ff6c;
-  transition: transform 0.2s;
-
-  &:hover {
-    background: rgba(162, 255, 108, 0.1);
-  }
-`;
-
-const AchivmentImagePlace = styled.img`
-  width: 60px;
-  height: 60px;
-  background: rgb(123, 255, 83);
-  border-radius: 8px;
-  object-fit: cover;
-  flex-shrink: 0;
-  border: 1px solid #2eb813;
-`;
-
-const AchivmentInfo = styled.div`
-  flex-grow: 1;
-`;
-
-const AchivmentName = styled.h3`
-  margin: 0;
-  font-size: 16px;
-  color: #ffb36c;
-`;
-
-const AchivmentGoal = styled.p`
-  margin: 5px 0 0;
-  font-size: 12px;
-  line-height: 1.4;
-  opacity: 0.9;
-  color: #a2ff6c;
-`;
-
-const RewardField = styled.div`
-  width: 65px;
-  height: 40px;
-  background: rgba(46, 184, 19, 0.2);
-  border-radius: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: bold;
-  font-size: 14px;
-  flex-shrink: 0;
-  border: 1px dashed #ffb36c;
-  color: #ffb36c;
 `;
 
 const AchivmentsModal = ({ onClose }) => {
-  const achievements = [
+  const [isClosing, setIsClosing] = useState(false);
+
+  const handleClose = () => {
+    setIsClosing(true);
+    setTimeout(() => onClose(), 300);
+  };
+
+  const categories = [
     {
-      name: "Спринтер",
-      goal: "Ціль: пройти за 40с головоломку",
-      reward: "20 🧧",
-    },
+      title: "🎮 Ігрові Майстри",
+      items: [
         {
-      name: "Давай!",
-      goal: "Ціль: Почніть головоломку, залиште останній хід і не робіть його протягом 2 хвилин, а потім закінчіть.",
-      reward: "20 🧧",
-    },
-    {
-      name: "Бог любить трійцю!",
-      goal: "Ціль: заходьте до нас після реєстрації 3 дні підряд",
-      reward: "30 🧧",
-    },
-    {
-      name: "Ерудит",
-      goal: "Ціль: пройдіть головоломку за 25 ходів",
-      reward: "20 🧧",
-    },
+          name: "Спринтер",
+          goal: "Ціль: пройти за 40с головоломку.",
+          reward: "40 🧧",
+          img: horse,
+        },
         {
-      name: "Помилка-це навчання",
-      goal: "Ціль: пройдіть головоломку на 20 спробі, між перезапусками 20с!",
-      reward: "20 🧧",
-    },
-    {
-      name: "А я думав, що ти не повернешся.",
-      goal: "Доступно: Після виконання досягнення 'Бог любить трійцю'. Ціль: заходьте 3 днів поспіль, а потім не заходьте 3 дні,а потім в ту саму хвилину зайдіть, коли ви були останнього разу.",
-      reward: "40 🧧",
-    },
+          name: "Душевний спокій",
+          goal: "Ціль: при розгадці ребусів не натискайте 4хв.",
+          reward: "40 🧧",
+          img: asium,
+        },
         {
-      name: "Він точно шпигун!",
-      goal: "Зайдіть на сайт, коли в Києві (за часом на картці) температура нижче -30°C або вище +30°C.",
-      reward: "30 🧧",
-    },
-    {
-      name: "Конотопська відьма!",
-      goal: "Зайдіть на сайт, опівночі, паралельно ввімкнуши на сайті саундхоррор 'жах ночі'",
-      reward: "30 🧧",
-    },
-    {
-      name: "Любитель ризиків",
-      goal: "Ціль: пройдіть з І спроби головоломку (раз на добу)",
-      reward: "30 🧧",
-    },
-    {
-      name: "Колекціонер",
-      goal: "Ціль: зберіть усі аватари(що отримуються з часом або конвертами)",
-      reward: "50 🧧",
-    },
-    {
-      name: "Нічна сова",
-      goal: "Ціль: розв'яжіть головоломку між 00:00 та 03:00",
-      reward: "30 🧧",
-    },
-    {
-      name: "Спонсор",
-      goal: "Ціль: підпишіться на мій фейсбук канал",
-      reward: "40 🧧",
-    },
-    {
-      name: "Хапай якір!",
-      goal: "Ціль: вийдіть з акаунту і поверніться через логін",
-      reward: "20 🧧",
-    },
-    {
-      name: "Ви зараз виконуєте це afk :(?",
-      goal: "Читайте угоду користувача 2хв!",
-      reward: "20 🧧",
-    },
-    {
-      name: "Дубль 2",
-      goal: "Ціль: прослухайте двічі мелодію, через автоповтор.",
-      reward: "20 🧧",
-    },
-    {
-      name: "Краще перестрахуюсь!",
-      goal: "Ціль: змініть пароль у нашому сайті",
-      reward: "20 🧧",
-    },
-    {
-      name: "Хм дай подумаю ні!",
-      goal: "Ціль: зробіть 2етапну перевірку.",
-      reward: "20 🧧",
-    },
-    {
-      name: "Цикл",
-      goal: "Ціль: натискайте на мелодії користуючись кодом: 8123. Порядок натискань переплутаний. Вірний порядок буде підсвічуватись.",
-      reward: "40 🧧",
-    },
-    {
-      name: "Можна взяти?",
-      goal: "Ціль: Скачайте пісню.",
-      reward: "20 🧧",
-    },
-    {
-      name: "Ти не станеш у мене на шляху!",
-      goal: "Ціль: Прискорте перезарядку кнопки конвертом(ами)",
-      reward: "20 🧧",
-    },
-    {
-      name: "Ви не з масонської організації?",
-      goal: "Натисність дізнатися більше у погодній картці",
-      reward: "20 🧧",
-    },
-    {
-      name: "Дім, милий дім!",
-      goal: "Ціль: Погодня картка - Конотоп.",
-      reward: "20 🧧",
-    },
+          name: "Ледве встиг!",
+          goal: "Ціль: закінчіть головоломку в останні 3,7с.",
+          reward: "37 🧧",
+          img: time,
+        },
         {
-      name: "Тестувальник",
-      goal: "Ціль: Випробуйте режим відео(музичні картки).",
-      reward: "20 🧧",
-    },
-    {
-      name: "Люблю текст!",
-      goal: "Ціль: Натисність на кнопку текст пісні",
-      reward: "20 🧧",
-    },
-    {
-      name: "Фанат чи хейтер?",
-      goal: "Ціль: Натисніть на кнопку роздрукувати фан-арт(але той якого немає в музичному списку).",
-      reward: "20 🧧",
-    },
-    {
-      name: "Індики винні!",
-      goal: "Ціль: за 1хв змініть світлу-темну тему 25разів! Під музику індиків.",
-      reward: "20 🧧",
-    },  
-    {
-      name: "Це цікаво!",
-      goal: "Ціль: знайдіть зайве на сайті, воно маленьке, у цьому досягненні уважні побачать підказку :).",
-      reward: "20 🧧",
-    },  
-    {
-      name: "Це незвично!",
-      goal: "Ціль: пройдіть за 30хв одну й ту саму головоломку 3 рази поспіль.",
-      reward: "20 🧧",
-    },  
-    {
-      name: "Назад в минуле!",
-      goal: "Ціль: пройдіть одну й ту саму головоломку 2 рази поспіль секунда в секунду!",
-      reward: "40 🧧",
-    },  
-    {
-      name: "Помножений на нуль!",
-      goal: "Витратьте 200🧧 за 10хв",
-      reward: "20 🧧",
-    },  
-    {
-      name: "Він знає те чого не знаю я?",
-      goal: "Зосередьте мишку у футері на лого на 2хв!",
-      reward: "20 🧧",
-    },  
+          name: "Давай!",
+          goal: "Ціль: Почніть головоломку, залиште останній хід і не робіть його протягом 2 хвилин 6 cекунд мінімум, а потім закінчіть.",
+          reward: "21 🧧",
+          img: chess,
+        },
         {
-      name: "Скрудж МакДак",
-      goal: "Ціль: Накопичте 500🧧!",
-      reward: "40 🧧",
-    },  
-    {
-      name: "Дракомбінація",
-      goal: "Скомбінуйте 2 саундтреки про драконів",
-      reward: "20 🧧",
+          name: "Ерудит",
+          goal: "Ціль: пройдіть головоломку за 22 ходів.",
+          reward: "22 🧧",
+          img: puzzle1,
+        },
+        {
+          name: "Помилка-це навчання",
+          goal: "Ціль: пройдіть головоломку на 23 спробі, між перезапусками 23с!",
+          reward: "23 🧧",
+          img: puzzle2,
+        },
+        {
+          name: "Любитель ризиків",
+          goal: "Ціль: пройдіть з І спроби головоломку (раз на добу).",
+          reward: "30 🧧",
+          img: puzzle3,
+        },
+        {
+          name: "Це незвично!",
+          goal: "Ціль: пройдіть за 30хв одну й ту саму головоломку 3 рази поспіль.",
+          reward: "20 🧧",
+          img: puzzle4,
+        },
+        {
+          name: "Назад в минуле!",
+          goal: "Ціль: пройдіть одну й ту саму головоломку 2 рази поспіль секунда в секунду!",
+          reward: "40 🧧",
+          img: puzzle5,
+        },
+      ],
     },
     {
-      name: "Великий день!",
-      goal: "Зайдіть на сайт, на важливе свято (старого/нового стилю).",
-      reward: "40 🧧",
+      title: "👥 Соціальні та Активність",
+      items: [
+        {
+          name: "Порекомендую!",
+          goal: "Ціль: увести в поле реєстрації або налаштувань, акаунт знайомого... Отримайте червоний колір імені.",
+          reward: "35 🧧",
+          isSpecial: true,
+          img: telegram,
+        },
+        {
+          name: "Щедрик!",
+          goal: "Ціль: відайте 36 🧧 другу.",
+          reward: "36 🧧",
+          img: kolada,
+        },
+        {
+          name: "Бог любить трійцю!",
+          goal: "Ціль: заходьте до нас після реєстрації 3 дні підряд.",
+          reward: "30 🧧",
+          img: christmas,
+        },
+        {
+          name: "А я думав, що ти не повернешся.",
+          goal: "Ціль: заходьте 3 днів поспіль, а потім не заходьте 3 дні.",
+          reward: "30 🧧",
+          img: returns,
+        },
+        {
+          name: "Спонсор",
+          goal: "Ціль: підпишіться на мій фейсбук канал.",
+          reward: "40 🧧",
+          img: money,
+        },
+        {
+          name: "Великий день!",
+          goal: "Зайдіть на сайт, на важливе свято (старого/нового стилю).",
+          reward: "40 🧧",
+          img: christmas,
+        },
+        {
+          name: "Любитель графіті!",
+          goal: "Ціль: зберіть усі кольори імені(що отримуються з часом, конвертами, досягненнями).",
+          reward: "40 🧧",
+          img: grafity,
+        },
+        {
+          name: "Колекціонер",
+          goal: "Ціль: зберіть усі аватари(що отримуються з часом або конвертами).",
+          reward: "40 🧧",
+          img: marks,
+        },
+      ],
     },
     {
-      name: "Дублер Тома Круза",
-      goal: "Ціль: виконайте 30 досягнень.",
-      reward: "40 🧧",
-    },  
-      {
-      name: "Імператор Ніцерон",
-      goal: "Придбайте набір конвертів або VIP-підписку. Або заходьте стільки днів поспіль, скільки я загадав! Підказка менше 32 днів точно :), можливо, не знаю, навряд або ні чекайте :). Удача любить терплячих.",
-      reward: "40 🧧",
+      title: "🛠 Технічні та Налаштування",
+      items: [
+        {
+          name: "Що!?!?!?!?!?!?",
+          goal: "Ціль: натисніть просто на угоду користувача і виділість 39 символів за 3,9с.",
+          reward: "39 🧧",
+          img: document,
+        },
+        {
+          name: "Хапай якір!",
+          goal: "Ціль: вийдіть з акаунту і поверніться через логін.",
+          reward: "20 🧧",
+          img: anchor,
+        },
+        {
+          name: "Фінансисти!",
+          goal: "Ціль: 2 дні підряд витрачайте лише по 20🧧.",
+          reward: "20 🧧",
+          img: finances,
+        },
+        {
+          name: "Ви зараз виконуєте це afk :(?",
+          goal: "Читайте угоду користувача 2:42хв!",
+          reward: "27 🧧",
+          img: text,
+        },
+        {
+          name: "Краще перестрахуюсь!",
+          goal: "Ціль: змініть пароль у нашому сайті.",
+          reward: "20 🧧",
+          img: parol,
+        },
+        {
+          name: "Хм дай подумаю ні!",
+          goal: "Ціль: зробіть 2етапну перевірку.",
+          reward: "20 🧧",
+          img: password,
+        },
+        {
+          name: "Цикл",
+          goal: "Ціль: натискайте на мелодії користуючись кодом: 8123... Вірна комбінація номерів підсвічує кнопку.",
+          reward: "40 🧧",
+          img: cycle,
+        },
+        {
+          name: "Можна взяти?",
+          goal: "Ціль: Скачайте пісню.",
+          reward: "20 🧧",
+          img: dizel,
+        },
+        {
+          name: "Ти не станеш у мене на шляху!",
+          goal: "Ціль: Прискорте перезарядку кнопки 🧧.",
+          reward: "20 🧧",
+          img: wall,
+        },
+        {
+          name: "Індики винні!",
+          goal: "Ціль: за 1хв змініть світлу-темну тему 28разів. Під звуки індиків!",
+          reward: "28 🧧",
+          img: turkeys,
+        },
+        {
+          name: "Мінливий характер!",
+          goal: "Змініть 10разів аватар за 40с.",
+          reward: "40 🧧",
+          img: cloud,
+        },
+        {
+          name: "Принтер!",
+          goal: "Змініть 4 рази колiр тексту імені за 40с.",
+          reward: "40 🧧",
+          img: threedprinter,
+        },
+      ],
+    },
+    {
+      title: "🎵 Медіа та Контент",
+      items: [
+        {
+          name: "Дубль 2",
+          goal: "Ціль: прослухайте двічі мелодію, через автоповтор.",
+          reward: "20 🧧",
+          img: clip,
+        },
+        {
+          name: "Тестувальник",
+          goal: "Ціль: Випробуйте режим відео(музичні картки).",
+          reward: "20 🧧",
+          img: matrix,
+        },
+        {
+          name: "Люблю текст!",
+          goal: "Ціль: Натисність на кнопку текст пісні.",
+          reward: "20 🧧",
+          img: texting,
+        },
+        {
+          name: "Фанат чи хейтер?",
+          goal: "Ціль: Натисніть на кнопку роздрукувати фан-арт...",
+          reward: "20 🧧",
+          img: rooster,
+        },
+        {
+          name: "Зоряно!",
+          goal: "Виберіть 3 пісні в обране, за 38с.",
+          reward: "38 🧧",
+          img: stars,
+        },
+        {
+          name: "Дракомбінація",
+          goal: "Скомбінуйте 2 саундтреки про драконів.",
+          reward: "20 🧧",
+          img: dragons,
+        },
+      ],
+    },
+    {
+      title: "🕵️ Секретні та Особливі",
+      items: [
+        {
+          name: "Він точно шпигун!",
+          goal: "Зайдіть на сайт, коли в Києві температура нижче -24°C або вище +24°C.",
+          reward: "24 🧧",
+          img: impossible2,
+        },
+        {
+          name: "Конотопська відьма!",
+          goal: "Зайдіть на сайт, о 2:30, паралельно ввімкнуши саундхоррор 'Жах ночі'.",
+          reward: "25 🧧",
+          img: horrordog,
+        },
+        {
+          name: "Ви не з масонської організації?",
+          goal: "Натисність дізнатися більше у погодній картці.",
+          reward: "33 🧧",
+          img: masons,
+        },
+        {
+          name: "Це цікаво!",
+          goal: "Ціль: знайдіть зайве на сайті, воно маленьке...",
+          reward: "29 🧧",
+          img: virus,
+        },
+        {
+          name: "Помножений на нуль!",
+          goal: "Витратьте 310🧧 за 31хв.",
+          reward: "31 🧧",
+          img: letters,
+        },
+        {
+          name: "Він знає те чого не знаю я?",
+          goal: "Зосередьте мишку у футері на лого на 3хв 12с!",
+          reward: "32 🧧",
+          img: matrix2,
+        },
+        {
+          name: "Скрудж МакДак",
+          goal: "Ціль: Накопичте 340🧧!",
+          reward: "34 🧧",
+          img: macduck,
+        },
+        {
+          name: "Дублер Тома Круза",
+          goal: "Ціль: виконайте 40досягнень і отримайте аватар з індиками.",
+          reward: "40 🧧",
+          isBlue: true,
+          img: impossible,
+        },
+        {
+          name: "Імператор Ніцерон",
+          goal: "Придбайте VIP, купіть набір або заходьте стільки днів поспіль, скільки я загадав...(десь до 39). Отрмайте аватар Ніцерона.",
+          reward: "40 🧧",
+          isBlue: true,
+          img: niceron,
+        },
+      ],
     },
   ];
 
   return (
-    <ModalOverlay onClick={onClose}>
-      <ModalContent onClick={(e) => e.stopPropagation()}>
-        <CloseButton onClick={onClose}>&times;</CloseButton>
-        <AchivmentsTitle>Досягнення</AchivmentsTitle>
-
+    <ModalOverlay isClosing={isClosing} onClick={handleClose}>
+      <ModalContent isClosing={isClosing} onClick={(e) => e.stopPropagation()}>
+        <CloseButton onClick={handleClose}>&times;</CloseButton>
+        <h2 style={{ textAlign: "center", marginBottom: "20px" }}>
+          Досягнення
+        </h2>
         <ScrollContainer>
-          {achievements.map((item, index) => (
-            <AchivmentItem key={index}>
-              <AchivmentImagePlace src={horse} alt={item.name} />
-              <AchivmentInfo>
-                <AchivmentName>{item.name}</AchivmentName>
-                <AchivmentGoal>{item.goal}</AchivmentGoal>
-              </AchivmentInfo>
-              <RewardField>{item.reward}</RewardField>
-            </AchivmentItem>
+          {categories.map((cat, idx) => (
+            <CategorySection key={idx}>
+              <CategoryTitle>{cat.title}</CategoryTitle>
+              {cat.items.map((item, i) => (
+                <AchivmentItem key={i} isSpecial={item.isSpecial}>
+                  <AchivmentImagePlace src={item.img} alt={item.name} />
+                  <div style={{ flexGrow: 1 }}>
+                    <AchivmentName>{item.name}</AchivmentName>
+                    <AchivmentGoal isBlue={item.isBlue}>
+                      {item.goal}
+                    </AchivmentGoal>
+                  </div>
+                  <RewardField>{item.reward}</RewardField>
+                </AchivmentItem>
+              ))}
+            </CategorySection>
           ))}
         </ScrollContainer>
       </ModalContent>
     </ModalOverlay>
   );
 };
-
 export default AchivmentsModal;

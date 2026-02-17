@@ -46,6 +46,7 @@ const ModalContent = styled.form`
   background: white;
   padding: 30px;
   border-radius: 15px;
+  background: #00f7ffa9;
   width: 90%;
   max-width: 350px;
   display: flex;
@@ -56,7 +57,7 @@ const ModalContent = styled.form`
 `;
 const Input = styled.input`
   padding: 12px;
-  border: 1px solid #ddd;
+  border: 2px solid black;
   border-radius: 8px;
   width: 100%;
   box-sizing: border-box;
@@ -68,7 +69,7 @@ const SubmitButton = styled.button`
   font-weight: bold;
   padding: 12px;
   border-radius: 8px;
-  border: none;
+  border: 2px solid black;
   cursor: pointer;
   &:hover {
     background: #ffa04d;
@@ -81,13 +82,17 @@ const CloseButton = styled.button`
   right: 15px;
   background: none;
   border: none;
-  font-size: 24px;
+  font-size: 34px;
   cursor: pointer;
-  color: #333;
+  color: #000000;
   &:hover {
-    color: #ffb36c;
+    color: #ff7b00;
   }
 `;
+const Title = styled.h3`
+font-weight: 900;
+color: black;
+`
 const LoginModal = ({ onClose, onLogin }) => {
   const [email, setEmail] = useState("");
   const [pass, setPass] = useState("");
@@ -120,7 +125,7 @@ const LoginModal = ({ onClose, onLogin }) => {
     <ModalOverlay $isClosing={isClosing} onClick={handleClose}>
       <ModalContent $isClosing={isClosing} onClick={(e) => e.stopPropagation()} onSubmit={handleLogin}>
         <CloseButton onClick={handleClose}>&times;</CloseButton>
-        <h3 style={{ textAlign: "center" }}>Вхід</h3>
+        <Title style={{ textAlign: "center" }}>Вхід</Title>
         <Input
           name="email"
           type="email"
