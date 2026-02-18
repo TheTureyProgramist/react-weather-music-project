@@ -29,24 +29,17 @@ import soloveyko from "./photos/vip-images/vip-soloveyko.jpg";
 import monody from "./photos/vip-images/vip-forest.webp";
 import dizel from "./photos/vip-images/dizel.webp";
 import flame from "./photos/vip-images/flame.jpg";
+import finances from "./photos/fan-art/finance.jpg";
+import parol from "./photos/fan-art/parol.jpg";
+import vovk from "./photos/fan-art/kolada.webp";
 
 const AVAILABLE_AVATARS = [
-  monody,
-  turkeys,
-  nicerone,
-  horrordog,
-  horse,
-  lebid,
-  dragons,
-  rooster,
-  soloveyko,
-  dizel,
-  flame,
+  monody, turkeys, nicerone, horrordog, vovk, finances, 
+  parol, horse, lebid, dragons, rooster, soloveyko, dizel, flame,
 ];
 
 const ThemeWrapper = styled.div`
-  background-color: ${(props) =>
-    props.$isDarkMode ? "#121212" : "transparent"};
+  background-color: ${(props) => (props.$isDarkMode ? "#121212" : "transparent")};
   color: ${(props) => (props.$isDarkMode ? "#ffffff" : "inherit")};
   min-height: 100vh;
   transition: background-color 0.3s ease;
@@ -60,7 +53,7 @@ const App = () => {
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   const [isVipModalOpen, setIsVipModalOpen] = useState(false);
   const [isShopOpen, setIsShopOpen] = useState(false);
-  const [isAchivmentsOpen, setIsAchivmentsOpen] = useState(false); // Стан для досягнень
+  const [isAchivmentsOpen, setIsAchivmentsOpen] = useState(false);
 
   const [isDarkMode, setIsDarkMode] = useState(() => {
     const saved = localStorage.getItem("isDarkMode");
@@ -68,7 +61,7 @@ const App = () => {
   });
 
   const [user, setUser] = useState(() => {
-    const saved = localStorage.getItem("registered_user");
+    const saved = localStorage.getItem("active_user");
     return saved ? JSON.parse(saved) : null;
   });
 
@@ -76,57 +69,43 @@ const App = () => {
     const saved = localStorage.getItem("currentAvatar");
     return saved || userDefault;
   });
-
   useEffect(() => {
     const timer = setInterval(() => setNow(new Date()), 1000);
     return () => clearInterval(timer);
   }, []);
-
   useEffect(() => {
     localStorage.setItem("isDarkMode", JSON.stringify(isDarkMode));
   }, [isDarkMode]);
-
   useEffect(() => {
     if (user) {
-      localStorage.setItem("registered_user", JSON.stringify(user));
+      localStorage.setItem("active_user", JSON.stringify(user));
+      if (user.avatar) {
+        setCurrentAvatar(user.avatar);
+        localStorage.setItem("currentAvatar", user.avatar);
+      }
     } else {
-      localStorage.removeItem("registered_user");
+      localStorage.removeItem("active_user");
     }
   }, [user]);
 
-  useEffect(() => {
-    if (currentAvatar) {
-      localStorage.setItem("currentAvatar", currentAvatar);
-    }
-  }, [currentAvatar]);
-
   const handleRegister = (userData) => {
-    const newUser = {
-      account: userData.account,
-      firstName: userData.firstName,
-      password: userData.password,
-      avatar: userData.avatar,
-      birthDate: userData.birthDate,
-    };
-    setUser(newUser);
-    setCurrentAvatar(userData.avatar);
+    setUser(userData);
+    setIsModalOpen(false);
   };
 
   const handleLogin = (savedUser) => {
     setUser(savedUser);
-    setCurrentAvatar(savedUser.avatar);
     setIsLoginOpen(false);
   };
 
   const handleUpdateUser = (userData) => {
-    const updated = { ...user, ...userData };
-    setUser(updated);
-    setCurrentAvatar(userData.avatar);
+    setUser(userData);
   };
 
   const handleLogout = () => {
     setUser(null);
     setCurrentAvatar(userDefault);
+    localStorage.removeItem("currentAvatar");
     setIsSettingsModalOpen(false);
   };
 
@@ -134,13 +113,8 @@ const App = () => {
 
   const capitalize = (s) => s.charAt(0).toUpperCase() + s.slice(1);
   const month = new Intl.DateTimeFormat("uk", { month: "2-digit" }).format(now);
-  const weekday = capitalize(
-    new Intl.DateTimeFormat("uk", { weekday: "long" }).format(now),
-  );
-  const heroDateString = `${String(now.getHours()).padStart(2, "0")}:${String(
-    now.getMinutes(),
-  ).padStart(2, "0")}:${String(now.getSeconds()).padStart(2, "0")} ${weekday}, ${now.getDate()}.${month}.${now.getFullYear()}`;
-
+  const weekday = capitalize(new Intl.DateTimeFormat("uk", { weekday: "long" }).format(now));
+  const heroDateString = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}:${String(now.getSeconds()).padStart(2, "0")} ${weekday}, ${now.getDate()}.${month}.${now.getFullYear()}`;
   return (
     <ThemeWrapper $isDarkMode={isDarkMode}>
       <div className="App">
@@ -151,7 +125,7 @@ const App = () => {
             onOpenSettings={() => setIsSettingsModalOpen(true)}
             onOpenVip={() => setIsVipModalOpen(true)}
             onOpenShop={() => setIsShopOpen(true)}
-            onOpenAchievements={() => setIsAchivmentsOpen(true)} // Передача функції для досягнень
+            onOpenAchievements={() => setIsAchivmentsOpen(true)}
             user={user}
             isDarkMode={isDarkMode}
             toggleTheme={toggleTheme}
@@ -166,11 +140,7 @@ const App = () => {
           <GraphicWeekly />
           <Aihelp isDarkMode={isDarkMode} />
           <MusicPhoto user={user} onOpenRegister={() => setIsModalOpen(true)} />
-          <FanArt
-            isDarkMode={isDarkMode}
-            user={user}
-            onOpenRegister={() => setIsModalOpen(true)}
-          />
+          <FanArt isDarkMode={isDarkMode} user={user} onOpenRegister={() => setIsModalOpen(true)} />
         </div>
         <Footer toggleTheme={toggleTheme} />
 
@@ -198,21 +168,12 @@ const App = () => {
           />
         )}
 
-        {isVipModalOpen && (
-          <VipModal onClose={() => setIsVipModalOpen(false)} />
-        )}
-
-        {isShopOpen && (
-          <ShopModal
-            onClose={() => setIsShopOpen(false)}
-            hasVip={!!user} 
-          />
-        )}
+        {isVipModalOpen && <VipModal onClose={() => setIsVipModalOpen(false)} />}
+        
+        {isShopOpen && <ShopModal onClose={() => setIsShopOpen(false)} hasVip={!!user} />}
+        
         {isAchivmentsOpen && (
-          <AchivmentsModal 
-            onClose={() => setIsAchivmentsOpen(false)} 
-            isDarkMode={isDarkMode}
-          />
+          <AchivmentsModal onClose={() => setIsAchivmentsOpen(false)} isDarkMode={isDarkMode} />
         )}
       </div>
     </ThemeWrapper>

@@ -37,6 +37,7 @@ const ModalOverlay = styled.div`
   background: rgba(0, 0, 0, 0.6);
   display: flex;
   justify-content: center;
+  backdrop-filter: blur(3px);
   align-items: center;
   z-index: 1000;
   animation: ${props => (props.$isClosing ? fadeOut : "none")} 0.5s ease-out forwards;
@@ -109,7 +110,8 @@ const LoginModal = ({ onClose, onLogin }) => {
 
   const handleLogin = (e) => {
     e.preventDefault();
-    const savedUser = JSON.parse(localStorage.getItem("registered_user"));
+    const savedUser = JSON.parse(localStorage.getItem("active_user")) || 
+                      JSON.parse(localStorage.getItem("registered_user"));
     if (
       savedUser &&
       savedUser.account === email &&

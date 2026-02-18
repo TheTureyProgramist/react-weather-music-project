@@ -1,4 +1,5 @@
-import styled, { keyframes } from "styled-components";
+import React from "react";
+import styled, { keyframes, css } from "styled-components";
 import logo from "../../photos/hero-header/logo.png";
 
 const pulse = keyframes`
@@ -157,7 +158,7 @@ const IconButton = styled.button`
   cursor: pointer;
   font-size: 13px;
   display: flex;
-  color: ${(props) => (props.$isDarkMode ? "#fff" : "#1a1a1a")}; /* Пофіксив колір тексту */
+  color: ${(props) => (props.$isDarkMode ? "#fff" : "#1a1a1a")};
   align-items: center;
   @media (min-width: 768px) {
     font-size: 16px;
@@ -166,6 +167,7 @@ const IconButton = styled.button`
     font-size: 19px;
   }
 `;
+
 const CounterText = styled.span`
   font-size: 6px;
   font-weight: 700;
@@ -185,13 +187,28 @@ const HeaderLogo = styled.img`
     height: 75px;
   }
 `;
-
 const HeaderAvatar = styled.img`
   width: 32px;
   height: 32px;
   border-radius: 50%;
   object-fit: cover;
-  border: 1px solid #ddd;
+  display: block;
+  border: 2px solid transparent;
+  background-image: ${(props) =>
+    props.$bColor?.includes("linear-gradient")
+      ? `linear-gradient(white, white), ${props.$bColor}`
+      : "none"};
+  background-origin: border-box;
+  background-clip: content-box, border-box;
+  background-color: ${(props) =>
+    props.$bColor?.includes("linear-gradient") ? "transparent" : "transparent"};
+  border-color: ${(props) =>
+    props.$bColor?.includes("linear-gradient") ? "transparent" : props.$bColor || "transparent"};
+  ${(props) => props.$bColor?.includes("270deg") && css`
+    background-size: 100% 100%, 400% 400%;
+    animation: ${flow} 5s ease infinite;
+  `}
+
   @media (min-width: 768px) {
     width: 40px;
     height: 40px;
@@ -201,18 +218,38 @@ const HeaderAvatar = styled.img`
     height: 50px;
   }
 `;
-
 const UserName = styled.span`
   font-size: 9px;
-  font-weight: 500;
+  font-weight: bold;
   margin-right: 5px;
-  color: ${(props) => (props.$isDarkMode ? "#fff" : "#333")};
+  ${(props) => {
+    const isGradient = props.$uColor?.includes("linear");
+    const isAnimated = props.$uColor?.includes("270deg");
+    if (isGradient) {
+      return css`
+        background: ${props.$uColor};
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        ${isAnimated && css`
+          background-size: 400% 400%;
+          animation: ${flow} 5s ease infinite;
+        `}
+      `;
+    } else {
+      return css`
+        color: ${props.$uColor || "inherit"};
+        background: none;
+        -webkit-background-clip: none;
+        -webkit-text-fill-color: currentcolor;
+      `;
+    }
+  }}
   @media (min-width: 768px) {
     font-size: 15px;
-     margin-right: 5px;
+    margin-right: 5px;
   }
 `;
-
 const Header = ({
   onOpenRegister,
   onOpenLogin,
@@ -244,7 +281,6 @@ const Header = ({
               </IconButton>
               <NotificationBadge>!</NotificationBadge>
             </IconWrapper>
-
             <IconButton title="Досягнення" onClick={onOpenAchievements} $isDarkMode={isDarkMode}>
               🏆
             </IconButton>
@@ -254,10 +290,8 @@ const Header = ({
             <IconButton onClick={onLogout} title="Вийти" $isDarkMode={isDarkMode}>
               🚪
             </IconButton>
-            <UserName $isDarkMode={isDarkMode}>
-              {user.firstName} {user.lastName}
-            </UserName>
-            <HeaderAvatar src={currentAvatar} alt="User" />
+            <UserName $uColor={user.textColor}>{user.firstName}</UserName>
+            <HeaderAvatar src={currentAvatar} $bColor={user.borderColor} />
           </>
         ) : (
           <>

@@ -110,14 +110,17 @@ const HeroTitle = styled.h1`
   text-align: center;
   font-family: var(--font-family);
   font-weight: 600;
-  font-size: 12px;
+  font-size: 10px;
   color: #fff;
+   width: 250px;
   margin: 0;
   @media (min-width: 768px) {
-    font-size: 17px;
+    font-size: 15px;
+     width: 450px;
   }
   @media (min-width: 1200px) {
-    font-size: 26px;
+    font-size: 20px;
+    width: 650px;
   }
 `;
 
@@ -240,7 +243,7 @@ const Hero = ({ heroDateString }) => {
         <HeroBlue>Сти</HeroBlue>
         <HeroYellow>хія</HeroYellow>
       </HeroDecors>
-      <HeroTitle>Безкоштовна приладова панель погоди</HeroTitle>
+      <HeroTitle>Безкоштовна панель погоди, музики, фан-артів, технологіями ШІ та системою 🧧 та 🏆.</HeroTitle>
       <HeroDecor>
         <HeroLineMobile />
         <HeroFix>

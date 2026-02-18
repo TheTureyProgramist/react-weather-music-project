@@ -24,7 +24,7 @@ import impossible2 from "../../photos/fan-art/impossible2.webp";
 import matrix2 from "../../photos/fan-art/matrix2.jpg";
 import virus from "../../photos/fan-art/virus.webp";
 import kolada from "../../photos/fan-art/kolada.webp";
-import document from "../../photos/fan-art/document.webp";
+// import document from "../../photos/fan-art/document.webp";
 import anchor from "../../photos/fan-art/anchor.webp";
 import parol from "../../photos/fan-art/parol.jpg";
 import password from "../../photos/fan-art/password.webp";
@@ -43,6 +43,7 @@ import wall from "../../photos/fan-art/wall.webp";
 import cycle from "../../photos/fan-art/cycle.webp";
 import masons from "../../photos/fan-art/masons.webp";
 import texting from "../../photos/fan-art/text.jpg";
+import hills from "../../photos/hero-header/hiils.jpg";
 const fadeIn = keyframes`
   from { opacity: 0; }
   to { opacity: 1; }
@@ -68,6 +69,7 @@ const ModalOverlay = styled.div`
   top: 0;
   left: 0;
   width: 100%;
+  backdrop-filter: blur(3px);
   height: 100%;
   background: rgba(0, 0, 0, 0.85);
   display: flex;
@@ -291,6 +293,12 @@ const AchivmentsModal = ({ onClose }) => {
           img: kolada,
         },
         {
+          name: "З двох краще!",
+          goal: "Зайдіть в акаунт з 2 пристороЇв. Отримайте голубий колір текту імені.",
+          reward: "20 🧧",
+          img: hills,
+        },
+        {
           name: "Бог любить трійцю!",
           goal: "Ціль: заходьте до нас після реєстрації 3 дні підряд.",
           reward: "30 🧧",
@@ -331,12 +339,6 @@ const AchivmentsModal = ({ onClose }) => {
     {
       title: "🛠 Технічні та Налаштування",
       items: [
-        {
-          name: "Що!?!?!?!?!?!?",
-          goal: "Ціль: натисніть просто на угоду користувача і виділість 39 символів за 3,9с.",
-          reward: "39 🧧",
-          img: document,
-        },
         {
           name: "Хапай якір!",
           goal: "Ціль: вийдіть з акаунту і поверніться через логін.",

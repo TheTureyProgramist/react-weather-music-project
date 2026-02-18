@@ -34,6 +34,7 @@ const Overlay = styled.div`
   background-color: rgba(0, 0, 0, 0.85);
   display: flex;
   justify-content: center;
+  backdrop-filter: blur(3px);
   align-items: center;
   z-index: 2000;
   padding: 10px;
@@ -252,27 +253,27 @@ const ShopModal = ({ onClose }) => {
   };
   const packs = [
     { name: "Механічний", 
-      count: 100, 
+      count: 75, 
       img: time, 
-      buttonText: "14.99грн",
+      buttonText: "11.99грн",
       badge: "2 рази/добу",
      },
     {
       name: "Бундючий",
-      count: 200,
+      count: 100,
       img: turkeys,
-      oldPrice: "19.99грн",
-      buttonText: "18.99грн",
-      badge: "-10% Популярний, ∞ в лімітах",
+      oldPrice: "15.99грн",
+      buttonText: "13.99грн",
+      badge: "≈-10% Популярний, ∞ в лімітах",
     },
     {
       name: "Драконячий",
-      count: 250,
+      count: 200,
       img: dinofroz,
       special: true,
-      oldPrice: "24.99грн",
-      buttonText: "19.99грн",
-      badge: "-20% Найвигідніший, Раз/добу",
+      oldPrice: "19.99грн",
+      buttonText: "15.99грн",
+      badge: "≈-50%! Найвигідніший, Раз/добу",
     },
   ];
   return (

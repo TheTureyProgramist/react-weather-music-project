@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from "react";
-import styled, { keyframes } from "styled-components";
+import styled, { keyframes, css } from "styled-components";
 import InfoModal from "./InfoModal";
 
 const slideIn = keyframes`
@@ -28,6 +28,7 @@ const fadeOut = keyframes`
   0% { opacity: 1; }
   100% { opacity: 0; }
 `;
+
 const flow = keyframes`
   0% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
@@ -60,6 +61,7 @@ const ModalOverlay = styled.div`
   top: 0;
   left: 0;
   width: 100%;
+  backdrop-filter: blur(3px);
   height: 100%;
   background: rgba(0, 0, 0, 0.6);
   display: flex;
@@ -115,10 +117,38 @@ const Input = styled.input`
   background: transparent;
   box-sizing: border-box;
 `;
+const NameInput = styled(Input)`
+  caret-color: black;
+  font-weight: bold;
+  ${(props) => {
+    const color = props.$textColor || "inherit";
+    const isGradient = color.includes("linear");
+    const isAnimated = color.includes("270deg");
+    if (isGradient) {
+      return css`
+        background: ${color};
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        ${isAnimated && css`
+          background-size: 400% 400%;
+          animation: ${flow} 5s ease infinite;
+        `}
+      `;
+    } else {
+      return css`
+        color: ${color};
+        background: transparent;
+        -webkit-background-clip: none;
+        -webkit-text-fill-color: currentcolor;
+      `;
+    }
+  }}
+`;
 const Select = styled.select`
   padding: 12px;
   border: 1px solid #000000;
-    background: transparent;
+  background: transparent;
   border-radius: 10px;
   flex: 1;
   background: white;
@@ -151,23 +181,28 @@ const TermsBtn = styled.span`
   font-weight: bold;
   font-size: 14px;
 `;
-
 const AvatarOption = styled.div`
   width: 60px;
   height: 60px;
   min-width: 60px;
   border-radius: 50%;
-  border: 2px solid
-    ${(props) => (props.$isSelected ? "#ffb36c" : "transparent")};
+  padding: 3px;
+  background: ${(props) => (props.$isSelected ? props.$borderColor : "transparent")};
   cursor: pointer;
-  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  ${(props) => props.$isSelected && props.$borderColor?.includes("270deg") && css`
+    background-size: 400% 400%;
+    animation: ${flow} 5s ease infinite;
+  `}
   img {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    border-radius: 50%;
   }
 `;
-
 const AvatarSlider = styled.div`
   display: flex;
   gap: 15px;
@@ -182,6 +217,33 @@ const AvatarSlider = styled.div`
   }
 `;
 
+const ColorContainer = styled.div`
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding: 5px 0;
+  &::-webkit-scrollbar {
+    height: 6px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: #ffb36c;
+    border-radius: 10px;
+  }
+`;
+const ColorCircle = styled.div`
+  width: 30px;
+  height: 30px;
+  min-width: 30px;
+  border-radius: 50%;
+  background: ${(props) => props.$color};
+  cursor: pointer;
+  border: 2px solid ${(props) => (props.$isSelected ? "#000" : "transparent")};
+  box-shadow: ${(props) => (props.$isSelected ? "0 0 5px rgba(0,0,0,0.5)" : "0 0 2px rgba(0,0,0,0.2)")};
+  ${(props) => props.$color.includes("270deg") && css`
+    background-size: 400% 400%;
+    animation: ${flow} 5s ease infinite;
+  `}
+`;
 const SaveButton = styled.button`
   background: #ffb36c;
   height: 45px;
@@ -195,19 +257,37 @@ const SaveButton = styled.button`
     cursor: not-allowed;
   }
 `;
+
 const CancelButton = styled.button`
   background: transparent;
   height: 45px;
   flex: 1;
   border-radius: 10px;
   font-weight: bold;
-    border: 2px solid black;
+  border: 2px solid black;
   cursor: pointer;
 `;
-const Title = styled.h3`
-font-weight: 900;
-color: black;
+const GreenText = styled.p`
+  font-size: 12px;
+  font-weight: bold;
+  color: green
 `
+const Title = styled.h3`
+  font-weight: 900;
+  color: black;
+`;
+
+const COLORS = [
+  { name: "Сірий", value: "grey" },
+  { name: "Помаранчевий", value: "orange" },
+  { name: "Фіолетовий", value: "purple" },
+  { name: "Червоний", value: "red" },
+  { name: "Веселковий", value: "linear-gradient(45deg, red, orange, yellow, green, blue, purple)" },
+  { name: "Анімований", value: "linear-gradient(270deg, #ff7eb3, #ff758c, #7afcff, #feffb7, #58e2c2)" },
+  { name: "Голубий", value: "#00e1ff" },
+  { name: "Синій", value: "blue" }
+];
+
 const UserSettingsModal = ({ onClose, user, availableAvatars, onUpdate }) => {
   const [y, m, d] = user?.birthDate ? user.birthDate.split("-") : ["", "", ""];
   const [formData, setFormData] = useState({
@@ -218,7 +298,9 @@ const UserSettingsModal = ({ onClose, user, availableAvatars, onUpdate }) => {
     oldPassword: "",
     newPassword: "",
     confirmPassword: "",
-    avatarIndex: availableAvatars.indexOf(user?.avatar) || 0,
+    avatarIndex: availableAvatars.indexOf(user?.avatar) !== -1 ? availableAvatars.indexOf(user?.avatar) : 0,
+    textColor: user?.textColor || "grey",
+    borderColor: user?.borderColor || "grey",
   });
   const [showTerms, setShowTerms] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
@@ -230,26 +312,18 @@ const UserSettingsModal = ({ onClose, user, availableAvatars, onUpdate }) => {
       onClose();
     }, 500);
   };
+  
   const days = Array.from({ length: 31 }, (_, i) => i + 1);
   const months = [
-    "Січень",
-    "Лютий",
-    "Березень",
-    "Квітень",
-    "Травень",
-    "Червень",
-    "Липень",
-    "Серпень",
-    "Вересень",
-    "Жовтень",
-    "Листопад",
-    "Грудень",
+    "Січень", "Лютий", "Березень", "Квітень", "Травень", "Червень",
+    "Липень", "Серпень", "Вересень", "Жовтень", "Листопад", "Грудень",
   ];
   const currentYear = new Date().getFullYear();
   const years = Array.from(
     { length: currentYear - 1909 + 1 },
     (_, i) => currentYear - i,
   );
+  
   const isInvalidDate = useMemo(() => {
     if (!formData.day || !formData.month || !formData.year) return false;
     const date = new Date(formData.year, formData.month - 1, formData.day);
@@ -259,6 +333,7 @@ const UserSettingsModal = ({ onClose, user, availableAvatars, onUpdate }) => {
       date.getDate() !== parseInt(formData.day)
     );
   }, [formData.day, formData.month, formData.year]);
+  
   const handleSubmit = () => {
     if (isInvalidDate) {
       alert("Введена некоректна дата!");
@@ -275,9 +350,12 @@ const UserSettingsModal = ({ onClose, user, availableAvatars, onUpdate }) => {
       }
     }
     onUpdate({
+      account: user?.account || formData.name,
       firstName: formData.name,
       avatar: availableAvatars[formData.avatarIndex],
       birthDate: `${formData.year}-${formData.month.toString().padStart(2, "0")}-${formData.day.toString().padStart(2, "0")}`,
+      textColor: formData.textColor,
+      borderColor: formData.borderColor,
       ...(formData.newPassword
         ? {
             oldPassword: formData.oldPassword,
@@ -296,7 +374,8 @@ const UserSettingsModal = ({ onClose, user, availableAvatars, onUpdate }) => {
         <Title style={{ textAlign: "center" }}>Налаштування</Title>
         <Section>
           <label style={{ fontSize: "13px", fontWeight: "bold" }}>Ім'я</label>
-          <Input
+          <NameInput
+            $textColor={formData.textColor}
             value={formData.name}
             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
           />
@@ -380,15 +459,47 @@ const UserSettingsModal = ({ onClose, user, availableAvatars, onUpdate }) => {
             }
           />
         </Section>
+        
+        <Section>
+          <label style={{ fontSize: "13px", fontWeight: "bold" }}>Колір тексту</label>
+          <ColorContainer>
+            {COLORS.map((color, i) => (
+              <ColorCircle
+                key={i}
+                $color={color.value}
+                $isSelected={formData.textColor === color.value}
+                title={color.name}
+                onClick={() => setFormData({ ...formData, textColor: color.value })}
+              />
+            ))}
+          </ColorContainer>
+        </Section>
+
+        <Section>
+          <label style={{ fontSize: "13px", fontWeight: "bold" }}>Колір рамки аватара</label>
+          <ColorContainer>
+            {COLORS.map((color, i) => (
+              <ColorCircle
+                key={i}
+                $color={color.value}
+                $isSelected={formData.borderColor === color.value}
+                title={color.name}
+                onClick={() => setFormData({ ...formData, borderColor: color.value })}
+              />
+            ))}
+          </ColorContainer>
+        </Section>
+
         <Section>
           <div style={{ fontSize: "12px", fontWeight: "bold", color: "grey" }}>
-            Оберіть аватар, 1-ий доступний з<AnimatedText>Стихія+</AnimatedText>
+            Аватар оберіть, 1-ий доступний з<AnimatedText>Стихія+</AnimatedText>, наступні 2 за <GreenText>досягнення</GreenText>. Та ще 3 за 🧧, та сама логіка з вибором кольору імені, та рамки аватара.
           </div>
           <AvatarSlider>
             {availableAvatars.map((img, i) => (
               <AvatarOption
                 key={i}
                 $isSelected={formData.avatarIndex === i}
+                $borderColor={formData.borderColor}
                 onClick={() => setFormData({ ...formData, avatarIndex: i })}
               >
                 <img src={img} alt="avatar" />
@@ -419,4 +530,5 @@ const UserSettingsModal = ({ onClose, user, availableAvatars, onUpdate }) => {
     </ModalOverlay>
   );
 };
+
 export default UserSettingsModal;
