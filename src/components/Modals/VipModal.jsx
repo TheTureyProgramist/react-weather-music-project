@@ -16,6 +16,7 @@ import horrordog from "../../photos/vip-images/horror.jpg";
 import asium from "../../photos/vip-images/asium.jpg";
 import rainbow from "../../photos/fan-art/rainbow.webp";
 import letters from "../../photos/fan-art/letters.webp";
+
 const appearAndShrink = keyframes`
   0% {
     opacity: 0;
@@ -33,6 +34,7 @@ const appearAndShrink = keyframes`
     filter: blur(0);
   }
 `;
+
 const slideIn = keyframes`
 0% {
 transform: translateY(100%) scale(0.5);
@@ -42,10 +44,12 @@ transform: translateY(0%)
 scale(1);
 }
 `;
+
 const slideOut = keyframes`
   0% { transform: translateY(0%) scale(1); opacity: 1; }
   100% { transform: translateY(100%) scale(0.5); opacity: 0; }
 `;
+
 const flow = keyframes`
   0% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
@@ -68,7 +72,7 @@ const AnimatedText = styled.h1`
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  animation: ${flow} 5s ease infinite;
+  animation: ${flow} 5s ease infinite, ${appearAndShrink} 0.8s ease-out forwards;
   color: transparent;
   text-align: start;
   margin-bottom: 8px;
@@ -171,11 +175,11 @@ const BenefitCard = styled.div`
   border-radius: 8px;
   padding: 6px;
   opacity: 0;
-  animation: ${appearAndShrink} 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  animation: ${appearAndShrink} 2s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
   margin-bottom: 6px;
-  transition: transform 0.2s;
+  transition: transform 1s;
   ${({ $index }) => css`
-    animation-delay: ${0.2 + $index * 0.1}s;
+    animation-delay: ${0.3 + $index * 0.1}s;
   `}
   &:hover {
     border-color: #ffb36c;
@@ -206,30 +210,21 @@ const SectionTitle = styled.div`
   font-size: 12px;
   border-left: 2px solid #ffb36c;
   padding-left: 8px;
+  opacity: 0;
+  animation: ${appearAndShrink} 0.6s ease-out forwards;
+  ${({ $delay }) => css`
+    animation-delay: ${$delay || "1s"};
+  `}
 `;
 
 const VipFix = styled.div`
   display: flex;
   flex-direction: column;
   gap: 8px;
+  opacity: 0;
+  animation: ${appearAndShrink} 0.8s ease-out forwards;
+  animation-delay: 0.5s;
 `;
-
-// const Input = styled.input`
-//   background: transparent;
-//   border: 1px solid #ffb36c;
-//   border-radius: 4px;
-//   padding: 8px 12px;
-//   color: #fff;
-//   width: 260px;
-//   font-size: 12px;
-//   @media (max-width: 768px) {
-//     width: 100%;
-//   }
-//   &::placeholder {
-//     color: rgba(255, 179, 108, 0.5);
-//     font-size: 10px;
-//   }
-// `;
 
 const VipImage = styled.img`
   width: 260px;
@@ -258,6 +253,7 @@ const VipButton = styled.button`
     width: 100%;
   }
 `;
+
 const VipText = styled.p`
   width: 100%;
   max-width: 300px;
@@ -273,16 +269,17 @@ const VipText = styled.p`
     justify-content: flex-end;
   }
 `;
+
+const VipFormater = styled.form`
+  display: flex;
+  gap: 6px;
+  flex-direction: column;
+`;
 const RedLine = styled.div`
   background: red;
   width: 100%;
   height: 1px;
   margin: 10px 0;
-`;
-const VipFormater = styled.form`
-  display: flex;
-  gap: 6px;
-  flex-direction: column;
 `;
 const VipWarning = styled.p`
   color: red;
@@ -290,19 +287,9 @@ const VipWarning = styled.p`
   word-wrap: break-word;
   margin-bottom: 2px;
 `;
-// const InputBlock = styled.div`
-//   display: flex;
-//   gap: 10px;
-//   flex-direction: column;
-//   @media (max-width: 768px) {
-//     flex-direction: row;
-//   }
-//   @media (max-width: 1200px) {
-//     flex-direction: column;
-//   }
-// `;
 const VipModal = ({ onClose }) => {
   const [isClosing, setIsClosing] = useState(false);
+
   const handleClose = (e) => {
     if (e) e.stopPropagation();
     setIsClosing(true);
@@ -310,6 +297,32 @@ const VipModal = ({ onClose }) => {
       onClose();
     }, 500);
   };
+
+  const aiBenefits = [
+    { src: texts, text: "6 безкоштовних повідомлень/день + за 🧧 4спроби, замість 3 безкоштовних повідомлень/день + за 🧧 2. Після вичерпування ліміту ціна повідомлення 0,1грн, не 0,12грн + 🧧. Ліміт безкоштовних нестабільний через активність користувачів." },
+    { src: lebid, text: "2 (не 1) зображення/міс по 3,99грн, далі 5,99грн." },
+    { src: clip, text: "Відео 56грн/с (замість 70грн/с)." },
+    { src: music, text: "mp3 2,5грн/хв, не 3,5грн/хв." }
+  ];
+
+  const musicBenefits = [
+    { src: monody, text: "Музичний файл та текст пісні Monody-TheFatRat та VIP-аватар (Нічний ліс) доступні одразу після реєстрації, не через 7дн." },
+    { src: asium, text: "Можна взяти в обране 8 пісень, а не 4! І на 50% дешевше(5, не 2 безкоштовних кріплень, та 3(не 1) за 🧧)!" },
+    { src: dinofroz, text: "Розширений кеш для офлайн-прослуховування." },
+    { src: horrordog, text: "Джойстики звуку та промотувачі 10с вперед/назад для муз. карток." },
+    { src: letters, text: "Ціни на аватари, рамки та райдужний текст менш спонтанні 20-30🧧, не 20-40🧧:" },
+    { src: dragons, text: "Автоповтор та доступ до пошуку пісні/добу дешевший на 25% в 🧧. А діапазон цін екслюзивних аватарів дешевший: 20-30🧧, замість 20-40🧧." }
+  ];
+
+  const systemBenefits = [
+    { src: vip, text: "Оновлений стиль сайту (з перемикачем лого вгорі, в лівому кутку)." },
+    { src: stars, text: "Плавніший регулятор темної теми." },
+    { src: dragons, text: "Знижка 50% у магазині конвертів, досягнення дають додатково до 20🧧, якщо їх к-сть у досягненнях < 40. У сумі вийде 40. Навіть, якщо ви вже виконали досягнення вони будуть після оплати автоматично відправлені. Сплата тарифу переодоплатою(разово) та місячним тарифом дає 50🧧. Ліміт покупок наборів 🧧*2. Можна зберігати 1000🧧, замість 500. Шанс 25%(не 20%) на джекпот(Ціна збільшена на 10🧧)." },
+    { src: buton, text: "Кнопки Пошук міста/Оновлення, видалення картки має перезарядку 12с замість 1хв. Прогноз на 21 день, не на 14 днів." },
+    { src: rainbow, text: "Райдужне ім'я та рамка доступні зразу не через 7дн після реєстрації." },
+    { src: time, text: "Нові функції з'являться пізніше." }
+  ];
+
   return (
     <Overlay $isClosing={isClosing} onClick={handleClose}>
       <VipModalDiv $isClosing={isClosing} onClick={(e) => e.stopPropagation()}>
@@ -317,139 +330,49 @@ const VipModal = ({ onClose }) => {
         <AnimatedText>Стихія+</AnimatedText>
         <VipBlock>
           <VipFixScroll>
-            <SectionTitle>ШІ</SectionTitle>
-            <BenefitCard>
-              <BenefitImage src={texts} />
-              <VipBonus>
-                6 безкоштовних повідомлень/день + за 🧧 4спроби, замість 3
-                безкоштовних повідомлень/день + за 🧧 2. Після вичерпування
-                ліміту ціна повідомлення 0,1грн, не 0,12грн + 🧧. Ліміт
-                безкоштовних нестабільний через активність користувачів.
-              </VipBonus>
-            </BenefitCard>
-            <BenefitCard>
-              <BenefitImage src={lebid} />
-              <VipBonus>
-                2 (не 1) зображення/міс по 3,99грн, далі 5,99грн.
-              </VipBonus>
-            </BenefitCard>
-            <BenefitCard>
-              <BenefitImage src={clip} />
-              <VipBonus>Відео 56грн/с (замість 70грн/с).</VipBonus>
-            </BenefitCard>
-            <BenefitCard>
-              <BenefitImage src={music} />
-              <VipBonus>mp3 2,5грн/хв, не 3,5грн/хв.</VipBonus>
-            </BenefitCard>
-            <SectionTitle>Музика та Арт</SectionTitle>
-            <BenefitCard>
-              <BenefitImage src={monody} />
-              <VipBonus>
-                Музичний файл та текст пісні Monody-TheFatRat та
-                VIP-аватар (Нічний ліс) доступні одразу після реєстрації, не
-                через 7дн.
-              </VipBonus>
-            </BenefitCard>
-            <BenefitCard>
-              <BenefitImage src={asium} />
-              <VipBonus>
-                Можна взяти в обране 8 пісень, а не 4! І на 50% дешевше(5, не 2
-                безкоштовних кріплень, та 3(не 1) за 🧧)! 
-              </VipBonus>
-            </BenefitCard>
-            <BenefitCard>
-              <BenefitImage src={dinofroz} />
-              <VipBonus>Розширений кеш для офлайн-прослуховування.</VipBonus>
-            </BenefitCard>
-            <BenefitCard>
-              <BenefitImage src={horrordog} />
-              <VipBonus>
-                Джойстики звуку та промотувачі 10с вперед/назад для
-                муз. карток.{" "}
-              </VipBonus>
-            </BenefitCard>
-            <BenefitCard>
-              <BenefitImage src={letters} />
-              <VipBonus>
-                Ціни на аватари, рамки та райдужний текст менш спонтанні 20-30🧧, не
-                20-40🧧:
-              </VipBonus>
-            </BenefitCard>
-            <BenefitCard>
-              <BenefitImage src={dragons} />
-              <VipBonus>
-                Автоповтор та доступ до пошуку пісні/добу дешевший на 25% в 🧧. А діапазон цін
-                екслюзивних аватарів дешевший: 20-30🧧, замість 20-40🧧.
-              </VipBonus>
-            </BenefitCard>
-            <SectionTitle>Система</SectionTitle>
-            <BenefitCard>
-              <BenefitImage src={vip} />
-              <VipBonus>
-                Оновлений стиль сайту (з перемикачем лого вгорі, в лівому
-                кутку).
-              </VipBonus>
-            </BenefitCard>
-            <BenefitCard>
-              <BenefitImage src={stars} />
-              <VipBonus>Плавніший регулятор темної теми.</VipBonus>
-            </BenefitCard>
-            <BenefitCard>
-              <BenefitImage src={dragons} />
-              <VipBonus>
-                Знижка 50% у магазині конвертів, досягнення дають додатково до
-                20🧧, якщо їх к-сть у досягненнях &lt; 40. У сумі вийде 40.
-                Навіть, якщо ви вже виконали досягнення вони будуть після оплати
-                автоматично відправлені. Сплата тарифу переодоплатою(разово) та
-                місячним тарифом дає 50🧧. Ліміт покупок наборів 🧧*2. Можна
-                зберігати 1000🧧, замість 500. Шанс 25%(не 20%) на джекпот(Ціна
-                збільшена на 10🧧).
-              </VipBonus>
-            </BenefitCard>
-            <BenefitCard>
-              <BenefitImage src={buton} />
-              <VipBonus>
-                Кнопки Пошук міста/Оновлення, видалення картки має перезарядку
-                12с замість 1хв. Прогноз на 21 день, не на 14 днів.
-              </VipBonus>
-            </BenefitCard>
-            <BenefitCard>
-              <BenefitImage src={rainbow} />
-              <VipBonus>
-                Райдужне ім'я та рамка доступні зразу не через 7дн після реєстрації.
-              </VipBonus>
-            </BenefitCard>
-            <BenefitCard>
-              <BenefitImage src={time} />
-              <VipBonus>Нові функції з'являться пізніше.</VipBonus>
-            </BenefitCard>
+            <SectionTitle $delay="0.2s">ШІ</SectionTitle>
+            {aiBenefits.map((item, i) => (
+              <BenefitCard key={i} $index={i}>
+                <BenefitImage src={item.src} />
+                <VipBonus>{item.text}</VipBonus>
+              </BenefitCard>
+            ))}
+
+            <SectionTitle $delay="0.7s">Музика та Арт</SectionTitle>
+            {musicBenefits.map((item, i) => (
+              <BenefitCard key={i} $index={i + 4}>
+                <BenefitImage src={item.src} />
+                <VipBonus>{item.text}</VipBonus>
+              </BenefitCard>
+            ))}
+
+            <SectionTitle $delay="1.2s">Система</SectionTitle>
+            {systemBenefits.map((item, i) => (
+              <BenefitCard key={i} $index={i + 10}>
+                <BenefitImage src={item.src} />
+                <VipBonus>{item.text}</VipBonus>
+              </BenefitCard>
+            ))}
           </VipFixScroll>
+
           <VipFix>
             <VipFormater onSubmit={(e) => e.preventDefault()}>
-              <SectionTitle>TurkeyStudio VIP!</SectionTitle>
+              <SectionTitle $delay="0.4s">TurkeyStudio VIP!</SectionTitle>
               <VipImage src={turkeys} />
-              <VipButton
-              // type="button" onClick={() => handlePayment("monthly")}
-              >
-                1,99грн/місяць
-              </VipButton>
-              <VipButton
-              // onClick={() => handlePayment("weekly")}
-              >
-                Передоплата: 3,99грн/тиждень
-              </VipButton>
+              <VipButton>1,99грн/місяць</VipButton>
+              <VipButton>Передоплата: 3,99грн/тиждень</VipButton>
               <VipText>Місячний тариф доступний, після передоплати.</VipText>
             </VipFormater>
           </VipFix>
         </VipBlock>
-        <RedLine />
-        <VipWarning>
+                <RedLine />
+                <VipWarning>
           Примітка: 1.Відмовишись від підписки, вам доведеться внести
           передоплату знову, якщо не передумаєте до кінця терміну тарифу.
         </VipWarning>
         <VipWarning>
-          Примітка: 2.Доступно з 14років, ціни не будуть мінятись, якщо
-          економічний стан не зміниться. І коли підписка закінчиться привілегії
+          Примітка: 2.Ціни не будуть змінюватись, якщо
+          економічний стан не зміниться. І коли підписка закінчиться привілегії(не всі)
           зникнуть.
         </VipWarning>
       </VipModalDiv>

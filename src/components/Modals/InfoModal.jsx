@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import styled, { keyframes } from "styled-components";
+import styled, { keyframes, css } from "styled-components";
 
 const slideIn = keyframes`
   0% { transform: translateY(100%) scale(0.9); opacity: 0; }
@@ -9,6 +9,33 @@ const slideIn = keyframes`
 const slideOut = keyframes`
   0% { transform: translateY(0%) scale(1); opacity: 1; }
   100% { transform: translateY(100%) scale(0.9); opacity: 0; }
+`;
+
+const appearAndShrink = keyframes`
+  0% {
+    opacity: 0;
+    transform: scale(1.3); 
+    filter: blur(10px);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(1.1);
+    filter: blur(2px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1); 
+    filter: blur(0);
+  }
+`;
+
+const animatedStyle = css`
+  opacity: 0;
+  transform-origin: left center; /* Щоб текст масштабувався від лівого краю */
+  animation: ${appearAndShrink} 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  ${({ $index }) => css`
+    animation-delay: ${0.2 + ($index || 0) * 0.08}s;
+  `}
 `;
 
 const Overlay = styled.div`
@@ -95,13 +122,15 @@ const SectionTitle = styled.h3`
   letter-spacing: 0.5px;
   border-left: 4px solid #8a2be2;
   padding-left: 15px;
+  ${animatedStyle}
 `;
 
-const Text = styled.p`
+const Text = styled.div`
   font-size: 14px;
   line-height: 1.7;
   color: #555;
   margin-bottom: 10px;
+  ${animatedStyle}
 `;
 
 const HighlightBox = styled.div`
@@ -110,6 +139,21 @@ const HighlightBox = styled.div`
   padding: 15px;
   border-radius: 10px;
   margin: 15px 0;
+  ${animatedStyle}
+`;
+const AcceptBtn = styled.button`
+  margin-top: 20px;
+  padding: 12px 35px;
+  background: #8a2be2;
+  color: white;
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+  font-weight: 600;
+  box-shadow: 0 4px 15px rgba(138, 43, 226, 0.3);
+  opacity: 0;
+  animation: ${appearAndShrink} 0.6s forwards;
+  animation-delay: 3s;
 `;
 
 const InfoModal = ({ onClose }) => {
@@ -119,6 +163,7 @@ const InfoModal = ({ onClose }) => {
     setIsClosing(true);
     setTimeout(() => onClose(), 400);
   };
+
   return (
     <Overlay $isClosing={isClosing} onClick={handleClose}>
       <Content $isClosing={isClosing} onClick={(e) => e.stopPropagation()}>
@@ -145,70 +190,75 @@ const InfoModal = ({ onClose }) => {
         >
           Останнє оновлення: 15 лютого 2026 року
         </h2>
+        
         <Section>
-          <Text>
+          <Text $index={1}>
             Ця Угода є юридично обов'язковим договором між Користувачем та
             Адміністрацією платформи. Натискаючи кнопку "Прийняти" або
             використовуючи будь-яку частину сервісу, ви підтверджуєте свою повну
             згоду з усіма пунктами.
           </Text>
         </Section>
-        <SectionTitle>1. Реєстрація та Вікові обмеження</SectionTitle>
-        <Text>
+
+        <SectionTitle $index={2}>1. Реєстрація та Вікові обмеження</SectionTitle>
+        <Text $index={3}>
           1.1. Доступ до базових функцій надається особам, що досягли{" "}
           <strong>13-річного віку</strong>.
         </Text>
-        <Text>
+        <Text $index={4}>
           1.2. Контент з маркуванням <strong>14+</strong> (зокрема певні музичні
           треки або візуальні матеріали) рекомендовані виключно особам
           відповідного віку.
         </Text>
-        <SectionTitle>2. Використання Штучного Інтелекту (ШІ)</SectionTitle>
-        <Text>
+
+        <SectionTitle $index={5}>2. Використання Штучного Інтелекту (ШІ)</SectionTitle>
+        <Text $index={6}>
           2.1. Сервіс використовує технології генеративного ШІ для надання
           допомоги та створення контенту.
         </Text>
-        <HighlightBox>
+        <HighlightBox $index={7}>
           <strong>Важливо:</strong> ШІ може генерувати фактично невірну або
           суб'єктивну інформацію. Адміністрація не несе відповідальності за
           поради ШІ.
         </HighlightBox>
-        <Text>
+        <Text $index={8}>
           2.2. Користувачеві заборонено використовувати ШІ для створення
           шкідливого коду, пропаганди ненависті, дискримінації або порушення
           законів України.
         </Text>
-        <Text>
+        <Text $index={9}>
           2.3. Ліміт безкоштовних повідомлень змінюється в залежності від
           активності користувачів.
         </Text>
-        <Text>
+        <Text $index={10}>
           2.4. Ви вносите гроші наперед перед генерацією ШІ. Гроші через помилки
           зв'язку/API не повертаються.
         </Text>
-        <SectionTitle>3. Авторські права та Комерція</SectionTitle>
-        <Text>
+
+        <SectionTitle $index={11}>3. Авторські права та Комерція</SectionTitle>
+        <Text $index={12}>
           3.1. Платформа надає технічний інструментарій для прослуховування
           аудіовізуального контенту. Адміністрація не є власником розміщених
           треків та використовує їх виключно в ознайомчих цілях. Усі права
           належать їх законним власникам.
         </Text>
-        <Text>
+        <Text $index={13}>
           3.2. <strong>Генерації користувача:</strong> Ви отримуєте право
           власності на результати своєї творчості, створені за допомогою
           інструментів сервісу (фан-арти, тексти), та маєте право на їх
           комерційне використання (продаж у розрукованому вигляді, а у
           віртуальному з умовою посилання на Стихію).
         </Text>
-        <Text>
+        <Text $index={14}>
           3.3. Для правовласників, я використовув їхні пісні з метою мотивації
           переглянути офіційний ресурс. У випадку якщо ви проти розміщення
           пишіть на емеіл theturkeyprogramist12@gmail.com. І обговорімо, за якої
           умови ви залишите пісню на сайті. Примітка: якщо не вийде домовитись
           ми видалимо пісню через 24год.
         </Text>
-        <SectionTitle>4. Конфіденційність та Дані</SectionTitle>
-        <Text>
+
+        <SectionTitle $index={15}>4. Конфіденційність та Дані</SectionTitle>
+        <Text $index={16}>
           4.1. Ми збираємо: Ім'я, дату народження, IP-адресу, дані про
           активність, вибір аватара,{" "}
           <strong>
@@ -216,21 +266,22 @@ const InfoModal = ({ onClose }) => {
           </strong>
           .
         </Text>
-        <Text>
+        <Text $index={17}>
           4.2. Мета збору: Персоналізація інтерфейсу, контроль вікового доступу,
           нарахування ігрових бонусів та покращення роботи ШІ.
         </Text>
-        <Text>
+        <Text $index={18}>
           4.3. Ми не передаємо ваші персональні дані третім особам, окрім
           випадків, передбачених чинним законодавством України.
         </Text>
-        <Text>
+        <Text $index={19}>
           4.4.Ми розміщую на сайті головоломки(деякі власні, а інші у власному
           стилі) + у вікнах зображень головоломок(деяких) компанії 5-bn
           games(взяв з PlayMarket), з метою мотивації зіграти в їхні ігри.
         </Text>
-        <SectionTitle>5. Правила поведінки (Анти-спам)</SectionTitle>
-        <Text>
+
+        <SectionTitle $index={20}>5. Правила поведінки (Анти-спам)</SectionTitle>
+        <Text $index={21}>
           Забороняється:
           <ul>
             <li>
@@ -244,78 +295,71 @@ const InfoModal = ({ onClose }) => {
             </li>
           </ul>
         </Text>
-        <SectionTitle>6. Відмова від гарантій</SectionTitle>
-        <Text>
+
+        <SectionTitle $index={22}>6. Відмова від гарантій</SectionTitle>
+        <Text $index={23}>
           Сервіс надається за принципом "як є" (as is). Ми не гарантуємо
           безперебійну роботу сайту у разі технічних збоїв на стороні
           провайдерів або форс-мажорних обставин.
         </Text>
-        <SectionTitle>7. Зміни та розірвання</SectionTitle>
-        <Text>
+
+        <SectionTitle $index={24}>7. Зміни та розірвання</SectionTitle>
+        <Text $index={25}>
           7.1. Адміністрація залишає за собою право змінювати цю Угоду в
           будь-який час. Продовження користування сайтом після змін означає вашу
           згоду з новою редакцією.
         </Text>
-        <Text>
+        <Text $index={26}>
           7.2. У разі порушення правил, акаунт користувача може бути
           заблокований без попередження. При блокуванні всі досягнення та
           внутрішня валюта анулюються без права на компенсацію.
         </Text>
-        <SectionTitle>8. Ціни</SectionTitle>
-        <Text>
+
+        <SectionTitle $index={27}>8. Ціни</SectionTitle>
+        <Text $index={28}>
           8.1. Активаційний платіж є оплатою за надання технічного доступу до
           преміум-функцій сервісу. Оскільки послуга вважається наданою в момент
           активації функцій, кошти за використаний період не повертаються, за
           винятком випадків повної технічної непрацездатності сервісу з вини
           Адміністрації.
         </Text>
-        <SectionTitle>
+
+        <SectionTitle $index={29}>
           9. Досягнення та Внутрішня валюта (Конверти)
         </SectionTitle>
-        <Text>
+        <Text $index={30}>
           9.1. <strong>Конверти</strong> — це внутрішня віртуальна валюта
           сервісу, яка не є грошовим засобом у розумінні законодавства та не
           може бути обміняна на реальні кошти.
         </Text>
-        <Text>
+        <Text $index={31}>
           9.2. Конверти та досягнення нараховуються за активність на сайті.
         </Text>
-        <Text>
+        <Text $index={32}>
           9.3. Адміністрація має право в односторонньому порядку змінювати
           вартість послуг у Конвертах або правила нарахування досягнень та
           додавати і прибирати їх.
         </Text>
-        <Text>
+        <Text $index={33}>
           9.4. Передача Конвертів між акаунтами можлива лише через офіційні
           інструменти сервісу. Будь-яка "торгівля" валютою поза сервісом
           заборонена.
         </Text>
+
         <hr
           style={{ border: "0", borderTop: "1px solid #eee", margin: "30px 0" }}
         />
         <div style={{ textAlign: "center", paddingBottom: "20px" }}>
-          <Text style={{ fontWeight: "600", color: "#333" }}>
+          <Text $index={34} style={{ fontWeight: "600", color: "#333" }}>
             Дякуємо, що ви з нами! Ваша безпека та творчість — наш пріоритет.
           </Text>
-          <button
-            onClick={handleClose}
-            style={{
-              marginTop: "20px",
-              padding: "12px 35px",
-              background: "#8a2be2",
-              color: "white",
-              border: "none",
-              borderRadius: "25px",
-              cursor: "pointer",
-              fontWeight: "600",
-              boxShadow: "0 4px 15px rgba(138, 43, 226, 0.3)",
-            }}
-          >
+          <AcceptBtn onClick={handleClose}>
             Я погоджуюсь з умовами
-          </button>
+          </AcceptBtn>
         </div>
       </Content>
     </Overlay>
   );
 };
+
 export default InfoModal;

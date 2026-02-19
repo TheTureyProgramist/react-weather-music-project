@@ -44,6 +44,7 @@ import cycle from "../../photos/fan-art/cycle.webp";
 import masons from "../../photos/fan-art/masons.webp";
 import texting from "../../photos/fan-art/text.jpg";
 import hills from "../../photos/hero-header/hiils.jpg";
+
 const fadeIn = keyframes`
   from { opacity: 0; }
   to { opacity: 1; }
@@ -62,6 +63,24 @@ const fadeOut = keyframes`
 const slideOut = keyframes`
   0% { transform: translateY(0%) scale(1); opacity: 1; }
   100% { transform: translateY(100%) scale(0.5); opacity: 0; }
+`;
+
+const appearAndShrink = keyframes`
+  0% {
+    opacity: 0;
+    transform: scale(1.3); 
+    filter: blur(10px);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(1.1);
+    filter: blur(2px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1); 
+    filter: blur(0);
+  }
 `;
 
 const ModalOverlay = styled.div`
@@ -137,8 +156,12 @@ const CategoryTitle = styled.div`
   padding-bottom: 5px;
   margin-bottom: 5px;
   font-weight: 900;
+  opacity: 0;
+  animation: ${appearAndShrink} 0.6s ease-out forwards;
+  ${({ $delay }) => css`
+    animation-delay: ${$delay || "0.2s"};
+  `}
 `;
-
 const AchivmentItem = styled.div`
   display: flex;
   align-items: center;
@@ -149,8 +172,15 @@ const AchivmentItem = styled.div`
   border: ${(props) =>
     props.isSpecial ? "2px solid #ff0000" : "1px solid #a2ff6c"};
   transition: transform 0.2s;
+  opacity: 0;
+  animation: ${appearAndShrink} 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  ${({ $index }) => css`
+    animation-delay: ${0.3 + $index * 0.1}s;
+  `}
+
   &:hover {
     background: rgba(162, 255, 108, 0.1);
+    transform: translateX(3px);
   }
 `;
 
@@ -510,7 +540,6 @@ const AchivmentsModal = ({ onClose }) => {
       ],
     },
   ];
-
   return (
     <ModalOverlay isClosing={isClosing} onClick={handleClose}>
       <ModalContent isClosing={isClosing} onClick={(e) => e.stopPropagation()}>
@@ -521,9 +550,13 @@ const AchivmentsModal = ({ onClose }) => {
         <ScrollContainer>
           {categories.map((cat, idx) => (
             <CategorySection key={idx}>
-              <CategoryTitle>{cat.title}</CategoryTitle>
+              <CategoryTitle $delay={`${0.2 + idx * 0.4}s`}>{cat.title}</CategoryTitle>
               {cat.items.map((item, i) => (
-                <AchivmentItem key={i} isSpecial={item.isSpecial}>
+                <AchivmentItem 
+                  key={i} 
+                  isSpecial={item.isSpecial}
+                  $index={(idx * 10) + i} 
+                >
                   <AchivmentImagePlace src={item.img} alt={item.name} />
                   <div style={{ flexGrow: 1 }}>
                     <AchivmentName>{item.name}</AchivmentName>
@@ -541,4 +574,5 @@ const AchivmentsModal = ({ onClose }) => {
     </ModalOverlay>
   );
 };
+
 export default AchivmentsModal;

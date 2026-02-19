@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import styled, { keyframes, css } from "styled-components";
 import logo from "../../photos/hero-header/logo.png";
+import bell from "../../mp3/bell.mp3";
 
 const pulse = keyframes`
   0% { transform: scale(1); opacity: 1; }
@@ -39,10 +40,43 @@ const flow = keyframes`
   100% { background-position: 0% 50%; }
 `;
 
-const AnimatedText = styled.h1`
+const VipTextWrapper = styled.div`
+  display: grid;
+  cursor: pointer;
+  align-items: center;
+`;
+
+const RainbowText = styled.h1`
+  grid-area: 1 / 1;
   font-family: "Inter", sans-serif;
   font-size: 9px;
   font-weight: bold;
+  margin: 0;
+  background: linear-gradient(
+    45deg,
+    #ff0000,
+    #ff7f00,
+    #ffff00,
+    #00ff00,
+    #0000ff,
+    #8b00ff
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  transition: opacity 0.5s ease-in-out;
+  opacity: ${(props) => (props.$show ? 1 : 0)};
+
+  @media (min-width: 768px) {
+    font-size: 15px;
+  }
+`;
+const UltraText = styled.h1`
+  grid-area: 1 / 1;
+  font-family: "Inter", sans-serif;
+  font-size: 9px;
+  font-weight: bold;
+  margin: 0;
   background: linear-gradient(
     270deg,
     #ff7eb3,
@@ -56,7 +90,8 @@ const AnimatedText = styled.h1`
   -webkit-text-fill-color: transparent;
   background-clip: text;
   animation: ${flow} 5s ease infinite;
-  cursor: pointer;
+  transition: opacity 0.5s ease-in-out;
+  opacity: ${(props) => (props.$show ? 1 : 0)};
 
   @media (min-width: 768px) {
     font-size: 15px;
@@ -91,7 +126,7 @@ const HeaderFix = styled.div`
   align-items: center;
   gap: 3px;
   @media (min-width: 768px) {
-    gap: 20px; 
+    gap: 20px;
   }
   @media (min-width: 1200px) {
     gap: 29px;
@@ -187,6 +222,7 @@ const HeaderLogo = styled.img`
     height: 75px;
   }
 `;
+
 const HeaderAvatar = styled.img`
   width: 32px;
   height: 32px;
@@ -203,11 +239,15 @@ const HeaderAvatar = styled.img`
   background-color: ${(props) =>
     props.$bColor?.includes("linear-gradient") ? "transparent" : "transparent"};
   border-color: ${(props) =>
-    props.$bColor?.includes("linear-gradient") ? "transparent" : props.$bColor || "transparent"};
-  ${(props) => props.$bColor?.includes("270deg") && css`
-    background-size: 100% 100%, 400% 400%;
-    animation: ${flow} 5s ease infinite;
-  `}
+    props.$bColor?.includes("linear-gradient")
+      ? "transparent"
+      : props.$bColor || "transparent"};
+  ${(props) =>
+    props.$bColor?.includes("270deg") &&
+    css`
+      background-size: 100% 100%, 400% 400%;
+      animation: ${flow} 5s ease infinite;
+    `}
 
   @media (min-width: 768px) {
     width: 40px;
@@ -218,6 +258,7 @@ const HeaderAvatar = styled.img`
     height: 50px;
   }
 `;
+
 const UserName = styled.span`
   font-size: 9px;
   font-weight: bold;
@@ -231,7 +272,8 @@ const UserName = styled.span`
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
-        ${isAnimated && css`
+        ${isAnimated &&
+        css`
           background-size: 400% 400%;
           animation: ${flow} 5s ease infinite;
         `}
@@ -250,6 +292,7 @@ const UserName = styled.span`
     margin-right: 5px;
   }
 `;
+
 const Header = ({
   onOpenRegister,
   onOpenLogin,
@@ -263,28 +306,60 @@ const Header = ({
   currentAvatar,
   onLogout,
 }) => {
+  const [showUltra, setShowUltra] = useState(false);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setShowUltra((prev) => !prev);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const handleThemeToggle = () => {
+    const audio = new Audio(bell);
+    audio.play().catch((err) => console.log("Audio play prevented: ", err));
+    toggleTheme();
+  };
+
   return (
     <HeaderDiv $isDarkMode={isDarkMode}>
       <HeaderFix>
         <HeaderLogo src={logo} />
-        {user && <AnimatedText onClick={onOpenVip}>Стихія+</AnimatedText>}
+        {user && (
+          <VipTextWrapper onClick={onOpenVip}>
+            <RainbowText $show={!showUltra}>Стихія+</RainbowText>
+            <UltraText $show={showUltra}>Стихія+ Ультра</UltraText>
+          </VipTextWrapper>
+        )}
       </HeaderFix>
       <HeaderFix>
-        <ThemeButton onClick={toggleTheme} $isDarkMode={isDarkMode}>
+        <ThemeButton onClick={handleThemeToggle} $isDarkMode={isDarkMode}>
           {isDarkMode ? "☀️" : "🌑"}
         </ThemeButton>
         {user ? (
           <>
             <IconWrapper>
-              <IconButton onClick={onOpenShop} title="Магазин конвертів" $isDarkMode={isDarkMode}>
+              <IconButton
+                onClick={onOpenShop}
+                title="Магазин конвертів"
+                $isDarkMode={isDarkMode}
+              >
                 <CounterText>1000/1000</CounterText>🧧
               </IconButton>
               <NotificationBadge>!</NotificationBadge>
             </IconWrapper>
-            <IconButton title="Досягнення" onClick={onOpenAchievements} $isDarkMode={isDarkMode}>
+            <IconButton
+              title="Досягнення"
+              onClick={onOpenAchievements}
+              $isDarkMode={isDarkMode}
+            >
               🏆
             </IconButton>
-            <IconButton onClick={onOpenSettings} title="Налаштування" $isDarkMode={isDarkMode}>
+            <IconButton
+              onClick={onOpenSettings}
+              title="Налаштування"
+              $isDarkMode={isDarkMode}
+            >
               ⚙️
             </IconButton>
             <IconButton onClick={onLogout} title="Вийти" $isDarkMode={isDarkMode}>
@@ -303,5 +378,4 @@ const Header = ({
     </HeaderDiv>
   );
 };
-
 export default Header;
