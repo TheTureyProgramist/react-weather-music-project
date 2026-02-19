@@ -344,7 +344,7 @@ const Header = ({
                 title="Магазин конвертів"
                 $isDarkMode={isDarkMode}
               >
-                <CounterText>1000/1000</CounterText>🧧
+                <CounterText>2000/2000</CounterText>🧧
               </IconButton>
               <NotificationBadge>!</NotificationBadge>
             </IconWrapper>

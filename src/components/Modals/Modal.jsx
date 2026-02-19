@@ -1,589 +1,417 @@
-import React, { useState, useMemo } from "react";
+import React, { useState } from "react";
 import styled, { keyframes, css } from "styled-components";
-import InfoModal from "./InfoModal";
+
+// Імпорти фото
+import turkeys from "../../photos/vip-images/collectors-edition.jpg";
+import dinofroz from "../../photos/vip-images/vip-dinofroz.webp";
+import monody from "../../photos/vip-images/vip-forest.webp";
+import dragons from "../../photos/vip-images/vip-dragons.jpg";
+import vip from "../../photos/hero-header/vip.jpg";
+import music from "../../photos/vip-modal/music.jpg";
+import time from "../../photos/vip-images/mechannic.jpg";
+import clip from "../../photos/vip-images/clip.png";
+import stars from "../../photos/vip-images/stars.jpg";
+import lebid from "../../photos/vip-images/vip-lebid.jpg";
+import buton from "../../photos/vip-modal/buton.jpg";
+import texts from "../../photos/vip-modal/texts.jpg";
+import horrordog from "../../photos/vip-images/horror.jpg";
+import asium from "../../photos/vip-images/asium.jpg";
+import rainbow from "../../photos/fan-art/rainbow.webp";
+import letters from "../../photos/fan-art/letters.webp";
+
+const appearAndShrink = keyframes`
+  0% { opacity: 0; transform: scale(1.3); filter: blur(10px); }
+  50% { opacity: 0.5; transform: scale(1.1); filter: blur(2px); }
+  100% { opacity: 1; transform: scale(1); filter: blur(0); }
+`;
 
 const slideIn = keyframes`
-  0% { 
-    transform: translateY(100%) scale(0.5);
-    opacity: 0;
-  }
-  100% { 
-    transform: translateY(0%) scale(1);
-    opacity: 1;
-  }
+  0% { transform: translateY(100%) scale(0.5); opacity: 0; }
+  100% { transform: translateY(0%) scale(1); opacity: 1; }
 `;
 
 const slideOut = keyframes`
-  0% { 
-    transform: translateY(0%) scale(1); 
-    opacity: 1; 
-  }
-  100% { 
-    transform: translateY(100%) scale(0.5); 
-    opacity: 0; 
-  }
+  0% { transform: translateY(0%) scale(1); opacity: 1; }
+  100% { transform: translateY(100%) scale(0.5); opacity: 0; }
 `;
 
-const fadeOut = keyframes`
-  0% { opacity: 1; }
-  100% { opacity: 0; }
+const flowPlus = keyframes`
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 `;
 
-const flow = keyframes`
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+const Overlay = styled.div`
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  backdrop-filter: blur(3px);
+  background-color: rgba(0, 0, 0, 0.85);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 5px;
 `;
 
-const rainbowAnimation = css`
-  background: linear-gradient(
-    270deg,
-    #ff7eb3,
-    #ff758c,
-    #7afcff,
-    #feffb7,
-    #58e2c2
-  );
-  background-size: 400% 400%;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  animation: ${flow} 5s ease infinite;
-`;
+const VipModalDiv = styled.div`
+  background-color: #3e2723;
+  color: #fff;
+  width: 98%;
+  max-width: 950px;
+  max-height: 95vh;
+  padding: 15px;
+  border-radius: 12px;
+  position: relative;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  border: 2px solid ${props => props.$isUltra ? "#00ff00" : "#ffb36c"};
+  overflow-y: auto;
+  transition: border-color 0.5s ease;
+  animation: ${(props) => (props.$isClosing ? slideOut : slideIn)} 0.5s ease-out forwards;
 
-const AnimatedText = styled.span`
-  font-family: "Inter", sans-serif;
-  font-size: 11px;
-  font-weight: bold;
-  ${rainbowAnimation}
-  margin-left: 5px;
-  display: inline-block;
-`;
-
-const ModalOverlay = styled.div`
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.6);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  backdrop-filter: blur(3px);
-  z-index: 1000;
-  animation: ${props => (props.$isClosing ? fadeOut : "none")} 0.5s ease-out forwards;
-`;
-
-const ModalContent = styled.div`
-  background: white;
-  padding: 30px 15px 15px 15px;
-  border-radius: 15px;
-  width: 90%;
-  max-width: 400px;
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-  max-height: 90vh;
-  overflow-y: auto;
-  animation: ${props => (props.$isClosing ? slideOut : slideIn)} 0.5s ease-out forwards;
-  @media (min-width: 768px) {
-    padding: 30px 30px;
-  }
+  @media (max-width: 480px) {
+    padding: 10px;
+    padding-top: 35px;
+  }
 `;
 
 const CloseButton = styled.button`
-  position: absolute;
-  top: 10px;
-  right: 15px;
-  background: none;
-  border: none;
-  font-size: 34px;
-  cursor: pointer;
-  color: #000000;
-  &:hover {
-    color: #ffb36c;
-  }
+  position: absolute;
+  top: 10px; right: 10px;
+  background: transparent;
+  border: none;
+  color: #ffb36c;
+  font-size: 22px;
+  cursor: pointer;
+  z-index: 1010;
+  &:hover { color: #fff; }
 `;
 
-const Title = styled.h3`
-  text-align: center;
-  margin: 0;
-  font-weight: 900;
-  color: #000000;
+const HeaderToggle = styled.button`
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  text-align: left;
+  display: block;
+  width: fit-content;
+  outline: none;
+  transition: transform 0.2s;
+  &:hover { transform: scale(1.02); }
 `;
 
-const Input = styled.input`
-  padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  width: 100%;
-  box-sizing: border-box;
-  font-size: 14px;
-  &:focus {
-    outline: none;
-    border-color: #ffb36c;
-  }
+const AnimatedText = styled.h1`
+  font-family: "Inter", sans-serif;
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 8px;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+
+  ${props => props.$variant === 'ultra' ? css`
+    /* Анімований веселковий для Ультра */
+    background-image: linear-gradient(270deg, #ff7eb3, #ff758c, #7afcff, #feffb7, #58e2c2);
+    background-size: 400% 400%;
+    animation: ${flowPlus} 5s ease infinite, ${appearAndShrink} 0.8s ease-out forwards;
+  ` : css`
+    /* Статичний для Плюс (ЖОДНОЇ АНІМАЦІЇ) */
+    background-image: linear-gradient(270deg, #ff7eb3, #ff758c, #7afcff, #feffb7, #58e2c2);
+    background-size: 100% 100%;
+    animation: none; 
+  `}
+
+  @media (max-width: 768px) {
+    font-size: 18px;
+  }
 `;
 
-const NameInput = styled(Input)`
-  font-weight: bold;
-  caret-color: black;
-
-  ${(props) => {
-    const isGradient = props.$color?.includes("linear-gradient");
-    const isAnimated = props.$color?.includes("270deg");
-
-    if (isGradient) {
-      return css`
-        background: ${props.$color};
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-        
-        ${isAnimated ? css`
-          background-size: 400% 400%;
-          animation: ${flow} 5s ease infinite;
-        ` : css`
-          background-size: 100% 100%;
-          animation: none;
-        `}
-      `;
-    } else {
-      return css`
-        color: ${props.$color || "black"};
-        -webkit-text-fill-color: initial;
-        background: transparent;
-      `;
-    }
-  }}
+const SwitchBackText = styled.div`
+  font-size: 10px;
+  color: #7afcff;
+  cursor: pointer;
+  text-decoration: underline;
+  margin-top: -5px;
+  margin-bottom: 10px;
+  opacity: 0.8;
+  &:hover { opacity: 1; }
 `;
 
-const Select = styled.select`
-  padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  width: 100%;
-  box-sizing: border-box;
-  font-size: 14px;
-  background: white;
-  cursor: pointer;
-  &:focus {
-    outline: none;
-    border-color: #ffb36c;
-  }
+const VipBlock = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 15px;
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: center;
+  }
 `;
 
-const DateRow = styled.div`
-  display: flex;
-  gap: 10px;
-  justify-content: space-between;
+const VipFixScroll = styled.div`
+  flex: 1;
+  height: 420px;
+  min-width: 280px;
+  overflow-y: auto;
+  padding-right: 8px;
+  @media (max-width: 768px) {
+    width: 100%;
+    height: 300px;
+  }
+  &::-webkit-scrollbar { width: 4px; }
+  &::-webkit-scrollbar-thumb { background: #ffb36c; border-radius: 10px; }
 `;
 
-const CheckboxRow = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 12px;
-  color: #555;
+const BenefitCard = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(255, 179, 108, 0.05);
+  border: 1px solid rgba(255, 179, 108, 0.15);
+  border-radius: 8px;
+  padding: 6px;
+  opacity: 0;
+  animation: ${appearAndShrink} 1s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  margin-bottom: 6px;
+  transition: transform 1s;
+  ${({ $index }) => css`
+    animation-delay: ${0.1 + $index * 0.05}s;
+  `}
+  &:hover {
+    border-color: #ffb36c;
+    transform: translateX(3px);
+  }
 `;
 
-const TermsBtn = styled.span`
-  color: #ffb36c;
-  text-decoration: underline;
-  cursor: pointer;
-  font-weight: bold;
+const BenefitImage = styled.img`
+  width: 45px;
+  height: 35px;
+  border-radius: 4px;
+  object-fit: cover;
+  flex-shrink: 0;
 `;
 
-const AvatarOption = styled.div`
-  width: 60px;
-  height: 60px;
-  min-width: 60px;
-  min-height: 60px;
-  flex-shrink: 0;
-  border-radius: 50%;
-  padding: 3px;
-  background: ${(props) => (props.$isSelected ? props.$borderColor : "transparent")};
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s ease;
-
-  ${(props) => {
-    const isAnimated = props.$borderColor?.includes("270deg");
-    if (props.$isSelected && props.$borderColor?.includes("linear-gradient")) {
-        return isAnimated ? css`
-            background-size: 400% 400%;
-            animation: ${flow} 5s ease infinite;
-        ` : css`
-            background-size: 100% 100%;
-            animation: none;
-        `;
-    }
-  }}
-  
-  img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border-radius: 50%;
-    display: block;
-  }
+const VipBonus = styled.div`
+  font-size: 9.9px;
+  line-height: 1.3;
+  color: #ffb36c;
+  flex: 1;
 `;
 
-const ImageSelectionContainer = styled.div`
-  display: flex;
-  gap: 15px;
-  overflow-x: auto;
-  padding: 5px 2px;
-  min-height: 75px;
-  align-items: center;
-  &::-webkit-scrollbar {
-    height: 6px;
-  }
-  &::-webkit-scrollbar-thumb {
-    background: #ffb36c;
-    border-radius: 10px;
-  }
+const SectionTitle = styled.div`
+  font-weight: bold;
+  color: #ffb36c;
+  margin: 10px 0 6px 0;
+  text-transform: uppercase;
+  font-size: 12px;
+  border-left: 2px solid #ffb36c;
+  padding-left: 8px;
+  opacity: 0;
+  animation: ${appearAndShrink} 0.6s ease-out forwards;
+  animation-delay: ${props => props.$delay || "0.2s"};
 `;
 
-const ColorSection = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
+const VipImage = styled.img`
+  width: 260px;
+  border-radius: 6px;
+  border: 1px solid #ffb36c;
+  @media (max-width: 768px) { width: 100%; }
 `;
 
-const ColorLabel = styled.div`
-  font-size: 12px;
-  font-weight: bold;
-  color: grey;
+const VipButton = styled.button`
+  width: 260px;
+  border: 1px solid #ffb36c;
+  cursor: pointer;
+  padding: 8px;
+  background: transparent;
+  color: #ffb36c;
+  font-size: 14px;
+  font-weight: bold;
+  border-radius: 4px;
+  &:hover {
+    background: #ffb36c;
+    color: #3e2723;
+  }
+  @media (max-width: 768px) { width: 100%; }
 `;
 
-const ColorContainer = styled.div`
-  display: flex;
-  gap: 10px;
-  overflow-x: auto;
-  padding: 5px 2px;
-  &::-webkit-scrollbar {
-    height: 6px;
-  }
-  &::-webkit-scrollbar-thumb {
-    background: #ffb36c;
-    border-radius: 10px;
-  }
+const VipText = styled.p`
+  width: 100%;
+  max-width: 300px;
+  font-size: 12px;
+  display: flex;
+  justify-content: flex-end;
+  color: #ffb36c;
 `;
 
-const ColorCircle = styled.div`
-  width: 30px;
-  height: 30px;
-  min-width: 30px;
-  border-radius: 50%;
-  background: ${(props) => props.$color};
-  cursor: pointer;
-  border: 2px solid ${(props) => (props.$isSelected ? "#000" : "transparent")};
-  box-shadow: ${(props) => (props.$isSelected ? "0 0 5px rgba(0,0,0,0.5)" : "0 0 2px rgba(0,0,0,0.2)")};
-
-  ${(props) => {
-    const isAnimated = props.$color?.includes("270deg");
-    if (props.$color?.includes("linear-gradient")) {
-      return isAnimated ? css`
-        background-size: 400% 400%;
-        animation: ${flow} 5s ease infinite;
-      ` : css`
-        background-size: 100% 100%;
-        animation: none;
-      `;
-    }
-  }}
+const RedLine = styled.div`
+  background: red;
+  width: 100%;
+  height: 1px;
+  margin: 10px 0;
 `;
 
-const SubmitButton = styled.button`
-  background: #ffb36c;
-  color: black;
-  font-weight: bold;
-  padding: 12px;
-  border-radius: 8px;
-  cursor: pointer;
-  border: none;
-  font-size: 16px;
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
+const VipWarning = styled.p`
+  color: red;
+  font-size: 12px;
+  word-wrap: break-word;
+  margin-bottom: 2px;
 `;
 
-const GreenText = styled.p`
-  font-size: 12px;
-  font-weight: bold;
-  color: green;
-  margin: 0;
-  display: inline;
-`;
+// --- КОМПОНЕНТ ---
 
-const COLORS = [
-  { name: "Сірий", value: "grey" },
-  { name: "Помаранчевий", value: "orange" },
-  { name: "Фіолетовий", value: "purple" },
-  { name: "Червоний", value: "red" },
-  { name: "Веселковий Анімований", value: "linear-gradient(270deg, #ff7eb3, #ff758c, #7afcff, #feffb7, #58e2c2)" },
-  { name: "Голубий", value: "#00e1ff" },
-  { name: "Синій", value: "blue" },
-  { name: "Веселковий Статичний", value: "linear-gradient(45deg, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #8b00ff)" },
-];
+const VipModal = ({ onClose }) => {
+  const [isClosing, setIsClosing] = useState(false);
+  const [tier, setTier] = useState("plus"); // "plus" або "ultra"
+  const [showContent, setShowContent] = useState(true);
 
-const Modal = ({ onClose, onRegister, availableAvatars = [] }) => {
-  const [formData, setFormData] = useState({
-    account: "",
-    firstName: "",
-    password: "",
-    confirmPassword: "",
-    avatarIndex: 0,
-    textColor: "grey",
-    borderColor: "grey",
-  });
-  const [birthDate, setBirthDate] = useState({ day: "", month: "", year: "" });
-  const [accepted, setAccepted] = useState(false);
-  const [showTerms, setShowTerms] = useState(false);
-  const [error, setError] = useState("");
-  const [isClosing, setIsClosing] = useState(false);
+  const handleClose = (e) => {
+    if (e) e.stopPropagation();
+    setIsClosing(true);
+    setTimeout(() => {
+      onClose();
+    }, 500);
+  };
 
-  const handleClose = (e) => {
-    if (e) e.stopPropagation();
-    setIsClosing(true);
-    setTimeout(() => {
-      onClose();
-    }, 500);
-  };
+  const handleTierSwitch = (newTier) => {
+    if (tier === newTier) return;
+    setShowContent(false);
+    // Змінюємо тир негайно для реакції заголовка
+    setTier(newTier); 
+    setTimeout(() => {
+      setShowContent(true);
+    }, 300); 
+  };
 
-  const months = [
-    "Січень", "Лютий", "Березень", "Квітень", "Травень", "Червень",
-    "Липень", "Серпень", "Вересень", "Жовтень", "Листопад", "Грудень",
-  ];
-  const years = Array.from(
-    { length: new Date().getFullYear() - 1909 + 1 },
-    (_, i) => 1909 + i,
-  ).reverse();
-  const days = Array.from({ length: 31 }, (_, i) => i + 1);
+  // ПЕРЕВАГИ СТИХІЯ+
+  const plusBenefits = {
+    ai: [
+      { src: texts, text: "6 безкоштовних повідомлень/день + за 🧧 4 спроби, замість 3 безкоштовних повідомлень/день + за 🧧 2. Після вичерпування ліміту ціна повідомлення 0,1грн, не 0,12грн + 🧧. Ліміт безкоштовних нестабільний через активність користувачів." },
+      { src: lebid, text: "2 (не 1) зображення/міс по 3,99грн, далі 5,99грн." },
+      { src: clip, text: "Відео 56грн/с (замість 70грн/с)." },
+      { src: music, text: "mp3 2,5грн/хв, не 3,5грн/хв." }
+    ],
+    music: [
+      { src: monody, text: "Музичний файл та текст пісні Monody-TheFatRat та VIP-аватар (Нічний ліс) доступні одразу після реєстрації, не через 7дн." },
+      { src: asium, text: "Можна взяти в обране 8 пісень, а не 4! І на 50% дешевше(5, не 2 безкоштовних кріплень, та 3(не 1) за 🧧)!А також поділ(необране, напівобране, обране)" },
+      { src: dinofroz, text: "Розширений кеш для офлайн-прослуховування." },
+      { src: horrordog, text: "Джойстики звуку та промотувачі 10с вперед/назад для муз. карток." },
+      { src: letters, text: "Ціни на аватари, рамки та райдужний текст менш спонтанні 20-30🧧, не 20-40🧧:" },
+      { src: dragons, text: "Автоповтор та доступ до пошуку пісні/добу дешевший на 25% в 🧧. А діапазон цін екслюзивних аватарів дешевший: 20-30🧧, замість 20-40🧧." }
+    ],
+    system: [
+      { src: vip, text: "Оновлений стиль сайту (з перемикачем лого вгорі, в лівому кутку)." },
+      { src: stars, text: "Плавніший регулятор темної теми." },
+      { src: dragons, text: "Знижка 50% у магазині конвертів, досягнення дають додатково до 20🧧, якщо їх к-сть у досягненнях < 40. У сумі вийде 40. Навіть, якщо ви вже виконали досягнення вони будуть після оплати автоматично відправлені. Сплата тарифу переодоплатою(разово) та місячним тарифом дає 50🧧. Ліміт покупок наборів 🧧*2. Можна зберігати 2500🧧, замість 2000. Шанс 25%(не 20%) на джекпот(Ціна збільшена на 10🧧)." },
+      { src: buton, text: "Кнопки Пошук міста/Оновлення, видалення картки має перезарядку 12с замість 1хв. Прогноз на 21 день, не на 14 днів." },
+      { src: rainbow, text: "Райдужне ім'я та рамка доступні зразу не через 7дн після реєстрації." },
+      { src: time, text: "Нові функції з'являться пізніше." }
+    ]
+  };
 
-  const isInvalidDate = useMemo(() => {
-    const { day, month, year } = birthDate;
-    if (!day || !month || !year) return false;
-    const d = parseInt(day);
-    const m = parseInt(month);
-    const y = parseInt(year);
-    const dateCheck = new Date(y, m - 1, d);
-    return (
-      dateCheck.getFullYear() !== y ||
-      dateCheck.getMonth() !== m - 1 ||
-      dateCheck.getDate() !== d
-    );
-  }, [birthDate]);
+  // ПЕРЕВАГИ УЛЬТРА
+  const ultraBenefits = {
+    ai: [
+      { src: texts, text: "УЛЬТРА ШІ: Безлімітні повідомлення (в межах стабільності системи) та пріоритетна обробка запитів." },
+      { src: lebid, text: "5 безкоштовних зображень щомісяця, фіксована ціна 2.50грн надалі." }
+    ],
+    music: [
+      { src: monody, text: "Повний доступ до всього преміум-архіву без очікування. Унікальна анімація плеєра." },
+      { src: asium, text: "До 20 пісень в обраному. Можливість створювати власні папки." }
+    ],
+    system: [
+      { src: vip, text: "Ексклюзивна тема 'Космічний Веселковий Стиль' з унікальними ефектами." },
+      { src: stars, text: "Миттєве оновлення даних та розширений прогноз погоди на 40 днів." }
+    ]
+  };
 
-  const calculateAge = (d, m, y) => {
-    const today = new Date();
-    const birth = new Date(y, m - 1, d);
-    let age = today.getFullYear() - birth.getFullYear();
-    const mDiff = today.getMonth() - birth.getMonth();
-    if (mDiff < 0 || (mDiff === 0 && today.getDate() < birth.getDate())) age--;
-    return age;
-  };
+  const current = tier === "plus" ? plusBenefits : ultraBenefits;
 
-  const handleSubmit = () => {
-    if (
-      !formData.account ||
-      !formData.firstName ||
-      !formData.password ||
-      !birthDate.day ||
-      !birthDate.month ||
-      !birthDate.year
-    ) {
-      return setError("Заповніть всі поля!");
-    }
-    if (isInvalidDate) return setError("Такої дати не існує!");
-    if (formData.password !== formData.confirmPassword)
-      return setError("Паролі не співпадають!");
-    if (!accepted) return setError("Прийміть угоду!");
+  return (
+    <Overlay onClick={handleClose}>
+      <VipModalDiv 
+        $isClosing={isClosing} 
+        $isUltra={tier === "ultra"} 
+        onClick={(e) => e.stopPropagation()}
+      >
+        <CloseButton onClick={handleClose}>&times;</CloseButton>
+        
+        <HeaderToggle onClick={() => handleTierSwitch(tier === "plus" ? "ultra" : "plus")}>
+          <AnimatedText $variant={tier} key={tier}>
+            {tier === "plus" ? "Стихія+" : "Стихія+ Ультра"}
+          </AnimatedText>
+        </HeaderToggle>
 
-    const age = calculateAge(
-      parseInt(birthDate.day),
-      parseInt(birthDate.month),
-      parseInt(birthDate.year),
-    );
-    if (age < 13) return setError("Реєстрація дозволена лише з 13 років!");
+        {tier === "ultra" && (
+          <SwitchBackText onClick={() => handleTierSwitch("plus")}>
+            Повернутись до переваг Стихія+
+          </SwitchBackText>
+        )}
 
-    onRegister({
-      account: formData.account,
-      firstName: formData.firstName,
-      password: formData.password,
-      avatar: availableAvatars[formData.avatarIndex],
-      textColor: formData.textColor,
-      borderColor: formData.borderColor,
-      birthDate: `${birthDate.year}-${birthDate.month.padStart(2, "0")}-${birthDate.day.padStart(2, "0")}`,
-    });
-    handleClose();
-  };
+        <VipBlock>
+          <VipFixScroll key={`scroll-${tier}`}>
+            {showContent && (
+              <>
+                <SectionTitle $delay="0.1s">ШІ</SectionTitle>
+                {current.ai.map((item, i) => (
+                  <BenefitCard key={`ai-${tier}-${i}`} $index={i}>
+                    <BenefitImage src={item.src} />
+                    <VipBonus>{item.text}</VipBonus>
+                  </BenefitCard>
+                ))}
 
-  return (
-    <ModalOverlay $isClosing={isClosing} onClick={handleClose}>
-      <ModalContent $isClosing={isClosing} onClick={(e) => e.stopPropagation()}>
-        <CloseButton onClick={handleClose}>&times;</CloseButton>
-        <Title>Реєстрація</Title>
+                <SectionTitle $delay="0.3s">Музика та Арт</SectionTitle>
+                {current.music.map((item, i) => (
+                  <BenefitCard key={`mu-${tier}-${i}`} $index={i + 4}>
+                    <BenefitImage src={item.src} />
+                    <VipBonus>{item.text}</VipBonus>
+                  </BenefitCard>
+                ))}
 
-        <Input
-          placeholder="Gmail"
-          onChange={(e) =>
-            setFormData({ ...formData, account: e.target.value })
-          }
-        />
-        
-        <NameInput
-          $color={formData.textColor}
-          placeholder="Ім'я та прізвище"
-          value={formData.firstName}
-          onChange={(e) =>
-            setFormData({ ...formData, firstName: e.target.value })
-          }
-        />
+                <SectionTitle $delay="0.5s">Система</SectionTitle>
+                {current.system.map((item, i) => (
+                  <BenefitCard key={`sy-${tier}-${i}`} $index={i + 10}>
+                    <BenefitImage src={item.src} />
+                    <VipBonus>{item.text}</VipBonus>
+                  </BenefitCard>
+                ))}
+              </>
+            )}
+          </VipFixScroll>
 
-        <DateRow>
-          <Select
-            value={birthDate.day}
-            onChange={(e) =>
-              setBirthDate({ ...birthDate, day: e.target.value })
-            }
-          >
-            <option value="" disabled>День</option>
-            {days.map((d) => (
-              <option key={d} value={d}>{d}</option>
-            ))}
-          </Select>
+          <div style={{ display: 'flex', gap: '6px', flexDirection: 'column' }}>
+            <SectionTitle $delay="0.4s">
+              {tier === "plus" ? "TurkeyStudio VIP!" : "TurkeyStudio ULTRA!"}
+            </SectionTitle>
+            <VipImage src={tier === "plus" ? turkeys : stars} />
+            
+            {tier === "plus" ? (
+              <>
+                <VipButton>1,99грн/місяць</VipButton>
+                <VipButton>Членський платіж: 3,99грн/тиждень</VipButton>
+              </>
+            ) : (
+              <>
+                <VipButton>4,99грн/місяць</VipButton>
+                <VipButton>Членський платіж: 8,99грн/тиждень</VipButton>
+              </>
+            )}
+            <VipText>Місячний тариф доступний, після членського платіжу.</VipText>
+          </div>
+        </VipBlock>
 
-          <Select
-            value={birthDate.month}
-            onChange={(e) =>
-              setBirthDate({ ...birthDate, month: e.target.value })
-            }
-          >
-            <option value="" disabled>Місяць</option>
-            {months.map((m, i) => (
-              <option key={i} value={i + 1}>{m}</option>
-            ))}
-          </Select>
-
-          <Select
-            value={birthDate.year}
-            onChange={(e) =>
-              setBirthDate({ ...birthDate, year: e.target.value })
-            }
-          >
-            <option value="" disabled>Рік</option>
-            {years.map((y) => (
-              <option key={y} value={y}>{y}</option>
-            ))}
-          </Select>
-        </DateRow>
-
-        {isInvalidDate && (
-          <div style={{ color: "red", fontSize: "11px", textAlign: "center", marginTop: "-10px" }}>
-            Такої дати не існує!
-          </div>
-        )}
-
-        <ColorSection>
-          <ColorLabel>Оберіть колір тексту</ColorLabel>
-          <ColorContainer>
-            {COLORS.map((color, index) => (
-              <ColorCircle
-                key={index}
-                $color={color.value}
-                $isSelected={formData.textColor === color.value}
-                title={color.name}
-                onClick={() => setFormData({ ...formData, textColor: color.value })}
-              />
-            ))}
-          </ColorContainer>
-        </ColorSection>
-
-        <ColorSection>
-          <ColorLabel>Оберіть колір рамки аватара</ColorLabel>
-          <ColorContainer>
-            {COLORS.map((color, index) => (
-              <ColorCircle
-                key={index}
-                $color={color.value}
-                $isSelected={formData.borderColor === color.value}
-                title={color.name}
-                onClick={() => setFormData({ ...formData, borderColor: color.value })}
-              />
-            ))}
-          </ColorContainer>
-        </ColorSection>
-
-        <div style={{ fontSize: "11px", fontWeight: "bold", color: "grey" }}>
-          Аватар оберіть, 1-ий доступний з<AnimatedText>Стихія+</AnimatedText>, наступні 2 за <GreenText>досягнення</GreenText>, та ще 3 за 🧧, та сама логіка з вибором кольору імені, та рамки аватара.
-        </div>
-        
-        <ImageSelectionContainer>
-          {availableAvatars.map((imgSrc, index) => (
-            <AvatarOption
-              key={index}
-              $isSelected={formData.avatarIndex === index}
-              $borderColor={formData.borderColor}
-              onClick={() => setFormData({ ...formData, avatarIndex: index })}
-            >
-              <img 
-                src={typeof imgSrc === 'string' ? imgSrc : imgSrc?.default || imgSrc} 
-                alt={`avatar-${index}`} 
-              />
-            </AvatarOption>
-          ))}
-        </ImageSelectionContainer>
-
-        <Input
-          type="password"
-          placeholder="Пароль"
-          onChange={(e) =>
-            setFormData({ ...formData, password: e.target.value })
-          }
-        />
-        <Input
-          type="password"
-          placeholder="Підтвердіть пароль"
-          onChange={(e) =>
-            setFormData({ ...formData, confirmPassword: e.target.value })
-          }
-        />
-
-        <CheckboxRow>
-          <input
-            type="checkbox"
-            checked={accepted}
-            onChange={(e) => setAccepted(e.target.checked)}
-          />
-          <label>
-            Я погоджуюсь з{" "}
-            <TermsBtn onClick={() => setShowTerms(true)}>Угодою</TermsBtn>
-          </label>
-        </CheckboxRow>
-
-        {error && (
-          <div style={{ color: "red", fontSize: "12px", textAlign: "center" }}>
-            {error}
-          </div>
-        )}
-
-        <SubmitButton
-          onClick={handleSubmit}
-          disabled={!accepted || isInvalidDate}
-        >
-          Зареєструватися
-        </SubmitButton>
-        {showTerms && <InfoModal onClose={() => setShowTerms(false)} />}
-      </ModalContent>
-    </ModalOverlay>
-  );
+        <RedLine />
+        <VipWarning>
+          Примітка: 1.Відмовишись від підписки, вам доведеться внести
+          передоплату знову, якщо не передумаєте до кінця терміну тарифу.
+        </VipWarning>
+        <VipWarning>
+          Примітка: 2.Ціни не будуть змінюватись, якщо
+          економічний стан не зміниться. І коли підписка закінчиться привілегії(не всі)
+          зникнуть.
+        </VipWarning>
+      </VipModalDiv>
+    </Overlay>
+  );
 };
-export default Modal;
+
+export default VipModal;
