@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import styled, { keyframes } from "styled-components";
 
 const slideIn = keyframes`
-  100% { transform: translateY(0%) scale(1); opacity: 1; }
   0% {
     transform: translateY(100%) scale(0.5);
     opacity: 0;
