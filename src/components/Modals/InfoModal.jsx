@@ -32,7 +32,8 @@ const appearAndShrink = keyframes`
 const animatedStyle = css`
   opacity: 0;
   transform-origin: left center; /* Щоб текст масштабувався від лівого краю */
-  animation: ${appearAndShrink} 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  animation: ${appearAndShrink} 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94)
+    forwards;
   ${({ $index }) => css`
     animation-delay: ${0.2 + ($index || 0) * 0.08}s;
   `}
@@ -190,7 +191,7 @@ const InfoModal = ({ onClose }) => {
         >
           Останнє оновлення: 15 лютого 2026 року
         </h2>
-        
+
         <Section>
           <Text $index={1}>
             Ця Угода є юридично обов'язковим договором між Користувачем та
@@ -200,7 +201,9 @@ const InfoModal = ({ onClose }) => {
           </Text>
         </Section>
 
-        <SectionTitle $index={2}>1. Реєстрація та Вікові обмеження</SectionTitle>
+        <SectionTitle $index={2}>
+          1. Реєстрація та Вікові обмеження
+        </SectionTitle>
         <Text $index={3}>
           1.1. Доступ до базових функцій надається особам, що досягли{" "}
           <strong>13-річного віку</strong>.
@@ -211,7 +214,9 @@ const InfoModal = ({ onClose }) => {
           відповідного віку.
         </Text>
 
-        <SectionTitle $index={5}>2. Використання Штучного Інтелекту (ШІ)</SectionTitle>
+        <SectionTitle $index={5}>
+          2. Використання Штучного Інтелекту (ШІ)
+        </SectionTitle>
         <Text $index={6}>
           2.1. Сервіс використовує технології генеративного ШІ для надання
           допомоги та створення контенту.
@@ -280,7 +285,9 @@ const InfoModal = ({ onClose }) => {
           games(взяв з PlayMarket), з метою мотивації зіграти в їхні ігри.
         </Text>
 
-        <SectionTitle $index={20}>5. Правила поведінки (Анти-спам)</SectionTitle>
+        <SectionTitle $index={20}>
+          5. Правила поведінки (Анти-спам)
+        </SectionTitle>
         <Text $index={21}>
           Забороняється:
           <ul>
@@ -353,9 +360,7 @@ const InfoModal = ({ onClose }) => {
           <Text $index={34} style={{ fontWeight: "600", color: "#333" }}>
             Дякуємо, що ви з нами! Ваша безпека та творчість — наш пріоритет.
           </Text>
-          <AcceptBtn onClick={handleClose}>
-            Я погоджуюсь з умовами
-          </AcceptBtn>
+          <AcceptBtn onClick={handleClose}>Я погоджуюсь з умовами</AcceptBtn>
         </div>
       </Content>
     </Overlay>

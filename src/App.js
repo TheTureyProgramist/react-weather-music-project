@@ -1,11 +1,9 @@
 import { useState, useEffect } from "react";
 import styled from "styled-components";
+import axios from "axios";
 import "./App.css";
 import Header from "./components/Header/Header.jsx";
 import Hero from "./components/Hero/Hero.jsx";
-import Main from "./components/Main/Main.jsx";
-import GraphicDaily from "./components/Graphics/GraphicDaily.jsx";
-import GraphicWeekly from "./components/Graphics/GraphicWeekly.jsx";
 import MusicPhoto from "./components/MusicPhoto/MusicPhoto.jsx";
 import Footer from "./components/Footer/Footer.jsx";
 import Modal from "./components/Modals/Modal.jsx";
@@ -17,7 +15,6 @@ import Aihelp from "./components/Aihelp.jsx/Aihelp.jsx";
 import FanArt from "./components/FanArt/FanArt.jsx";
 import ShopModal from "./components/Modals/ShopModal.jsx";
 import AchivmentsModal from "./components/Modals/AchivmentsModal.jsx";
-
 // Імпорт аватарів
 import turkeys from "./photos/vip-images/ultra-vip-turkeys.webp";
 import dragons from "./photos/vip-images/vip-dragons.jpg";
@@ -33,10 +30,12 @@ import flame from "./photos/vip-images/flame.jpg";
 import finances from "./photos/fan-art/finance.jpg";
 import parol from "./photos/fan-art/parol.jpg";
 import vovk from "./photos/fan-art/kolada.webp";
+
 const AVAILABLE_AVATARS = [
-  monody, turkeys, nicerone, horrordog, vovk, finances, 
+  monody, turkeys, nicerone, horrordog, vovk, finances,
   parol, horse, lebid, dragons, rooster, soloveyko, dizel, flame,
 ];
+
 const LoaderWrapper = styled.div`
   position: fixed;
   top: 0;
@@ -48,7 +47,7 @@ const LoaderWrapper = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  z-index: 9999;
+  z-index: 994;
 `;
 
 const LoaderImage = styled.img`
@@ -63,6 +62,7 @@ const LoaderImage = styled.img`
     50% { transform: translateY(-25px); }
   }
 `;
+
 const ProgressContainer = styled.div`
   width: 280px;
   height: 8px;
@@ -71,6 +71,7 @@ const ProgressContainer = styled.div`
   overflow: hidden;
   box-shadow: 0 0 15px rgba(255, 140, 0, 0.2);
 `;
+
 const ProgressBar = styled.div`
   height: 100%;
   background: linear-gradient(90deg, #ff8c00, #ff0080);
@@ -81,6 +82,7 @@ const ProgressBar = styled.div`
     100% { width: 100%; }
   }
 `;
+
 const ThemeWrapper = styled.div`
   background-color: ${(props) => (props.$isDarkMode ? "#121212" : "transparent")};
   color: ${(props) => (props.$isDarkMode ? "#ffffff" : "inherit")};
@@ -88,8 +90,90 @@ const ThemeWrapper = styled.div`
   transition: background-color 0.3s ease;
   padding-bottom: 20px;
 `;
+
+const WeatherCardsContainer = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+  margin: 30px 0;
+`;
+
+const WeatherCard = styled.div`
+  background: ${(props) => (props.$isDarkMode ? "#1e1e1e" : "#f5f5f5")};
+  color: ${(props) => (props.$isDarkMode ? "#fff" : "#333")};
+  border-radius: 15px;
+  padding: 20px;
+  width: 100%;
+  max-width: 450px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  border: ${(props) => (props.$isMain ? "2px solid gold" : "1px solid #444")};
+`;
+
+const CardHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #444;
+  padding-bottom: 10px;
+  margin-bottom: 15px;
+  
+  h3 {
+    margin: 0;
+    color: ${(props) => (props.$isMain ? "gold" : "skyblue")};
+  }
+`;
+
+const ActionButtons = styled.div`
+  display: flex;
+  gap: 10px;
+
+  button {
+    background: #333;
+    color: #fff;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    &:hover { background: #555; }
+  }
+`;
+
+const ImagePlaceholder = styled.div`
+  width: ${(props) => props.size || "50px"};
+  height: ${(props) => props.size || "50px"};
+  background: #3a3a3a;
+  border: 1px dashed #888;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  font-size: 10px;
+  color: #aaa;
+  text-align: center;
+  margin: ${(props) => props.margin || "0"};
+`;
+
+const ForecastRow = styled.div`
+  display: flex;
+  gap: 15px;
+  overflow-x: auto;
+  padding: 10px 0;
+  &::-webkit-scrollbar { height: 5px; }
+  &::-webkit-scrollbar-thumb { background: #888; border-radius: 5px; }
+`;
+
+const ForecastItem = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  min-width: 60px;
+  font-size: 12px;
+`;
+
 const App = () => {
-  const [isLoading, setIsLoading] = useState(true); 
+  const [isLoading, setIsLoading] = useState(true);
   const [now, setNow] = useState(new Date());
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoginOpen, setIsLoginOpen] = useState(false);
@@ -97,22 +181,117 @@ const App = () => {
   const [isVipModalOpen, setIsVipModalOpen] = useState(false);
   const [isShopOpen, setIsShopOpen] = useState(false);
   const [isAchivmentsOpen, setIsAchivmentsOpen] = useState(false);
+  
   const [isDarkMode, setIsDarkMode] = useState(() => {
     const saved = localStorage.getItem("isDarkMode");
     return saved !== null ? JSON.parse(saved) : false;
   });
+
   const [user, setUser] = useState(() => {
     const saved = localStorage.getItem("active_user");
     return saved ? JSON.parse(saved) : null;
   });
+
   const [currentAvatar, setCurrentAvatar] = useState(() => {
     const saved = localStorage.getItem("currentAvatar");
     return saved || userDefault;
   });
+
+  const [weatherCards, setWeatherCards] = useState([]);
+  const fetchWeather = async (city, isMain, lat = null, lon = null) => {
+    try {
+      let targetLat = lat;
+      let targetLon = lon;
+      let displayName = city || "Ваша локація";
+      if (city) {
+        const geo = await axios.get(`https://geocoding-api.open-meteo.com/v1/search?name=${city}&count=1&language=uk`);
+        if (geo.data.results && geo.data.results[0]) {
+          targetLat = geo.data.results[0].latitude;
+          targetLon = geo.data.results[0].longitude;
+          displayName = geo.data.results[0].name;
+        } else {
+          alert("Місто не знайдено");
+          return;
+        }
+      }
+      const url = `https://api.open-meteo.com/v1/forecast?latitude=${targetLat}&longitude=${targetLon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m,surface_pressure&hourly=temperature_2m,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min,uv_index_max&timezone=auto&forecast_days=16`;
+      const res = await axios.get(url);
+      const d = res.data;
+
+      const newCardData = {
+        id: isMain ? "main-card" : Date.now(),
+        isMain: isMain,
+        locationName: displayName,
+        current: {
+          temp: `${Math.round(d.current.temperature_2m)}°C`,
+          feels_like: `${Math.round(d.current.apparent_temperature)}°C`,
+          humidity: `${d.current.relative_humidity_2m}%`,
+          pressure: `${Math.round(d.current.surface_pressure)} hPa`,
+          wind_speed: `${d.current.wind_speed_10m} м/с`,
+          uv_index: d.daily.uv_index_max[0],
+          description: "За кодом: " + d.current.weather_code,
+          iconPlaceholder: d.current.weather_code
+        },
+        hourly: d.hourly.time.slice(0, 12).map((t, i) => ({
+          time: new Date(t).getHours() + ":00",
+          temp: `${Math.round(d.hourly.temperature_2m[i])}°C`,
+          iconPlaceholder: d.hourly.weather_code[i]
+        })),
+        daily16: d.daily.time.map((t, i) => ({
+          date: new Date(t).toLocaleDateString("uk", { day: "numeric", month: "2-digit" }),
+          day: new Date(t).toLocaleDateString("uk", { weekday: "short" }),
+          temp_day: `${Math.round(d.daily.temperature_2m_max[i])}°C`,
+          temp_night: `${Math.round(d.daily.temperature_2m_min[i])}°C`,
+          description: "Код " + d.daily.weather_code[i],
+          iconPlaceholder: d.daily.weather_code[i]
+        }))
+      };
+
+      setWeatherCards((prev) => {
+        if (isMain) {
+          const filtered = prev.filter(c => !c.isMain);
+          return [newCardData, ...filtered];
+        } else {
+          if (prev.length >= 2) return prev;
+          return [...prev, newCardData];
+        }
+      });
+    } catch (error) {
+      console.error("Помилка завантаження погоди", error);
+    }
+  };
+
+  const getInitialLocation = () => {
+    if ("geolocation" in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          fetchWeather(null, true, position.coords.latitude, position.coords.longitude);
+        },
+        () => fetchWeather("Київ", true, 50.45, 30.52)
+      );
+    } else {
+      fetchWeather("Київ", true, 50.45, 30.52);
+    }
+  };
+
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 2000);
+    getInitialLocation();
+  }, []);
+
+  const handleAddCityFromHero = (cityName) => {
+    if (weatherCards.length >= 2) {
+      alert("Ліміт карток: 2.");
+      return;
+    }
+    fetchWeather(cityName, false);
+  };
+
+  const handleDeleteCard = (id) => {
+    setWeatherCards((prev) => prev.filter(card => card.id !== id));
+  };
+
+  useEffect(() => {
+    const timer = setTimeout(() => setIsLoading(false), 2000);
     return () => clearTimeout(timer);
   }, []);
 
@@ -137,38 +316,27 @@ const App = () => {
     }
   }, [user]);
 
-  const handleRegister = (userData) => {
-    setUser(userData);
-    setIsModalOpen(false);
-  };
-
-  const handleLogin = (savedUser) => {
-    setUser(savedUser);
-    setIsLoginOpen(false);
-  };
-
-  const handleUpdateUser = (userData) => {
-    setUser(userData);
-  };
-
+  const handleRegister = (userData) => { setUser(userData); setIsModalOpen(false); };
+  const handleLogin = (savedUser) => { setUser(savedUser); setIsLoginOpen(false); };
+  const handleUpdateUser = (userData) => { setUser(userData); };
   const handleLogout = () => {
     setUser(null);
     setCurrentAvatar(userDefault);
     localStorage.removeItem("currentAvatar");
     setIsSettingsModalOpen(false);
   };
+
   const toggleTheme = () => setIsDarkMode(!isDarkMode);
   const capitalize = (s) => s.charAt(0).toUpperCase() + s.slice(1);
   const month = new Intl.DateTimeFormat("uk", { month: "2-digit" }).format(now);
   const weekday = capitalize(new Intl.DateTimeFormat("uk", { weekday: "long" }).format(now));
   const heroDateString = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}:${String(now.getSeconds()).padStart(2, "0")} ${weekday}, ${now.getDate()}.${month}.${now.getFullYear()}`;
+
   if (isLoading) {
     return (
       <LoaderWrapper>
         <LoaderImage src={monody} alt="Loading..." />
-        <ProgressContainer>
-          <ProgressBar />
-        </ProgressContainer>
+        <ProgressContainer><ProgressBar /></ProgressContainer>
         <p style={{ color: "#fff", marginTop: "15px", letterSpacing: "2px", fontSize: "12px", opacity: 0.7 }}>
           Зачекайте трішки...
         </p>
@@ -194,48 +362,84 @@ const App = () => {
             onLogout={handleLogout}
           />
         </div>
-        <Hero heroDateString={heroDateString} toggleTheme={toggleTheme} />
+
+        <Hero 
+          heroDateString={heroDateString} 
+          onAddCity={handleAddCityFromHero} 
+        />
+        
         <div className="container">
-          <Main />
-          <GraphicDaily />
-          <GraphicWeekly />
+          <WeatherCardsContainer>
+            {weatherCards.map((card) => (
+              <WeatherCard key={card.id} $isMain={card.isMain} $isDarkMode={isDarkMode}>
+                <CardHeader $isMain={card.isMain}>
+                  <h3>{card.locationName} {card.isMain && "📍"}</h3>
+                  <ActionButtons>
+                    {card.isMain ? (
+                      <button onClick={getInitialLocation}>Оновити</button>
+                    ) : (
+                      <button onClick={() => handleDeleteCard(card.id)}>Видалити</button>
+                    )}
+                  </ActionButtons>
+                </CardHeader>
+
+                <div style={{ display: "flex", gap: "20px", marginBottom: "15px" }}>
+                  <ImagePlaceholder size="80px">Код: {card.current.iconPlaceholder}</ImagePlaceholder>
+                  <div>
+                    <h1 style={{ margin: "0 0 5px 0" }}>{card.current.temp}</h1>
+                    <p style={{ margin: "0", fontSize: "12px" }}>Відчувається: {card.current.feels_like}</p>
+                  </div>
+                </div>
+
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px", fontSize: "12px", marginBottom: "20px" }}>
+                  <div>Вологість: <b>{card.current.humidity}</b></div>
+                  <div>Вітер: <b>{card.current.wind_speed}</b></div>
+                  <div>Тиск: <b>{card.current.pressure}</b></div>
+                  <div>УФ-індекс: <b>{card.current.uv_index}</b></div>
+                </div>
+
+                <h4 style={{ margin: "0 0 10px 0" }}>Годинний прогноз:</h4>
+                <ForecastRow>
+                  {card.hourly.map((hour, idx) => (
+                    <ForecastItem key={idx}>
+                      <span>{hour.time}</span>
+                      <ImagePlaceholder size="40px">{hour.iconPlaceholder}</ImagePlaceholder>
+                      <span>{hour.temp}</span>
+                    </ForecastItem>
+                  ))}
+                </ForecastRow>
+
+                <h4 style={{ margin: "15px 0 10px 0" }}>Прогноз на 16 днів:</h4>
+                <div style={{ maxHeight: "150px", overflowY: "auto", paddingRight: "10px" }}>
+                  {card.daily16.map((day, idx) => (
+                    <div key={idx} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px", fontSize: "12px", borderBottom: "1px solid #444", paddingBottom: "5px" }}>
+                      <span style={{ width: "40px" }}>{day.date}</span>
+                      <span style={{ width: "30px", fontWeight: "bold" }}>{day.day}</span>
+                      <ImagePlaceholder size="30px" margin="0 10px">{day.iconPlaceholder}</ImagePlaceholder>
+                      <div style={{ display: "flex", gap: "10px" }}>
+                        <span>Д: {day.temp_day}</span>
+                        <span style={{ color: "#aaa" }}>Н: {day.temp_night}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </WeatherCard>
+            ))}
+          </WeatherCardsContainer>
+
           <Aihelp isDarkMode={isDarkMode} />
           <MusicPhoto user={user} onOpenRegister={() => setIsModalOpen(true)} />
           <FanArt isDarkMode={isDarkMode} user={user} onOpenRegister={() => setIsModalOpen(true)} />
         </div>
+
         <Footer toggleTheme={toggleTheme} />
 
-        {isModalOpen && (
-          <Modal
-            onClose={() => setIsModalOpen(false)}
-            onRegister={handleRegister}
-            availableAvatars={AVAILABLE_AVATARS}
-          />
-        )}
-
-        {isLoginOpen && (
-          <LoginModal
-            onClose={() => setIsLoginOpen(false)}
-            onLogin={handleLogin}
-          />
-        )}
-
-        {isSettingsModalOpen && user && (
-          <UserSettingsModal
-            onClose={() => setIsSettingsModalOpen(false)}
-            user={user}
-            availableAvatars={AVAILABLE_AVATARS}
-            onUpdate={handleUpdateUser}
-          />
-        )}
-
+        {isModalOpen && <Modal onClose={() => setIsModalOpen(false)} onRegister={handleRegister} availableAvatars={AVAILABLE_AVATARS} />}
+        {isLoginOpen && <LoginModal onClose={() => setIsLoginOpen(false)} onLogin={handleLogin} />}
+        {isSettingsModalOpen && user && <UserSettingsModal onClose={() => setIsSettingsModalOpen(false)} user={user} availableAvatars={AVAILABLE_AVATARS} onUpdate={handleUpdateUser} />}
         {isVipModalOpen && <VipModal onClose={() => setIsVipModalOpen(false)} />}
-        
         {isShopOpen && <ShopModal onClose={() => setIsShopOpen(false)} hasVip={!!user} />}
-        
-        {isAchivmentsOpen && (
-          <AchivmentsModal onClose={() => setIsAchivmentsOpen(false)} isDarkMode={isDarkMode} />
-        )}
+        {isAchivmentsOpen && <AchivmentsModal onClose={() => setIsAchivmentsOpen(false)} isDarkMode={isDarkMode} />}
       </div>
     </ThemeWrapper>
   );

@@ -173,7 +173,8 @@ const AchivmentItem = styled.div`
     props.isSpecial ? "2px solid #ff0000" : "1px solid #a2ff6c"};
   transition: transform 0.2s;
   opacity: 0;
-  animation: ${appearAndShrink} 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  animation: ${appearAndShrink} 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94)
+    forwards;
   ${({ $index }) => css`
     animation-delay: ${0.3 + $index * 0.1}s;
   `}
@@ -550,12 +551,14 @@ const AchivmentsModal = ({ onClose }) => {
         <ScrollContainer>
           {categories.map((cat, idx) => (
             <CategorySection key={idx}>
-              <CategoryTitle $delay={`${0.2 + idx * 0.4}s`}>{cat.title}</CategoryTitle>
+              <CategoryTitle $delay={`${0.2 + idx * 0.4}s`}>
+                {cat.title}
+              </CategoryTitle>
               {cat.items.map((item, i) => (
-                <AchivmentItem 
-                  key={i} 
+                <AchivmentItem
+                  key={i}
                   isSpecial={item.isSpecial}
-                  $index={(idx * 10) + i} 
+                  $index={idx * 10 + i}
                 >
                   <AchivmentImagePlace src={item.img} alt={item.name} />
                   <div style={{ flexGrow: 1 }}>

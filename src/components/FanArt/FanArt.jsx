@@ -69,7 +69,9 @@ const BenefitImage = styled.img`
   object-fit: cover;
   height: auto;
   cursor: pointer;
-  transition: transform 0.3s ease, opacity 0.3s ease;
+  transition:
+    transform 0.3s ease,
+    opacity 0.3s ease;
 
   &:hover {
     transform: scale(1.05);
@@ -114,7 +116,9 @@ const FanArt = ({ isDarkMode, user, onOpenRegister }) => {
   };
   return (
     <FanArtDiv>
-      <FanArtTitle $isDarkMode={isDarkMode}>Фан-арти(Клікніть на картинку, для друку)</FanArtTitle>
+      <FanArtTitle $isDarkMode={isDarkMode}>
+        Фан-арти(Клікніть на картинку, для друку)
+      </FanArtTitle>
       <FanBlock>
         {images.map((img, index) => (
           <BenefitImage

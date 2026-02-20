@@ -64,8 +64,6 @@ const MusicPhotoText = styled.div`
     font-size: 30px;
   }
 `;
-
-// Стилі для пошуку
 const SearchInput = styled.input`
   width: 100%;
   max-width: 400px;
@@ -111,14 +109,13 @@ const MusicImage = styled.img`
   height: 100%;
   object-fit: cover;
   border-radius: 15px 15px 0 0;
-  cursor: pointer; 
+  cursor: pointer;
   transition: transform 0.3s ease;
   &:hover {
     transform: scale(1.02);
   }
 `;
 
-// Кнопка сердечка
 const HeartButton = styled.button`
   position: absolute;
   top: 10px;
@@ -216,7 +213,7 @@ const TimeDisplay = styled.span`
 `;
 
 const SeekBar = styled.input`
-  flex-grow: 1; 
+  flex-grow: 1;
   height: 4px;
   -webkit-appearance: none;
   background: #ccc;
@@ -239,7 +236,10 @@ const VolumeRow = styled.div`
   width: 100%;
   margin-bottom: 10px;
   padding: 0 5px;
-  span { font-size: 10px; color: #777; }
+  span {
+    font-size: 10px;
+    color: #777;
+  }
 `;
 
 const VolumeSlider = styled.input`
@@ -296,12 +296,13 @@ const ModalOverlay = styled.div`
   backdrop-filter: blur(3px);
   width: 100vw;
   height: 100vh;
-  background: hsla(0, 0%, 0%, 0.70);
+  background: hsla(0, 0%, 0%, 0.7);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 1000;
-  animation: ${(props) => (props.$isClosing ? fadeOut : "none")} 0.5s ease-out forwards;
+  animation: ${(props) => (props.$isClosing ? fadeOut : "none")} 0.5s ease-out
+    forwards;
 `;
 
 const ModalContent = styled.div`
@@ -313,11 +314,19 @@ const ModalContent = styled.div`
   max-height: 85vh;
   overflow-y: auto;
   position: relative;
-  animation: ${(props) => (props.$isClosing ? slideOut : slideIn)} 0.5s ease-out forwards;
+  animation: ${(props) => (props.$isClosing ? slideOut : slideIn)} 0.5s ease-out
+    forwards;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-  &::-webkit-scrollbar { width: 6px; }
-  &::-webkit-scrollbar-thumb { background: #ffb36c; border-radius: 3px; }
-  &::-webkit-scrollbar-track { background: #f0f0f0; }
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: #ffb36c;
+    border-radius: 3px;
+  }
+  &::-webkit-scrollbar-track {
+    background: #f0f0f0;
+  }
 `;
 
 const CloseButton = styled.button`
@@ -329,7 +338,9 @@ const CloseButton = styled.button`
   font-size: 20px;
   cursor: pointer;
   color: #333;
-  &:hover { color: #ffb36c; }
+  &:hover {
+    color: #ffb36c;
+  }
 `;
 
 const LyricsContainer = styled.div`
@@ -355,7 +366,7 @@ const MusicCard = ({
   user,
   onOpenRegister,
   isFavorite,
-  onToggleFavorite
+  onToggleFavorite,
 }) => {
   const { id, image, audio, text } = cardData;
   const audioRef = useRef(null);
@@ -363,7 +374,7 @@ const MusicCard = ({
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [isLooping, setIsLooping] = useState(false);
-  const [volume, setVolume] = useState(1); // Стейт гучності
+  const [volume, setVolume] = useState(1);
 
   useEffect(() => {
     if (forcePause && isPlaying) {
@@ -400,14 +411,20 @@ const MusicCard = ({
   };
 
   const handleDownload = () => {
-    if (!user) { onOpenRegister(); return; }
+    if (!user) {
+      onOpenRegister();
+      return;
+    }
     const a = document.createElement("a");
     a.href = audio || image;
     a.download = "file";
     a.click();
   };
   const handlePrint = () => {
-    if (!user) { onOpenRegister(); return; }
+    if (!user) {
+      onOpenRegister();
+      return;
+    }
     const printWindow = window.open("", "_blank");
     printWindow.document.write(
       `<html><head><title>Print Image</title></head><body style="text-align:center;"><img src="${image}" style="max-width:100%;" onload="window.print();window.close()" /></body></html>`,
@@ -417,10 +434,12 @@ const MusicCard = ({
   return (
     <CardWrapper $isFavorite={isFavorite}>
       <MusicImageContainer>
-        <HeartButton 
-          $active={isFavorite} 
+        <HeartButton
+          $active={isFavorite}
           onClick={() => onToggleFavorite(id)}
-          title={isFavorite ? "Прибрати з улюблених" : "Додати в улюблені (ліміт 3)"}
+          title={
+            isFavorite ? "Прибрати з улюблених" : "Додати в улюблені (ліміт 3)"
+          }
         >
           {isFavorite ? "❤️" : "🤍"}
         </HeartButton>
@@ -442,9 +461,13 @@ const MusicCard = ({
           <PlayerRow>
             <PlayButton onClick={togglePlayPause}>
               {isPlaying ? (
-                <svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" /></svg>
+                <svg viewBox="0 0 24 24">
+                  <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
+                </svg>
               ) : (
-                <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
+                <svg viewBox="0 0 24 24">
+                  <path d="M8 5v14l11-7z" />
+                </svg>
               )}
             </PlayButton>
             <SeekBar
@@ -454,21 +477,26 @@ const MusicCard = ({
               value={currentTime}
               onChange={(e) => (audioRef.current.currentTime = e.target.value)}
             />
-            <TimeDisplay>{formatTime(currentTime)} / {formatTime(duration)}</TimeDisplay>
+            <TimeDisplay>
+              {formatTime(currentTime)} / {formatTime(duration)}
+            </TimeDisplay>
           </PlayerRow>
           <VolumeRow>
             <span>🔈</span>
-            <VolumeSlider 
-              type="range" 
-              min="0" 
-              max="1" 
-              step="0.01" 
-              value={volume} 
+            <VolumeSlider
+              type="range"
+              min="0"
+              max="1"
+              step="0.01"
+              value={volume}
               onChange={(e) => setVolume(parseFloat(e.target.value))}
             />
             <span>🔊</span>
           </VolumeRow>
-          <LoopButton $active={isLooping} onClick={() => setIsLooping(!isLooping)}>
+          <LoopButton
+            $active={isLooping}
+            onClick={() => setIsLooping(!isLooping)}
+          >
             {isLooping ? "Автоповтор увімкнено" : "Автоповтор вимкнено"}
           </LoopButton>
         </ControlsContainer>
@@ -482,149 +510,151 @@ const MusicCard = ({
     </CardWrapper>
   );
 };
-  const musicCards = [
-    {
-      id: 1,
-      image: require("../../photos/vip-images/christmas.jpg"),
-      audio: require("../../mp3/kolada.mp3"),
-      text: "'Україна колядує'. Озвучка І. Федишин.",
-      lyrics: "Текст відсутній.",
-    },
-    {
-      id: 2,
-      image: require("../../photos/vip-images/vip-dinofroz.webp"),
-      audio: require("../../mp3/dinofroz.mp3"),
-      text: "Легендарний мультфільм на малятко ТВ(нажаль закритий) Mondo TV - Динофроз. Зображено Імператора дрaконів Ніцерона.",
-      lyrics:
-        "Dinofroze...dinofroze. Четверо друзів знайшли дивну гру. В доісторичну пішли давнину. Там динозаврами стали вони. В цьому карти їм допомогли. У давнині небезпечні дракони. Та з ними впорались наші герої. До бою готові всюди і завжди. І утілюють мірії свої в боротьбі. Dinofroze... Дружні, завзяті, зброя в руках. Dinofroze... Вони Ніцерону не по зубах. Dinofroze... Дружні, завзяті, зброя в руках. Вони Ніцерону не по зубах. Друзі б'ються завзято. Дракони тікають. Четверо друзів майбутнє спасають. До бою завжди готові вони. Ховайтеся, вороги! Dinofroze...",
-    },
-    {
-      id: 3,
-      image: require("../../photos/vip-images/ultra-vip-turkeys.webp"),
-      audio: require("../../mp3/turkeys.mp3"),
-      text: "Насолоджуйтеся звуками індиків. Авторське спостереження.",
-      lyrics: "Лише звуки природи.",
-    },
-    {
-      id: 4,
-      image: require("../../photos/vip-images/vip-forest.webp"),
-      audio: require("../../mp3/thefatrat-monody.mp3"),
-      text: "Цей казковий нічний ліс наповнений сакурами. TheFatRat - Monody.",
-      lyrics: "Текст трохи  змінено для рими: Літо в пагорбах. Ті туманні дні у мене в спогадах. Ми все ще бігали. Весь світ був біля наших ніг. Бачачи зміни сезону. Наші дороги були вкриті пригодами. Гори на шляху. Від моря не могли втримати нас. Ось ми стоїмо з розпростертими обіймами. Це наш дім. Завжди сильні у світі, який ми створили. Я все ще чую тебе у вітрі. Бачу твої тіні на деревах. Тримаючись, спогади ніколи не змінюються.",
-    },
-    {
-      id: 5,
-      image: require("../../photos/vip-images/vip-desert.webp"),
-      audio: require("../../mp3/wind.mp3"),
-      text: "Пустеля розділенна вічно грозовою і сонячною зоною. Невідомий автор. ",
-      lyrics: "Звуки дощу, допомагають заснути",
-    },
-    {
-      id: 6,
-      image: require("../../photos/vip-images/horror.jpg"),
-      audio: require("../../mp3/horror.mp3"),
-      text: "Ви дивилися моторошне кіно...",
-      lyrics: "Атмосферні звуки. Хто може страшніше зробити чекаю)",
-    },
-    {
-      id: 7,
-      image: require("../../photos/vip-images/horse.jpg"),
-      audio: require("../../mp3/horse.mp3"),
-      text: "Кінь друг людини. Телеканал мега(автор звуку).",
-      lyrics: "Тут немає тексту.",
-    },
-    {
-      id: 8,
-      image: require("../../photos/vip-images/flame.jpg"),
-      audio: require("../../mp3/darkness-and--flame.mp3"),
-      text: "Епічна гра головоломка від 5-bn games 4 частини доступно - чекаємо на 5-ту.",
-      lyrics: "Текст відсутній.",
-    },
-    {
-      id: 9,
-      image: require("../../photos/vip-images/vip-dragons.jpg"),
-      audio: require("../../mp3/dragon.mp3"),
-      text: "І знову дракони, музика доісторичного світу. Картина взята з мультфільму Динофроз, а музика з гри (My Little Universe-Drаgonora). Звучить при комбінації.",
-      lyrics: "Тут немає тексту.",
-    },
-    {
-      id: 10,
-      image: require("../../photos/vip-images/vip-soloveyko.jpg"),
-      audio: require("../../mp3/soloveyko.mp3"),
-      text: "Голосування хто кращий по звукам соловеко чи індик. Зроблено за ідеї сім'ї.",
-      lyrics: "Спів соловейка.",
-    },
-    {
-      id: 11,
-      image: require("../../photos/vip-images/dizel.webp"),
-      audio: require("../../mp3/dizel.mp3"),
-      text: "Пісня під питанням, бо на російській мові. Але вона, без політики + комедійна про Саню та Віку.",
-      lyrics: "Текст відсутній.",
-    },
-    {
-      id: 12,
-      image: require("../../photos/vip-images/asium.jpg"),
-      audio: require("../../mp3/harmonic-japan.mp3"),
-      text: "My little universe. Спокійна і прекрасна музика в японському стилі.",
-      lyrics: "Текст відсутній.",
-    },
-    {
-      id: 13,
-      image: require("../../photos/vip-images/mechannic.jpg"),
-      audio: require("../../mp3/mechanik-kindom.mp3"),
-      text: "My little universe. Спокійна і прекрасна музика в механічному стилі.",
-      lyrics: "Текст відсутній.",
-    },
-    {
-      id: 14,
-      image: require("../../photos/vip-images/mechannic.jpg"),
-      audio: require("../../mp3/mechanik-kindom.mp3"),
-      text: "Зоотрополіс(Disney)-рекомендую. Shakira-Try Everything.",
-      lyrics: "",
-    },   
-        {
-      id: 15,
-      image: require("../../photos/vip-images/mechannic.jpg"),
-      audio: require("../../mp3/mechanik-kindom.mp3"),
-      text: "Продовження історої зоотрополісу(Disney). Чекатиму, через 5років продовження. Skakira, Ed Sheeran - Zoo.",
-      lyrics: "",
-    },
-        {
-      id: 15,
-      image: require("../../photos/vip-images/mechannic.jpg"),
-      audio: require("../../mp3/mechanik-kindom.mp3"),
-      text: "Мія та я. Не пожалкуєте.",
-      lyrics: "Мія та я. Не пожалкуєте",
-    },
-        {
-      id: 16,
-      image: require("../../photos/vip-images/mechannic.jpg"),
-      audio: require("../../mp3/mechanik-kindom.mp3"),
-      text: "My little universe. Спокійна і прекрасна музика в механічному стилі.",
-      lyrics: "Динофроз, показували, з кількома, ще мульфільмами: Якарі, Анна з зелених дахів, Хайді, Острів іпаток, Пригоди в качиному порту, Марко, Лис Микита. Пісні розміщені в 3 частинах. Четверта під питанням.",
-    },
-        {
-      id: 17,
-      image: require("../../photos/vip-images/mechannic.jpg"),
-      audio: require("../../mp3/mechanik-kindom.mp3"),
-      text: "My little universe. Спокійна і прекрасна музика в механічному стилі.",
-      lyrics: "Текст відсутній.",
-    },
-    {
-      id: 18,
-      image: require("../../photos/vip-images/mechannic.jpg"),
-      audio: require("../../mp3/mechanik-kindom.mp3"),
-      text: "My little universe. Спокійна і прекрасна музика в механічному стилі.",
-      lyrics: "Текст відсутній.",
-    },
-        {
-      id: 19,
-      image: require("../../photos/vip-images/mechannic.jpg"),
-      audio: require("../../mp3/mechanik-kindom.mp3"),
-      text: "My little universe. Спокійна і прекрасна музика в механічному стилі.",
-      lyrics: "Текст відсутній.",
-    },
-  ];
+const musicCards = [
+  {
+    id: 1,
+    image: require("../../photos/vip-images/christmas.jpg"),
+    audio: require("../../mp3/kolada.mp3"),
+    text: "'Україна колядує'. Озвучка І. Федишин.",
+    lyrics: "Текст відсутній.",
+  },
+  {
+    id: 2,
+    image: require("../../photos/vip-images/vip-dinofroz.webp"),
+    audio: require("../../mp3/dinofroz.mp3"),
+    text: "Легендарний мультфільм на малятко ТВ(нажаль закритий) Mondo TV - Динофроз. Зображено Імператора дрaконів Ніцерона.",
+    lyrics:
+      "Dinofroze...dinofroze. Четверо друзів знайшли дивну гру. В доісторичну пішли давнину. Там динозаврами стали вони. В цьому карти їм допомогли. У давнині небезпечні дракони. Та з ними впорались наші герої. До бою готові всюди і завжди. І утілюють мірії свої в боротьбі. Dinofroze... Дружні, завзяті, зброя в руках. Dinofroze... Вони Ніцерону не по зубах. Dinofroze... Дружні, завзяті, зброя в руках. Вони Ніцерону не по зубах. Друзі б'ються завзято. Дракони тікають. Четверо друзів майбутнє спасають. До бою завжди готові вони. Ховайтеся, вороги! Dinofroze...",
+  },
+  {
+    id: 3,
+    image: require("../../photos/vip-images/ultra-vip-turkeys.webp"),
+    audio: require("../../mp3/turkeys.mp3"),
+    text: "Насолоджуйтеся звуками індиків. Авторське спостереження.",
+    lyrics: "Лише звуки природи.",
+  },
+  {
+    id: 4,
+    image: require("../../photos/vip-images/vip-forest.webp"),
+    audio: require("../../mp3/thefatrat-monody.mp3"),
+    text: "Цей казковий нічний ліс наповнений сакурами. TheFatRat - Monody.",
+    lyrics:
+      "Текст трохи  змінено для рими: Літо в пагорбах. Ті туманні дні у мене в спогадах. Ми все ще бігали. Весь світ був біля наших ніг. Бачачи зміни сезону. Наші дороги були вкриті пригодами. Гори на шляху. Від моря не могли втримати нас. Ось ми стоїмо з розпростертими обіймами. Це наш дім. Завжди сильні у світі, який ми створили. Я все ще чую тебе у вітрі. Бачу твої тіні на деревах. Тримаючись, спогади ніколи не змінюються.",
+  },
+  {
+    id: 5,
+    image: require("../../photos/vip-images/vip-desert.webp"),
+    audio: require("../../mp3/wind.mp3"),
+    text: "Пустеля розділенна вічно грозовою і сонячною зоною. Невідомий автор. ",
+    lyrics: "Звуки дощу, допомагають заснути",
+  },
+  {
+    id: 6,
+    image: require("../../photos/vip-images/horror.jpg"),
+    audio: require("../../mp3/horror.mp3"),
+    text: "Ви дивилися моторошне кіно...",
+    lyrics: "Атмосферні звуки. Хто може страшніше зробити чекаю)",
+  },
+  {
+    id: 7,
+    image: require("../../photos/vip-images/horse.jpg"),
+    audio: require("../../mp3/horse.mp3"),
+    text: "Кінь друг людини. Телеканал мега(автор звуку).",
+    lyrics: "Тут немає тексту.",
+  },
+  {
+    id: 8,
+    image: require("../../photos/vip-images/flame.jpg"),
+    audio: require("../../mp3/darkness-and--flame.mp3"),
+    text: "Епічна гра головоломка від 5-bn games 4 частини доступно - чекаємо на 5-ту.",
+    lyrics: "Текст відсутній.",
+  },
+  {
+    id: 9,
+    image: require("../../photos/vip-images/vip-dragons.jpg"),
+    audio: require("../../mp3/dragon.mp3"),
+    text: "І знову дракони, музика доісторичного світу. Картина взята з мультфільму Динофроз, а музика з гри (My Little Universe-Drаgonora). Звучить при комбінації.",
+    lyrics: "Тут немає тексту.",
+  },
+  {
+    id: 10,
+    image: require("../../photos/vip-images/vip-soloveyko.jpg"),
+    audio: require("../../mp3/soloveyko.mp3"),
+    text: "Голосування хто кращий по звукам соловеко чи індик. Зроблено за ідеї сім'ї.",
+    lyrics: "Спів соловейка.",
+  },
+  {
+    id: 11,
+    image: require("../../photos/vip-images/dizel.webp"),
+    audio: require("../../mp3/dizel.mp3"),
+    text: "Пісня під питанням, бо на російській мові. Але вона, без політики + комедійна про Саню та Віку.",
+    lyrics: "Текст відсутній.",
+  },
+  {
+    id: 12,
+    image: require("../../photos/vip-images/asium.jpg"),
+    audio: require("../../mp3/harmonic-japan.mp3"),
+    text: "My little universe. Спокійна і прекрасна музика в японському стилі.",
+    lyrics: "Текст відсутній.",
+  },
+  {
+    id: 13,
+    image: require("../../photos/vip-images/mechannic.jpg"),
+    audio: require("../../mp3/mechanik-kindom.mp3"),
+    text: "My little universe. Спокійна і прекрасна музика в механічному стилі.",
+    lyrics: "Текст відсутній.",
+  },
+  {
+    id: 14,
+    image: require("../../photos/vip-images/mechannic.jpg"),
+    audio: require("../../mp3/mechanik-kindom.mp3"),
+    text: "Зоотрополіс(Disney)-рекомендую. Shakira-Try Everything.",
+    lyrics: "",
+  },
+  {
+    id: 15,
+    image: require("../../photos/vip-images/mechannic.jpg"),
+    audio: require("../../mp3/mechanik-kindom.mp3"),
+    text: "Продовження історої зоотрополісу(Disney). Чекатиму, через 5років продовження. Skakira, Ed Sheeran - Zoo.",
+    lyrics: "",
+  },
+  {
+    id: 15,
+    image: require("../../photos/vip-images/mechannic.jpg"),
+    audio: require("../../mp3/mechanik-kindom.mp3"),
+    text: "Мія та я. Не пожалкуєте.",
+    lyrics: "Мія та я. Не пожалкуєте",
+  },
+  {
+    id: 16,
+    image: require("../../photos/vip-images/mechannic.jpg"),
+    audio: require("../../mp3/mechanik-kindom.mp3"),
+    text: "My little universe. Спокійна і прекрасна музика в механічному стилі.",
+    lyrics:
+      "Динофроз, показували, з кількома, ще мульфільмами: Якарі, Анна з зелених дахів, Хайді, Острів іпаток, Пригоди в качиному порту, Марко, Лис Микита. Пісні розміщені в 3 частинах. Четверта під питанням.",
+  },
+  {
+    id: 17,
+    image: require("../../photos/vip-images/mechannic.jpg"),
+    audio: require("../../mp3/mechanik-kindom.mp3"),
+    text: "My little universe. Спокійна і прекрасна музика в механічному стилі.",
+    lyrics: "Текст відсутній.",
+  },
+  {
+    id: 18,
+    image: require("../../photos/vip-images/mechannic.jpg"),
+    audio: require("../../mp3/mechanik-kindom.mp3"),
+    text: "My little universe. Спокійна і прекрасна музика в механічному стилі.",
+    lyrics: "Текст відсутній.",
+  },
+  {
+    id: 19,
+    image: require("../../photos/vip-images/mechannic.jpg"),
+    audio: require("../../mp3/mechanik-kindom.mp3"),
+    text: "My little universe. Спокійна і прекрасна музика в механічному стилі.",
+    lyrics: "Текст відсутній.",
+  },
+];
 const MusicPhoto = ({ user, onOpenRegister }) => {
   const [showAll, setShowAll] = useState(false);
   const [modalData, setModalData] = useState(null);
@@ -641,9 +671,9 @@ const MusicPhoto = ({ user, onOpenRegister }) => {
   }, [favorites]);
 
   const handleToggleFavorite = (id) => {
-    setFavorites(prev => {
+    setFavorites((prev) => {
       if (prev.includes(id)) {
-        return prev.filter(favId => favId !== id);
+        return prev.filter((favId) => favId !== id);
       }
       if (prev.length >= 3) {
         alert("Можна додати не більше 3-х улюблених пісень!");
@@ -661,9 +691,9 @@ const MusicPhoto = ({ user, onOpenRegister }) => {
       setIsClosing(false);
     }, 500);
   };
-const processedCards = useMemo(() => {
-    let filtered = musicCards.filter(card => 
-      card.text.toLowerCase().includes(searchQuery.toLowerCase())
+  const processedCards = useMemo(() => {
+    let filtered = musicCards.filter((card) =>
+      card.text.toLowerCase().includes(searchQuery.toLowerCase()),
     );
     return [...filtered].sort((a, b) => {
       const aFav = favorites.includes(a.id);
@@ -683,10 +713,10 @@ const processedCards = useMemo(() => {
   return (
     <MusicPhotoDiv>
       <MusicPhotoText>Насолоджуйтеся музикою</MusicPhotoText>
-      
-      <SearchInput 
-        type="text" 
-        placeholder="Пошук пісні за описом..." 
+
+      <SearchInput
+        type="text"
+        placeholder="Пошук пісні за описом..."
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
       />
@@ -715,10 +745,30 @@ const processedCards = useMemo(() => {
 
       {modalData && (
         <ModalOverlay $isClosing={isClosing} onClick={handleCloseModal}>
-          <ModalContent $isClosing={isClosing} onClick={(e) => e.stopPropagation()}>
+          <ModalContent
+            $isClosing={isClosing}
+            onClick={(e) => e.stopPropagation()}
+          >
             <CloseButton onClick={handleCloseModal}>&times;</CloseButton>
-            <img src={modalData.image} style={{ width: "100%", borderRadius: "15px", marginBottom: "15px" }} alt="Music" />
-            <h4 style={{ textAlign: "center", color: "#333", marginBottom: "10px", marginTop: 0 }}>Текст пісні:</h4>
+            <img
+              src={modalData.image}
+              style={{
+                width: "100%",
+                borderRadius: "15px",
+                marginBottom: "15px",
+              }}
+              alt="Music"
+            />
+            <h4
+              style={{
+                textAlign: "center",
+                color: "#333",
+                marginBottom: "10px",
+                marginTop: 0,
+              }}
+            >
+              Текст пісні:
+            </h4>
             <LyricsContainer>{modalData.lyrics}</LyricsContainer>
           </ModalContent>
         </ModalOverlay>

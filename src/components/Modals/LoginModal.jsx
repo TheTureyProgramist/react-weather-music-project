@@ -40,7 +40,8 @@ const ModalOverlay = styled.div`
   backdrop-filter: blur(3px);
   align-items: center;
   z-index: 1000;
-  animation: ${props => (props.$isClosing ? fadeOut : "none")} 0.5s ease-out forwards;
+  animation: ${(props) => (props.$isClosing ? fadeOut : "none")} 0.5s ease-out
+    forwards;
 `;
 
 const ModalContent = styled.form`
@@ -54,7 +55,8 @@ const ModalContent = styled.form`
   flex-direction: column;
   gap: 15px;
   position: relative;
-  animation: ${props => (props.$isClosing ? slideOut : slideIn)} 0.5s ease-out forwards;
+  animation: ${(props) => (props.$isClosing ? slideOut : slideIn)} 0.5s ease-out
+    forwards;
 `;
 const Input = styled.input`
   padding: 12px;
@@ -91,9 +93,9 @@ const CloseButton = styled.button`
   }
 `;
 const Title = styled.h3`
-font-weight: 900;
-color: black;
-`
+  font-weight: 900;
+  color: black;
+`;
 const LoginModal = ({ onClose, onLogin }) => {
   const [email, setEmail] = useState("");
   const [pass, setPass] = useState("");
@@ -110,8 +112,9 @@ const LoginModal = ({ onClose, onLogin }) => {
 
   const handleLogin = (e) => {
     e.preventDefault();
-    const savedUser = JSON.parse(localStorage.getItem("active_user")) || 
-                      JSON.parse(localStorage.getItem("registered_user"));
+    const savedUser =
+      JSON.parse(localStorage.getItem("active_user")) ||
+      JSON.parse(localStorage.getItem("registered_user"));
     if (
       savedUser &&
       savedUser.account === email &&
@@ -125,7 +128,11 @@ const LoginModal = ({ onClose, onLogin }) => {
   };
   return (
     <ModalOverlay $isClosing={isClosing} onClick={handleClose}>
-      <ModalContent $isClosing={isClosing} onClick={(e) => e.stopPropagation()} onSubmit={handleLogin}>
+      <ModalContent
+        $isClosing={isClosing}
+        onClick={(e) => e.stopPropagation()}
+        onSubmit={handleLogin}
+      >
         <CloseButton onClick={handleClose}>&times;</CloseButton>
         <Title style={{ textAlign: "center" }}>Вхід</Title>
         <Input

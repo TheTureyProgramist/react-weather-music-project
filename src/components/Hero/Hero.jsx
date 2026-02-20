@@ -1,6 +1,8 @@
+import { useState } from "react";
 import styled from "styled-components";
 import hills from "../../photos/hero-header/hiils.jpg";
 import search from "../../photos/hero-header/search.webp";
+
 const HeroDiv = styled.div`
   position: relative;
   width: 100%;
@@ -10,8 +12,11 @@ const HeroDiv = styled.div`
   margin-bottom: 35px;
   display: flex;
   background-size: cover;
-  background-image:
-    linear-gradient(to right, rgba(47, 48, 58, 0), rgba(47, 48, 58, 0)),
+  background-image: linear-gradient(
+      to right,
+      rgba(47, 48, 58, 0),
+      rgba(47, 48, 58, 0)
+    ),
     url(${hills});
   background-repeat: no-repeat;
   flex-direction: column;
@@ -112,11 +117,11 @@ const HeroTitle = styled.h1`
   font-weight: 600;
   font-size: 10px;
   color: #fff;
-   width: 250px;
+  width: 250px;
   margin: 0;
   @media (min-width: 768px) {
     font-size: 15px;
-     width: 450px;
+    width: 450px;
   }
   @media (min-width: 1200px) {
     font-size: 20px;
@@ -134,7 +139,6 @@ const HeroInput = styled.input`
   padding-left: 30px;
   background: #d9d9d9;
   border-radius: 10px 0 0 10px;
-  width: 173px;
   @media (min-width: 768px) {
     width: 402px;
     height: 25px;
@@ -203,9 +207,7 @@ const HeroButton = styled.button`
     top: 50%;
     transform: translate(-50%, -50%) scale(0.5);
     opacity: 0;
-    transition:
-      opacity 200ms ease,
-      transform 200ms ease;
+    transition: opacity 200ms ease, transform 200ms ease;
     pointer-events: none;
     z-index: 2;
     font-size: 18px;
@@ -236,14 +238,34 @@ const HeroButton = styled.button`
     }
   }
 `;
-const Hero = ({ heroDateString }) => {
+
+const Hero = ({ heroDateString, onAddCity }) => {
+  const [inputValue, setInputValue] = useState("");
+
+  const handleSearch = () => {
+    if (inputValue.trim() !== "") {
+      if (onAddCity) {
+        onAddCity(inputValue.trim());
+      }
+      setInputValue("");
+    }
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === "Enter") {
+      handleSearch();
+    }
+  };
+
   return (
     <HeroDiv>
       <HeroDecors>
         <HeroBlue>Сти</HeroBlue>
         <HeroYellow>хія</HeroYellow>
       </HeroDecors>
-      <HeroTitle>Безкоштовна панель погоди, музики, фан-артів, технологіями ШІ та системою 🧧 та 🏆.</HeroTitle>
+      <HeroTitle>
+        Безкоштовна панель погоди, музики, фан-артів, технологіями ШІ та системою 🧧 та 🏆.
+      </HeroTitle>
       <HeroDecor>
         <HeroLineMobile />
         <HeroFix>
@@ -255,8 +277,13 @@ const Hero = ({ heroDateString }) => {
         </HeroFix>
       </HeroDecor>
       <HeroFormater>
-        <HeroInput placeholder="Уведіть місто, яке вам треба" />
-        <HeroButton></HeroButton>
+        <HeroInput
+          value={inputValue}
+          onChange={(e) => setInputValue(e.target.value)}
+          onKeyDown={handleKeyPress}
+          placeholder="Уведіть місто, яке вам треба"
+        />
+        <HeroButton onClick={handleSearch}></HeroButton>
       </HeroFormater>
     </HeroDiv>
   );

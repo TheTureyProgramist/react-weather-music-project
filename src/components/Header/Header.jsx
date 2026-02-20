@@ -245,7 +245,9 @@ const HeaderAvatar = styled.img`
   ${(props) =>
     props.$bColor?.includes("270deg") &&
     css`
-      background-size: 100% 100%, 400% 400%;
+      background-size:
+        100% 100%,
+        400% 400%;
       animation: ${flow} 5s ease infinite;
     `}
 
@@ -362,7 +364,11 @@ const Header = ({
             >
               ⚙️
             </IconButton>
-            <IconButton onClick={onLogout} title="Вийти" $isDarkMode={isDarkMode}>
+            <IconButton
+              onClick={onLogout}
+              title="Вийти"
+              $isDarkMode={isDarkMode}
+            >
               🚪
             </IconButton>
             <UserName $uColor={user.textColor}>{user.firstName}</UserName>
