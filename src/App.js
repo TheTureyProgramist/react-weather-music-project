@@ -17,6 +17,7 @@ import Aihelp from "./components/Aihelp.jsx/Aihelp.jsx";
 import FanArt from "./components/FanArt/FanArt.jsx";
 import ShopModal from "./components/Modals/ShopModal.jsx";
 import AchivmentsModal from "./components/Modals/AchivmentsModal.jsx";
+
 // Імпорт аватарів
 import turkeys from "./photos/vip-images/ultra-vip-turkeys.webp";
 import dragons from "./photos/vip-images/vip-dragons.jpg";
@@ -32,12 +33,54 @@ import flame from "./photos/vip-images/flame.jpg";
 import finances from "./photos/fan-art/finance.jpg";
 import parol from "./photos/fan-art/parol.jpg";
 import vovk from "./photos/fan-art/kolada.webp";
-
 const AVAILABLE_AVATARS = [
   monody, turkeys, nicerone, horrordog, vovk, finances, 
   parol, horse, lebid, dragons, rooster, soloveyko, dizel, flame,
 ];
+const LoaderWrapper = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: #121212;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+`;
 
+const LoaderImage = styled.img`
+  width: 300px;
+  height: auto;
+  margin-bottom: 30px;
+  border-radius: 20px;
+  animation: bounce 2s infinite ease-in-out;
+
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-25px); }
+  }
+`;
+const ProgressContainer = styled.div`
+  width: 280px;
+  height: 8px;
+  background: #2a2a2a;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 0 15px rgba(255, 140, 0, 0.2);
+`;
+const ProgressBar = styled.div`
+  height: 100%;
+  background: linear-gradient(90deg, #ff8c00, #ff0080);
+  width: 0%;
+  animation: load 2.5s forwards ease-in-out;
+  @keyframes load {
+    0% { width: 0%; }
+    100% { width: 100%; }
+  }
+`;
 const ThemeWrapper = styled.div`
   background-color: ${(props) => (props.$isDarkMode ? "#121212" : "transparent")};
   color: ${(props) => (props.$isDarkMode ? "#ffffff" : "inherit")};
@@ -45,8 +88,8 @@ const ThemeWrapper = styled.div`
   transition: background-color 0.3s ease;
   padding-bottom: 20px;
 `;
-
 const App = () => {
+  const [isLoading, setIsLoading] = useState(true); 
   const [now, setNow] = useState(new Date());
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoginOpen, setIsLoginOpen] = useState(false);
@@ -54,28 +97,34 @@ const App = () => {
   const [isVipModalOpen, setIsVipModalOpen] = useState(false);
   const [isShopOpen, setIsShopOpen] = useState(false);
   const [isAchivmentsOpen, setIsAchivmentsOpen] = useState(false);
-
   const [isDarkMode, setIsDarkMode] = useState(() => {
     const saved = localStorage.getItem("isDarkMode");
     return saved !== null ? JSON.parse(saved) : false;
   });
-
   const [user, setUser] = useState(() => {
     const saved = localStorage.getItem("active_user");
     return saved ? JSON.parse(saved) : null;
   });
-
   const [currentAvatar, setCurrentAvatar] = useState(() => {
     const saved = localStorage.getItem("currentAvatar");
     return saved || userDefault;
   });
   useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 2000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
     const timer = setInterval(() => setNow(new Date()), 1000);
     return () => clearInterval(timer);
   }, []);
+
   useEffect(() => {
     localStorage.setItem("isDarkMode", JSON.stringify(isDarkMode));
   }, [isDarkMode]);
+
   useEffect(() => {
     if (user) {
       localStorage.setItem("active_user", JSON.stringify(user));
@@ -108,13 +157,25 @@ const App = () => {
     localStorage.removeItem("currentAvatar");
     setIsSettingsModalOpen(false);
   };
-
   const toggleTheme = () => setIsDarkMode(!isDarkMode);
-
   const capitalize = (s) => s.charAt(0).toUpperCase() + s.slice(1);
   const month = new Intl.DateTimeFormat("uk", { month: "2-digit" }).format(now);
   const weekday = capitalize(new Intl.DateTimeFormat("uk", { weekday: "long" }).format(now));
   const heroDateString = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}:${String(now.getSeconds()).padStart(2, "0")} ${weekday}, ${now.getDate()}.${month}.${now.getFullYear()}`;
+  if (isLoading) {
+    return (
+      <LoaderWrapper>
+        <LoaderImage src={monody} alt="Loading..." />
+        <ProgressContainer>
+          <ProgressBar />
+        </ProgressContainer>
+        <p style={{ color: "#fff", marginTop: "15px", letterSpacing: "2px", fontSize: "12px", opacity: 0.7 }}>
+          Зачекайте трішки...
+        </p>
+      </LoaderWrapper>
+    );
+  }
+
   return (
     <ThemeWrapper $isDarkMode={isDarkMode}>
       <div className="App">
