@@ -326,7 +326,7 @@ const Header = ({
   return (
     <HeaderDiv $isDarkMode={isDarkMode}>
       <HeaderFix>
-        <HeaderLogo src={logo} alt="Логотип Стихії: Погода надійніша з нами!"/>
+        <HeaderLogo src={logo}/>
         {user && (
           <VipTextWrapper onClick={onOpenVip}>
             <RainbowText $show={!showUltra}>Стихія+</RainbowText>
