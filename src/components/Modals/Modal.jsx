@@ -25,9 +25,8 @@ const slideOut = keyframes`
 `;
 
 const fadeOut = keyframes`
-  0% { opacity: 1; transform: scale(1); filter: blur(0); }
-  50% { opacity: 0.5; transform: scale(1.1); filter: blur(2px); }
-  100% { opacity: 0; transform: scale(1.3); filter: blur(10px); }
+  0% { opacity: 1; }
+  100% { opacity: 0; }
 `;
 
 const flow = keyframes`
@@ -104,7 +103,6 @@ const CloseButton = styled.button`
   font-size: 34px;
   cursor: pointer;
   color: #000000;
-  z-index: 1010;
   &:hover {
     color: #ffb36c;
   }
@@ -144,7 +142,6 @@ const NameInput = styled(Input)`
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
-        color: transparent; /* Додано для надійності */
         
         ${isAnimated ? css`
           background-size: 400% 400%;
@@ -156,15 +153,9 @@ const NameInput = styled(Input)`
       `;
     } else {
       return css`
-        /* Скидання градієнтних налаштувань */
-        background: transparent;
-        -webkit-background-clip: initial;
-        background-clip: initial;
-        
-        /* Встановлення звичайного кольору */
         color: ${props.$color || "black"};
-        -webkit-text-fill-color: ${props.$color || "black"};
-        animation: none;
+        -webkit-text-fill-color: initial;
+        background: transparent;
       `;
     }
   }}
@@ -595,5 +586,4 @@ const Modal = ({ onClose, onRegister, availableAvatars = [] }) => {
     </ModalOverlay>
   );
 };
-
 export default Modal;
