@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import styled from "styled-components";
 import axios from "axios";
 import "./App.css";
@@ -15,7 +15,9 @@ import Aihelp from "./components/Aihelp.jsx/Aihelp.jsx";
 import FanArt from "./components/FanArt/FanArt.jsx";
 import ShopModal from "./components/Modals/ShopModal.jsx";
 import AchivmentsModal from "./components/Modals/AchivmentsModal.jsx";
+
 // Імпорт аватарів
+import loadimage from "./photos/hero-header/start-image.jpg";
 import turkeys from "./photos/vip-images/ultra-vip-turkeys.webp";
 import dragons from "./photos/vip-images/vip-dragons.jpg";
 import horrordog from "./photos/vip-images/horror.jpg";
@@ -36,6 +38,17 @@ const AVAILABLE_AVATARS = [
   parol, horse, lebid, dragons, rooster, soloveyko, dizel, flame,
 ];
 
+// Плейлист міст по алфавіту
+const CITY_PLAYLIST = [
+  "Берлін",
+  "Варшава",
+  "Київ",
+  "Лондон",
+  "Нью-Йорк",
+  "Париж",
+  "Токіо"
+];
+
 const LoaderWrapper = styled.div`
   position: fixed;
   top: 0;
@@ -44,43 +57,83 @@ const LoaderWrapper = styled.div`
   height: 100vh;
   background-color: #121212;
   display: flex;
-  flex-direction: column;
   justify-content: center;
   align-items: center;
   z-index: 994;
+  padding: 20px;
+  box-sizing: border-box;
+`;
+
+const LoaderContent = styled.div`
+  position: relative;
+  width: 100%;
+  max-width: 900px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 `;
 
 const LoaderImage = styled.img`
-  width: 300px;
+  width: 100%;
   height: auto;
-  margin-bottom: 30px;
   border-radius: 20px;
-  animation: bounce 2s infinite ease-in-out;
+  animation: pulse 3s infinite ease-in-out;
+  display: block;
 
-  @keyframes bounce {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-25px); }
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.015); opacity: 0.9; }
+  }
+`;
+
+const LoaderOverlay = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 25px;
+  @media (max-width: 1024px) {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    padding: 40px 20px 20px 20px;
+    background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, transparent 100%);
+    border-radius: 0 0 20px 20px;
+    margin-top: 0;
+    box-sizing: border-box;
   }
 `;
 
 const ProgressContainer = styled.div`
-  width: 280px;
-  height: 8px;
+  width: 100%;
+  max-width: 450px;
+  height: 12px;
   background: #2a2a2a;
   border-radius: 10px;
   overflow: hidden;
-  box-shadow: 0 0 15px rgba(255, 140, 0, 0.2);
+  box-shadow: 0 0 20px rgba(0, 198, 255, 0.3);
 `;
 
 const ProgressBar = styled.div`
   height: 100%;
-  background: linear-gradient(90deg, #ff8c00, #ff0080);
+  background: linear-gradient(90deg, #00c6ff 0%, #0072ff 50%, #ff8c00 100%);
   width: 0%;
   animation: load 2.5s forwards ease-in-out;
   @keyframes load {
     0% { width: 0%; }
     100% { width: 100%; }
   }
+`;
+
+const LoaderText = styled.p`
+  color: #fff;
+  margin-top: 15px;
+  letter-spacing: 3px;
+  font-size: 21px;
+  font-weight: bold;
+  opacity: 0.8;
+  text-shadow: 2px 2px 8px rgba(0,0,0,0.7);
+  text-align: center;
 `;
 
 const ThemeWrapper = styled.div`
@@ -198,11 +251,13 @@ const App = () => {
   });
 
   const [weatherCards, setWeatherCards] = useState([]);
-  const fetchWeather = async (city, isMain, lat = null, lon = null) => {
+
+  const fetchWeather = useCallback(async (city, isMain, lat = null, lon = null) => {
     try {
       let targetLat = lat;
       let targetLon = lon;
       let displayName = city || "Ваша локація";
+
       if (city) {
         const geo = await axios.get(`https://geocoding-api.open-meteo.com/v1/search?name=${city}&count=1&language=uk`);
         if (geo.data.results && geo.data.results[0]) {
@@ -214,6 +269,7 @@ const App = () => {
           return;
         }
       }
+
       const url = `https://api.open-meteo.com/v1/forecast?latitude=${targetLat}&longitude=${targetLon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m,surface_pressure&hourly=temperature_2m,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min,uv_index_max&timezone=auto&forecast_days=16`;
       const res = await axios.get(url);
       const d = res.data;
@@ -252,16 +308,18 @@ const App = () => {
           const filtered = prev.filter(c => !c.isMain);
           return [newCardData, ...filtered];
         } else {
-          if (prev.length >= 2) return prev;
+          // Перевіряємо, чи місто вже є в списку (щоб не дублювати)
+          if (prev.find(c => c.locationName === displayName)) return prev;
+          if (prev.length >= 3) return prev; // Разом з головною максимум 3 картки
           return [...prev, newCardData];
         }
       });
     } catch (error) {
       console.error("Помилка завантаження погоди", error);
     }
-  };
+  }, []);
 
-  const getInitialLocation = () => {
+  const getInitialLocation = useCallback(() => {
     if ("geolocation" in navigator) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
@@ -272,26 +330,39 @@ const App = () => {
     } else {
       fetchWeather("Київ", true, 50.45, 30.52);
     }
-  };
+  }, [fetchWeather]);
 
   useEffect(() => {
     getInitialLocation();
-  }, []);
+  }, [getInitialLocation]);
 
   const handleAddCityFromHero = (cityName) => {
-    if (weatherCards.length >= 2) {
-      alert("Ліміт карток: 2.");
-      return;
+    // Перевіряємо, чи введене місто є в нашому алфавітному плейлисті
+    const cityInPlaylist = CITY_PLAYLIST.find(
+      (c) => c.toLowerCase() === cityName.toLowerCase()
+    );
+
+    if (cityInPlaylist) {
+      fetchWeather(cityInPlaylist, false);
+    } else {
+      fetchWeather(cityName, false);
     }
-    fetchWeather(cityName, false);
   };
 
   const handleDeleteCard = (id) => {
     setWeatherCards((prev) => prev.filter(card => card.id !== id));
   };
 
+  const handleRefreshCard = (card) => {
+    if (card.isMain) {
+      getInitialLocation();
+    } else {
+      fetchWeather(card.locationName, false);
+    }
+  };
+
   useEffect(() => {
-    const timer = setTimeout(() => setIsLoading(false), 2000);
+    const timer = setTimeout(() => setIsLoading(false), 3500);
     return () => clearTimeout(timer);
   }, []);
 
@@ -335,11 +406,13 @@ const App = () => {
   if (isLoading) {
     return (
       <LoaderWrapper>
-        <LoaderImage src={monody} alt="Loading..." />
-        <ProgressContainer><ProgressBar /></ProgressContainer>
-        <p style={{ color: "#fff", marginTop: "15px", letterSpacing: "2px", fontSize: "12px", opacity: 0.7 }}>
-          Зачекайте трішки...
-        </p>
+        <LoaderContent>
+          <LoaderImage src={loadimage} alt="Loading..." />
+          <LoaderOverlay>
+            <ProgressContainer><ProgressBar /></ProgressContainer>
+            <LoaderText>TurkeyStudio Presents...</LoaderText>
+          </LoaderOverlay>
+        </LoaderContent>
       </LoaderWrapper>
     );
   }
@@ -375,9 +448,8 @@ const App = () => {
                 <CardHeader $isMain={card.isMain}>
                   <h3>{card.locationName} {card.isMain && "📍"}</h3>
                   <ActionButtons>
-                    {card.isMain ? (
-                      <button onClick={getInitialLocation}>Оновити</button>
-                    ) : (
+                    <button onClick={() => handleRefreshCard(card)}>Оновити</button>
+                    {!card.isMain && (
                       <button onClick={() => handleDeleteCard(card.id)}>Видалити</button>
                     )}
                   </ActionButtons>
