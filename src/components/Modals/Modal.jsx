@@ -139,10 +139,7 @@ const NameInput = styled(Input)`
     if (isGradient) {
       return css`
         background: ${props.$color};
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-        
+        color: #fff;
         ${isAnimated ? css`
           background-size: 400% 400%;
           animation: ${flow} 5s ease infinite;
@@ -154,7 +151,6 @@ const NameInput = styled(Input)`
     } else {
       return css`
         color: ${props.$color || "black"};
-        -webkit-text-fill-color: initial;
         background: transparent;
       `;
     }
@@ -441,6 +437,7 @@ const Modal = ({ onClose, onRegister, availableAvatars = [] }) => {
         
         <NameInput
           $color={formData.textColor}
+          style={!formData.textColor?.includes('linear-gradient') ? { color: formData.textColor } : { color: '#fff' }}
           placeholder="Ім'я та прізвище"
           value={formData.firstName}
           onChange={(e) =>
