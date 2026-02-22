@@ -1,7 +1,6 @@
 import styled, { keyframes } from "styled-components";
 import logo from "../../photos/hero-header/logo.png";
-import facebok from "../../photos/footer/facebook.webp";
-import whatsap from "../../photos/footer/whatsapp.webp";
+import facebok from "../../photos/hero-header/facebook.webp";
 const changeColor = keyframes`
 0% { background: skyblue; }
 50% { background: skyblue; }
@@ -95,11 +94,6 @@ const Facebook = styled.a`
   width: 40px;
   background: url(${facebok}) center no-repeat;
 `;
-const Whatsapp = styled.a`
-  background: url(${whatsap}) center no-repeat;
-  height: 40px;
-  width: 40px;
-`;
 const Footer = () => {
   return (
     <FooterDiv>
@@ -112,7 +106,6 @@ const Footer = () => {
         <FooterContactsText>Наші контакти</FooterContactsText>
         <FooterContactsFix>
           <Facebook href="https://www.facebook.com/share/g/15cVdicVtGc/"></Facebook>
-          <Whatsapp href="https://chat.whatsapp.com/KvCMirZC8Hz34ObSTiwRaR"></Whatsapp>
         </FooterContactsFix>
       </FooterContacts>
       <FooterAdress>
