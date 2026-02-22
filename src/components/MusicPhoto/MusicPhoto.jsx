@@ -217,7 +217,13 @@ const SeekBar = styled.input`
   flex-grow: 1;
   height: 4px;
   -webkit-appearance: none;
-  background: #ccc;
+  background: linear-gradient(
+    to right,
+    orange 0%,
+    orange ${(props) => (props.value / props.max) * 100 || 0}%,
+    #ccc ${(props) => (props.value / props.max) * 100 || 0}%,
+    #ccc 100%
+  );
   border-radius: 2px;
   outline: none;
   cursor: pointer;
@@ -247,7 +253,13 @@ const VolumeSlider = styled.input`
   flex-grow: 1;
   height: 3px;
   -webkit-appearance: none;
-  background: orange;
+  background: linear-gradient(
+    to right,
+    orange 0%,
+    orange ${(props) => (props.value * 100) || 0}%,
+    #ccc ${(props) => (props.value * 100) || 0}%,
+    #ccc 100%
+  );
   border-radius: 2px;
   outline: none;
   &::-webkit-slider-thumb {
@@ -377,6 +389,7 @@ const MusicCard = ({
   const [duration, setDuration] = useState(0);
   const [isLooping, setIsLooping] = useState(false);
   const [volume, setVolume] = useState(1);
+  const [bufferedTime, setBufferedTime] = useState(0);
 
   useEffect(() => {
     if (forcePause && isPlaying) {
@@ -390,6 +403,23 @@ const MusicCard = ({
       audioRef.current.volume = volume;
     }
   }, [volume]);
+
+  // Оновлення bufferedTime
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    const updateBuffered = () => {
+      if (audio.buffered.length > 0) {
+        setBufferedTime(audio.buffered.end(audio.buffered.length - 1));
+      }
+    };
+    audio.addEventListener('progress', updateBuffered);
+    audio.addEventListener('loadedmetadata', updateBuffered);
+    return () => {
+      audio.removeEventListener('progress', updateBuffered);
+      audio.removeEventListener('loadedmetadata', updateBuffered);
+    };
+  }, []);
 
   const formatTime = (time) => {
     if (isNaN(time)) return "0:00";
@@ -478,9 +508,15 @@ const MusicCard = ({
               max={duration || 0}
               value={currentTime}
               onChange={(e) => (audioRef.current.currentTime = e.target.value)}
+              style={{
+                background: `linear-gradient(to right, orange 0%, orange ${((currentTime / (duration || 1)) * 100)}%, #ccc ${((currentTime / (duration || 1)) * 100)}%, #ccc 100%)`
+              }}
             />
             <TimeDisplay>
               {formatTime(currentTime)} / {formatTime(duration)}
+              {bufferedTime > currentTime && (
+                <span style={{ color: '#aaa', marginLeft: 4 }} title="Завантажено">({formatTime(bufferedTime)})</span>
+              )}
             </TimeDisplay>
           </PlayerRow>
           <VolumeRow>
