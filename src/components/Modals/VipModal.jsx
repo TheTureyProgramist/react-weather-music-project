@@ -80,16 +80,21 @@ const VipModalDiv = styled.div`
 
 const CloseButton = styled.button`
   position: absolute;
-  top: 10px;
-  right: 10px;
+  top: 3px;
+  right: 7px;
   background: transparent;
   border: none;
   color: #ffb36c;
-  font-size: 22px;
+  font-size: 16px;
   cursor: pointer;
   z-index: 1010;
   &:hover {
     color: #fff;
+  }
+   @media (max-width: 768px) {
+     top: 10px;
+     font-size: 19px;
+  right: 10px;
   }
 `;
 

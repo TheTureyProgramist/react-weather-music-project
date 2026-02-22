@@ -65,8 +65,8 @@ const ShopContainer = styled.div`
 
 const CloseButton = styled.button`
   position: absolute;
-  top: 15px;
-  right: 20px;
+  top: 5px;
+  right: 5px;
   background: transparent;
   border: none;
   color: #ff6c6c;
@@ -76,6 +76,11 @@ const CloseButton = styled.button`
   &:hover {
     transform: scale(1.1);
     color: #fff;
+  }
+   @media (max-width: 768px) {
+     top: 10px;
+     font-size: 19px;
+  right: 10px;
   }
 `;
 
