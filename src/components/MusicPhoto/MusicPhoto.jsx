@@ -85,7 +85,7 @@ const CardWrapper = styled.div`
   flex-direction: column;
   align-items: center;
   width: 285px;
-  height: 440px; /* Трохи збільшив висоту для нових елементів */
+  height: 440px; 
   background: #fff;
   border-radius: 15px;
   padding-bottom: 15px;
