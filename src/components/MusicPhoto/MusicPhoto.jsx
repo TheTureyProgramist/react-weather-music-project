@@ -158,9 +158,10 @@ const LoadMoreButton = styled.button`
   background-color: #333;
   color: white;
   border: none;
+  
   border-radius: 20px;
-  padding: 10px 20px;
-  font-size: 14px;
+  padding: 10px 110px;
+  font-size: 19px;
   cursor: pointer;
   margin-top: 20px;
 `;
@@ -284,8 +285,9 @@ const ActionButton = styled.button`
   background: #f0f0f0;
   border: 1px solid #ddd;
   border-radius: 5px;
+  width: 60px;
   padding: 5px 10px;
-  font-size: 11px;
+  font-size: 19px;
   cursor: pointer;
 `;
 
@@ -310,7 +312,7 @@ const ModalContent = styled.div`
   padding: 20px;
   border-radius: 15px;
   width: 90%;
-  max-width: 550px;
+  max-width: 300px;
   max-height: 85vh;
   overflow-y: auto;
   position: relative;
@@ -503,9 +505,9 @@ const MusicCard = ({
       )}
       {text && <MusicText title={text}>{text}</MusicText>}
       <ActionButtonsContainer>
-        <ActionButton onClick={handleDownload}>Скачати</ActionButton>
-        <ActionButton onClick={handlePrint}>Друк</ActionButton>
-        <ActionButton onClick={() => onOpenModal(cardData)}>Текст</ActionButton>
+        <ActionButton title="Скачати пісню" onClick={handleDownload}>⇩</ActionButton>
+        <ActionButton title="Роздрукувати фан-арт" onClick={handlePrint}>⎙</ActionButton>
+        <ActionButton title="Текст пісні" onClick={() => onOpenModal(cardData)}>✎</ActionButton>
       </ActionButtonsContainer>
     </CardWrapper>
   );
@@ -739,7 +741,7 @@ const MusicPhoto = ({ user, onOpenRegister }) => {
 
       {!showAll && processedCards.length > 8 && (
         <LoadMoreButton onClick={() => setShowAll(true)}>
-          Завантажити ще
+        ︾
         </LoadMoreButton>
       )}
 

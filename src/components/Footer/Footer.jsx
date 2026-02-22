@@ -103,7 +103,7 @@ const Footer = () => {
         <FooterAdressInfo>Конотоп. Україна</FooterAdressInfo>
       </FooterAdress>
       <FooterContacts>
-        <FooterContactsText>Наші контакти</FooterContactsText>
+        <FooterContactsText>Мій контакт</FooterContactsText>
         <FooterContactsFix>
           <Facebook href="https://www.facebook.com/share/g/15cVdicVtGc/"></Facebook>
         </FooterContactsFix>

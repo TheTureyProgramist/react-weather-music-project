@@ -102,7 +102,7 @@ const ModalOverlay = styled.div`
 const ModalContent = styled.div`
   background: #093500;
   color: #2eb813;
-  padding: 20px;
+  padding: 7px;
   border-radius: 15px;
   width: 95%;
   max-width: 550px;
@@ -167,7 +167,7 @@ const AchivmentItem = styled.div`
   align-items: center;
   background: rgba(162, 255, 108, 0.05);
   border-radius: 12px;
-  padding: 12px;
+  padding: 6px;
   gap: 15px;
   border: ${(props) =>
     props.isSpecial ? "2px solid #ff0000" : "1px solid #a2ff6c"};
@@ -225,17 +225,22 @@ const RewardField = styled.div`
 
 const CloseButton = styled.button`
   position: absolute;
-  top: 10px;
-  right: 10px;
+  top: 6px;
+  right: 6px;
   background: transparent;
   border: none;
-  font-size: 28px;
+  font-size: 16px;
   cursor: pointer;
   color: #2eb813;
   z-index: 10;
   &:hover {
     color: #a2ff6c;
     transform: rotate(90deg);
+  }
+       @media (max-width: 768px) {
+     top: 10px;
+     font-size: 19px;
+  right: 10px;
   }
 `;
 
@@ -253,7 +258,7 @@ const AchivmentsModal = ({ onClose }) => {
       items: [
         {
           name: "Спринтер",
-          goal: "Ціль: пройти за 40с головоломку.",
+          goal: "Ціль: пройти за 40с головоломку. І отримайте зелений колір імені.",
           reward: "40 🧧",
           img: horse,
         },
@@ -372,13 +377,13 @@ const AchivmentsModal = ({ onClose }) => {
       items: [
         {
           name: "Хапай якір!",
-          goal: "Ціль: вийдіть з акаунту і поверніться через логін.",
+          goal: "Ціль: вийдіть з акаунту і поверніться через логін. І отримайте червону обводку імені.",
           reward: "20 🧧",
           img: anchor,
         },
         {
           name: "Фінансисти!",
-          goal: "Ціль: 2 дні підряд витрачайте лише по 20🧧.",
+          goal: "Ціль: 2 дні підряд витрачайте лише по 20🧧. І отримайте зелену обводку імені.",
           reward: "20 🧧",
           img: finances,
         },

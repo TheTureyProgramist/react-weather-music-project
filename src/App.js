@@ -37,8 +37,6 @@ const AVAILABLE_AVATARS = [
   monody, turkeys, nicerone, horrordog, vovk, finances,
   parol, horse, lebid, dragons, rooster, soloveyko, dizel, flame,
 ];
-
-// Плейлист міст по алфавіту
 const CITY_PLAYLIST = [
   "Берлін",
   "Варшава",
@@ -70,7 +68,10 @@ const LoaderContent = styled.div`
   max-width: 900px;
   display: flex;
   flex-direction: column;
+  align-items: bottom;
+  @media screen and (min-width: 769p8) {
   align-items: center;
+  }
 `;
 
 const LoaderImage = styled.img`
@@ -158,7 +159,7 @@ const WeatherCard = styled.div`
   border-radius: 15px;
   padding: 20px;
   width: 100%;
-  max-width: 450px;
+  max-width: 320px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
   border: ${(props) => (props.$isMain ? "2px solid gold" : "1px solid #444")};
 `;
@@ -308,9 +309,8 @@ const App = () => {
           const filtered = prev.filter(c => !c.isMain);
           return [newCardData, ...filtered];
         } else {
-          // Перевіряємо, чи місто вже є в списку (щоб не дублювати)
           if (prev.find(c => c.locationName === displayName)) return prev;
-          if (prev.length >= 3) return prev; // Разом з головною максимум 3 картки
+          if (prev.length >= 3) return prev; 
           return [...prev, newCardData];
         }
       });
@@ -337,7 +337,6 @@ const App = () => {
   }, [getInitialLocation]);
 
   const handleAddCityFromHero = (cityName) => {
-    // Перевіряємо, чи введене місто є в нашому алфавітному плейлисті
     const cityInPlaylist = CITY_PLAYLIST.find(
       (c) => c.toLowerCase() === cityName.toLowerCase()
     );
@@ -448,9 +447,9 @@ const App = () => {
                 <CardHeader $isMain={card.isMain}>
                   <h3>{card.locationName} {card.isMain && "📍"}</h3>
                   <ActionButtons>
-                    <button onClick={() => handleRefreshCard(card)}>Оновити</button>
+                    <button onClick={() => handleRefreshCard(card)}>↺</button>
                     {!card.isMain && (
-                      <button onClick={() => handleDeleteCard(card.id)}>Видалити</button>
+                      <button onClick={() => handleDeleteCard(card.id)}>🗑</button>
                     )}
                   </ActionButtons>
                 </CardHeader>
