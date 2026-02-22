@@ -15,7 +15,6 @@ import Aihelp from "./components/Aihelp.jsx/Aihelp.jsx";
 import FanArt from "./components/FanArt/FanArt.jsx";
 import ShopModal from "./components/Modals/ShopModal.jsx";
 import AchivmentsModal from "./components/Modals/AchivmentsModal.jsx";
-
 // Імпорт аватарів
 import loadimage from "./photos/hero-header/start-image.jpg";
 import turkeys from "./photos/vip-images/ultra-vip-turkeys.webp";
@@ -37,6 +36,7 @@ const AVAILABLE_AVATARS = [
   monody, turkeys, nicerone, horrordog, vovk, finances,
   parol, horse, lebid, dragons, rooster, soloveyko, dizel, flame,
 ];
+
 const CITY_PLAYLIST = [
   "Берлін",
   "Варшава",
@@ -46,7 +46,17 @@ const CITY_PLAYLIST = [
   "Париж",
   "Токіо"
 ];
-
+const getWeatherIcon = (code) => {
+  if (code === 0) return "☀️"; 
+  if (code >= 1 && code <= 3) return "🌤️"; 
+  if (code >= 45 && code <= 48) return "🌫️"; 
+  if (code >= 51 && code <= 55) return "🌧️"; 
+  if (code >= 61 && code <= 65) return "☔"; 
+  if (code >= 71 && code <= 77) return "❄️"; 
+  if (code >= 80 && code <= 82) return "🌦️"; 
+  if (code >= 95 && code <= 99) return "⚡"; 
+  return "☁️"; 
+};
 const LoaderWrapper = styled.div`
   position: fixed;
   top: 0;
@@ -219,8 +229,8 @@ const ImagePlaceholder = styled.div`
   align-items: center;
   justify-content: center;
   border-radius: 10px;
-  font-size: 10px;
-  color: #aaa;
+  font-size: ${(props) => props.fontSize || "24px"};
+  color: #fff;
   text-align: center;
   margin: ${(props) => props.margin || "0"};
 `;
@@ -267,8 +277,13 @@ const App = () => {
     const saved = localStorage.getItem("currentAvatar");
     return saved || userDefault;
   });
-
-  const [weatherCards, setWeatherCards] = useState([]);
+  const [weatherCards, setWeatherCards] = useState(() => {
+    const savedCards = localStorage.getItem("weather_cards");
+    return savedCards ? JSON.parse(savedCards) : [];
+  });
+  useEffect(() => {
+    localStorage.setItem("weather_cards", JSON.stringify(weatherCards));
+  }, [weatherCards]);
 
   const fetchWeather = useCallback(async (city, isMain, lat = null, lon = null) => {
     try {
@@ -287,11 +302,9 @@ const App = () => {
           return;
         }
       }
-
       const url = `https://api.open-meteo.com/v1/forecast?latitude=${targetLat}&longitude=${targetLon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m,surface_pressure&hourly=temperature_2m,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min,uv_index_max&timezone=auto&forecast_days=16`;
       const res = await axios.get(url);
       const d = res.data;
-
       const newCardData = {
         id: isMain ? "main-card" : Date.now(),
         isMain: isMain,
@@ -304,12 +317,12 @@ const App = () => {
           wind_speed: `${d.current.wind_speed_10m} м/с`,
           uv_index: d.daily.uv_index_max[0],
           description: "За кодом: " + d.current.weather_code,
-          iconPlaceholder: d.current.weather_code
+          iconPlaceholder: getWeatherIcon(d.current.weather_code)
         },
         hourly: d.hourly.time.slice(0, 12).map((t, i) => ({
           time: new Date(t).getHours() + ":00",
           temp: `${Math.round(d.hourly.temperature_2m[i])}°C`,
-          iconPlaceholder: d.hourly.weather_code[i]
+          iconPlaceholder: getWeatherIcon(d.hourly.weather_code[i]) 
         })),
         daily16: d.daily.time.map((t, i) => ({
           date: new Date(t).toLocaleDateString("uk", { day: "numeric", month: "2-digit" }),
@@ -317,17 +330,16 @@ const App = () => {
           temp_day: `${Math.round(d.daily.temperature_2m_max[i])}°C`,
           temp_night: `${Math.round(d.daily.temperature_2m_min[i])}°C`,
           description: "Код " + d.daily.weather_code[i],
-          iconPlaceholder: d.daily.weather_code[i]
+          iconPlaceholder: getWeatherIcon(d.daily.weather_code[i]) 
         }))
       };
-
       setWeatherCards((prev) => {
         if (isMain) {
           const filtered = prev.filter(c => !c.isMain);
           return [newCardData, ...filtered];
         } else {
           if (prev.find(c => c.locationName === displayName)) return prev;
-          if (prev.length >= 3) return prev; 
+          if (prev.length >= 4) return prev;
           return [...prev, newCardData];
         }
       });
@@ -348,7 +360,6 @@ const App = () => {
       fetchWeather("Київ", true, 50.45, 30.52);
     }
   }, [fetchWeather]);
-
   useEffect(() => {
     getInitialLocation();
   }, [getInitialLocation]);
@@ -357,12 +368,7 @@ const App = () => {
     const cityInPlaylist = CITY_PLAYLIST.find(
       (c) => c.toLowerCase() === cityName.toLowerCase()
     );
-
-    if (cityInPlaylist) {
-      fetchWeather(cityInPlaylist, false);
-    } else {
-      fetchWeather(cityName, false);
-    }
+    fetchWeather(cityInPlaylist || cityName, false);
   };
 
   const handleDeleteCard = (id) => {
@@ -486,7 +492,7 @@ const App = () => {
                 </CardHeader>
 
                 <div style={{ display: "flex", gap: "20px", marginBottom: "15px" }}>
-                  <ImagePlaceholder size="80px">Код: {card.current.iconPlaceholder}</ImagePlaceholder>
+                  <ImagePlaceholder size="80px">{card.current.iconPlaceholder}</ImagePlaceholder>
                   <div>
                     <h1 style={{ margin: "0 0 5px 0" }}>{card.current.temp}</h1>
                     <p style={{ margin: "0", fontSize: "12px" }}>Відчувається: {card.current.feels_like}</p>
@@ -505,7 +511,7 @@ const App = () => {
                   {card.hourly.map((hour, idx) => (
                     <ForecastItem key={idx}>
                       <span>{hour.time}</span>
-                      <ImagePlaceholder size="40px">{hour.iconPlaceholder}</ImagePlaceholder>
+                      <ImagePlaceholder size="40px" fontSize="18px">{hour.iconPlaceholder}</ImagePlaceholder>
                       <span>{hour.temp}</span>
                     </ForecastItem>
                   ))}
@@ -517,7 +523,7 @@ const App = () => {
                     <div key={idx} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px", fontSize: "12px", borderBottom: "1px solid #444", paddingBottom: "5px" }}>
                       <span style={{ width: "40px" }}>{day.date}</span>
                       <span style={{ width: "30px", fontWeight: "bold" }}>{day.day}</span>
-                      <ImagePlaceholder size="30px" margin="0 10px">{day.iconPlaceholder}</ImagePlaceholder>
+                      <ImagePlaceholder size="30px" margin="0 10px" fontSize="14px">{day.iconPlaceholder}</ImagePlaceholder>
                       <div style={{ display: "flex", gap: "10px" }}>
                         <span>Д: {day.temp_day}</span>
                         <span style={{ color: "#aaa" }}>Н: {day.temp_night}</span>

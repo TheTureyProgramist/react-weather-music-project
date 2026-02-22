@@ -32,7 +32,7 @@ const MusicPhotoDiv = styled.div`
   background: #e8e8e8;
   border-radius: 20px;
   margin-top: 35px;
-  padding: 20px;
+  padding: 5px;
   text-align: center;
   @media (min-width: 768px) {
     margin-top: 50px;
@@ -44,7 +44,7 @@ const MusicPhotoDiv = styled.div`
 
 const MusicPhotoFix = styled.div`
   display: flex;
-  gap: 15px;
+  gap: 9px;
   flex-wrap: wrap;
   justify-content: center;
   align-items: flex-start;
@@ -64,6 +64,7 @@ const MusicPhotoText = styled.div`
     font-size: 30px;
   }
 `;
+
 const SearchInput = styled.input`
   width: 100%;
   max-width: 400px;
@@ -80,12 +81,12 @@ const SearchInput = styled.input`
 `;
 
 const CardWrapper = styled.div`
-  display: relative;
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 285px;
-  height: 440px; 
+  width: 288px;
+  height: 400px;
   background: #fff;
   border-radius: 15px;
   padding-bottom: 15px;
@@ -105,7 +106,7 @@ const MusicImageContainer = styled.div`
 `;
 
 const MusicImage = styled.img`
-  width: 285px;
+  width: 280px;
   height: 100%;
   object-fit: cover;
   border-radius: 15px 15px 0 0;
@@ -158,12 +159,11 @@ const LoadMoreButton = styled.button`
   background-color: #333;
   color: white;
   border: none;
-  
   border-radius: 20px;
   padding: 10px 110px;
   font-size: 19px;
   cursor: pointer;
-  margin-top: 20px;
+  margin-top: 15px;
 `;
 
 const ControlsContainer = styled.div`
@@ -178,7 +178,7 @@ const ControlsContainer = styled.div`
 const PlayerRow = styled.div`
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 1px;
   width: 100%;
   margin-bottom: 5px;
 `;
@@ -236,16 +236,26 @@ const SeekBar = styled.input`
   }
 `;
 
-const VolumeRow = styled.div`
+const SliderRow = styled.div`
   display: flex;
   align-items: center;
-  gap: 8px;
+  justify-content: space-between;
+  gap: 4px;
   width: 100%;
-  margin-bottom: 10px;
+  margin-bottom: 5px;
   padding: 0 5px;
   span {
     font-size: 10px;
     color: #777;
+    display: inline-block;
+  }
+  .icon {
+    min-width: 15px;
+  }
+  .value {
+    min-width: 28px;
+    text-align: right;
+    font-weight: bold;
   }
 `;
 
@@ -268,6 +278,30 @@ const VolumeSlider = styled.input`
     height: 10px;
     border-radius: 50%;
     background: #333;
+    cursor: pointer;
+  }
+`;
+
+const SpeedSlider = styled.input`
+  flex-grow: 1;
+  height: 3px;
+  -webkit-appearance: none;
+  background: linear-gradient(
+    to right,
+    orange 0%,
+    orange ${(props) => ((props.value - 0.2) / 2.3) * 100 || 0}%,
+    #ccc ${(props) => ((props.value - 0.2) / 2.3) * 100 || 0}%,
+    #ccc 100%
+  );
+  border-radius: 2px;
+  outline: none;
+  &::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #333;
+    cursor: pointer;
   }
 `;
 
@@ -281,7 +315,7 @@ const LoopButton = styled.button`
   padding: 4px 8px;
   cursor: pointer;
   align-self: center;
-  margin-bottom: 10px;
+  margin-bottom: 5px;
 `;
 
 const ActionButtonsContainer = styled.div`
@@ -297,10 +331,13 @@ const ActionButton = styled.button`
   background: #f0f0f0;
   border: 1px solid #ddd;
   border-radius: 5px;
-  width: 60px;
-  padding: 5px 10px;
+  width: 80px;
+  padding: 5px 30px;
   font-size: 19px;
   cursor: pointer;
+  &:hover {
+    background: #e0e0e0;
+  }
 `;
 
 const ModalOverlay = styled.div`
@@ -315,21 +352,19 @@ const ModalOverlay = styled.div`
   justify-content: center;
   align-items: center;
   z-index: 1000;
-  animation: ${(props) => (props.$isClosing ? fadeOut : "none")} 0.5s ease-out
-    forwards;
+  animation: ${(props) => (props.$isClosing ? fadeOut : "none")} 0.5s ease-out forwards;
 `;
 
 const ModalContent = styled.div`
   background: white;
-  padding: 20px;
+  padding: 10px;
   border-radius: 15px;
-  width: 90%;
-  max-width: 300px;
+  width: 100%;
+  max-width: 310px;
   max-height: 85vh;
   overflow-y: auto;
   position: relative;
-  animation: ${(props) => (props.$isClosing ? slideOut : slideIn)} 0.5s ease-out
-    forwards;
+  animation: ${(props) => (props.$isClosing ? slideOut : slideIn)} 0.5s ease-out forwards;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
   &::-webkit-scrollbar {
     width: 6px;
@@ -345,8 +380,8 @@ const ModalContent = styled.div`
 
 const CloseButton = styled.button`
   position: absolute;
-  top: 10px;
-  right: 15px;
+  top: 8px;
+  right: 10px;
   background: none;
   border: none;
   font-size: 20px;
@@ -389,6 +424,8 @@ const MusicCard = ({
   const [duration, setDuration] = useState(0);
   const [isLooping, setIsLooping] = useState(false);
   const [volume, setVolume] = useState(1);
+  const [prevVolume, setPrevVolume] = useState(1);
+  const [playbackRate, setPlaybackRate] = useState(1); 
   const [bufferedTime, setBufferedTime] = useState(0);
 
   useEffect(() => {
@@ -403,21 +440,26 @@ const MusicCard = ({
       audioRef.current.volume = volume;
     }
   }, [volume]);
-
-  // Оновлення bufferedTime
+  
   useEffect(() => {
-    const audio = audioRef.current;
-    if (!audio) return;
+    if (audioRef.current) {
+      audioRef.current.playbackRate = playbackRate;
+    }
+  }, [playbackRate]);
+
+  useEffect(() => {
+    const audioEl = audioRef.current;
+    if (!audioEl) return;
     const updateBuffered = () => {
-      if (audio.buffered.length > 0) {
-        setBufferedTime(audio.buffered.end(audio.buffered.length - 1));
+      if (audioEl.buffered.length > 0) {
+        setBufferedTime(audioEl.buffered.end(audioEl.buffered.length - 1));
       }
     };
-    audio.addEventListener('progress', updateBuffered);
-    audio.addEventListener('loadedmetadata', updateBuffered);
+    audioEl.addEventListener('progress', updateBuffered);
+    audioEl.addEventListener('loadedmetadata', updateBuffered);
     return () => {
-      audio.removeEventListener('progress', updateBuffered);
-      audio.removeEventListener('loadedmetadata', updateBuffered);
+      audioEl.removeEventListener('progress', updateBuffered);
+      audioEl.removeEventListener('loadedmetadata', updateBuffered);
     };
   }, []);
 
@@ -452,6 +494,7 @@ const MusicCard = ({
     a.download = "file";
     a.click();
   };
+
   const handlePrint = () => {
     if (!user) {
       onOpenRegister();
@@ -463,15 +506,22 @@ const MusicCard = ({
     );
     printWindow.document.close();
   };
+  const toggleMute = () => {
+    if (volume > 0) {
+      setPrevVolume(volume);
+      setVolume(0);
+    } else {
+      setVolume(prevVolume > 0 ? prevVolume : 1);
+    }
+  };
+
   return (
     <CardWrapper $isFavorite={isFavorite}>
       <MusicImageContainer>
         <HeartButton
           $active={isFavorite}
           onClick={() => onToggleFavorite(id)}
-          title={
-            isFavorite ? "Прибрати з улюблених" : "Додати в улюблені (ліміт 3)"
-          }
+          title={isFavorite ? "Прибрати з улюблених" : "Додати в улюблені (ліміт 3)"}
         >
           {isFavorite ? "❤️" : "🤍"}
         </HeartButton>
@@ -508,9 +558,6 @@ const MusicCard = ({
               max={duration || 0}
               value={currentTime}
               onChange={(e) => (audioRef.current.currentTime = e.target.value)}
-              style={{
-                background: `linear-gradient(to right, orange 0%, orange ${((currentTime / (duration || 1)) * 100)}%, #ccc ${((currentTime / (duration || 1)) * 100)}%, #ccc 100%)`
-              }}
             />
             <TimeDisplay>
               {formatTime(currentTime)} / {formatTime(duration)}
@@ -519,18 +566,42 @@ const MusicCard = ({
               )}
             </TimeDisplay>
           </PlayerRow>
-          <VolumeRow>
-            <span>🔈</span>
+          <SliderRow>
+            <span 
+              className="icon" 
+              title={volume === 0 ? "Увімкнути звук" : "Вимкнути звук"} 
+              onClick={toggleMute} 
+              style={{ cursor: "pointer" }}
+            >
+              {volume === 0 ? "🔇" : "🔈"}
+            </span>
             <VolumeSlider
               type="range"
               min="0"
               max="1"
               step="0.01"
               value={volume}
-              onChange={(e) => setVolume(parseFloat(e.target.value))}
+              onChange={(e) => {
+                const newVol = parseFloat(e.target.value);
+                setVolume(newVol);
+                if (newVol > 0) setPrevVolume(newVol); 
+              }}
             />
-            <span>🔊</span>
-          </VolumeRow>
+            <span className="value">{Math.round(volume * 100)}%</span>
+          </SliderRow>
+          <SliderRow>
+            <span className="icon" title="Швидкість">⚡</span>
+            <SpeedSlider
+              type="range"
+              min="0.2"
+              max="2.5"
+              step="0.1"
+              value={playbackRate}
+              onChange={(e) => setPlaybackRate(parseFloat(e.target.value))}
+            />
+            <span className="value">{playbackRate.toFixed(1)}x</span>
+          </SliderRow>
+
           <LoopButton
             $active={isLooping}
             onClick={() => setIsLooping(!isLooping)}
@@ -539,7 +610,9 @@ const MusicCard = ({
           </LoopButton>
         </ControlsContainer>
       )}
+      
       {text && <MusicText title={text}>{text}</MusicText>}
+      
       <ActionButtonsContainer>
         <ActionButton title="Скачати пісню" onClick={handleDownload}>⇩</ActionButton>
         <ActionButton title="Роздрукувати фан-арт" onClick={handlePrint}>⎙</ActionButton>
@@ -548,6 +621,7 @@ const MusicCard = ({
     </CardWrapper>
   );
 };
+
 const musicCards = [
   {
     id: 1,
@@ -729,6 +803,7 @@ const MusicPhoto = ({ user, onOpenRegister }) => {
       setIsClosing(false);
     }, 500);
   };
+  
   const processedCards = useMemo(() => {
     let filtered = musicCards.filter((card) =>
       card.text.toLowerCase().includes(searchQuery.toLowerCase()),
@@ -814,4 +889,5 @@ const MusicPhoto = ({ user, onOpenRegister }) => {
     </MusicPhotoDiv>
   );
 };
+
 export default MusicPhoto;
