@@ -68,15 +68,18 @@ const LoaderContent = styled.div`
   max-width: 900px;
   display: flex;
   flex-direction: column;
-  align-items: bottom;
-  @media screen and (min-width: 769p8) {
+  justify-content: center;
+  overflow: visible;
+  align-items: center;
+  @media screen and (min-width: 769px) {
   align-items: center;
   }
 `;
 
 const LoaderImage = styled.img`
-  width: 100%;
+  width: 122%;
   height: auto;
+  margin-right: 1%;
   border-radius: 20px;
   animation: pulse 3s infinite ease-in-out;
   display: block;
@@ -93,12 +96,18 @@ const LoaderOverlay = styled.div`
   flex-direction: column;
   align-items: center;
   margin-top: 25px;
-  @media (max-width: 1024px) {
+  @media (max-width: 600px) {
+    position: static;
+    background: none;
+    margin-top: 20px;
+    padding: 0;
+  }
+  @media (min-width: 601px) {
     position: absolute;
     bottom: 0;
     left: 0;
     padding: 40px 20px 20px 20px;
-    background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, transparent 100%);
+    background: linear-gradient(to end, rgba(0,0,0,0.85) 0%, transparent 100%);
     border-radius: 0 0 20px 20px;
     margin-top: 0;
     box-sizing: border-box;
@@ -113,6 +122,11 @@ const ProgressContainer = styled.div`
   border-radius: 10px;
   overflow: hidden;
   box-shadow: 0 0 20px rgba(0, 198, 255, 0.3);
+  @media (max-width: 600px) {
+    position: static;
+    margin: 0 auto 3px auto;
+    max-width: 95vw;
+  }
 `;
 
 const ProgressBar = styled.div`
@@ -130,11 +144,14 @@ const LoaderText = styled.p`
   color: #fff;
   margin-top: 15px;
   letter-spacing: 3px;
-  font-size: 21px;
+  font-size: 15px;
   font-weight: bold;
   opacity: 0.8;
   text-shadow: 2px 2px 8px rgba(0,0,0,0.7);
   text-align: center;
+  @media (max-width: 600px) {
+    margin-top: 10px;
+  }
 `;
 
 const ThemeWrapper = styled.div`
@@ -407,11 +424,25 @@ const App = () => {
       <LoaderWrapper>
         <LoaderContent>
           <LoaderImage src={loadimage} alt="Loading..." />
-          <LoaderOverlay>
+          <div className="mobile-loader-bar" style={{ width: '100%' }}>
             <ProgressContainer><ProgressBar /></ProgressContainer>
             <LoaderText>TurkeyStudio Presents...</LoaderText>
+          </div>
+          <LoaderOverlay className="desktop-loader-bar">
+            <ProgressContainer><ProgressBar /></ProgressContainer>
+            <LoaderText>TheTurkeyStudio Presents...</LoaderText>
           </LoaderOverlay>
         </LoaderContent>
+        <style>{`
+          @media (max-width: 600px) {
+            .desktop-loader-bar { display: none !important; }
+            .mobile-loader-bar { display: block !important; }
+          }
+          @media (min-width: 601px) {
+            .desktop-loader-bar { display: flex !important; }
+            .mobile-loader-bar { display: none !important; }
+          }
+        `}</style>
       </LoaderWrapper>
     );
   }
