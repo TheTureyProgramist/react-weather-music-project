@@ -289,8 +289,8 @@ const SpeedSlider = styled.input`
   background: linear-gradient(
     to right,
     orange 0%,
-    orange ${(props) => ((props.value - 0.2) / 2.3) * 100 || 0}%,
-    #ccc ${(props) => ((props.value - 0.2) / 2.3) * 100 || 0}%,
+    orange ${(props) => ((props.value - 0.2) / 2.0) * 100 || 0}%,
+    #ccc ${(props) => ((props.value - 0.2) / 2.0) * 100 || 0}%,
     #ccc 100%
   );
   border-radius: 2px;
@@ -594,7 +594,7 @@ const MusicCard = ({
             <SpeedSlider
               type="range"
               min="0.2"
-              max="2.5"
+              max="2.2"
               step="0.1"
               value={playbackRate}
               onChange={(e) => setPlaybackRate(parseFloat(e.target.value))}
@@ -731,26 +731,19 @@ const musicCards = [
     lyrics: "",
   },
   {
-    id: 15,
+    id: 16,
     image: require("../../photos/vip-images/mechannic.jpg"),
     audio: require("../../mp3/mechanik-kindom.mp3"),
     text: "Мія та я. Не пожалкуєте.",
     lyrics: "Мія та я. Не пожалкуєте",
   },
   {
-    id: 16,
+    id: 17,
     image: require("../../photos/vip-images/mechannic.jpg"),
     audio: require("../../mp3/mechanik-kindom.mp3"),
     text: "My little universe. Спокійна і прекрасна музика в механічному стилі.",
     lyrics:
       "Динофроз, показували, з кількома, ще мульфільмами: Якарі, Анна з зелених дахів, Хайді, Острів іпаток, Пригоди в качиному порту, Марко, Лис Микита. Пісні розміщені в 3 частинах. Четверта під питанням.",
-  },
-  {
-    id: 17,
-    image: require("../../photos/vip-images/mechannic.jpg"),
-    audio: require("../../mp3/mechanik-kindom.mp3"),
-    text: "My little universe. Спокійна і прекрасна музика в механічному стилі.",
-    lyrics: "Текст відсутній.",
   },
   {
     id: 18,
@@ -766,9 +759,29 @@ const musicCards = [
     text: "My little universe. Спокійна і прекрасна музика в механічному стилі.",
     lyrics: "Текст відсутній.",
   },
+  {
+    id: 20,
+    image: require("../../photos/vip-images/mechannic.jpg"),
+    audio: require("../../mp3/mechanik-kindom.mp3"),
+    text: "GeometryDash(MDK-Fingerdash) Гаряча мелодія I-ша в режимі анімованості. Ласково просимо в хаос!",
+    lyrics: "Текст відсутній.",
+  },
+    {
+    id: 21,
+    image: require("../../photos/vip-images/mechannic.jpg"),
+    audio: require("../../mp3/mechanik-kindom.mp3"),
+    text: "GeometryDash(DJ-Nate - Theory of everything II). Ця пісня варта уваги!",
+    lyrics: "Текст відсутній.",
+  },  {
+    id: 22,
+    image: require("../../photos/vip-images/mechannic.jpg"),
+    audio: require("../../mp3/mechanik-kindom.mp3"),
+    text: "GeometryDash(F-777 - Deadlocked). Моторошна, але епічна пісня. Друг фанат цього рівня :).",
+    lyrics: "Текст відсутній.",
+  },  
 ];
 const MusicPhoto = ({ user, onOpenRegister }) => {
-  const [showAll, setShowAll] = useState(false);
+  const [visibleCount, setVisibleCount] = useState(8);
   const [modalData, setModalData] = useState(null);
   const [playingTracks, setPlayingTracks] = useState([]);
   const [isClosing, setIsClosing] = useState(false);
@@ -833,29 +846,32 @@ const MusicPhoto = ({ user, onOpenRegister }) => {
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
       />
-
-      <MusicPhotoFix>
-        {(showAll ? processedCards : processedCards.slice(0, 8)).map((card) => (
-          <MusicCard
-            key={card.id}
-            cardData={card}
-            user={user}
-            isFavorite={favorites.includes(card.id)}
-            onToggleFavorite={handleToggleFavorite}
-            onOpenModal={setModalData}
-            onOpenRegister={onOpenRegister}
-            onTrackToggle={handleTrackToggle}
-            forcePause={!playingTracks.includes(card.id)}
-          />
-        ))}
-      </MusicPhotoFix>
-
-      {!showAll && processedCards.length > 8 && (
-        <LoadMoreButton onClick={() => setShowAll(true)}>
-        ︾
-        </LoadMoreButton>
-      )}
-
+     <MusicPhotoFix>
+  {processedCards.slice(0, visibleCount).map((card) => (
+    <MusicCard
+      key={card.id}
+      cardData={card}
+      user={user}
+      isFavorite={favorites.includes(card.id)}
+      onToggleFavorite={handleToggleFavorite}
+      onOpenModal={setModalData}
+      onOpenRegister={onOpenRegister}
+      onTrackToggle={handleTrackToggle}
+      forcePause={!playingTracks.includes(card.id)}
+    />
+  ))}
+</MusicPhotoFix>
+      {visibleCount < processedCards.length && (
+  <LoadMoreButton onClick={() => {
+    if (visibleCount === 8) {
+      setVisibleCount(16);
+    } else {
+      setVisibleCount(processedCards.length);
+    }
+  }}>
+    {visibleCount === 8 ?  "︾" :  "︾"}
+  </LoadMoreButton>
+)}
       {modalData && (
         <ModalOverlay $isClosing={isClosing} onClick={handleCloseModal}>
           <ModalContent

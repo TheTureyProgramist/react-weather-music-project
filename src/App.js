@@ -14,7 +14,9 @@ import VipModal from "./components/Modals/VipModal.jsx";
 import Aihelp from "./components/Aihelp.jsx/Aihelp.jsx";
 import FanArt from "./components/FanArt/FanArt.jsx";
 import ShopModal from "./components/Modals/ShopModal.jsx";
+import News from "./components/News/News.jsx"; 
 import AchivmentsModal from "./components/Modals/AchivmentsModal.jsx";
+import Puzzles from "./components/Puzzles/Puzzles.jsx";
 // Імпорт аватарів
 import loadimage from "./photos/hero-header/start-image.jpg";
 import turkeys from "./photos/vip-images/ultra-vip-turkeys.webp";
@@ -46,6 +48,7 @@ const CITY_PLAYLIST = [
   "Париж",
   "Токіо"
 ];
+
 const getWeatherIcon = (code) => {
   if (code === 0) return "☀️"; 
   if (code >= 1 && code <= 3) return "🌤️"; 
@@ -70,6 +73,9 @@ const LoaderWrapper = styled.div`
   z-index: 994;
   padding: 20px;
   box-sizing: border-box;
+  opacity: ${(props) => (props.$isFadingOut ? 0 : 1)};
+  visibility: ${(props) => (props.$isFadingOut ? "hidden" : "visible")};
+  transition: opacity 1s ease-in-out, visibility 1s ease-in-out;
 `;
 
 const LoaderContent = styled.div`
@@ -255,6 +261,8 @@ const ForecastItem = styled.div`
 
 const App = () => {
   const [isLoading, setIsLoading] = useState(true);
+  const [isFadingOut, setIsFadingOut] = useState(false); 
+
   const [now, setNow] = useState(new Date());
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoginOpen, setIsLoginOpen] = useState(false);
@@ -382,10 +390,10 @@ const App = () => {
       fetchWeather(card.locationName, false);
     }
   };
-
   useEffect(() => {
-    const timer = setTimeout(() => setIsLoading(false), 3500);
-    return () => clearTimeout(timer);
+    const fadeTimer = setTimeout(() => setIsFadingOut(true), 3500); 
+    const removeTimer = setTimeout(() => setIsLoading(false), 5300); 
+    return () => { clearTimeout(fadeTimer); clearTimeout(removeTimer); };
   }, []);
 
   useEffect(() => {
@@ -424,132 +432,132 @@ const App = () => {
   const month = new Intl.DateTimeFormat("uk", { month: "2-digit" }).format(now);
   const weekday = capitalize(new Intl.DateTimeFormat("uk", { weekday: "long" }).format(now));
   const heroDateString = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}:${String(now.getSeconds()).padStart(2, "0")} ${weekday}, ${now.getDate()}.${month}.${now.getFullYear()}`;
-
-  if (isLoading) {
-    return (
-      <LoaderWrapper>
-        <LoaderContent>
-          <LoaderImage src={loadimage} alt="Loading..." />
-          <div className="mobile-loader-bar" style={{ width: '100%' }}>
-            <ProgressContainer><ProgressBar /></ProgressContainer>
-            <LoaderText>TurkeyStudio Presents...</LoaderText>
-          </div>
-          <LoaderOverlay className="desktop-loader-bar">
-            <ProgressContainer><ProgressBar /></ProgressContainer>
-            <LoaderText>TheTurkeyStudio Presents...</LoaderText>
-          </LoaderOverlay>
-        </LoaderContent>
-        <style>{`
-          @media (max-width: 600px) {
-            .desktop-loader-bar { display: none !important; }
-            .mobile-loader-bar { display: block !important; }
-          }
-          @media (min-width: 601px) {
-            .desktop-loader-bar { display: flex !important; }
-            .mobile-loader-bar { display: none !important; }
-          }
-        `}</style>
-      </LoaderWrapper>
-    );
-  }
-
   return (
-    <ThemeWrapper $isDarkMode={isDarkMode}>
-      <div className="App">
-        <div className="container">
-          <Header
-            onOpenRegister={() => setIsModalOpen(true)}
-            onOpenLogin={() => setIsLoginOpen(true)}
-            onOpenSettings={() => setIsSettingsModalOpen(true)}
-            onOpenVip={() => setIsVipModalOpen(true)}
-            onOpenShop={() => setIsShopOpen(true)}
-            onOpenAchievements={() => setIsAchivmentsOpen(true)}
-            user={user}
-            isDarkMode={isDarkMode}
-            toggleTheme={toggleTheme}
-            currentAvatar={currentAvatar}
-            onLogout={handleLogout}
+    <>
+      {isLoading && (
+        <LoaderWrapper $isFadingOut={isFadingOut}>
+          <LoaderContent>
+            <LoaderImage src={loadimage} alt="Loading..." />
+            <div className="mobile-loader-bar" style={{ width: '100%' }}>
+              <ProgressContainer><ProgressBar /></ProgressContainer>
+              <LoaderText>TurkeyStudio Presents...</LoaderText>
+            </div>
+            <LoaderOverlay className="desktop-loader-bar">
+              <ProgressContainer><ProgressBar /></ProgressContainer>
+              <LoaderText>TheTurkeyStudio Presents...</LoaderText>
+            </LoaderOverlay>
+          </LoaderContent>
+          <style>{`
+            @media (max-width: 600px) {
+              .desktop-loader-bar { display: none !important; }
+              .mobile-loader-bar { display: block !important; }
+            }
+            @media (min-width: 601px) {
+              .desktop-loader-bar { display: flex !important; }
+              .mobile-loader-bar { display: none !important; }
+            }
+          `}</style>
+        </LoaderWrapper>
+      )}
+
+      <ThemeWrapper $isDarkMode={isDarkMode}>
+        <div className="App">
+          <div className="container">
+            <Header
+              onOpenRegister={() => setIsModalOpen(true)}
+              onOpenLogin={() => setIsLoginOpen(true)}
+              onOpenSettings={() => setIsSettingsModalOpen(true)}
+              onOpenVip={() => setIsVipModalOpen(true)}
+              onOpenShop={() => setIsShopOpen(true)}
+              onOpenAchievements={() => setIsAchivmentsOpen(true)}
+              user={user}
+              isDarkMode={isDarkMode}
+              toggleTheme={toggleTheme}
+              currentAvatar={currentAvatar}
+              onLogout={handleLogout}
+            />
+          </div>
+
+          <Hero 
+            heroDateString={heroDateString} 
+            onAddCity={handleAddCityFromHero} 
           />
-        </div>
+          
+          <div className="container">
+            <WeatherCardsContainer>
+              {weatherCards.map((card) => (
+                <WeatherCard key={card.id} $isMain={card.isMain} $isDarkMode={isDarkMode}>
+                  <CardHeader $isMain={card.isMain}>
+                    <h3>{card.locationName} {card.isMain && "📍"}</h3>
+                    <ActionButtons>
+                      <button onClick={() => handleRefreshCard(card)}>↺</button>
+                      {!card.isMain && (
+                        <button onClick={() => handleDeleteCard(card.id)}>🗑</button>
+                      )}
+                    </ActionButtons>
+                  </CardHeader>
 
-        <Hero 
-          heroDateString={heroDateString} 
-          onAddCity={handleAddCityFromHero} 
-        />
-        
-        <div className="container">
-          <WeatherCardsContainer>
-            {weatherCards.map((card) => (
-              <WeatherCard key={card.id} $isMain={card.isMain} $isDarkMode={isDarkMode}>
-                <CardHeader $isMain={card.isMain}>
-                  <h3>{card.locationName} {card.isMain && "📍"}</h3>
-                  <ActionButtons>
-                    <button onClick={() => handleRefreshCard(card)}>↺</button>
-                    {!card.isMain && (
-                      <button onClick={() => handleDeleteCard(card.id)}>🗑</button>
-                    )}
-                  </ActionButtons>
-                </CardHeader>
-
-                <div style={{ display: "flex", gap: "20px", marginBottom: "15px" }}>
-                  <ImagePlaceholder size="80px">{card.current.iconPlaceholder}</ImagePlaceholder>
-                  <div>
-                    <h1 style={{ margin: "0 0 5px 0" }}>{card.current.temp}</h1>
-                    <p style={{ margin: "0", fontSize: "12px" }}>Відчувається: {card.current.feels_like}</p>
-                  </div>
-                </div>
-
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px", fontSize: "12px", marginBottom: "20px" }}>
-                  <div>Вологість: <b>{card.current.humidity}</b></div>
-                  <div>Вітер: <b>{card.current.wind_speed}</b></div>
-                  <div>Тиск: <b>{card.current.pressure}</b></div>
-                  <div>УФ-індекс: <b>{card.current.uv_index}</b></div>
-                </div>
-
-                <h4 style={{ margin: "0 0 10px 0" }}>Годинний прогноз:</h4>
-                <ForecastRow>
-                  {card.hourly.map((hour, idx) => (
-                    <ForecastItem key={idx}>
-                      <span>{hour.time}</span>
-                      <ImagePlaceholder size="40px" fontSize="18px">{hour.iconPlaceholder}</ImagePlaceholder>
-                      <span>{hour.temp}</span>
-                    </ForecastItem>
-                  ))}
-                </ForecastRow>
-
-                <h4 style={{ margin: "15px 0 10px 0" }}>Прогноз на 16 днів:</h4>
-                <div style={{ maxHeight: "150px", overflowY: "auto", paddingRight: "10px" }}>
-                  {card.daily16.map((day, idx) => (
-                    <div key={idx} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px", fontSize: "12px", borderBottom: "1px solid #444", paddingBottom: "5px" }}>
-                      <span style={{ width: "40px" }}>{day.date}</span>
-                      <span style={{ width: "30px", fontWeight: "bold" }}>{day.day}</span>
-                      <ImagePlaceholder size="30px" margin="0 10px" fontSize="14px">{day.iconPlaceholder}</ImagePlaceholder>
-                      <div style={{ display: "flex", gap: "10px" }}>
-                        <span>Д: {day.temp_day}</span>
-                        <span style={{ color: "#aaa" }}>Н: {day.temp_night}</span>
-                      </div>
+                  <div style={{ display: "flex", gap: "20px", marginBottom: "15px" }}>
+                    <ImagePlaceholder size="80px">{card.current.iconPlaceholder}</ImagePlaceholder>
+                    <div>
+                      <h1 style={{ margin: "0 0 5px 0" }}>{card.current.temp}</h1>
+                      <p style={{ margin: "0", fontSize: "12px" }}>Відчувається: {card.current.feels_like}</p>
                     </div>
-                  ))}
-                </div>
-              </WeatherCard>
-            ))}
-          </WeatherCardsContainer>
+                  </div>
 
-          <Aihelp isDarkMode={isDarkMode} />
-          <MusicPhoto user={user} onOpenRegister={() => setIsModalOpen(true)} />
-          <FanArt isDarkMode={isDarkMode} user={user} onOpenRegister={() => setIsModalOpen(true)} />
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px", fontSize: "12px", marginBottom: "20px" }}>
+                    <div>Вологість: <b>{card.current.humidity}</b></div>
+                    <div>Вітер: <b>{card.current.wind_speed}</b></div>
+                    <div>Тиск: <b>{card.current.pressure}</b></div>
+                    <div>УФ-індекс: <b>{card.current.uv_index}</b></div>
+                  </div>
+
+                  <h4 style={{ margin: "0 0 10px 0" }}>Годинний прогноз:</h4>
+                  <ForecastRow>
+                    {card.hourly.map((hour, idx) => (
+                      <ForecastItem key={idx}>
+                        <span>{hour.time}</span>
+                        <ImagePlaceholder size="40px" fontSize="18px">{hour.iconPlaceholder}</ImagePlaceholder>
+                        <span>{hour.temp}</span>
+                      </ForecastItem>
+                    ))}
+                  </ForecastRow>
+
+                  <h4 style={{ margin: "15px 0 10px 0" }}>Прогноз на 16 днів:</h4>
+                  <div style={{ maxHeight: "150px", overflowY: "auto", paddingRight: "10px" }}>
+                    {card.daily16.map((day, idx) => (
+                      <div key={idx} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px", fontSize: "12px", borderBottom: "1px solid #444", paddingBottom: "5px" }}>
+                        <span style={{ width: "40px" }}>{day.date}</span>
+                        <span style={{ width: "30px", fontWeight: "bold" }}>{day.day}</span>
+                        <ImagePlaceholder size="30px" margin="0 10px" fontSize="14px">{day.iconPlaceholder}</ImagePlaceholder>
+                        <div style={{ display: "flex", gap: "10px" }}>
+                          <span>Д: {day.temp_day}</span>
+                          <span style={{ color: "#aaa" }}>Н: {day.temp_night}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </WeatherCard>
+              ))}
+            </WeatherCardsContainer>
+            <Puzzles/>
+            <Aihelp isDarkMode={isDarkMode} />
+            <News/>
+            <MusicPhoto user={user} onOpenRegister={() => setIsModalOpen(true)} />
+            <FanArt isDarkMode={isDarkMode} user={user} onOpenRegister={() => setIsModalOpen(true)} />
+          </div>
+
+          <Footer toggleTheme={toggleTheme} />
+
+          {isModalOpen && <Modal onClose={() => setIsModalOpen(false)} onRegister={handleRegister} availableAvatars={AVAILABLE_AVATARS} />}
+          {isLoginOpen && <LoginModal onClose={() => setIsLoginOpen(false)} onLogin={handleLogin} />}
+          {isSettingsModalOpen && user && <UserSettingsModal onClose={() => setIsSettingsModalOpen(false)} user={user} availableAvatars={AVAILABLE_AVATARS} onUpdate={handleUpdateUser} />}
+          {isVipModalOpen && <VipModal onClose={() => setIsVipModalOpen(false)} />}
+          {isShopOpen && <ShopModal onClose={() => setIsShopOpen(false)} hasVip={!!user} />}
+          {isAchivmentsOpen && <AchivmentsModal onClose={() => setIsAchivmentsOpen(false)} isDarkMode={isDarkMode} />}
         </div>
-
-        <Footer toggleTheme={toggleTheme} />
-
-        {isModalOpen && <Modal onClose={() => setIsModalOpen(false)} onRegister={handleRegister} availableAvatars={AVAILABLE_AVATARS} />}
-        {isLoginOpen && <LoginModal onClose={() => setIsLoginOpen(false)} onLogin={handleLogin} />}
-        {isSettingsModalOpen && user && <UserSettingsModal onClose={() => setIsSettingsModalOpen(false)} user={user} availableAvatars={AVAILABLE_AVATARS} onUpdate={handleUpdateUser} />}
-        {isVipModalOpen && <VipModal onClose={() => setIsVipModalOpen(false)} />}
-        {isShopOpen && <ShopModal onClose={() => setIsShopOpen(false)} hasVip={!!user} />}
-        {isAchivmentsOpen && <AchivmentsModal onClose={() => setIsAchivmentsOpen(false)} isDarkMode={isDarkMode} />}
-      </div>
-    </ThemeWrapper>
+      </ThemeWrapper>
+    </>
   );
 };
 

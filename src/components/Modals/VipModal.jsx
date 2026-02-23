@@ -18,7 +18,9 @@ import horrordog from "../../photos/vip-images/horror.jpg";
 import asium from "../../photos/vip-images/asium.jpg";
 import rainbow from "../../photos/fan-art/rainbow.webp";
 import letters from "../../photos/fan-art/letters.webp";
-
+import document from "../../photos/fan-art/document.webp";
+import puzzle5 from "../../photos/fan-art/puzzle-5.webp";
+import puzzle2 from "../../photos/fan-art/puzzle-2.webp";
 const appearAndShrink = keyframes`
   0% { opacity: 0; transform: scale(1.3); filter: blur(10px); }
   50% { opacity: 0.5; transform: scale(1.1); filter: blur(2px); }
@@ -328,11 +330,12 @@ const VipModal = ({ onClose }) => {
     ai: [
       {
         src: texts,
-        text: "4 безкоштовних повідомлень/день + за 🧧 2 спроби, замість 2 безкоштовних повідомлень/день + за 🧧 1. Після вичерпування ліміту ціна повідомлення 0,11грн, не 0,13грн + 🧧. Ліміт безкоштовних спроб може змінюватися залежно від навантаження на систему.",
+        text: "2 безкоштовних повідомленя/добу + за 🧧 4 спроби, замість 1 безкоштовного повідомлення/добу + за 🧧 2. Після вичерпування ліміту ціна повідомлення 0,11грн, не 0,13грн + 🧧. Ліміт безкоштовних спроб може змінюватися залежно від навантаження на систему.",
       },
       { src: lebid, text: "2 (не 1) зображення/міс по 3,99грн, далі 5,99грн." },
       { src: clip, text: "Відео 65грн/с (замість 75грн/с)." },
       { src: music, text: "mp3 3грн/хв, не 5грн/хв." },
+      { src: puzzle2, text: "Пам'ять на 33дні, не на 21добу!" },
     ],
     music: [
       {
@@ -372,7 +375,15 @@ const VipModal = ({ onClose }) => {
         src: rainbow,
         text: "Райдужне ім'я та рамка доступні через 3дні, не через 7дн після реєстрації.",
       },
-      { src: time, text: "Нові функції з'являться пізніше." },
+      {
+        src: document,
+        text: "Доступно 8 останніх новин, а не 4.",
+      },
+      {
+        src: puzzle5,
+        text: "Перезарядка досягнень 33год, не 42год.",
+      },
+      { src: time, text: "Нові функції з'являться пізніше, в обох підписках!" },
     ],
   };
 
@@ -380,11 +391,12 @@ const VipModal = ({ onClose }) => {
     ai: [
       {
         src: texts,
-        text: "8 безкоштовних повідомлень/день + за 🧧 6 спроб. Далі за 0,1грн + 🧧(лише за обширні відповіді)",
+        text: "4 безкоштовних повідомлення/доба + за 🧧 8 спроб. Далі за 0,1грн + 🧧(лише за обширні відповіді)",
       },
       { src: lebid, text: "3 зображення/міс по 2,99грн, далі 4,99грн." },
       { src: clip, text: "Відео 45грн/с." },
       { src: music, text: "mp3 2грн/хв." },
+      { src: puzzle2, text: "Пам'ять на 42доби!" },
     ],
     music: [
       {
@@ -416,7 +428,14 @@ const VipModal = ({ onClose }) => {
         text: "Кнопки Додавання міста/Оновлення, Видалення картки має перезарядку 3с. Ліміт додаткових карток 8.",
       },
       { src: rainbow, text: "Райдужне ім'я та рамка доступні зразу." },
-      { src: time, text: "Нові функції з'являться пізніше." },
+            {
+        src: document,
+        text: "Досуп до 16 останніх новин.",
+      },
+            {
+        src: puzzle5,
+        text: "Перезарядка досягнень 21год.",
+      },
     ],
   };
 
@@ -439,12 +458,9 @@ const VipModal = ({ onClose }) => {
           </AnimatedText>
         </HeaderToggle>
 
-        {tier === "ultra" && (
-          <SwitchBackText onClick={() => handleTierSwitch("plus")}>
-            Повернутись до переваг Стихія+
-          </SwitchBackText>
-        )}
-
+ <SwitchBackText onClick={() => handleTierSwitch(tier === "plus" ? "ultra" : "plus")}>
+  {tier === "plus" ? "Переглянути переваги Стихія+ Ультра" : "Повернутись до переваг Стихія+"}
+</SwitchBackText>
         <VipBlock>
           <VipFixScroll key={`scroll-area-${tier}`}>
             {showContent && (
