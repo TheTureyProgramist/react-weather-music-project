@@ -4,12 +4,16 @@
   "homepage": "https://thetureyprogramist.github.io/react-weather-music-project/",
   "private": true,
   "dependencies": {
+    "@google/generative-ai": "^0.24.1",
     "@testing-library/dom": "^10.4.1",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
     "@testing-library/user-event": "^13.5.0",
     "axios": "^1.13.5",
     "chart.js": "^4.5.1",
+    "cors": "^2.8.6",
+    "dotenv": "^17.3.1",
+    "express": "^5.2.1",
     "formik": "^2.4.9",
     "modern-normalize": "^3.0.1",
     "mui": "^0.0.1",
@@ -29,7 +33,9 @@
     "predeploy": "npm run build",
     "deploy": "gh-pages -d build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "star": "node server/index.js",
+    "server": "nodemon server/index.js"
   },
   "eslintConfig": {
     "extends": [
@@ -50,6 +56,19 @@
     ]
   },
   "devDependencies": {
-    "gh-pages": "^6.3.0"
+    "gh-pages": "^6.3.0",
+    "nodemon": "^3.1.14"
+  },
+  "description": "",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TheTureyProgramist/react-weather-music-project.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/TheTureyProgramist/react-weather-music-project/issues"
   }
 }

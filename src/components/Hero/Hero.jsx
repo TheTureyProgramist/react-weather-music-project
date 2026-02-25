@@ -238,7 +238,28 @@ const HeroButton = styled.button`
     }
   }
 `;
+const HeroTextLink = styled.a`
+  color: #fff;
+  text-align: center;
+  font-family: var(--font-family);
+  font-size: 10px;
+  font-weight: 500;
+  width: 206px;
+  display: block;
+  margin: 0;
 
+  @media (min-width: 768px) {
+    font-size: 11px;
+    width: 229px;
+  }
+  @media (min-width: 1200px) {
+    font-size: 19px;
+    width: 395px;
+  }
+`;
+const HeroDecorsFix = styled.div`
+
+`
 const Hero = ({ heroDateString, onAddCity }) => {
   const [inputValue, setInputValue] = useState("");
 
@@ -269,9 +290,12 @@ const Hero = ({ heroDateString, onAddCity }) => {
       <HeroDecor>
         <HeroLineMobile />
         <HeroFix>
-          <HeroText>
+          <HeroDecorsFix>
+                      <HeroText>
             Створіть свій особистий список погодних умов у 3 точках світу.
           </HeroText>
+            <HeroTextLink href="https://www.sat24.com/en-gb">Посилання на кліматичну мапу</HeroTextLink>
+          </HeroDecorsFix>
           <HeroLine />
           <HeroDate>{heroDateString}</HeroDate>
         </HeroFix>

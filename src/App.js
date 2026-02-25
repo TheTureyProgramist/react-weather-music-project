@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import styled from "styled-components";
 import axios from "axios";
+import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 import "./App.css";
 import Header from "./components/Header/Header.jsx";
 import Hero from "./components/Hero/Hero.jsx";
@@ -11,10 +12,10 @@ import LoginModal from "./components/Modals/LoginModal.jsx";
 import UserSettingsModal from "./components/Modals/UserSettingsModal.jsx";
 import userDefault from "./photos/hero-header/user.webp";
 import VipModal from "./components/Modals/VipModal.jsx";
-import Aihelp from "./components/Aihelp.jsx/Aihelp.jsx";
+import Aihelp from "./components/Aihelp/Aihelp.jsx";
 import FanArt from "./components/FanArt/FanArt.jsx";
 import ShopModal from "./components/Modals/ShopModal.jsx";
-import News from "./components/News/News.jsx"; 
+import News from "./components/News/News.jsx";
 import AchivmentsModal from "./components/Modals/AchivmentsModal.jsx";
 import Puzzles from "./components/Puzzles/Puzzles.jsx";
 // Імпорт аватарів
@@ -35,31 +36,34 @@ import parol from "./photos/fan-art/parol.jpg";
 import vovk from "./photos/fan-art/kolada.webp";
 
 const AVAILABLE_AVATARS = [
-  monody, turkeys, nicerone, horrordog, vovk, finances,
-  parol, horse, lebid, dragons, rooster, soloveyko, dizel, flame,
-];
-
-const CITY_PLAYLIST = [
-  "Берлін",
-  "Варшава",
-  "Київ",
-  "Лондон",
-  "Нью-Йорк",
-  "Париж",
-  "Токіо"
+  monody,
+  turkeys,
+  nicerone,
+  horrordog,
+  vovk,
+  finances,
+  parol,
+  horse,
+  lebid,
+  dragons,
+  rooster,
+  soloveyko,
+  dizel,
+  flame,
 ];
 
 const getWeatherIcon = (code) => {
-  if (code === 0) return "☀️"; 
-  if (code >= 1 && code <= 3) return "🌤️"; 
-  if (code >= 45 && code <= 48) return "🌫️"; 
-  if (code >= 51 && code <= 55) return "🌧️"; 
-  if (code >= 61 && code <= 65) return "☔"; 
-  if (code >= 71 && code <= 77) return "❄️"; 
-  if (code >= 80 && code <= 82) return "🌦️"; 
-  if (code >= 95 && code <= 99) return "⚡"; 
-  return "☁️"; 
+  if (code === 0) return "☀️";
+  if (code >= 1 && code <= 3) return "🌤️";
+  if (code >= 45 && code <= 48) return "🌫️";
+  if (code >= 51 && code <= 55) return "🌧️";
+  if (code >= 61 && code <= 65) return "☔";
+  if (code >= 71 && code <= 77) return "❄️";
+  if (code >= 80 && code <= 82) return "🌦️";
+  if (code >= 95 && code <= 99) return "⚡";
+  return "☁️";
 };
+
 const LoaderWrapper = styled.div`
   position: fixed;
   top: 0;
@@ -75,7 +79,9 @@ const LoaderWrapper = styled.div`
   box-sizing: border-box;
   opacity: ${(props) => (props.$isFadingOut ? 0 : 1)};
   visibility: ${(props) => (props.$isFadingOut ? "hidden" : "visible")};
-  transition: opacity 1s ease-in-out, visibility 1s ease-in-out;
+  transition:
+    opacity 1s ease-in-out,
+    visibility 1s ease-in-out;
 `;
 
 const LoaderContent = styled.div`
@@ -88,7 +94,7 @@ const LoaderContent = styled.div`
   overflow: visible;
   align-items: center;
   @media screen and (min-width: 769px) {
-  align-items: center;
+    align-items: center;
   }
 `;
 
@@ -101,8 +107,15 @@ const LoaderImage = styled.img`
   display: block;
 
   @keyframes pulse {
-    0%, 100% { transform: scale(1); opacity: 1; }
-    50% { transform: scale(1.015); opacity: 0.9; }
+    0%,
+    100% {
+      transform: scale(1);
+      opacity: 1;
+    }
+    50% {
+      transform: scale(1.015);
+      opacity: 0.9;
+    }
   }
 `;
 
@@ -123,7 +136,11 @@ const LoaderOverlay = styled.div`
     bottom: 0;
     left: 0;
     padding: 40px 20px 20px 20px;
-    background: linear-gradient(to end, rgba(0,0,0,0.85) 0%, transparent 100%);
+    background: linear-gradient(
+      to end,
+      rgba(0, 0, 0, 0.85) 0%,
+      transparent 100%
+    );
     border-radius: 0 0 20px 20px;
     margin-top: 0;
     box-sizing: border-box;
@@ -151,8 +168,12 @@ const ProgressBar = styled.div`
   width: 0%;
   animation: load 2.5s forwards ease-in-out;
   @keyframes load {
-    0% { width: 0%; }
-    100% { width: 100%; }
+    0% {
+      width: 0%;
+    }
+    100% {
+      width: 100%;
+    }
   }
 `;
 
@@ -163,7 +184,7 @@ const LoaderText = styled.p`
   font-size: 15px;
   font-weight: bold;
   opacity: 0.8;
-  text-shadow: 2px 2px 8px rgba(0,0,0,0.7);
+  text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.7);
   text-align: center;
   @media (max-width: 600px) {
     margin-top: 10px;
@@ -171,7 +192,8 @@ const LoaderText = styled.p`
 `;
 
 const ThemeWrapper = styled.div`
-  background-color: ${(props) => (props.$isDarkMode ? "#121212" : "transparent")};
+  background-color: ${(props) =>
+    props.$isDarkMode ? "#121212" : "transparent"};
   color: ${(props) => (props.$isDarkMode ? "#ffffff" : "inherit")};
   min-height: 100vh;
   transition: background-color 0.3s ease;
@@ -204,7 +226,7 @@ const CardHeader = styled.div`
   border-bottom: 1px solid #444;
   padding-bottom: 10px;
   margin-bottom: 15px;
-  
+
   h3 {
     margin: 0;
     color: ${(props) => (props.$isMain ? "gold" : "skyblue")};
@@ -222,7 +244,9 @@ const ActionButtons = styled.div`
     padding: 5px 10px;
     border-radius: 5px;
     cursor: pointer;
-    &:hover { background: #555; }
+    &:hover {
+      background: #555;
+    }
   }
 `;
 
@@ -241,28 +265,28 @@ const ImagePlaceholder = styled.div`
   margin: ${(props) => props.margin || "0"};
 `;
 
-const ForecastRow = styled.div`
-  display: flex;
-  gap: 15px;
-  overflow-x: auto;
-  padding: 10px 0;
-  &::-webkit-scrollbar { height: 5px; }
-  &::-webkit-scrollbar-thumb { background: #888; border-radius: 5px; }
-`;
-
-const ForecastItem = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 5px;
-  min-width: 60px;
-  font-size: 12px;
-`;
+const LOADING_PHRASES = [
+  ".",
+  "Підпішіться на мій фейсбук, щоб знати, що буде в наступній версії! Проект погода.",
+  "Інструкція з використання і отримування 🧧, розміщеннна у магазині конвертів!",
+  "Головоломки та кат-сцени в розробці🧩",
+  "Зворотній зв'язок: фейсбук або акаунт theturkeystudio@gmail.com, на випадок помилок або якщо ви правовласник, і хочете обговорити умови розміщення треку на сайті.",
+  "Питання по навігації можете задати до нашого ШІ✨",
+  "Фан-арти безкоштовні, для роздрукування! 🎨",
+  "Розблокуйте переваги з Стихія+ та Стихія+ Ультра!",
+  "Ви знаєте, що за рандомний текст, можна отримати досягнення?",
+  "Скиньте мені в фейсбук, картинку до треків деяких, а також моторошнішу історію, бо моя не дуже :)",
+  "У вас характер Ніцерона, індика, чи кого?",
+  "СлівкіШоу та Дизель шоу, це легенди.",
+  "0 казино, 0 реклами, 0 політики.",
+];
 
 const App = () => {
   const [isLoading, setIsLoading] = useState(true);
-  const [isFadingOut, setIsFadingOut] = useState(false); 
-
+  const [isFadingOut, setIsFadingOut] = useState(false);
+  const [randomPhrase] = useState(
+    () => LOADING_PHRASES[Math.floor(Math.random() * LOADING_PHRASES.length)],
+  );
   const [now, setNow] = useState(new Date());
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoginOpen, setIsLoginOpen] = useState(false);
@@ -270,7 +294,8 @@ const App = () => {
   const [isVipModalOpen, setIsVipModalOpen] = useState(false);
   const [isShopOpen, setIsShopOpen] = useState(false);
   const [isAchivmentsOpen, setIsAchivmentsOpen] = useState(false);
-  
+  const [isLocationEnabled, setIsLocationEnabled] = useState(true);
+
   const [isDarkMode, setIsDarkMode] = useState(() => {
     const saved = localStorage.getItem("isDarkMode");
     return saved !== null ? JSON.parse(saved) : false;
@@ -289,98 +314,120 @@ const App = () => {
     const savedCards = localStorage.getItem("weather_cards");
     return savedCards ? JSON.parse(savedCards) : [];
   });
+
   useEffect(() => {
     localStorage.setItem("weather_cards", JSON.stringify(weatherCards));
   }, [weatherCards]);
 
-  const fetchWeather = useCallback(async (city, isMain, lat = null, lon = null) => {
-    try {
-      let targetLat = lat;
-      let targetLon = lon;
-      let displayName = city || "Ваша локація";
+  const fetchWeather = useCallback(
+    async (city, isMain, lat = null, lon = null) => {
+      try {
+        let targetLat = lat;
+        let targetLon = lon;
+        let displayName = city || "Ваша локація";
 
-      if (city) {
-        const geo = await axios.get(`https://geocoding-api.open-meteo.com/v1/search?name=${city}&count=1&language=uk`);
-        if (geo.data.results && geo.data.results[0]) {
-          targetLat = geo.data.results[0].latitude;
-          targetLon = geo.data.results[0].longitude;
-          displayName = geo.data.results[0].name;
-        } else {
-          alert("Місто не знайдено");
-          return;
+        if (city) {
+          const geo = await axios.get(
+            `https://geocoding-api.open-meteo.com/v1/search?name=${city}&count=1&language=uk`,
+          );
+          if (geo.data.results && geo.data.results[0]) {
+            targetLat = geo.data.results[0].latitude;
+            targetLon = geo.data.results[0].longitude;
+            displayName = geo.data.results[0].name;
+          } else {
+            alert("Місто не знайдено");
+            return;
+          }
         }
+        const url = `https://api.open-meteo.com/v1/forecast?latitude=${targetLat}&longitude=${targetLon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m,surface_pressure&hourly=temperature_2m,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min,uv_index_max&timezone=auto&forecast_days=16`;
+        const res = await axios.get(url);
+        const d = res.data;
+        const newCardData = {
+          id: isMain ? "main-card" : Date.now(),
+          isMain: isMain,
+          locationName: displayName,
+          lat: targetLat, 
+          lon: targetLon, 
+          current: {
+            temp: `${Math.round(d.current.temperature_2m)}°C`,
+            tempNum: Math.round(d.current.temperature_2m), 
+            feels_like: `${Math.round(d.current.apparent_temperature)}°C`,
+            humidity: `${d.current.relative_humidity_2m}%`,
+            pressure: `${Math.round(d.current.surface_pressure)} hPa`,
+            wind_speed: `${d.current.wind_speed_10m} м/с`,
+            windNum: d.current.wind_speed_10m, 
+            uv_index: d.daily.uv_index_max[0],
+            description: "За кодом: " + d.current.weather_code,
+            iconPlaceholder: getWeatherIcon(d.current.weather_code),
+          },
+          hourly: d.hourly.time.slice(0, 12).map((t, i) => ({
+            time: new Date(t).getHours() + ":00",
+            temp: `${Math.round(d.hourly.temperature_2m[i])}°C`,
+            tempNum: Math.round(d.hourly.temperature_2m[i]), 
+            iconPlaceholder: getWeatherIcon(d.hourly.weather_code[i]),
+          })),
+          daily16: d.daily.time.map((t, i) => ({
+            date: new Date(t).toLocaleDateString("uk", {
+              day: "numeric",
+              month: "2-digit",
+            }),
+            day: new Date(t).toLocaleDateString("uk", { weekday: "short" }),
+            temp_day: `${Math.round(d.daily.temperature_2m_max[i])}°C`,
+            temp_night: `${Math.round(d.daily.temperature_2m_min[i])}°C`,
+            description: "Код " + d.daily.weather_code[i],
+            iconPlaceholder: getWeatherIcon(d.daily.weather_code[i]),
+          })),
+        };
+        setWeatherCards((prev) => {
+          if (isMain) {
+            const filtered = prev.filter((c) => !c.isMain);
+            return [newCardData, ...filtered];
+          } else {
+            if (prev.find((c) => c.locationName === displayName)) return prev;
+            if (prev.length >= 4) return prev;
+            return [...prev, newCardData];
+          }
+        });
+      } catch (error) {
+        console.error("Помилка завантаження погоди", error);
       }
-      const url = `https://api.open-meteo.com/v1/forecast?latitude=${targetLat}&longitude=${targetLon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m,surface_pressure&hourly=temperature_2m,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min,uv_index_max&timezone=auto&forecast_days=16`;
-      const res = await axios.get(url);
-      const d = res.data;
-      const newCardData = {
-        id: isMain ? "main-card" : Date.now(),
-        isMain: isMain,
-        locationName: displayName,
-        current: {
-          temp: `${Math.round(d.current.temperature_2m)}°C`,
-          feels_like: `${Math.round(d.current.apparent_temperature)}°C`,
-          humidity: `${d.current.relative_humidity_2m}%`,
-          pressure: `${Math.round(d.current.surface_pressure)} hPa`,
-          wind_speed: `${d.current.wind_speed_10m} м/с`,
-          uv_index: d.daily.uv_index_max[0],
-          description: "За кодом: " + d.current.weather_code,
-          iconPlaceholder: getWeatherIcon(d.current.weather_code)
-        },
-        hourly: d.hourly.time.slice(0, 12).map((t, i) => ({
-          time: new Date(t).getHours() + ":00",
-          temp: `${Math.round(d.hourly.temperature_2m[i])}°C`,
-          iconPlaceholder: getWeatherIcon(d.hourly.weather_code[i]) 
-        })),
-        daily16: d.daily.time.map((t, i) => ({
-          date: new Date(t).toLocaleDateString("uk", { day: "numeric", month: "2-digit" }),
-          day: new Date(t).toLocaleDateString("uk", { weekday: "short" }),
-          temp_day: `${Math.round(d.daily.temperature_2m_max[i])}°C`,
-          temp_night: `${Math.round(d.daily.temperature_2m_min[i])}°C`,
-          description: "Код " + d.daily.weather_code[i],
-          iconPlaceholder: getWeatherIcon(d.daily.weather_code[i]) 
-        }))
-      };
-      setWeatherCards((prev) => {
-        if (isMain) {
-          const filtered = prev.filter(c => !c.isMain);
-          return [newCardData, ...filtered];
-        } else {
-          if (prev.find(c => c.locationName === displayName)) return prev;
-          if (prev.length >= 4) return prev;
-          return [...prev, newCardData];
-        }
-      });
-    } catch (error) {
-      console.error("Помилка завантаження погоди", error);
-    }
-  }, []);
+    },
+    [],
+  );
 
   const getInitialLocation = useCallback(() => {
+    if (!isLocationEnabled) {
+      fetchWeather("Київ", true, 50.45, 30.52);
+      return;
+    }
+
     if ("geolocation" in navigator) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
-          fetchWeather(null, true, position.coords.latitude, position.coords.longitude);
+          fetchWeather(
+            null,
+            true,
+            position.coords.latitude,
+            position.coords.longitude,
+          );
         },
-        () => fetchWeather("Київ", true, 50.45, 30.52)
+        () => fetchWeather("Київ", true, 50.45, 30.52),
       );
     } else {
       fetchWeather("Київ", true, 50.45, 30.52);
     }
-  }, [fetchWeather]);
+  }, [fetchWeather, isLocationEnabled]);
+
   useEffect(() => {
     getInitialLocation();
   }, [getInitialLocation]);
 
   const handleAddCityFromHero = (cityName) => {
-    const cityInPlaylist = CITY_PLAYLIST.find(
-      (c) => c.toLowerCase() === cityName.toLowerCase()
-    );
-    fetchWeather(cityInPlaylist || cityName, false);
+    fetchWeather(cityName, false);
   };
 
   const handleDeleteCard = (id) => {
-    setWeatherCards((prev) => prev.filter(card => card.id !== id));
+    setWeatherCards((prev) => prev.filter((card) => card.id !== id));
   };
 
   const handleRefreshCard = (card) => {
@@ -390,10 +437,14 @@ const App = () => {
       fetchWeather(card.locationName, false);
     }
   };
+
   useEffect(() => {
-    const fadeTimer = setTimeout(() => setIsFadingOut(true), 3500); 
-    const removeTimer = setTimeout(() => setIsLoading(false), 5300); 
-    return () => { clearTimeout(fadeTimer); clearTimeout(removeTimer); };
+    const fadeTimer = setTimeout(() => setIsFadingOut(true), 3500);
+    const removeTimer = setTimeout(() => setIsLoading(false), 5300);
+    return () => {
+      clearTimeout(fadeTimer);
+      clearTimeout(removeTimer);
+    };
   }, []);
 
   useEffect(() => {
@@ -417,9 +468,17 @@ const App = () => {
     }
   }, [user]);
 
-  const handleRegister = (userData) => { setUser(userData); setIsModalOpen(false); };
-  const handleLogin = (savedUser) => { setUser(savedUser); setIsLoginOpen(false); };
-  const handleUpdateUser = (userData) => { setUser(userData); };
+  const handleRegister = (userData) => {
+    setUser(userData);
+    setIsModalOpen(false);
+  };
+  const handleLogin = (savedUser) => {
+    setUser(savedUser);
+    setIsLoginOpen(false);
+  };
+  const handleUpdateUser = (userData) => {
+    setUser(userData);
+  };
   const handleLogout = () => {
     setUser(null);
     setCurrentAvatar(userDefault);
@@ -430,21 +489,69 @@ const App = () => {
   const toggleTheme = () => setIsDarkMode(!isDarkMode);
   const capitalize = (s) => s.charAt(0).toUpperCase() + s.slice(1);
   const month = new Intl.DateTimeFormat("uk", { month: "2-digit" }).format(now);
-  const weekday = capitalize(new Intl.DateTimeFormat("uk", { weekday: "long" }).format(now));
+  const weekday = capitalize(
+    new Intl.DateTimeFormat("uk", { weekday: "long" }).format(now),
+  );
   const heroDateString = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}:${String(now.getSeconds()).padStart(2, "0")} ${weekday}, ${now.getDate()}.${month}.${now.getFullYear()}`;
+  const DEFAULT_SITE_SECTIONS = [
+    { key: "weather", label: "Погода" },
+    { key: "puzzles", label: "Пазли" },
+    { key: "aihelp", label: "AI-допомога" },
+    { key: "news", label: "Новини" },
+    { key: "music", label: "Музика" },
+    { key: "fanart", label: "FanArt" },
+  ];
+  const [siteSections, setSiteSections] = useState([...DEFAULT_SITE_SECTIONS]);
+  const moveSiteSection = (idx, dir) => {
+    setSiteSections((prev) => {
+      const arr = [...prev];
+      const newIdx = idx + dir;
+      if (newIdx < 0 || newIdx >= arr.length) return arr;
+      [arr[idx], arr[newIdx]] = [arr[newIdx], arr[idx]];
+      return arr;
+    });
+  };
+  const resetSiteSections = () => setSiteSections([...DEFAULT_SITE_SECTIONS]);
+
   return (
     <>
       {isLoading && (
         <LoaderWrapper $isFadingOut={isFadingOut}>
           <LoaderContent>
             <LoaderImage src={loadimage} alt="Loading..." />
-            <div className="mobile-loader-bar" style={{ width: '100%' }}>
-              <ProgressContainer><ProgressBar /></ProgressContainer>
+            <div className="mobile-loader-bar" style={{ width: "100%" }}>
+              <ProgressContainer>
+                <ProgressBar />
+              </ProgressContainer>
               <LoaderText>TurkeyStudio Presents...</LoaderText>
+              <LoaderText
+                style={{
+                  fontSize: "13px",
+                  marginTop: "5px",
+                  color: "#00c6ff",
+                  textTransform: "none",
+                  letterSpacing: "1px",
+                }}
+              >
+                {randomPhrase}
+              </LoaderText>
             </div>
             <LoaderOverlay className="desktop-loader-bar">
-              <ProgressContainer><ProgressBar /></ProgressContainer>
+              <ProgressContainer>
+                <ProgressBar />
+              </ProgressContainer>
               <LoaderText>TheTurkeyStudio Presents...</LoaderText>
+              <LoaderText
+                style={{
+                  fontSize: "13px",
+                  marginTop: "5px",
+                  color: "#00c6ff",
+                  textTransform: "none",
+                  letterSpacing: "1px",
+                }}
+              >
+                {randomPhrase}
+              </LoaderText>
             </LoaderOverlay>
           </LoaderContent>
           <style>{`
@@ -478,83 +585,246 @@ const App = () => {
             />
           </div>
 
-          <Hero 
-            heroDateString={heroDateString} 
-            onAddCity={handleAddCityFromHero} 
+          <Hero
+            heroDateString={heroDateString}
+            onAddCity={handleAddCityFromHero}
           />
-          
+
           <div className="container">
-            <WeatherCardsContainer>
-              {weatherCards.map((card) => (
-                <WeatherCard key={card.id} $isMain={card.isMain} $isDarkMode={isDarkMode}>
-                  <CardHeader $isMain={card.isMain}>
-                    <h3>{card.locationName} {card.isMain && "📍"}</h3>
-                    <ActionButtons>
-                      <button onClick={() => handleRefreshCard(card)}>↺</button>
-                      {!card.isMain && (
-                        <button onClick={() => handleDeleteCard(card.id)}>🗑</button>
-                      )}
-                    </ActionButtons>
-                  </CardHeader>
-
-                  <div style={{ display: "flex", gap: "20px", marginBottom: "15px" }}>
-                    <ImagePlaceholder size="80px">{card.current.iconPlaceholder}</ImagePlaceholder>
-                    <div>
-                      <h1 style={{ margin: "0 0 5px 0" }}>{card.current.temp}</h1>
-                      <p style={{ margin: "0", fontSize: "12px" }}>Відчувається: {card.current.feels_like}</p>
-                    </div>
-                  </div>
-
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px", fontSize: "12px", marginBottom: "20px" }}>
-                    <div>Вологість: <b>{card.current.humidity}</b></div>
-                    <div>Вітер: <b>{card.current.wind_speed}</b></div>
-                    <div>Тиск: <b>{card.current.pressure}</b></div>
-                    <div>УФ-індекс: <b>{card.current.uv_index}</b></div>
-                  </div>
-
-                  <h4 style={{ margin: "0 0 10px 0" }}>Годинний прогноз:</h4>
-                  <ForecastRow>
-                    {card.hourly.map((hour, idx) => (
-                      <ForecastItem key={idx}>
-                        <span>{hour.time}</span>
-                        <ImagePlaceholder size="40px" fontSize="18px">{hour.iconPlaceholder}</ImagePlaceholder>
-                        <span>{hour.temp}</span>
-                      </ForecastItem>
-                    ))}
-                  </ForecastRow>
-
-                  <h4 style={{ margin: "15px 0 10px 0" }}>Прогноз на 16 днів:</h4>
-                  <div style={{ maxHeight: "150px", overflowY: "auto", paddingRight: "10px" }}>
-                    {card.daily16.map((day, idx) => (
-                      <div key={idx} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px", fontSize: "12px", borderBottom: "1px solid #444", paddingBottom: "5px" }}>
-                        <span style={{ width: "40px" }}>{day.date}</span>
-                        <span style={{ width: "30px", fontWeight: "bold" }}>{day.day}</span>
-                        <ImagePlaceholder size="30px" margin="0 10px" fontSize="14px">{day.iconPlaceholder}</ImagePlaceholder>
-                        <div style={{ display: "flex", gap: "10px" }}>
-                          <span>Д: {day.temp_day}</span>
-                          <span style={{ color: "#aaa" }}>Н: {day.temp_night}</span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </WeatherCard>
+            <div style={{ margin: "20px 0 30px 0", background: "#ff005d", borderRadius: 12, padding: 16, boxShadow: "0 2px 8px #0001" }}>
+              <h4 style={{ fontWeight: 700, fontSize: 16, margin: "15px" }}>Порядок секцій сайту:</h4>
+              {siteSections.map((section, idx) => (
+                <div key={section.key} style={{ display: "flex", alignItems: "center", marginBottom: 6 }}>
+                  <span style={{ minWidth: 120, fontWeight: 500 }}>{section.label}</span>
+                  <button
+                    style={{ fontSize: "16px", padding: "2px 8px", borderRadius: "6px", border: "1px solid #aaa", background: "#eee", marginLeft: 8, cursor: idx === 0 ? "not-allowed" : "pointer" }}
+                    disabled={idx === 0}
+                    onClick={() => moveSiteSection(idx, -1)}
+                    title="Вище"
+                  >↑</button>
+                  <button
+                    style={{ fontSize: "16px", padding: "2px 8px", borderRadius: "6px", border: "1px solid #aaa", background: "#eee", marginLeft: 4, cursor: idx === siteSections.length - 1 ? "not-allowed" : "pointer" }}
+                    disabled={idx === siteSections.length - 1}
+                    onClick={() => moveSiteSection(idx, 1)}
+                    title="Нижче"
+                  >↓</button>
+                </div>
               ))}
-            </WeatherCardsContainer>
-            <Puzzles/>
-            <Aihelp isDarkMode={isDarkMode} />
-            <News/>
-            <MusicPhoto user={user} onOpenRegister={() => setIsModalOpen(true)} />
-            <FanArt isDarkMode={isDarkMode} user={user} onOpenRegister={() => setIsModalOpen(true)} />
+              <button
+                style={{ marginTop: 10, padding: "6px 18px", borderRadius: "8px", border: "1px solid #aaa", background: "#ffe0b2", fontWeight: 600, cursor: "pointer" }}
+                onClick={resetSiteSections}
+              >Скинути порядок</button>
+            </div>
+            {siteSections.map((section) => {
+              if (section.key === "weather") {
+                return (
+                  <WeatherCardsContainer key="weather">
+                    {weatherCards.map((card) => {
+                      const isExtremeTemp = card.current.tempNum > 30 || card.current.tempNum < -10;
+                      const isExtremeWind = card.current.windNum > 10;
+                      const isExtremeUV = card.current.uv_index > 7;
+
+                      return (
+                        <WeatherCard
+                          key={card.id}
+                          $isMain={card.isMain}
+                          $isDarkMode={isDarkMode}
+                        >
+                          <CardHeader $isMain={card.isMain}>
+                            <div>
+                              <h3>
+                                {card.locationName} {card.isMain && "📍"}
+                              </h3>
+                              {card.isMain && (
+                                <p style={{ margin: "5px 0 0 0", fontSize: "11px", color: "#888" }}>
+                                  Широта: {card.lat ? card.lat.toFixed(4) : "—"}, Довгота: {card.lon ? card.lon.toFixed(4) : "—"}
+                                </p>
+                              )}
+                            </div>
+                            <ActionButtons>
+                              {card.isMain && (
+                                <button
+                                  onClick={() => setIsLocationEnabled(!isLocationEnabled)}
+                                  style={{ background: isLocationEnabled ? "#444" : "#ff4d4d", fontSize: "12px" }}
+                                  title="Ввімкнути/вимкнути доступ до вашої локації"
+                                >
+                                  {isLocationEnabled ? "GPS Увімк." : "GPS Вимк."}
+                                </button>
+                              )}
+                              <button onClick={() => handleRefreshCard(card)}>↺</button>
+                              {!card.isMain && (
+                                <button onClick={() => handleDeleteCard(card.id)}>
+                                  🗑
+                                </button>
+                              )}
+                            </ActionButtons>
+                          </CardHeader>
+                          <div
+                            style={{
+                              display: "flex",
+                              gap: "20px",
+                              marginBottom: "15px",
+                            }}
+                          >
+                            <ImagePlaceholder size="80px">
+                              {card.current.iconPlaceholder}
+                            </ImagePlaceholder>
+                            <div>
+                              <h1 style={{ margin: "0 0 5px 0", color: isExtremeTemp ? "#ff4d4d" : "inherit" }}>
+                                {card.current.temp}
+                              </h1>
+                              <p style={{ margin: "0", fontSize: "12px" }}>
+                                Відчувається: {card.current.feels_like}
+                              </p>
+                            </div>
+                          </div>
+                          <div
+                            style={{
+                              display: "grid",
+                              gridTemplateColumns: "1fr 1fr",
+                              gap: "10px",
+                              fontSize: "12px",
+                              marginBottom: "20px",
+                            }}
+                          >
+                            <div>
+                              Вологість: <b>{card.current.humidity}</b>
+                            </div>
+                            <div style={{ color: isExtremeWind ? "#ff4d4d" : "inherit" }}>
+                              Вітер: <b>{card.current.wind_speed}</b>
+                            </div>
+                            <div>
+                              Тиск: <b>{card.current.pressure}</b>
+                            </div>
+                            <div style={{ color: isExtremeUV ? "#ff4d4d" : "inherit" }}>
+                              УФ-індекс: <b>{card.current.uv_index}</b>
+                            </div>
+                          </div>
+
+                          <h4 style={{ margin: "0 0 10px 0" }}>Годинний прогноз:</h4>
+                          <div style={{ width: '100%', height: '200px', marginTop: '15px', marginBottom: '15px' }}>
+                            {card.hourly && card.hourly.length > 0 && (
+                                <ResponsiveContainer width="100%" height="100%">
+                                <LineChart data={card.hourly} margin={{ top: 25, right: 10, left: -25, bottom: 0 }}>
+                                    <XAxis dataKey="time" stroke={isDarkMode ? "#ccc" : "#333"} fontSize={11} tickLine={false} axisLine={false} />
+                                    <YAxis hide domain={['dataMin - 5', 'dataMax + 5']} />
+                                    <Tooltip
+                                    contentStyle={{ backgroundColor: isDarkMode ? '#333' : '#fff', color: isDarkMode ? '#fff' : '#333', borderRadius: '8px', border: 'none' }}
+                                    formatter={(value) => [`${value}°C`, 'Темп.']}
+                                    />
+                                    <Line
+                                    type="monotone"
+                                    dataKey="tempNum"
+                                    stroke="#00c6ff"
+                                    strokeWidth={3}
+                                    dot={{ r: 4, fill: "#00c6ff" }}
+                                    label={(props) => {
+                                        const { x, y, index } = props;
+                                        return (
+                                        <text x={x} y={y - 12} fill={isDarkMode ? "#fff" : "#000"} fontSize={16} textAnchor="middle">
+                                            {card.hourly[index].iconPlaceholder}
+                                        </text>
+                                        );
+                                    }}
+                                    />
+                                </LineChart>
+                                </ResponsiveContainer>
+                            )}
+                          </div>
+
+                          <h4 style={{ margin: "15px 0 10px 0" }}>
+                            Прогноз на 16 днів:
+                          </h4>
+                          <div
+                            style={{
+                              maxHeight: "410px", 
+                              overflowY: "auto",
+                              paddingRight: "10px",
+                            }}
+                          >
+                            {card.daily16.map((day, idx) => (
+                              <div
+                                key={idx}
+                                style={{
+                                  display: "flex",
+                                  justifyContent: "space-between",
+                                  alignItems: "center",
+                                  marginBottom: "8px",
+                                  fontSize: "12px",
+                                  borderBottom: "1px solid #444",
+                                  paddingBottom: "5px",
+                                }}
+                              >
+                                <span style={{ width: "40px" }}>{day.date}</span>
+                                <span style={{ width: "30px", fontWeight: "bold" }}>
+                                  {day.day}
+                                </span>
+                                <ImagePlaceholder
+                                  size="30px"
+                                  margin="0 10px"
+                                  fontSize="14px"
+                                >
+                                  {day.iconPlaceholder}
+                                </ImagePlaceholder>
+                                <div style={{ display: "flex", gap: "10px" }}>
+                                  <span>Д: {day.temp_day}</span>
+                                  <span style={{ color: "#aaa" }}>
+                                    Н: {day.temp_night}
+                                  </span>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </WeatherCard>
+                      );
+                    })}
+                  </WeatherCardsContainer>
+                );
+              }
+              if (section.key === "puzzles") return <Puzzles key="puzzles" />;
+              if (section.key === "aihelp") return <Aihelp key="aihelp" isDarkMode={isDarkMode} />;
+              if (section.key === "news") return <News key="news" />;
+              if (section.key === "music") return <MusicPhoto key="music" user={user} onOpenRegister={() => setIsModalOpen(true)} />;
+              if (section.key === "fanart") return <FanArt key="fanart" isDarkMode={isDarkMode} user={user} onOpenRegister={() => setIsModalOpen(true)} />;
+              return null;
+            })}
           </div>
 
           <Footer toggleTheme={toggleTheme} />
 
-          {isModalOpen && <Modal onClose={() => setIsModalOpen(false)} onRegister={handleRegister} availableAvatars={AVAILABLE_AVATARS} />}
-          {isLoginOpen && <LoginModal onClose={() => setIsLoginOpen(false)} onLogin={handleLogin} />}
-          {isSettingsModalOpen && user && <UserSettingsModal onClose={() => setIsSettingsModalOpen(false)} user={user} availableAvatars={AVAILABLE_AVATARS} onUpdate={handleUpdateUser} />}
-          {isVipModalOpen && <VipModal onClose={() => setIsVipModalOpen(false)} />}
-          {isShopOpen && <ShopModal onClose={() => setIsShopOpen(false)} hasVip={!!user} />}
-          {isAchivmentsOpen && <AchivmentsModal onClose={() => setIsAchivmentsOpen(false)} isDarkMode={isDarkMode} />}
+          {isModalOpen && (
+            <Modal
+              onClose={() => setIsModalOpen(false)}
+              onRegister={handleRegister}
+              availableAvatars={AVAILABLE_AVATARS}
+            />
+          )}
+          {isLoginOpen && (
+            <LoginModal
+              onClose={() => setIsLoginOpen(false)}
+              onLogin={handleLogin}
+            />
+          )}
+          {isSettingsModalOpen && user && (
+            <UserSettingsModal
+              onClose={() => setIsSettingsModalOpen(false)}
+              user={user}
+              availableAvatars={AVAILABLE_AVATARS}
+              onUpdate={handleUpdateUser}
+            />
+          )}
+          {isVipModalOpen && (
+            <VipModal onClose={() => setIsVipModalOpen(false)} />
+          )}
+          {isShopOpen && (
+            <ShopModal onClose={() => setIsShopOpen(false)} hasVip={!!user} />
+          )}
+          {isAchivmentsOpen && (
+            <AchivmentsModal
+              onClose={() => setIsAchivmentsOpen(false)}
+              isDarkMode={isDarkMode}
+            />
+          )}
         </div>
       </ThemeWrapper>
     </>
