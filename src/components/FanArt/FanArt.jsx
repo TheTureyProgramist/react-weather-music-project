@@ -101,6 +101,7 @@ const FanArt = ({ isDarkMode, user, onOpenRegister }) => {
     rooster,
     soloveyko,
     volcano,
+    
   ];
 
   const handleImageClick = (imgSrc) => {
