@@ -9,6 +9,7 @@ import nicerone from "../../photos/vip-images/vip-dinofroz.webp";
 import soloveyko from "../../photos/vip-images/vip-soloveyko.jpg";
 import monody from "../../photos/vip-images/vip-forest.webp";
 import volcano from "../../photos/vip-images/fire.jpg";
+import flame from "../../photos/vip-images/flame.jpg";
 const FanArtDiv = styled.div`
   margin-top: 35px;
   @media (min-width: 768px) {
@@ -101,7 +102,7 @@ const FanArt = ({ isDarkMode, user, onOpenRegister }) => {
     rooster,
     soloveyko,
     volcano,
-    
+    flame,
   ];
 
   const handleImageClick = (imgSrc) => {
