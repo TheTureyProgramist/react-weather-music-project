@@ -43,10 +43,10 @@ const Overlay = styled.div`
 const ShopContainer = styled.div`
   background-color: #3a1a1a;
   color: #fff;
-  width: 95%;
+  width: 90%;
   max-width: 850px;
   max-height: 90vh;
-  padding: 20px;
+  padding: 10px;
   border-radius: 20px;
   position: relative;
   border: 2px solid #ff6c6c;
@@ -88,7 +88,7 @@ const ShopTitle = styled.h2`
   text-align: center;
   color: #ff6c6c;
   letter-spacing: 2px;
-  margin-bottom: 25px;
+  margin-bottom: 15px;
 `;
 
 const Badge = styled.div`
@@ -97,7 +97,7 @@ const Badge = styled.div`
   right: -10px;
   background: linear-gradient(135deg, #ffb36c 0%, #ff6c6c 100%);
   color: #3a1a1a;
-  padding: 4px 10px;
+  padding: 3px 6px;
   border-radius: 8px;
   font-size: 10px;
   font-weight: 900;
@@ -108,7 +108,7 @@ const Badge = styled.div`
 const PackGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
+  gap: 10px;
   @media (max-width: 650px) {
     grid-template-columns: 1fr;
   }
@@ -120,7 +120,7 @@ const PackCard = styled.div`
     props.$isSpecial ? "rgba(255, 108, 108, 0.2)" : "rgba(255, 108, 108, 0.1)"};
   border: 1px solid #ff6c6c;
   border-radius: 12px;
-  padding: 15px;
+  padding: 10px;
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -135,7 +135,7 @@ const PackCard = styled.div`
 const PackInfo = styled.div`
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
 `;
 
 const PackImageFrame = styled.img`
@@ -148,11 +148,11 @@ const PackImageFrame = styled.img`
 
 const PackContent = styled.div`
   display: flex;
-  flex-direction: column;
+  gap: 10px;
 `;
 
 const PackLabel = styled.div`
-  font-size: 12px;
+  font-size: 15px;
   color: #ff6c6c;
   font-weight: 900;
 `;
@@ -186,8 +186,8 @@ const BuyButton = styled.button`
   }
 `;
 const InfoSection = styled.div`
-  margin-top: 25px;
-  padding: 20px;
+  margin-top: 10px;
+  padding: 10px;
   background: rgba(0, 0, 0, 0.3);
   border-radius: 15px;
   border: 1px dashed #ff6c6c;
@@ -235,6 +235,7 @@ const InfoItem = styled.li`
 `;
 const RainbowSpan = styled.span`
   font-weight: bold;
+  font-size: 9.3px;
   background: linear-gradient(
     to right,
     #ff7eb3,
@@ -322,30 +323,28 @@ const ShopModal = ({ onClose }) => {
                 <InfoItem>
                   <span>
                     Створення, оновлення, видалення погодної картки(окремо за
-                    всі процеси).
+                    кожний процес). Доступ до JPS/доба 
                   </span>
                   <span className="price">2 🧧</span>
                 </InfoItem>
                 <InfoItem>
                   <span>
-                    3 Спец-аватари, кольори імені та автару (випадково в ціні). Поліпшіть з{" "}
-                    <RainbowSpan>Підпискою</RainbowSpan>.
+                    3 Спец-аватари, кольори імені та автару (випадково в ціні). Поліпшіть 
+                    з <RainbowSpan>Підписками</RainbowSpan>.
                   </span>
                   <span className="price">20-40 🧧</span>
                 </InfoItem>
                 <InfoItem>
                   <span>
-                    Автоповтор всіх пісень(на добу). Поліпшіть з{" "}
-                    <RainbowSpan>Підпискою</RainbowSpan>.
+                     Зміни в налаштуваннях.
                   </span>
                   <span className="price">4 🧧</span>
                 </InfoItem>
                 <InfoItem>
                   <span>
-                    Запит до ШІ (після безкоштовних спроб, спроби за
-                    конверти, далі конверти + гроші). Прискорення перезарядки
-                    кнопок(регулюється к-сть) 1 🧧 = -12с. Зміни в налаштуваннях.
-                    Поліпшіть з <RainbowSpan>Підпискою</RainbowSpan>.
+                    Запит до ШІ (спроби за 🧧, далі 🧧 + гроші). Прискорення перезарядки
+                    кнопок(регулюється к-сть) 1 🧧 = -12с.
+                    Поліпшіть з <RainbowSpan>Підписками</RainbowSpan>.
                   </span>
                   <span className="price">5 🧧</span>
                 </InfoItem>
@@ -357,34 +356,33 @@ const ShopModal = ({ onClose }) => {
                 <InfoItem>
                   <span>
                     Щоденний безкоштовнй бонус за вхід, проходження 1
-                    головоломки. Поліпшіть з <RainbowSpan>Підпискою</RainbowSpan>.
+                    головоломки. Поліпшіть <RainbowSpan>Підписками</RainbowSpan>.
                   </span>
                   <span className="price">+10 🧧</span>
                 </InfoItem>
                 <InfoItem>
                   <span>
-                    Джекпот з шансом 20%(можливий на початку добу). Покращіть 
-                    <RainbowSpan>Підпискою</RainbowSpan>.
+                    Джекпот з шансом 20%(можливий на початку добу). 
+                    Покращіть <RainbowSpan>Підписками</RainbowSpan>.
                   </span>
                   <span className="price">+20 🧧</span>
                 </InfoItem>
                 <InfoItem>
                   <span>
-                    Досягнення. Поліпшіть з <RainbowSpan>Підписками</RainbowSpan>.
+                    🏆 Поліпшіть з <RainbowSpan>Підписками</RainbowSpan>.
                   </span>
                   <span className="price">20-40 🧧</span>
                 </InfoItem>
                 <InfoItem>
                   <span>
                     Стартовий набір, усі зібрані аватари, стилі імені та всі
-                    пройдені головоломки. Поліпшіть доступність з{" "}
-                    <RainbowSpan>Підписками</RainbowSpan>.
+                    пройдені головоломки. Поліпшіть доступність в ціні/аватарів,<RainbowSpan>Підписками</RainbowSpan>.
                   </span>
                   <span className="price">+40 🧧</span>
                 </InfoItem>
                 <InfoItem>
                   <span>
-                    Оплата <RainbowSpan>Підпискою</RainbowSpan>{" "}
+                    Оплата <RainbowSpan>Підписками</RainbowSpan>{" "}
                     передоплатою(разово) та місячним тарифом.
                   </span>
                   <span className="price">+50, 100 🧧</span>
@@ -396,7 +394,7 @@ const ShopModal = ({ onClose }) => {
         <div
           style={{
             textAlign: "center",
-            marginTop: "20px",
+            marginTop: "10px",
             fontSize: "11px",
             color: "#ff5e5e",
             fontStyle: "italic",
