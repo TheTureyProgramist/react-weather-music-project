@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import styled from "styled-components";
 import axios from "axios";
-import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 import "./App.css";
 import Header from "./components/Header/Header.jsx";
 import Hero from "./components/Hero/Hero.jsx";
@@ -383,7 +382,12 @@ const App = () => {
             const filtered = prev.filter((c) => !c.isMain);
             return [newCardData, ...filtered];
           } else {
-            if (prev.find((c) => c.locationName === displayName)) return prev;
+            const index = prev.findIndex((c) => c.locationName === displayName);
+            if (index !== -1) {
+              const updated = [...prev];
+              updated[index] = { ...newCardData, id: prev[index].id };
+              return updated;
+            }
             if (prev.length >= 4) return prev;
             return [...prev, newCardData];
           }
@@ -422,12 +426,45 @@ const App = () => {
     getInitialLocation();
   }, [getInitialLocation]);
 
+  useEffect(() => {
+    weatherCards.forEach((card) => {
+      if (!card.isMain && (!card.hourly || card.hourly.length === 0)) {
+        fetchWeather(card.locationName, false);
+      }
+    });
+  }, [weatherCards, fetchWeather]);
+
   const handleAddCityFromHero = (cityName) => {
+    if (!user) {
+      alert("Створювати картки погоди можуть лише зареєстровані користувачі!");
+      return;
+    }
     fetchWeather(cityName, false);
   };
 
+  const [hideDeleteModalUntil, setHideDeleteModalUntil] = useState(() => {
+    const val = localStorage.getItem("hideDeleteModalUntil");
+    return val ? parseInt(val) : 0;
+  });
+
   const handleDeleteCard = (id) => {
-    setWeatherCards((prev) => prev.filter((card) => card.id !== id));
+    const now = Date.now();
+    if (hideDeleteModalUntil > now) {
+      setWeatherCards((prev) => prev.filter((card) => card.id !== id));
+      return;
+    }
+    let hours = 1;
+    const ask = window.confirm("Ви дійсно хочете видалити картку погоди?\n\nВи можете приховати це підтвердження на певний час.\n\nНатисніть ОК для видалення, або Скасувати для відміни.");
+    if (ask) {
+      let input = window.prompt("Скільки годин не показувати це підтвердження? (1-72)", "1");
+      if (input !== null) {
+        const num = Math.max(1, Math.min(72, parseInt(input)));
+        hours = isNaN(num) ? 1 : num;
+        localStorage.setItem("hideDeleteModalUntil", (now + hours * 3600 * 1000).toString());
+        setHideDeleteModalUntil(now + hours * 3600 * 1000);
+      }
+      setWeatherCards((prev) => prev.filter((card) => card.id !== id));
+    }
   };
 
   const handleRefreshCard = (card) => {
@@ -591,6 +628,38 @@ const App = () => {
           />
 
           <div className="container">
+            <div style={{ maxWidth: 1200, margin: "0 auto 20px auto", background: "#00ffd5", borderRadius: 12, padding: 16, boxShadow: "0 2px 8px #0001" }}>
+              <h4 style={{ fontWeight: 700, fontSize: 16, marginBottom: 10 }}>Налаштування підтвердження видалення картки погоди</h4>
+              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                <label htmlFor="hideDeleteModalHours" style={{ fontWeight: 500 }}>Час приховування (1-72 год):</label>
+                <input
+                  id="hideDeleteModalHours"
+                  type="number"
+                  min={1}
+                  max={72}
+                  value={hideDeleteModalUntil > Date.now() ? Math.ceil((hideDeleteModalUntil - Date.now()) / 3600000) : 1}
+                  onChange={e => {
+                    let val = Math.max(1, Math.min(72, parseInt(e.target.value)));
+                    const newUntil = Date.now() + val * 3600 * 1000;
+                    localStorage.setItem("hideDeleteModalUntil", newUntil.toString());
+                    setHideDeleteModalUntil(newUntil);
+                  }}
+                  style={{ width: 60, fontSize: 16, borderRadius: 6, border: "1px solid #aaa", padding: "2px 8px" }}
+                />
+                <button
+                  style={{ marginLeft: 10, padding: "4px 12px", borderRadius: 8, border: "1px solid #aaa", background: "#ffe0b2", fontWeight: 600, cursor: "pointer" }}
+                  onClick={() => {
+                    localStorage.removeItem("hideDeleteModalUntil");
+                    setHideDeleteModalUntil(0);
+                  }}
+                >Показувати завжди</button>
+                {hideDeleteModalUntil > Date.now() && (
+                  <span style={{ color: "#ff7b00", fontWeight: 500, marginLeft: 10 }}>
+                    Активно ще {Math.ceil((hideDeleteModalUntil - Date.now()) / 3600000)} год.
+                  </span>
+                )}
+              </div>
+            </div>
             <div style={{ margin: "20px 0 30px 0", background: "#ff005d", borderRadius: 12, padding: 16, boxShadow: "0 2px 8px #0001" }}>
               <h4 style={{ fontWeight: 700, fontSize: 16, margin: "15px" }}>Порядок секцій сайту:</h4>
               {siteSections.map((section, idx) => (
@@ -702,34 +771,38 @@ const App = () => {
                           </div>
 
                           <h4 style={{ margin: "0 0 10px 0" }}>Годинний прогноз:</h4>
-                          <div style={{ width: '100%', height: '200px', marginTop: '15px', marginBottom: '15px' }}>
-                            {card.hourly && card.hourly.length > 0 && (
-                                <ResponsiveContainer width="100%" height="100%">
-                                <LineChart data={card.hourly} margin={{ top: 25, right: 10, left: -25, bottom: 0 }}>
-                                    <XAxis dataKey="time" stroke={isDarkMode ? "#ccc" : "#333"} fontSize={11} tickLine={false} axisLine={false} />
-                                    <YAxis hide domain={['dataMin - 5', 'dataMax + 5']} />
-                                    <Tooltip
-                                    contentStyle={{ backgroundColor: isDarkMode ? '#333' : '#fff', color: isDarkMode ? '#fff' : '#333', borderRadius: '8px', border: 'none' }}
-                                    formatter={(value) => [`${value}°C`, 'Темп.']}
-                                    />
-                                    <Line
-                                    type="monotone"
-                                    dataKey="tempNum"
-                                    stroke="#00c6ff"
-                                    strokeWidth={3}
-                                    dot={{ r: 4, fill: "#00c6ff" }}
-                                    label={(props) => {
-                                        const { x, y, index } = props;
-                                        return (
-                                        <text x={x} y={y - 12} fill={isDarkMode ? "#fff" : "#000"} fontSize={16} textAnchor="middle">
-                                            {card.hourly[index].iconPlaceholder}
-                                        </text>
-                                        );
-                                    }}
-                                    />
-                                </LineChart>
-                                </ResponsiveContainer>
-                            )}
+                          <div
+                            style={{
+                              display: "flex",
+                              overflowX: "auto",
+                              gap: "10px",
+                              paddingBottom: "10px",
+                              marginBottom: "15px",
+                            }}
+                          >
+                            {card.hourly &&
+                              card.hourly.map((h, i) => (
+                                <div
+                                  key={i}
+                                  style={{
+                                    minWidth: "60px",
+                                    display: "flex",
+                                    flexDirection: "column",
+                                    alignItems: "center",
+                                    background: isDarkMode ? "#333" : "#e0e0e0",
+                                    padding: "10px",
+                                    borderRadius: "10px",
+                                  }}
+                                >
+                                  <span style={{ fontSize: "12px", marginBottom: "5px" }}>
+                                    {h.time}
+                                  </span>
+                                  <span style={{ fontSize: "20px", marginBottom: "5px" }}>
+                                    {h.iconPlaceholder}
+                                  </span>
+                                  <span style={{ fontWeight: "bold" }}>{h.temp}</span>
+                                </div>
+                              ))}
                           </div>
 
                           <h4 style={{ margin: "15px 0 10px 0" }}>
@@ -737,7 +810,7 @@ const App = () => {
                           </h4>
                           <div
                             style={{
-                              maxHeight: "410px", 
+                              maxHeight: "400px", 
                               overflowY: "auto",
                               paddingRight: "10px",
                             }}
@@ -761,7 +834,7 @@ const App = () => {
                                 </span>
                                 <ImagePlaceholder
                                   size="30px"
-                                  margin="0 10px"
+                                  margin="0 20px"
                                   fontSize="14px"
                                 >
                                   {day.iconPlaceholder}

@@ -4,6 +4,8 @@ const dotenv = require("dotenv");
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 const path = require('path');
 
+// Спочатку пробуємо знайти .env у корені проєкту (на рівень вище), потім у поточній папці
+dotenv.config({ path: path.resolve(__dirname, '../.env') });
 dotenv.config({ path: path.resolve(__dirname, '.env') });
 
 const apiKey = process.env.GEMINI_API_KEY;
@@ -66,7 +68,8 @@ app.post("/api/help", async (req, res) => {
     });
 
     const result = await model.generateContent(prompt);
-    const text = result.response.text();
+    const response = await result.response;
+    const text = response.text();
     
     res.json({ text });
   } catch (error) {

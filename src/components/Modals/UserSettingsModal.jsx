@@ -286,6 +286,83 @@ const Title = styled.h3`
   font-weight: 900;
   color: black;
 `;
+const PasswordStrengthContainer = styled.div`
+  background: rgba(0, 0, 0, 0.1);
+  height: 6px;
+  border-radius: 3px;
+  width: 100%;
+  margin-top: -2px;
+  margin-bottom: 2px;
+  overflow: hidden;
+`;
+
+const PasswordStrengthBar = styled.div`
+  height: 100%;
+  border-radius: 3px;
+  background-color: ${(props) => props.$color || "transparent"};
+  width: ${(props) => props.$width || "0%"};
+  transition: width 0.3s ease, background-color 0.3s ease;
+`;
+
+const PasswordStrengthLabel = styled.span`
+  font-size: 11px;
+  font-weight: bold;
+  color: ${(props) => props.$color};
+  align-self: flex-end;
+  margin-bottom: 8px;
+`;
+
+const OrderButton = styled.button`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  font-size: 14px;
+  border-radius: 6px;
+  border: 1px solid #000;
+  background: ${(props) => (props.disabled ? "transparent" : "#fff")};
+  color: ${(props) => (props.disabled ? "#aaa" : "#000")};
+  border-color: ${(props) => (props.disabled ? "#aaa" : "#000")};
+  margin-left: 6px;
+  cursor: ${(props) => (props.disabled ? "not-allowed" : "pointer")};
+  transition: all 0.2s;
+  box-shadow: ${(props) => (props.disabled ? "none" : "0 2px 0 #000")};
+
+  &:hover:not(:disabled) {
+    background: #ffb36c;
+    transform: translateY(-1px);
+    box-shadow: 0 3px 0 #000;
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(1px);
+    box-shadow: 0 0 0 #000;
+  }
+`;
+
+const ResetOrderButton = styled.button`
+  margin-top: 10px;
+  padding: 8px 18px;
+  border-radius: 8px;
+  border: 2px solid #000;
+  background: transparent;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 2px 0 #000;
+
+  &:hover {
+    background: #ffe0b2;
+    transform: translateY(-1px);
+    box-shadow: 0 3px 0 #000;
+  }
+
+  &:active {
+    transform: translateY(1px);
+    box-shadow: 0 0 0 #000;
+  }
+`;
 
 const COLORS = [
   { name: "Сірий", value: "grey" },
@@ -382,6 +459,21 @@ const UserSettingsModal = ({ onClose, user, availableAvatars, onUpdate }) => {
       date.getDate() !== parseInt(formData.day)
     );
   }, [formData.day, formData.month, formData.year]);
+  const getPasswordStrength = (password) => {
+    if (!password) return { width: "0%", color: "transparent", label: "" };
+    let score = 0;
+    if (password.length >= 6) score += 1;
+    if (password.length >= 8) score += 1;
+    if (/[A-Z]/.test(password) || /[a-z]/.test(password)) score += 1;
+    if (/\d/.test(password)) score += 1;
+    if (/[^A-Za-z0-9]/.test(password)) score += 1;
+
+    if (score <= 2) return { width: "33%", color: "#ff4d4d", label: "Слабкий" };
+    if (score <= 4) return { width: "66%", color: "#ffb36c", label: "Середній" };
+    return { width: "100%", color: "#4caf50", label: "Надійний" };
+  };
+
+  const pwStrength = getPasswordStrength(formData.newPassword);
 
   const handleSubmit = () => {
     if (isInvalidDate) {
@@ -499,10 +591,10 @@ const UserSettingsModal = ({ onClose, user, availableAvatars, onUpdate }) => {
                 <Input
                   type="password"
                   placeholder="Поточний пароль"
-                  onChange={(e) =>
-                    setFormData({ ...formData, oldPassword: e.target.value })
-                  }
-                  style={{ marginBottom: "8px" }}
+                  disabled
+                  readOnly
+                  value="********"
+                  style={{ marginBottom: "8px", opacity: 0.6, cursor: "not-allowed" }}
                 />
                 <Input
                   type="password"
@@ -510,8 +602,21 @@ const UserSettingsModal = ({ onClose, user, availableAvatars, onUpdate }) => {
                   onChange={(e) =>
                     setFormData({ ...formData, newPassword: e.target.value })
                   }
-                  style={{ marginBottom: "8px" }}
+                  style={{ marginBottom: formData.newPassword ? "4px" : "8px" }}
                 />
+                {formData.newPassword && (
+                  <>
+                    <PasswordStrengthContainer>
+                      <PasswordStrengthBar
+                        $width={pwStrength.width}
+                        $color={pwStrength.color}
+                      />
+                    </PasswordStrengthContainer>
+                    <PasswordStrengthLabel $color={pwStrength.color}>
+                      Надійність: {pwStrength.label}
+                    </PasswordStrengthLabel>
+                  </>
+                )}
                 <Input
                   type="password"
                   placeholder="Підтвердіть новий пароль"
@@ -583,24 +688,25 @@ const UserSettingsModal = ({ onClose, user, availableAvatars, onUpdate }) => {
           {sectionsOrder.map((section, idx) => (
             <div key={section} style={{ display: "flex", alignItems: "center", marginBottom: 6 }}>
               <span style={{ minWidth: 120, fontWeight: 500 }}>{SECTION_LABELS[section]}</span>
-              <button
-                style={{ fontSize: "16px", padding: "2px 8px", borderRadius: "6px", border: "1px solid #aaa", background: "#eee", marginLeft: 8, cursor: idx === 0 ? "not-allowed" : "pointer" }}
+              <OrderButton
                 disabled={idx === 0}
                 onClick={() => moveSection(idx, -1)}
                 title="Вище"
-              >↑</button>
-              <button
-                style={{ fontSize: "16px", padding: "2px 8px", borderRadius: "6px", border: "1px solid #aaa", background: "#eee", marginLeft: 4, cursor: idx === sectionsOrder.length - 1 ? "not-allowed" : "pointer" }}
+              >
+                ↑
+              </OrderButton>
+              <OrderButton
                 disabled={idx === sectionsOrder.length - 1}
                 onClick={() => moveSection(idx, 1)}
                 title="Нижче"
-              >↓</button>
+              >
+                ↓
+              </OrderButton>
             </div>
           ))}
-          <button
-            style={{ marginTop: 10, padding: "6px 18px", borderRadius: "8px", border: "1px solid #aaa", background: "#ffe0b2", fontWeight: 600, cursor: "pointer" }}
-            onClick={resetSectionsOrder}
-          >Скинути порядок</button>
+          <ResetOrderButton onClick={resetSectionsOrder}>
+            Скинути порядок
+          </ResetOrderButton>
         </div>
         <CheckboxRow>
           <input

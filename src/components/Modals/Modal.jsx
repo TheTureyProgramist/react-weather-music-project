@@ -340,6 +340,19 @@ const Modal = ({ onClose, onRegister, availableAvatars = [] }) => {
     textColor: "grey",
     borderColor: "grey",
   });
+  const getPasswordStrength = (password) => {
+    if (!password) return { width: "0%", color: "transparent", label: "" };
+    let score = 0;
+    if (password.length >= 6) score += 1;
+    if (password.length >= 8) score += 1;
+    if (/[A-Z]/.test(password) || /[a-z]/.test(password)) score += 1;
+    if (/\d/.test(password)) score += 1;
+    if (/[^A-Za-z0-9]/.test(password)) score += 1;
+    if (score <= 1) return { width: "33%", color: "#ff4d4d", label: "Слабкий" };
+    if (score <= 2) return { width: "66%", color: "#ffb36c", label: "Середній" };
+    return { width: "100%", color: "#4caf50", label: "Надійний" };
+  };
+  const pwStrength = getPasswordStrength(formData.password);
   const [birthDate, setBirthDate] = useState({ day: "", month: "", year: "" });
   const [accepted, setAccepted] = useState(false);
   const [showTerms, setShowTerms] = useState(false);
@@ -545,7 +558,18 @@ const Modal = ({ onClose, onRegister, availableAvatars = [] }) => {
           onChange={(e) =>
             setFormData({ ...formData, password: e.target.value })
           }
+          style={{ marginBottom: formData.password ? "4px" : "8px" }}
         />
+        {formData.password && (
+          <>
+            <div style={{ background: "rgba(0,0,0,0.1)", height: "6px", borderRadius: "3px", width: "100%", marginTop: "-2px", marginBottom: "2px", overflow: "hidden" }}>
+              <div style={{ height: "100%", borderRadius: "3px", backgroundColor: pwStrength.color, width: pwStrength.width, transition: "width 0.3s ease, background-color 0.3s ease" }} />
+            </div>
+            <span style={{ fontSize: "11px", fontWeight: "bold", color: pwStrength.color, alignSelf: "flex-end", marginBottom: "8px" }}>
+              Надійність: {pwStrength.label}
+            </span>
+          </>
+        )}
         <Input
           type="password"
           placeholder="Підтвердіть пароль"

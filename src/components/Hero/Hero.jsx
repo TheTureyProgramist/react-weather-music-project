@@ -291,7 +291,7 @@ const Hero = ({ heroDateString, onAddCity }) => {
         <HeroLineMobile />
         <HeroFix>
           <HeroDecorsFix>
-                      <HeroText>
+            <HeroText>
             Створіть свій особистий список погодних умов у 3 точках світу.
           </HeroText>
             <HeroTextLink href="https://www.sat24.com/en-gb">Посилання на кліматичну мапу</HeroTextLink>

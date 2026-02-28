@@ -1,5 +1,5 @@
 import styled, { keyframes } from "styled-components";
-import { useState, useRef, useEffect, useCallback, useMemo } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 
 const slideIn = keyframes`
   0% { 
@@ -65,11 +65,21 @@ const MusicPhotoText = styled.div`
   }
 `;
 
+const ControlsContainer = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 30px;
+  width: 100%;
+  padding: 0 10px;
+`;
+
 const SearchInput = styled.input`
   width: 100%;
-  max-width: 400px;
+  max-width: 300px;
   padding: 12px 20px;
-  margin-bottom: 30px;
   border-radius: 25px;
   border: 2px solid #ccc;
   font-size: 16px;
@@ -77,6 +87,53 @@ const SearchInput = styled.input`
   transition: border-color 0.3s;
   &:focus {
     border-color: orange;
+  }
+`;
+
+const SortSelect = styled.select`
+  padding: 12px 20px;
+  border-radius: 25px;
+  border: 2px solid #ccc;
+  font-size: 16px;
+  font-family: var(--font-family);
+  outline: none;
+  cursor: pointer;
+  transition: border-color 0.3s;
+  &:focus {
+    border-color: orange;
+  }
+`;
+
+const PlayAllButton = styled.button`
+  background: orange;
+  color: white;
+  border: none;
+  border-radius: 25px;
+  padding: 12px 25px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s, transform 0.2s;
+  &:hover {
+    background: #e69500;
+    transform: scale(1.05);
+  }
+`;
+
+const ShuffleButton = styled.button`
+  background: ${(props) => (props.$active ? "orange" : "white")};
+  color: ${(props) => (props.$active ? "white" : "black")};
+  border: 2px solid ${(props) => (props.$active ? "orange" : "#ccc")};
+  border-radius: 25px;
+  padding: 12px 20px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s;
+  &:hover {
+    background: ${(props) => (props.$active ? "#e69500" : "#f0f0f0")};
+    border-color: ${(props) => (props.$active ? "#e69500" : "#bbb")};
+    transform: scale(1.05);
   }
 `;
 
@@ -166,7 +223,7 @@ const LoadMoreButton = styled.button`
   margin-top: 15px;
 `;
 
-const ControlsContainer = styled.div`
+const ControlsContainerPlayer = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
@@ -410,8 +467,9 @@ const LyricsContainer = styled.div`
 const MusicCard = ({
   cardData,
   onOpenModal,
-  onTrackToggle,
-  forcePause,
+  activeTrackId,
+  onPlay,
+  onTrackEnd,
   user,
   onOpenRegister,
   isFavorite,
@@ -428,12 +486,29 @@ const MusicCard = ({
   const [playbackRate, setPlaybackRate] = useState(1); 
   const [bufferedTime, setBufferedTime] = useState(0);
 
+  const isCurrentTrack = activeTrackId === id;
+
   useEffect(() => {
-    if (forcePause && isPlaying) {
-      if (audioRef.current) audioRef.current.pause();
-      setIsPlaying(false);
+    if (isCurrentTrack) {
+      if (audioRef.current) {
+        const playPromise = audioRef.current.play();
+        if (playPromise !== undefined) {
+          playPromise
+            .then(() => setIsPlaying(true))
+            .catch((e) => {
+              console.error("Playback failed", e);
+              setIsPlaying(false);
+              onPlay(null);
+            });
+        }
+      }
+    } else {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        setIsPlaying(false);
+      }
     }
-  }, [forcePause, isPlaying]);
+  }, [isCurrentTrack, onPlay]);
 
   useEffect(() => {
     if (audioRef.current) {
@@ -472,14 +547,10 @@ const MusicCard = ({
 
   const togglePlayPause = () => {
     if (audioRef.current) {
-      if (isPlaying) {
-        audioRef.current.pause();
-        setIsPlaying(false);
-        onTrackToggle(id, false);
+      if (isCurrentTrack) {
+        onPlay(null);
       } else {
-        audioRef.current.play();
-        setIsPlaying(true);
-        onTrackToggle(id, true);
+        onPlay(id);
       }
     }
   };
@@ -530,7 +601,10 @@ const MusicCard = ({
           <audio
             ref={audioRef}
             src={audio}
-            onEnded={() => setIsPlaying(false)}
+            onEnded={() => {
+              setIsPlaying(false);
+              onTrackEnd(id);
+            }}
             onTimeUpdate={() => setCurrentTime(audioRef.current.currentTime)}
             onLoadedMetadata={() => setDuration(audioRef.current.duration)}
             loop={isLooping}
@@ -539,7 +613,7 @@ const MusicCard = ({
       </MusicImageContainer>
 
       {audio && (
-        <ControlsContainer>
+        <ControlsContainerPlayer>
           <PlayerRow>
             <PlayButton onClick={togglePlayPause}>
               {isPlaying ? (
@@ -608,7 +682,7 @@ const MusicCard = ({
           >
             {isLooping ? "Автоповтор увімкнено" : "Автоповтор вимкнено"}
           </LoopButton>
-        </ControlsContainer>
+        </ControlsContainerPlayer>
       )}
       
       {text && <MusicText title={text}>{text}</MusicText>}
@@ -629,6 +703,7 @@ const musicCards = [
     audio: require("../../mp3/kolada.mp3"),
     text: "'Україна колядує'. Озвучка І. Федишин.",
     lyrics: "Текст відсутній.",
+    duration: 180,
   },
   {
     id: 2,
@@ -637,6 +712,7 @@ const musicCards = [
     text: "Легендарний мультфільм на малятко ТВ(нажаль закритий) Mondo TV - Динофроз. Зображено Імператора дрaконів Ніцерона.",
     lyrics:
       "Dinofroze...dinofroze. Четверо друзів знайшли дивну гру. В доісторичну пішли давнину. Там динозаврами стали вони. В цьому карти їм допомогли. У давнині небезпечні дракони. Та з ними впорались наші герої. До бою готові всюди і завжди. І утілюють мірії свої в боротьбі. Dinofroze... Дружні, завзяті, зброя в руках. Dinofroze... Вони Ніцерону не по зубах. Dinofroze... Дружні, завзяті, зброя в руках. Вони Ніцерону не по зубах. Друзі б'ються завзято. Дракони тікають. Четверо друзів майбутнє спасають. До бою завжди готові вони. Ховайтеся, вороги! Dinofroze...",
+    duration: 120,
   },
   {
     id: 3,
@@ -644,6 +720,7 @@ const musicCards = [
     audio: require("../../mp3/turkeys.mp3"),
     text: "Насолоджуйтеся звуками індиків. Авторське спостереження.",
     lyrics: "Лише звуки природи.",
+    duration: 60,
   },
   {
     id: 4,
@@ -652,6 +729,7 @@ const musicCards = [
     text: "Цей казковий нічний ліс наповнений сакурами. TheFatRat - Monody.",
     lyrics:
       "Текст трохи  змінено для рими: Літо в пагорбах. Ті туманні дні у мене в спогадах. Ми все ще бігали. Весь світ був біля наших ніг. Бачачи зміни сезону. Наші дороги були вкриті пригодами. Гори на шляху. Від моря не могли втримати нас. Ось ми стоїмо з розпростертими обіймами. Це наш дім. Завжди сильні у світі, який ми створили. Я все ще чую тебе у вітрі. Бачу твої тіні на деревах. Тримаючись, спогади ніколи не змінюються.",
+    duration: 240,
   },
   {
     id: 5,
@@ -659,6 +737,7 @@ const musicCards = [
     audio: require("../../mp3/wind.mp3"),
     text: "Пустеля розділенна вічно грозовою і сонячною зоною. Невідомий автор. ",
     lyrics: "Звуки дощу, допомагають заснути",
+    duration: 300,
   },
   {
     id: 6,
@@ -666,6 +745,7 @@ const musicCards = [
     audio: require("../../mp3/horror.mp3"),
     text: "Ви дивилися моторошне кіно...",
     lyrics: "Атмосферні звуки. Хто може страшніше зробити чекаю)",
+    duration: 150,
   },
   {
     id: 7,
@@ -673,6 +753,7 @@ const musicCards = [
     audio: require("../../mp3/horse.mp3"),
     text: "Кінь друг людини. Телеканал мега(автор звуку).",
     lyrics: "Тут немає тексту.",
+    duration: 45,
   },
   {
     id: 8,
@@ -680,6 +761,7 @@ const musicCards = [
     audio: require("../../mp3/darkness-and--flame.mp3"),
     text: "Епічна гра головоломка від 5-bn games 4 частини доступно - чекаємо на 5-ту.",
     lyrics: "Текст відсутній.",
+    duration: 200,
   },
   {
     id: 9,
@@ -687,6 +769,7 @@ const musicCards = [
     audio: require("../../mp3/dragon.mp3"),
     text: "І знову дракони, музика доісторичного світу. Картина взята з мультфільму Динофроз, а музика з гри (My Little Universe-Drаgonora). Звучить при комбінації.",
     lyrics: "Тут немає тексту.",
+    duration: 180,
   },
   {
     id: 10,
@@ -694,6 +777,7 @@ const musicCards = [
     audio: require("../../mp3/soloveyko.mp3"),
     text: "Голосування хто кращий по звукам соловеко чи індик. Зроблено за ідеї сім'ї.",
     lyrics: "Спів соловейка.",
+    duration: 90,
   },
   {
     id: 11,
@@ -701,6 +785,7 @@ const musicCards = [
     audio: require("../../mp3/dizel.mp3"),
     text: "Пісня під питанням, бо на російській мові. Але вона, без політики + комедійна про Саню та Віку.",
     lyrics: "Текст відсутній.",
+    duration: 210,
   },
   {
     id: 12,
@@ -708,6 +793,7 @@ const musicCards = [
     audio: require("../../mp3/harmonic-japan.mp3"),
     text: "My little universe. Спокійна і прекрасна музика в японському стилі.",
     lyrics: "Текст відсутній.",
+    duration: 160,
   },
   {
     id: 13,
@@ -715,6 +801,7 @@ const musicCards = [
     audio: require("../../mp3/mechanik-kindom.mp3"),
     text: "My little universe. Спокійна і прекрасна музика в механічному стилі.",
     lyrics: "Текст відсутній.",
+    duration: 160,
   },
   {
     id: 14,
@@ -722,6 +809,7 @@ const musicCards = [
     audio: require("../../mp3/mechanik-kindom.mp3"),
     text: "Зоотрополіс(Disney)-рекомендую. Shakira-Try Everything.",
     lyrics: "",
+    duration: 200,
   },
   {
     id: 15,
@@ -729,6 +817,7 @@ const musicCards = [
     audio: require("../../mp3/mechanik-kindom.mp3"),
     text: "Продовження історої зоотрополісу(Disney). Чекатиму, через 5років продовження. Skakira, Ed Sheeran - Zoo.",
     lyrics: "",
+    duration: 200,
   },
   {
     id: 16,
@@ -736,6 +825,7 @@ const musicCards = [
     audio: require("../../mp3/mechanik-kindom.mp3"),
     text: "Мія та я. Не пожалкуєте.",
     lyrics: "Мія та я. Не пожалкуєте",
+    duration: 180,
   },
   {
     id: 17,
@@ -744,6 +834,7 @@ const musicCards = [
     text: "My little universe. Спокійна і прекрасна музика в механічному стилі.",
     lyrics:
       "Динофроз, показували, з кількома, ще мульфільмами: Якарі, Анна з зелених дахів, Хайді, Острів іпаток, Пригоди в качиному порту, Марко, Лис Микита. Пісні розміщені в 3 частинах. Четверта під питанням.",
+    duration: 180,
   },
   {
     id: 18,
@@ -751,6 +842,7 @@ const musicCards = [
     audio: require("../../mp3/mechanik-kindom.mp3"),
     text: "My little universe. Спокійна і прекрасна музика в механічному стилі.",
     lyrics: "Текст відсутній.",
+    duration: 160,
   },
   {
     id: 19,
@@ -758,6 +850,7 @@ const musicCards = [
     audio: require("../../mp3/mechanik-kindom.mp3"),
     text: "My little universe. Спокійна і прекрасна музика в механічному стилі.",
     lyrics: "Текст відсутній.",
+    duration: 160,
   },
   {
     id: 20,
@@ -765,6 +858,7 @@ const musicCards = [
     audio: require("../../mp3/mechanik-kindom.mp3"),
     text: "GeometryDash(MDK-Fingerdash) Гаряча мелодія I-ша в режимі анімованості. Ласково просимо в хаос!",
     lyrics: "Текст відсутній.",
+    duration: 140,
   },
     {
     id: 21,
@@ -772,20 +866,24 @@ const musicCards = [
     audio: require("../../mp3/mechanik-kindom.mp3"),
     text: "GeometryDash(DJ-Nate - Theory of everything II). Ця пісня варта уваги!",
     lyrics: "Текст відсутній.",
+    duration: 140,
   },  {
     id: 22,
     image: require("../../photos/vip-images/mechannic.jpg"),
     audio: require("../../mp3/mechanik-kindom.mp3"),
     text: "GeometryDash(F-777 - Deadlocked). Моторошна, але епічна пісня. Друг фанат цього рівня :).",
     lyrics: "Текст відсутній.",
+    duration: 140,
   },  
 ];
 const MusicPhoto = ({ user, onOpenRegister }) => {
   const [visibleCount, setVisibleCount] = useState(8);
   const [modalData, setModalData] = useState(null);
-  const [playingTracks, setPlayingTracks] = useState([]);
+  const [activeTrackId, setActiveTrackId] = useState(null);
   const [isClosing, setIsClosing] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [sortOption, setSortOption] = useState("favorites");
+  const [isShuffle, setIsShuffle] = useState(false);
   const [favorites, setFavorites] = useState(() => {
     const saved = localStorage.getItem("music_favorites");
     return saved ? JSON.parse(saved) : [];
@@ -821,31 +919,82 @@ const MusicPhoto = ({ user, onOpenRegister }) => {
     let filtered = musicCards.filter((card) =>
       card.text.toLowerCase().includes(searchQuery.toLowerCase()),
     );
-    return [...filtered].sort((a, b) => {
-      const aFav = favorites.includes(a.id);
-      const bFav = favorites.includes(b.id);
-      if (aFav && !bFav) return -1;
-      if (!aFav && bFav) return 1;
-      return 0;
-    });
-  }, [searchQuery, favorites]);
 
-  const handleTrackToggle = useCallback((id, startPlaying) => {
-    setPlayingTracks((prev) =>
-      startPlaying ? [...prev, id].slice(-2) : prev.filter((t) => t !== id),
-    );
-  }, []);
+    if (sortOption === "favorites") {
+      return [...filtered].sort((a, b) => {
+        const aFav = favorites.includes(a.id);
+        const bFav = favorites.includes(b.id);
+        if (aFav && !bFav) return -1;
+        if (!aFav && bFav) return 1;
+        return 0;
+      });
+    } else if (sortOption === "name") {
+      return [...filtered].sort((a, b) => a.text.localeCompare(b.text));
+    } else if (sortOption === "duration") {
+      return [...filtered].sort((a, b) => (a.duration || 0) - (b.duration || 0));
+    }
+    return filtered;
+  }, [searchQuery, favorites, sortOption]);
+
+  const handleTrackEnd = (id) => {
+    if (isShuffle) {
+      const remaining = processedCards.filter((c) => c.id !== id);
+      if (remaining.length > 0) {
+        const randomIndex = Math.floor(Math.random() * remaining.length);
+        setActiveTrackId(remaining[randomIndex].id);
+      } else {
+        setActiveTrackId(null);
+      }
+      return;
+    }
+    const currentIndex = processedCards.findIndex((c) => c.id === id);
+    if (currentIndex !== -1 && currentIndex < processedCards.length - 1) {
+      setActiveTrackId(processedCards[currentIndex + 1].id);
+    } else {
+      setActiveTrackId(null);
+    }
+  };
+
+  const handlePlayAll = () => {
+    if (processedCards.length > 0) {
+      if (isShuffle) {
+        const randomIndex = Math.floor(Math.random() * processedCards.length);
+        setActiveTrackId(processedCards[randomIndex].id);
+      } else {
+        setActiveTrackId(processedCards[0].id);
+      }
+    }
+  };
 
   return (
     <MusicPhotoDiv>
       <MusicPhotoText>Насолоджуйтеся музикою</MusicPhotoText>
 
-      <SearchInput
-        type="text"
-        placeholder="Пошук пісні за описом..."
-        value={searchQuery}
-        onChange={(e) => setSearchQuery(e.target.value)}
-      />
+      <ControlsContainer>
+        <SearchInput
+          type="text"
+          placeholder="Пошук пісні за описом..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
+        <SortSelect
+          value={sortOption}
+          onChange={(e) => setSortOption(e.target.value)}
+        >
+          <option value="favorites">Улюблені</option>
+          <option value="name">Назва</option>
+          <option value="duration">Тривалість</option>
+        </SortSelect>
+        <ShuffleButton
+          $active={isShuffle}
+          onClick={() => setIsShuffle(!isShuffle)}
+          title="Випадковий порядок"
+        >
+          🔀
+        </ShuffleButton>
+        <PlayAllButton onClick={handlePlayAll}>Грати все</PlayAllButton>
+      </ControlsContainer>
+
      <MusicPhotoFix>
   {processedCards.slice(0, visibleCount).map((card) => (
     <MusicCard
@@ -856,8 +1005,9 @@ const MusicPhoto = ({ user, onOpenRegister }) => {
       onToggleFavorite={handleToggleFavorite}
       onOpenModal={setModalData}
       onOpenRegister={onOpenRegister}
-      onTrackToggle={handleTrackToggle}
-      forcePause={!playingTracks.includes(card.id)}
+      activeTrackId={activeTrackId}
+      onPlay={setActiveTrackId}
+      onTrackEnd={handleTrackEnd}
     />
   ))}
 </MusicPhotoFix>
