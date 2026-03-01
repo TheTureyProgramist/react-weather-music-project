@@ -10,7 +10,7 @@ import soloveyko from "../../photos/vip-images/vip-soloveyko.jpg";
 import monody from "../../photos/vip-images/vip-forest.webp";
 import volcano from "../../photos/vip-images/fire.jpg";
 import flame from "../../photos/vip-images/flame.jpg";
-import dizel from "../../photos/vip-images/disel.jpg";
+import dizel from "../../photos/vip-images/dizel.webp";
 const FanArtDiv = styled.div`
   margin-top: 35px;
   @media (min-width: 768px) {
