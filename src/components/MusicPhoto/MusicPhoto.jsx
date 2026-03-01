@@ -780,14 +780,6 @@ const musicCards = [
     duration: 90,
   },
   {
-    id: 11,
-    image: require("../../photos/vip-images/dizel.webp"),
-    audio: require("../../mp3/dizel.mp3"),
-    text: "Пісня під питанням, бо на російській мові. Але вона, без політики + комедійна про Саню та Віку.",
-    lyrics: "Текст відсутній.",
-    duration: 210,
-  },
-  {
     id: 12,
     image: require("../../photos/vip-images/asium.jpg"),
     audio: require("../../mp3/harmonic-japan.mp3"),
