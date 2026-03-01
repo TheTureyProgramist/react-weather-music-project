@@ -32,8 +32,18 @@ const slideIn = keyframes`
   100% { transform: translateY(0%) scale(1); opacity: 1; }
 `;
 
+const slideInUltraLarge = keyframes`
+  0% { transform: translateY(100%) scale(0.5); opacity: 0; }
+  70% { transform: translateY(-5%) scale(2.3); opacity: 1; }
+  100% { transform: translateY(0%) scale(2.2); opacity: 1; }
+`;
+
 const slideOut = keyframes`
   0% { transform: translateY(0%) scale(1); opacity: 1; }
+  100% { transform: translateY(100%) scale(0.5); opacity: 0; }
+`;
+const slideOutUltraLarge = keyframes`
+  0% { transform: translateY(0%) scale(2.2); opacity: 1; }
   100% { transform: translateY(100%) scale(0.5); opacity: 0; }
 `;
 
@@ -80,7 +90,7 @@ const VipModalDiv = styled.div`
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
   border: 2px solid ${(props) => (props.$isUltra ? "#710097" : "#ffb36c")};
   overflow-y: auto;
-  overflow-x: hidden; 
+  overflow-x: hidden;
   transition: border-color 0.5s ease;
   animation: ${(props) => (props.$isClosing ? slideOut : slideIn)} 0.5s ease-out
     forwards;
@@ -89,8 +99,14 @@ const VipModalDiv = styled.div`
     padding: 10px;
     padding-top: 35px;
   }
-      @media (min-width: 1920px) {
-    
+
+  @media (min-width: 1900px) {
+    max-width: 430px;
+    max-height: 40vh;
+    animation: ${(props) =>
+        props.$isClosing ? slideOutUltraLarge : slideInUltraLarge}
+      0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    padding: 20px;
   }
 `;
 
@@ -107,10 +123,10 @@ const CloseButton = styled.button`
   &:hover {
     color: #fff;
   }
-   @media (max-width: 768px) {
-     top: 10px;
-     font-size: 19px;
-  right: 10px;
+  @media (max-width: 768px) {
+    top: 10px;
+    font-size: 19px;
+    right: 10px;
   }
 `;
 
@@ -277,7 +293,7 @@ const ImageContainer = styled.div`
   align-items: center;
   margin: 20px 0;
   z-index: 5;
-  
+
   @media (max-width: 768px) {
     width: 100%;
   }
@@ -286,79 +302,129 @@ const ImageContainer = styled.div`
     position: absolute;
     width: 400px;
     height: 400px;
-background: conic-gradient(
-  from 0deg,
-  transparent 0deg 8deg,
-  ${(props) => (props.$isUltra ? "rgba(122, 252, 255, 0.75)" : "rgba(255, 179, 108, 0.5)")} 8deg 18deg,
-  transparent 18deg 30deg,
-  ${(props) => (props.$isUltra ? "rgba(122, 252, 255, 0.75)" : "rgba(255, 179, 108, 0.5)")} 38deg 48deg,
-  transparent 48deg 60deg,
-  ${(props) => (props.$isUltra ? "rgba(122, 252, 255, 0.75)" : "rgba(255, 179, 108, 0.5)")} 68deg 78deg,
-  transparent 78deg 90deg,
-  ${(props) => (props.$isUltra ? "rgba(122, 252, 255, 0.75)" : "rgba(255, 179, 108, 0.5)")} 98deg 108deg,
-  transparent 108deg 120deg,
-  ${(props) => (props.$isUltra ? "rgba(122, 252, 255, 0.75)" : "rgba(255, 179, 108, 0.5)")} 128deg 138deg,
-  transparent 138deg 150deg,
-  ${(props) => (props.$isUltra ? "rgba(122, 252, 255, 0.75)" : "rgba(255, 179, 108, 0.5)")} 158deg 168deg,
-  transparent 168deg 180deg,
-  ${(props) => (props.$isUltra ? "rgba(122, 252, 255, 0.75)" : "rgba(255, 179, 108, 0.5)")} 188deg 198deg,
-  transparent 198deg 210deg,
-  ${(props) => (props.$isUltra ? "rgba(122, 252, 255, 0.75)" : "rgba(255, 179, 108, 0.5)")} 218deg 228deg,
-  transparent 228deg 240deg,
-  ${(props) => (props.$isUltra ? "rgba(122, 252, 255, 0.75)" : "rgba(255, 179, 108, 0.5)")} 248deg 258deg,
-  transparent 258deg 270deg,
-  ${(props) => (props.$isUltra ? "rgba(122, 252, 255, 0.75)" : "rgba(255, 179, 108, 0.5)")} 278deg 288deg,
-  transparent 288deg 300deg,
-  ${(props) => (props.$isUltra ? "rgba(122, 252, 255, 0.75)" : "rgba(255, 179, 108, 0.5)")} 308deg 318deg,
-  transparent 318deg 330deg,
-  ${(props) => (props.$isUltra ? "rgba(122, 252, 255, 0.75)" : "rgba(255, 179, 108, 0.5)")} 338deg 348deg,
-  transparent 348deg 360deg
-);
+    background: conic-gradient(
+      from 0deg,
+      transparent 0deg 8deg,
+      ${(props) =>
+          props.$isUltra
+            ? "rgba(122, 252, 255, 0.75)"
+            : "rgba(255, 179, 108, 0.5)"}
+        8deg 18deg,
+      transparent 18deg 30deg,
+      ${(props) =>
+          props.$isUltra
+            ? "rgba(122, 252, 255, 0.75)"
+            : "rgba(255, 179, 108, 0.5)"}
+        38deg 48deg,
+      transparent 48deg 60deg,
+      ${(props) =>
+          props.$isUltra
+            ? "rgba(122, 252, 255, 0.75)"
+            : "rgba(255, 179, 108, 0.5)"}
+        68deg 78deg,
+      transparent 78deg 90deg,
+      ${(props) =>
+          props.$isUltra
+            ? "rgba(122, 252, 255, 0.75)"
+            : "rgba(255, 179, 108, 0.5)"}
+        98deg 108deg,
+      transparent 108deg 120deg,
+      ${(props) =>
+          props.$isUltra
+            ? "rgba(122, 252, 255, 0.75)"
+            : "rgba(255, 179, 108, 0.5)"}
+        128deg 138deg,
+      transparent 138deg 150deg,
+      ${(props) =>
+          props.$isUltra
+            ? "rgba(122, 252, 255, 0.75)"
+            : "rgba(255, 179, 108, 0.5)"}
+        158deg 168deg,
+      transparent 168deg 180deg,
+      ${(props) =>
+          props.$isUltra
+            ? "rgba(122, 252, 255, 0.75)"
+            : "rgba(255, 179, 108, 0.5)"}
+        188deg 198deg,
+      transparent 198deg 210deg,
+      ${(props) =>
+          props.$isUltra
+            ? "rgba(122, 252, 255, 0.75)"
+            : "rgba(255, 179, 108, 0.5)"}
+        218deg 228deg,
+      transparent 228deg 240deg,
+      ${(props) =>
+          props.$isUltra
+            ? "rgba(122, 252, 255, 0.75)"
+            : "rgba(255, 179, 108, 0.5)"}
+        248deg 258deg,
+      transparent 258deg 270deg,
+      ${(props) =>
+          props.$isUltra
+            ? "rgba(122, 252, 255, 0.75)"
+            : "rgba(255, 179, 108, 0.5)"}
+        278deg 288deg,
+      transparent 288deg 300deg,
+      ${(props) =>
+          props.$isUltra
+            ? "rgba(122, 252, 255, 0.75)"
+            : "rgba(255, 179, 108, 0.5)"}
+        308deg 318deg,
+      transparent 318deg 330deg,
+      ${(props) =>
+          props.$isUltra
+            ? "rgba(122, 252, 255, 0.75)"
+            : "rgba(255, 179, 108, 0.5)"}
+        338deg 348deg,
+      transparent 348deg 360deg
+    );
     animation: ${rotateRays} 20s linear infinite;
-    z-index: -1; 
+    z-index: -1;
     pointer-events: none;
-    mask-image: radial-gradient(circle, black 20%, transparent 70%); 
+    mask-image: radial-gradient(circle, black 20%, transparent 70%);
   }
-  ${(props) => props.$isUltra && css`
-    &::after {
-      content: "";
-      position: absolute;
-      width: 400px;
-      height: 400px;
-background: conic-gradient(
-  from 0deg,
-  transparent 0deg 8deg,
-  rgba(139, 0, 255, 0.8) 8deg 18deg,
-  transparent 20deg 28deg,
-  rgba(139, 0, 255, 0.8) 28deg 37deg, 
-  transparent 37deg 50deg,
-  rgba(139, 0, 255, 0.8) 58deg 67deg,
-  transparent 67deg 80deg,
-  rgba(139, 0, 255, 0.8) 88deg 97deg,
-  transparent 97deg 110deg,
-  rgba(139, 0, 255, 0.8) 118deg 127deg,
-  transparent 127deg 140deg,
-  rgba(139, 0, 255, 0.8) 148deg 157deg,
-  transparent 157deg 170deg,
-  rgba(139, 0, 255, 0.8) 178deg 187deg,
-  transparent 187deg 200deg,
-  rgba(139, 0, 255, 0.8) 208deg 217deg,
-  transparent 217deg 230deg,
-  rgba(139, 0, 255, 0.8) 238deg 247deg,
-  transparent 247deg 260deg,
-  rgba(139, 0, 255, 0.8) 268deg 277deg,
-  transparent 277deg 290deg,
-  rgba(139, 0, 255, 0.8) 298deg 307deg,
-  transparent 307deg 320deg,
-  rgba(139, 0, 255, 0.8) 328deg 337deg,
-  transparent 337deg 350deg
-);
-      animation: ${rotateRaysReverse} 25s linear infinite;
-      z-index: -1; 
-      pointer-events: none;
-      mask-image: radial-gradient(circle, black 20%, transparent 70%); 
-    }
-  `}
+  ${(props) =>
+    props.$isUltra &&
+    css`
+      &::after {
+        content: "";
+        position: absolute;
+        width: 400px;
+        height: 400px;
+        background: conic-gradient(
+          from 0deg,
+          transparent 0deg 8deg,
+          rgba(139, 0, 255, 0.8) 8deg 18deg,
+          transparent 20deg 28deg,
+          rgba(139, 0, 255, 0.8) 28deg 37deg,
+          transparent 37deg 50deg,
+          rgba(139, 0, 255, 0.8) 58deg 67deg,
+          transparent 67deg 80deg,
+          rgba(139, 0, 255, 0.8) 88deg 97deg,
+          transparent 97deg 110deg,
+          rgba(139, 0, 255, 0.8) 118deg 127deg,
+          transparent 127deg 140deg,
+          rgba(139, 0, 255, 0.8) 148deg 157deg,
+          transparent 157deg 170deg,
+          rgba(139, 0, 255, 0.8) 178deg 187deg,
+          transparent 187deg 200deg,
+          rgba(139, 0, 255, 0.8) 208deg 217deg,
+          transparent 217deg 230deg,
+          rgba(139, 0, 255, 0.8) 238deg 247deg,
+          transparent 247deg 260deg,
+          rgba(139, 0, 255, 0.8) 268deg 277deg,
+          transparent 277deg 290deg,
+          rgba(139, 0, 255, 0.8) 298deg 307deg,
+          transparent 307deg 320deg,
+          rgba(139, 0, 255, 0.8) 328deg 337deg,
+          transparent 337deg 350deg
+        );
+        animation: ${rotateRaysReverse} 25s linear infinite;
+        z-index: -1;
+        pointer-events: none;
+        mask-image: radial-gradient(circle, black 20%, transparent 70%);
+      }
+    `}
 `;
 
 const VipImage = styled.img`
@@ -369,7 +435,7 @@ const VipImage = styled.img`
   border: 1px solid ${(props) => (props.$isUltra ? "#710097" : "#ffb36c")};
   position: relative;
   z-index: 2;
-  box-shadow: 0 0 20px rgba(0,0,0,0.7);
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.7);
 `;
 
 const VipButton = styled.button`
@@ -446,7 +512,10 @@ const VipModal = ({ onClose }) => {
       { src: lebid, text: "2 (не 1) зображення/міс по 4,99грн, далі 6,99грн." },
       { src: clip, text: "Відео 65грн/с (замість 75грн/с)." },
       { src: music, text: "mp3 4грн/хв, не 6грн/хв." },
-      { src: puzzle2, text: "Пам'ять на 33дні, не на 21добу! Ліміт історії запитів 70, не 50. Ліміт паралельних чатів спілкування 5, не 3." },
+      {
+        src: puzzle2,
+        text: "Пам'ять на 33дні, не на 21добу! Ліміт історії запитів 70, не 50. Ліміт паралельних чатів спілкування 5, не 3.",
+      },
     ],
     music: [
       {
@@ -457,8 +526,14 @@ const VipModal = ({ onClose }) => {
         src: asium,
         text: "Можна взяти в обране 8 пісень, а не 4! І на 50% дешевше(5, не 2 безкоштовних кріплень, та 3(не 1) за 🧧)!А також поділ(необране, напівобране, обране). Назавжди!",
       },
-      { src: dinofroz, text: "Пісні доступні без інтернету, збоку від кнопки автоповтору(треба час, можна видалити потім). Назавжди!" },
-      { src: horrordog, text: "Промотувачі 10с вперед/назад для муз. карток. Натискайте на зображення для цієї механіки. Назавжди!" },
+      {
+        src: dinofroz,
+        text: "Пісні доступні без інтернету, збоку від кнопки автоповтору(треба час, можна видалити потім). Назавжди!",
+      },
+      {
+        src: horrordog,
+        text: "Промотувачі 10с вперед/назад для муз. карток. Натискайте на зображення для цієї механіки. Назавжди!",
+      },
       {
         src: letters,
         text: "Ціни на аватари, рамки та райдужний текст менш спонтанні 20-30🧧, не 20-40🧧.",
@@ -506,7 +581,10 @@ const VipModal = ({ onClose }) => {
       { src: lebid, text: "3 зображення/міс по 3,99грн, далі 5,99грн." },
       { src: clip, text: "Відео 45грн/с." },
       { src: music, text: "mp3 2грн/хв." },
-      { src: puzzle2, text: "Пам'ять на 42доби! Пам'ять запитів 100. Ліміт паралельних чатів 7." },
+      {
+        src: puzzle2,
+        text: "Пам'ять на 42доби! Пам'ять запитів 100. Ліміт паралельних чатів 7.",
+      },
     ],
     music: [
       {
@@ -517,7 +595,10 @@ const VipModal = ({ onClose }) => {
         src: asium,
         text: "Можна взяти в обране 12 пісень. І на 50% дешевше(8 безкоштовних кріплень, та 4 за 🧧)! Назавжди!",
       },
-      { src: horrordog, text: "Потужність часу промотувача можна регулювати вище кнопки автоповтору(5-25с)! Назавжди!" },
+      {
+        src: horrordog,
+        text: "Потужність часу промотувача можна регулювати вище кнопки автоповтору(5-25с)! Назавжди!",
+      },
       {
         src: letters,
         text: "Ціни на аватари, рамки та райдужний текст менш спонтанні 20-25🧧",
@@ -528,7 +609,10 @@ const VipModal = ({ onClose }) => {
       },
     ],
     system: [
-      { src: vip, text: "Оновлений стиль сайту (з перемикачем лого). Назавжди!" },
+      {
+        src: vip,
+        text: "Оновлений стиль сайту (з перемикачем лого). Назавжди!",
+      },
       {
         src: dragons,
         text: "Знижка 50% у магазині 🧧. Сплата тарифу переодоплатою(разово) та місячним тарифом дає 100🧧. Ліміт покупок наборів 🧧*3. Можна зберігати 10000🧧. Шанс 50% на джекпот(Ціна збільшена на 20🧧).",
@@ -568,10 +652,45 @@ const VipModal = ({ onClose }) => {
           </AnimatedText>
         </HeaderToggle>
 
- <SwitchBackText onClick={() => handleTierSwitch(tier === "plus" ? "ultra" : "plus")}>
-  {tier === "plus" ? "Переглянути переваги Стихія+ Ultra" : "Повернутись до переваг Стихія+"}
-</SwitchBackText>
+        <SwitchBackText
+          onClick={() => handleTierSwitch(tier === "plus" ? "ultra" : "plus")}
+        >
+          {tier === "plus"
+            ? "Переглянути переваги Стихія+ Ultra"
+            : "Повернутись до переваг Стихія+"}
+        </SwitchBackText>
         <VipBlock>
+                    <div
+            style={{
+              display: "flex",
+              gap: "6px",
+              flexDirection: "column",
+              alignItems: "center",
+            }}
+          >
+            <ImageContainer $isUltra={tier === "ultra"}>
+              <VipImage
+                src={tier === "plus" ? turkeys : ultra}
+                key={`img-${tier}`}
+                $isUltra={tier === "ultra"}
+              />
+            </ImageContainer>
+
+            {tier === "plus" ? (
+              <>
+                <VipButton>4,99грн/місяць(30дн)</VipButton>
+              </>
+            ) : (
+              <>
+                <VipButton>9,99грн/фортнайт(14дн)</VipButton>
+              </>
+            )}
+            <VipText>
+              Друзі, набори 🧧 та підписки, допомагають як і мотиваційно, так і
+              в плані утримування Стихії, ціни на підписки низькі, для
+              мотивації, кожен це може зробити і нічого не втратить.
+            </VipText>
+          </div>
           <VipFixScroll key={`scroll-area-${tier}`}>
             {showContent && (
               <>
@@ -591,50 +710,27 @@ const VipModal = ({ onClose }) => {
                   </BenefitCard>
                 ))}
                 <SectionTitle $delay="0.5s">Система</SectionTitle>
-{current.system.map((item, i) => (
-  <BenefitCard key={`sys-${tier}-${i}`} $index={i + 10}>
-    <BenefitImage src={item.src} />
-    <VipBonus>{item.text}</VipBonus>
-  </BenefitCard>
-))}
+                {current.system.map((item, i) => (
+                  <BenefitCard key={`sys-${tier}-${i}`} $index={i + 10}>
+                    <BenefitImage src={item.src} />
+                    <VipBonus>{item.text}</VipBonus>
+                  </BenefitCard>
+                ))}
               </>
             )}
           </VipFixScroll>
-
-          <div style={{ display: "flex", gap: "6px", flexDirection: "column", alignItems: "center" }}>
-            <ImageContainer $isUltra={tier === "ultra"}>
-              <VipImage
-                src={tier === "plus" ? turkeys : ultra}
-                key={`img-${tier}`}
-                $isUltra={tier === "ultra"}
-              />
-            </ImageContainer>
-
-            {tier === "plus" ? (
-              <>
-                <VipButton>4,99грн/місяць(30дн)</VipButton>
-              </>
-            ) : (
-              <>
-                <VipButton>9,99грн/фортнайт(14дн)</VipButton>
-              </>
-            )}
-                <VipText>
-              Друзі, набори 🧧 та підписки, допомагають як і мотиваційно, так і в плані утримування Стихії, ціни на підписки низькі, для мотивації, кожен це може зробити і нічого не втратить.
-            </VipText>
-          </div>
         </VipBlock>
         <RedLine />
         <VipWarning>
-          Примітка: 1.Mісячний тариф перемикається автоматично!
+          Примітка: 1.Mісячний тариф перемикається автоматично! 
+          Деякі функції в розробці.
         </VipWarning>
         <VipWarning>
-          Примітка: 2.Ціни не будуть змінюватись, якщо економічний стан не
-          зміниться. І коли підписка закінчиться привілегії(не всі) зникнуть.
+          Примітка: 2.Ціни змінюються, в залежності від скономічного стану. Коли підписка закінчиться привілегії(не всі) зникнуть.
         </VipWarning>
         <VipWarning>
           Примітка: 3.Переваги Стихії+ оптимізовані в Стихія+ Ultrа, ті що не
-          були вказані в Стихія+ Ultra(присутні, але ті самі як в Стихія+.).  Деякі функції в розробці.
+          були вказані в Стихія+ Ultra(присутні, але ті самі як в Стихія+.).
         </VipWarning>
       </VipModalDiv>
     </Overlay>

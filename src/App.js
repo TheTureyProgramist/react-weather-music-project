@@ -95,6 +95,9 @@ const LoaderContent = styled.div`
   @media screen and (min-width: 769px) {
     align-items: center;
   }
+  @media (min-width: 1920px) {
+    max-width: 1400px;
+  }
 `;
 
 const LoaderImage = styled.img`
@@ -188,6 +191,10 @@ const LoaderText = styled.p`
   @media (max-width: 600px) {
     margin-top: 10px;
   }
+  @media (min-width: 1920px) {
+    font-size: 20px;
+    margin-top: 20px;
+  }
 `;
 
 const ThemeWrapper = styled.div`
@@ -205,6 +212,9 @@ const WeatherCardsContainer = styled.div`
   gap: 20px;
   justify-content: center;
   margin: 30px 0;
+  @media (min-width: 1920px) {
+    gap: 40px;
+  }
 `;
 
 const WeatherCard = styled.div`
@@ -216,6 +226,13 @@ const WeatherCard = styled.div`
   max-width: 320px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
   border: ${(props) => (props.$isMain ? "2px solid gold" : "1px solid #444")};
+  @media (min-width: 1920px) {
+    max-width: 460px;
+    padding: 30px;
+    h1 { font-size: 3rem !important; }
+    p, div, span { font-size: 16px !important; }
+    h3 { font-size: 1.5rem !important; }
+  }
 `;
 
 const CardHeader = styled.div`
@@ -247,6 +264,12 @@ const ActionButtons = styled.div`
       background: #555;
     }
   }
+  @media (min-width: 1920px) {
+    button {
+      font-size: 16px;
+      padding: 8px 16px;
+    }
+  }
 `;
 
 const ImagePlaceholder = styled.div`
@@ -262,6 +285,11 @@ const ImagePlaceholder = styled.div`
   color: #fff;
   text-align: center;
   margin: ${(props) => props.margin || "0"};
+  @media (min-width: 1920px) {
+    transform: scale(1.3);
+    margin: 10px;
+    font-size: 36px !important;
+  }
 `;
 
 const LOADING_PHRASES = [
@@ -279,6 +307,34 @@ const LOADING_PHRASES = [
   "СлівкіШоу та Дизель шоу, це легенди.",
   "0 казино, 0 реклами, 0 політики.",
 ];
+
+const SettingsContainer = styled.div`
+  max-width: 1200px;
+  margin: 0 auto 20px auto;
+  background: #00ffd5;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 2px 8px #0001;
+  @media (min-width: 1920px) {
+    max-width: 1600px;
+    padding: 24px;
+    h4 { font-size: 22px !important; }
+    label, input, button, span { font-size: 18px !important; }
+  }
+`;
+
+const SectionOrderContainer = styled.div`
+  margin: 20px 0 30px 0;
+  background: #ff005d;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 2px 8px #0001;
+  @media (min-width: 1920px) {
+    padding: 24px;
+    h4 { font-size: 22px !important; }
+    span, button { font-size: 18px !important; }
+  }
+`;
 
 const App = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -628,7 +684,7 @@ const App = () => {
           />
 
           <div className="container">
-            <div style={{ maxWidth: 1200, margin: "0 auto 20px auto", background: "#00ffd5", borderRadius: 12, padding: 16, boxShadow: "0 2px 8px #0001" }}>
+            <SettingsContainer>
               <h4 style={{ fontWeight: 700, fontSize: 16, marginBottom: 10 }}>Налаштування підтвердження видалення картки погоди</h4>
               <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                 <label htmlFor="hideDeleteModalHours" style={{ fontWeight: 500 }}>Час приховування (1-72 год):</label>
@@ -659,8 +715,8 @@ const App = () => {
                   </span>
                 )}
               </div>
-            </div>
-            <div style={{ margin: "20px 0 30px 0", background: "#ff005d", borderRadius: 12, padding: 16, boxShadow: "0 2px 8px #0001" }}>
+            </SettingsContainer>
+            <SectionOrderContainer>
               <h4 style={{ fontWeight: 700, fontSize: 16, margin: "15px" }}>Порядок секцій сайту:</h4>
               {siteSections.map((section, idx) => (
                 <div key={section.key} style={{ display: "flex", alignItems: "center", marginBottom: 6 }}>
@@ -683,7 +739,7 @@ const App = () => {
                 style={{ marginTop: 10, padding: "6px 18px", borderRadius: "8px", border: "1px solid #aaa", background: "#ffe0b2", fontWeight: 600, cursor: "pointer" }}
                 onClick={resetSiteSections}
               >Скинути порядок</button>
-            </div>
+            </SectionOrderContainer>
             {siteSections.map((section) => {
               if (section.key === "weather") {
                 return (
