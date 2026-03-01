@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import hills from "../../photos/hero-header/hiils.jpg";
 import search from "../../photos/hero-header/search.webp";
@@ -34,6 +34,12 @@ const HeroDiv = styled.div`
     margin-bottom: 80px;
     margin-top: 80px;
   }
+  @media (min-width: 1920px) {
+    min-height: 1200px;
+    margin-top: 133px;
+    margin-bottom: 120px;
+    gap: 120px;
+  }
 `;
 
 const HeroText = styled.h2`
@@ -54,6 +60,11 @@ const HeroText = styled.h2`
     font-size: 19px;
     width: 395px;
   }
+  @media (min-width: 1920px) {
+    font-size: 34px;
+    width: 800px;
+    line-height: 1.4;
+  }
 `;
 
 const HeroFix = styled.div`
@@ -65,6 +76,9 @@ const HeroFix = styled.div`
 
   @media (min-width: 768px) {
     flex-direction: row;
+  }
+  @media (min-width: 1920px) {
+    gap: 100px;
   }
 `;
 
@@ -86,6 +100,10 @@ const HeroDate = styled.div`
     font-size: 19px;
     width: 395px;
   }
+  @media (min-width: 1920px) {
+    font-size: 34px;
+    width: 600px;
+  }
 `;
 
 const HeroLine = styled.div`
@@ -97,6 +115,10 @@ const HeroLine = styled.div`
     border-radius: 1px;
     display: flex;
     flex-shrink: 0;
+  }
+  @media (min-width: 1920px) {
+    height: 150px;
+    width: 4px;
   }
 `;
 
@@ -127,6 +149,11 @@ const HeroTitle = styled.h1`
     font-size: 20px;
     width: 650px;
   }
+  @media (min-width: 1920px) {
+    font-size: 42px;
+    width: 1400px;
+    line-height: 1.3;
+  }
 `;
 
 const HeroInput = styled.input`
@@ -147,6 +174,13 @@ const HeroInput = styled.input`
   @media (min-width: 1200px) {
     width: 629px;
     height: 42px;
+  }
+  @media (min-width: 1920px) {
+    width: 1000px;
+    height: 90px;
+    font-size: 32px;
+    padding-left: 60px;
+    border-radius: 20px 0 0 20px;
   }
 `;
 
@@ -173,6 +207,9 @@ const HeroBlue = styled.div`
   @media (min-width: 1200px) {
     font-size: 40px;
   }
+  @media (min-width: 1920px) {
+    font-size: 90px;
+  }
 `;
 const HeroYellow = styled.div`
   text-align: center;
@@ -186,6 +223,9 @@ const HeroYellow = styled.div`
   }
   @media (min-width: 1200px) {
     font-size: 40px;
+  }
+  @media (min-width: 1920px) {
+    font-size: 90px;
   }
 `;
 const HeroButton = styled.button`
@@ -237,6 +277,15 @@ const HeroButton = styled.button`
       font-size: 24px;
     }
   }
+  @media (min-width: 1920px) {
+    width: 95px;
+    height: 94px;
+    border-radius: 0 20px 20px 0;
+    border-width: 4px;
+    &::after {
+      font-size: 50px;
+    }
+  }
 `;
 const HeroTextLink = styled.a`
   color: #fff;
@@ -255,6 +304,11 @@ const HeroTextLink = styled.a`
   @media (min-width: 1200px) {
     font-size: 19px;
     width: 395px;
+  }
+  @media (min-width: 1920px) {
+    font-size: 30px;
+    width: 800px;
+    margin-top: 20px;
   }
 `;
 const HeroDecorsFix = styled.div`

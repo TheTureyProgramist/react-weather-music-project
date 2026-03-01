@@ -102,11 +102,11 @@ const ModalOverlay = styled.div`
 const ModalContent = styled.div`
   background: #093500;
   color: #2eb813;
-  padding: 7px;
-  border-radius: 15px;
+  padding: 15px;
+  border-radius: 20px;
   width: 95%;
-  max-width: 550px;
-  max-height: 85vh;
+  max-width: 750px;
+  max-height: 95vh;
   border: 2px solid #2eb813;
   position: relative;
   display: flex;
@@ -119,16 +119,20 @@ const ModalContent = styled.div`
       : css`
           ${slideIn} 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards
         `};
+  @media (min-width: 1920px) {
+    max-width: 1890px; 
+    padding: 10px;
+  }
 `;
 
 const ScrollContainer = styled.div`
   overflow-y: auto;
-  padding-right: 10px;
+  padding-right: 15px;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 25px;
   &::-webkit-scrollbar {
-    width: 6px;
+    width: 8px;
   }
   &::-webkit-scrollbar-track {
     background: #051a00;
@@ -145,7 +149,13 @@ const ScrollContainer = styled.div`
 const CategorySection = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
+  @media (min-width: 1920px) {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 20px;
+    align-items: start;
+  }
 `;
 
 const CategoryTitle = styled.div`
@@ -153,7 +163,7 @@ const CategoryTitle = styled.div`
   letter-spacing: 1.5px;
   color: #a2ff6c;
   border-bottom: 1px solid rgba(162, 255, 108, 0.3);
-  padding-bottom: 5px;
+  padding-bottom: 8px;
   margin-bottom: 5px;
   font-weight: 900;
   opacity: 0;
@@ -161,51 +171,76 @@ const CategoryTitle = styled.div`
   ${({ $delay }) => css`
     animation-delay: ${$delay || "0.2s"};
   `}
+  @media (min-width: 1920px) {
+    grid-column: 1 / -1; 
+    font-size: 34px;
+    margin-bottom: 10px;
+  }
 `;
+
 const AchivmentItem = styled.div`
   display: flex;
   align-items: center;
   background: rgba(162, 255, 108, 0.05);
-  border-radius: 12px;
-  padding: 6px;
+  border-radius: 14px;
+  padding: 10px;
   gap: 15px;
   border: ${(props) =>
     props.isSpecial ? "2px solid #ff0000" : "1px solid #a2ff6c"};
-  transition: transform 0.2s;
+  transition: all 0.2s ease-in-out;
   opacity: 0;
   animation: ${appearAndShrink} 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94)
     forwards;
   ${({ $index }) => css`
-    animation-delay: ${0.3 + $index * 0.1}s;
+    animation-delay: ${0.3 + $index * 0.05}s;
   `}
 
   &:hover {
-    background: rgba(162, 255, 108, 0.1);
-    transform: translateX(3px);
+    background: rgba(162, 255, 108, 0.15);
+    transform: translateX(5px) scale(1.01);
+    box-shadow: 0 0 15px rgba(46, 184, 19, 0.2);
+  }
+
+  @media (min-width: 1920px) {
+    padding: 15px;
+    min-height: 80px;
   }
 `;
 
 const AchivmentImagePlace = styled.img`
-  width: 50px;
+  width: 70px;
   height: 50px;
-  border-radius: 8px;
+  border-radius: 10px;
   object-fit: cover;
   border: 1px solid #2eb813;
   background: #051a00;
+
+  @media (min-width: 1900px) {
+    width: 95px;
+    height: 65px;
+  }
 `;
 
 const AchivmentName = styled.h3`
   margin: 0;
   font-size: 15px;
   color: #ffb36c;
+
+  @media (min-width: 1900px) {
+    font-size: 26px;
+  }
 `;
 
 const AchivmentGoal = styled.p`
-  margin: 3px 0 0;
-  font-size: 11px;
-  line-height: 1.3;
+  margin: 4px 0 0;
+  font-size: 13px;
+  line-height: 1.4;
   opacity: 0.8;
   color: ${(props) => (props.isBlue ? "#00a2ff" : "#a2ff6c")};
+
+  @media (min-width: 1900px) {
+    font-size: 23px;
+  }
 `;
 
 const RewardField = styled.div`
@@ -221,26 +256,48 @@ const RewardField = styled.div`
   border: 1px dashed #ffb36c;
   color: #ffb36c;
   flex-shrink: 0;
+
+  @media (min-width: 1900px) {
+    width: 80px;
+    height: 45px;
+    font-size: 15px;
+    border-radius: 10px;
+  }
 `;
 
 const CloseButton = styled.button`
   position: absolute;
-  top: 6px;
-  right: 6px;
+  top: 10px;
+  right: 15px;
   background: transparent;
   border: none;
-  font-size: 16px;
+  font-size: 24px;
   cursor: pointer;
   color: #2eb813;
   z-index: 10;
+  transition: all 0.3s;
   &:hover {
     color: #a2ff6c;
-    transform: rotate(90deg);
+    transform: rotate(90deg) scale(1.2);
   }
-       @media (max-width: 768px) {
-     top: 10px;
-     font-size: 19px;
-  right: 10px;
+
+  @media (min-width: 1900px) {
+    top: 20px;
+    right: 25px;
+    font-size: 32px;
+  }
+`;
+
+const MainTitle = styled.h2`
+  text-align: center;
+  margin-bottom: 25px;
+  font-size: 22px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+
+  @media (min-width: 1900px) {
+    font-size: 32px;
+    margin-bottom: 35px;
   }
 `;
 
@@ -393,7 +450,7 @@ const AchivmentsModal = ({ onClose }) => {
           reward: "27 🧧",
           img: text,
         },
-                {
+        {
           name: "Lorem impusm",
           goal: "Перейдіть на сайт де ми взяли новину!",
           reward: "27 🧧",
@@ -411,25 +468,25 @@ const AchivmentsModal = ({ onClose }) => {
           reward: "20 🧧",
           img: password,
         },
-                {
+        {
           name: "Черепаха",
           goal: "Ціль: ввімкніть пісню на мінімальній швидкості",
           reward: "22 🧧",
           img: puzzle1,
         },
-                {
+        {
           name: "Блискавка",
           goal: "Ціль: ввімкніть пісню на максимальній швидкості.",
           reward: "22 🧧",
           img: puzzle1,
         },
-          {
+        {
           name: "Мовчанка",
           goal: "Ціль: ввімкніть пісню на 0% звуку.",
           reward: "22 🧧",
           img: puzzle1,
         },
-         {
+        {
           name: "Ненавиджу казино!",
           goal: "Ціль: Пропишіть в розділі ім'я та пізвище: ненавиджу казино.",
           reward: "20 🧧",
@@ -559,7 +616,7 @@ const AchivmentsModal = ({ onClose }) => {
           reward: "34 🧧",
           img: macduck,
         },
-                {
+        {
           name: "Світ навиворіт",
           goal: "Ціль: Розмістіть елемнти налаштувань та сайт сайту по порядку навиворіт!",
           reward: "34 🧧",
@@ -582,13 +639,12 @@ const AchivmentsModal = ({ onClose }) => {
       ],
     },
   ];
+
   return (
     <ModalOverlay isClosing={isClosing} onClick={handleClose}>
       <ModalContent isClosing={isClosing} onClick={(e) => e.stopPropagation()}>
         <CloseButton onClick={handleClose}>&times;</CloseButton>
-        <h2 style={{ textAlign: "center", marginBottom: "20px" }}>
-          Досягнення
-        </h2>
+        <MainTitle>Досягнення</MainTitle>
         <ScrollContainer>
           {categories.map((cat, idx) => (
             <CategorySection key={idx}>

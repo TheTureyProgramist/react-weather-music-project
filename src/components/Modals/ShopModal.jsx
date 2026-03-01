@@ -3,6 +3,7 @@ import styled, { keyframes } from "styled-components";
 import time from "../../photos/vip-images/mechannic.jpg";
 import dinofroz from "../../photos/vip-images/vip-dinofroz.webp";
 import turkeys from "../../photos/vip-images/collectors-edition.jpg";
+
 const slideIn = keyframes`
   0% { transform: translateY(100%) scale(0.5); opacity: 0; }
   100% { transform: translateY(0%) scale(1); opacity: 1; }
@@ -46,7 +47,7 @@ const ShopContainer = styled.div`
   width: 90%;
   max-width: 850px;
   max-height: 90vh;
-  padding: 10px;
+  padding: 15px;
   border-radius: 20px;
   position: relative;
   border: 2px solid #ff6c6c;
@@ -55,32 +56,43 @@ const ShopContainer = styled.div`
     forwards;
 
   &::-webkit-scrollbar {
-    width: 6px;
+    width: 8px;
   }
   &::-webkit-scrollbar-thumb {
     background: #ff6c6c;
     border-radius: 10px;
   }
+
+  /* Оптимізація для 1920x1080 */
+  @media (min-width: 1900px) {
+    max-width: 1300px;
+    padding: 30px;
+  }
 `;
 
 const CloseButton = styled.button`
   position: absolute;
-  top: 5px;
-  right: 5px;
+  top: 10px;
+  right: 15px;
   background: transparent;
   border: none;
   color: #ff6c6c;
-  font-size: 32px;
+  font-size: 36px;
   cursor: pointer;
   transition: 0.3s;
   &:hover {
-    transform: scale(1.1);
+    transform: scale(1.1) rotate(90deg);
     color: #fff;
   }
-   @media (max-width: 768px) {
-     top: 10px;
-     font-size: 19px;
-  right: 10px;
+  @media (max-width: 768px) {
+    top: 10px;
+    font-size: 19px;
+    right: 10px;
+  }
+  @media (min-width: 1900px) {
+    font-size: 45px;
+    top: 20px;
+    right: 25px;
   }
 `;
 
@@ -88,7 +100,14 @@ const ShopTitle = styled.h2`
   text-align: center;
   color: #ff6c6c;
   letter-spacing: 2px;
-  margin-bottom: 15px;
+  margin-bottom: 20px;
+  font-size: 24px;
+
+  @media (min-width: 1900px) {
+    font-size: 36px;
+    margin-bottom: 40px;
+    letter-spacing: 5px;
+  }
 `;
 
 const Badge = styled.div`
@@ -97,20 +116,29 @@ const Badge = styled.div`
   right: -10px;
   background: linear-gradient(135deg, #ffb36c 0%, #ff6c6c 100%);
   color: #3a1a1a;
-  padding: 3px 6px;
+  padding: 5px 10px;
   border-radius: 8px;
   font-size: 10px;
   font-weight: 900;
   z-index: 10;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+
+  @media (min-width: 1900px) {
+    font-size: 13px;
+    padding: 6px 12px;
+  }
 `;
 
 const PackGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
+  gap: 15px;
   @media (max-width: 650px) {
     grid-template-columns: 1fr;
+  }
+  @media (min-width: 1900px) {
+    gap: 30px;
+    margin-bottom: 40px;
   }
 `;
 
@@ -119,55 +147,73 @@ const PackCard = styled.div`
   background: ${(props) =>
     props.$isSpecial ? "rgba(255, 108, 108, 0.2)" : "rgba(255, 108, 108, 0.1)"};
   border: 1px solid #ff6c6c;
-  border-radius: 12px;
-  padding: 10px;
+  border-radius: 15px;
+  padding: 15px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 15px;
   animation: ${(props) => (props.$isSpecial ? pulse : "none")} 2s infinite;
   transition: 0.3s;
   &:hover {
-    transform: translateY(-5px);
+    transform: translateY(-8px);
     background: rgba(255, 108, 108, 0.25);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
+  }
+
+  @media (min-width: 1900px) {
+    padding: 25px;
+    gap: 20px;
   }
 `;
 
 const PackInfo = styled.div`
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 12px;
 `;
 
 const PackImageFrame = styled.img`
-  width: 50px;
-  height: 50px;
-  border-radius: 8px;
+  width: 60px;
+  height: 60px;
+  border-radius: 10px;
   object-fit: cover;
   border: 1px solid rgba(255, 108, 108, 0.4);
+
+  @media (min-width: 1900px) {
+    width: 90px;
+    height: 90px;
+  }
 `;
 
 const PackContent = styled.div`
   display: flex;
-  gap: 10px;
+  flex-direction: column;
+  gap: 5px;
 `;
 
 const PackLabel = styled.div`
   font-size: 15px;
   color: #ff6c6c;
   font-weight: 900;
+  @media (min-width: 1900px) {
+    font-size: 20px;
+  }
 `;
 
 const PackName = styled.div`
   font-weight: bold;
-  font-size: 16px;
+  font-size: 18px;
+  @media (min-width: 1900px) {
+    font-size: 24px;
+  }
 `;
 
 const BuyButton = styled.button`
   width: 100%;
-  padding: 8px;
+  padding: 12px;
   background: #ff6c6c;
   border: none;
-  border-radius: 8px;
+  border-radius: 10px;
   color: white;
   font-weight: bold;
   cursor: pointer;
@@ -178,64 +224,107 @@ const BuyButton = styled.button`
 
   .old-price {
     text-decoration: line-through;
-    font-size: 10px;
-    opacity: 0.7;
+    font-size: 11px;
+    opacity: 0.8;
   }
+
+  span {
+    font-size: 14px;
+  }
+
+  &:hover {
+    background: #ff8585;
+  }
+
   &:active {
     transform: scale(0.95);
   }
+
+  @media (min-width: 1900px) {
+    padding: 18px;
+    span { font-size: 18px; }
+    .old-price { font-size: 13px; }
+  }
 `;
+
 const InfoSection = styled.div`
-  margin-top: 10px;
-  padding: 10px;
+  margin-top: 20px;
+  padding: 20px;
   background: rgba(0, 0, 0, 0.3);
   border-radius: 15px;
   border: 1px dashed #ff6c6c;
+
+  @media (min-width: 1900px) {
+    margin-top: 40px;
+    padding: 30px;
+  }
 `;
+
 const InfoTitle = styled.h3`
   color: #ff6c6c;
   font-size: 18px;
   margin-bottom: 15px;
   border-bottom: 1px solid rgba(255, 108, 108, 0.2);
-  padding-bottom: 8px;
+  padding-bottom: 10px;
   display: flex;
   align-items: center;
   gap: 10px;
+
+  @media (min-width: 1900px) {
+    font-size: 24px;
+    margin-bottom: 25px;
+  }
 `;
+
 const InfoGrid = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 20px;
+  gap: 25px;
   @media (max-width: 768px) {
     grid-template-columns: 1fr;
   }
+  @media (min-width: 1900px) {
+    gap: 50px;
+  }
 `;
+
 const InfoList = styled.ul`
   list-style: none;
   padding: 0;
   margin: 0;
 `;
+
 const InfoItem = styled.li`
   font-size: 13px;
-  margin-bottom: 12px;
+  margin-bottom: 15px;
   color: #e0e0e0;
   display: flex;
   justify-content: space-between;
   gap: 15px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-  padding-bottom: 8px;
+  padding-bottom: 10px;
+  line-height: 1.5;
+
   .price {
     color: #ff6c6c;
     font-weight: bold;
     background: rgba(255, 108, 108, 0.1);
-    padding: 2px 6px;
-    border-radius: 4px;
+    padding: 4px 10px;
+    border-radius: 6px;
     white-space: nowrap;
+    align-self: flex-start;
+  }
+
+  @media (min-width: 1900px) {
+    font-size: 16px;
+    margin-bottom: 20px;
+    .price { font-size: 15px; }
   }
 `;
+
 const RainbowSpan = styled.span`
   font-weight: bold;
-  font-size: 9.3px;
+  font-size: inherit;
   background: linear-gradient(
     to right,
     #ff7eb3,
@@ -251,6 +340,7 @@ const RainbowSpan = styled.span`
   background-clip: text;
   animation: ${rainbowText} 3s linear infinite;
 `;
+
 const ShopModal = ({ onClose }) => {
   const [isClosing, setIsClosing] = useState(false);
   const handleClose = () => {
@@ -322,7 +412,7 @@ const ShopModal = ({ onClose }) => {
                 </InfoItem>
                 <InfoItem>
                   <span>
-                    Створення, оновлення, видалення погодної картки(окремо за
+                    Створення, видалення погодної картки(окремо за
                     кожний процес). Доступ до JPS/доба 
                   </span>
                   <span className="price">2 🧧</span>
@@ -394,10 +484,11 @@ const ShopModal = ({ onClose }) => {
         <div
           style={{
             textAlign: "center",
-            marginTop: "10px",
-            fontSize: "11px",
+            marginTop: "20px",
+            fontSize: "12px",
             color: "#ff5e5e",
             fontStyle: "italic",
+            lineHeight: "1.6",
             opacity: 0.9,
           }}
         >
@@ -409,4 +500,5 @@ const ShopModal = ({ onClose }) => {
     </Overlay>
   );
 };
+
 export default ShopModal;

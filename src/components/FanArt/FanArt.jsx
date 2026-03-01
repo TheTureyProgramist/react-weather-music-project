@@ -1,5 +1,5 @@
+import React, { useState } from "react";
 import styled from "styled-components";
-// import { useState } from "react";
 import turkeys from "../../photos/vip-images/ultra-vip-turkeys.webp";
 import dragons from "../../photos/vip-images/vip-dragons.jpg";
 import horse from "../../photos/vip-images/horse.jpg";
@@ -13,6 +13,9 @@ import flame from "../../photos/vip-images/flame.jpg";
 import dizel from "../../photos/vip-images/dizel.webp";
 const FanArtDiv = styled.div`
   margin-top: 35px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   @media (min-width: 768px) {
     margin-top: 50px;
   }
@@ -20,7 +23,6 @@ const FanArtDiv = styled.div`
     margin-top: 80px;
   }
 `;
-
 const FanArtTitle = styled.div`
   font-size: 14px;
   text-align: center;
@@ -36,76 +38,89 @@ const FanArtTitle = styled.div`
     font-size: 30px;
     margin-bottom: 80px;
   }
+  @media (min-width: 1920px) {
+    font-size: 45px;
+    margin-bottom: 100px;
+  }
 `;
 const FanBlock = styled.div`
   display: flex;
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
+  flex-wrap: wrap;
+  justify-content: center;
   gap: 15px;
-  padding: 10px 10px 20px 10px;
-  &::-webkit-scrollbar {
-    height: 8px;
-    display: block;
-  }
-  &::-webkit-scrollbar-track {
-    background: rgba(128, 0, 128, 0.1);
-    border-radius: 10px;
-  }
-  &::-webkit-scrollbar-thumb {
-    background: #8a2be2;
-    border-radius: 10px;
-    border: 2px solid transparent;
-  }
-  &::-webkit-scrollbar-thumb:hover {
-    background: #7b1fa2;
-  }
-  scrollbar-width: auto;
-  scrollbar-color: #8a2be2 rgba(128, 0, 128, 0.1);
-`;
+  padding: 10px;
+  width: 100%;
+  max-width: 100%;
 
+  @media (min-width: 1920px) {
+    gap: 30px;
+  }
+`;
 const BenefitImage = styled.img`
-  flex: 0 0 85%;
-  width: 85%;
-  scroll-snap-align: center;
+  width: 140px;
   border-radius: 15px;
   object-fit: cover;
   height: auto;
   cursor: pointer;
-  transition:
-    transform 0.3s ease,
-    opacity 0.3s ease;
-
+  transition: transform 0.3s ease, opacity 0.3s ease;
   &:hover {
     transform: scale(1.05);
     opacity: 0.9;
   }
-
   @media (min-width: 768px) {
-    flex: 0 0 45%;
-    width: 45%;
-    height: auto;
+    width: 210px; 
   }
-
   @media (min-width: 1200px) {
-    flex: 0 0 30%;
-    width: 20%;
-    height: auto;
+    width: 270px; 
+  }
+  @media (min-width: 1920px) {
+    width: 310px; 
+    border-radius: 25px;
   }
 `;
+
+const LoadMoreButton = styled.button`
+  margin-top: 30px;
+  background: #ffb36c;
+  color: black;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 14px;
+  font-size: 14px;
+  font-family: var(--font-family);
+  transition: background 0.2s, transform 0.2s;
+
+  &:hover {
+    background: #ffa04d;
+    transform: translateY(-2px);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  @media (min-width: 1920px) {
+    padding: 25px 60px;
+    font-size: 28px;
+    border-radius: 15px;
+    margin-top: 60px;
+  }
+`;
+
 const FanArt = ({ isDarkMode, user, onOpenRegister }) => {
-  const images = [
-    turkeys,
-    nicerone,
-    dragons,
-    horse,
-    lebid,
-    monody,
-    rooster,
-    soloveyko,
-    volcano,
-    flame,
-    dizel,
+  const allImages = [
+    turkeys, nicerone, dragons, horse, lebid, monody, 
+    rooster, soloveyko, volcano, flame, dizel,
+    turkeys, nicerone, dragons, horse
   ];
+
+  const [visibleCount, setVisibleCount] = useState(10);
+
+  const showMoreImages = () => {
+    setVisibleCount((prevCount) => prevCount + 10);
+  };
 
   const handleImageClick = (imgSrc) => {
     if (!user) {
@@ -114,17 +129,19 @@ const FanArt = ({ isDarkMode, user, onOpenRegister }) => {
     }
     const printWindow = window.open("", "_blank");
     printWindow.document.write(
-      `<html><head><title>Print Fan Art</title></head><body style="text-align:center;"><img src="${imgSrc}" style="max-width:100%;" onload="window.print();window.close()" /></body></html>`,
+      `<html><head><title>Print Fan Art</title></head><body style="text-align:center;"><img src="${imgSrc}" style="max-width:100%;" onload="window.print();window.close()" /></body></html>`
     );
     printWindow.document.close();
   };
+
   return (
     <FanArtDiv>
       <FanArtTitle $isDarkMode={isDarkMode}>
-        Фан-арти(Клікніть на картинку, для друку)
+        Фан-арти (Клікніть на картинку для друку)
       </FanArtTitle>
+      
       <FanBlock>
-        {images.map((img, index) => (
+        {allImages.slice(0, visibleCount).map((img, index) => (
           <BenefitImage
             key={index}
             src={img}
@@ -134,7 +151,14 @@ const FanArt = ({ isDarkMode, user, onOpenRegister }) => {
           />
         ))}
       </FanBlock>
+
+      {visibleCount < allImages.length && (
+        <LoadMoreButton onClick={showMoreImages}>
+          Показати ще
+        </LoadMoreButton>
+      )}
     </FanArtDiv>
   );
 };
+
 export default FanArt;

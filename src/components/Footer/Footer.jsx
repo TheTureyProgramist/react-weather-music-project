@@ -1,11 +1,14 @@
+import React from "react";
 import styled, { keyframes } from "styled-components";
 import logo from "../../photos/hero-header/logo.png";
 import facebok from "../../photos/hero-header/facebook.webp";
+
 const changeColor = keyframes`
 0% { background: skyblue; }
 50% { background: skyblue; }
 100% { background: yellow; }
 `;
+
 const FooterDiv = styled.div`
   background: yellow;
   width: 100%;
@@ -34,7 +37,16 @@ const FooterDiv = styled.div`
     gap: 100px;
     padding-bottom: 64px;
   }
+  @media (min-width: 1920px) {
+    flex-direction: row;
+    margin-top: 120px;
+    gap: 200px; 
+    padding-top: 80px;
+    padding-bottom: 100px;
+    margin-bottom: -20px;
+  }
 `;
+
 const FooterImage = styled.img`
   height: 85px;
   border-radius: 100%;
@@ -44,13 +56,24 @@ const FooterImage = styled.img`
   @media (min-width: 1200px) {
     height: 105px;
   }
+  /* TV VERSION */
+  @media (min-width: 1920px) {
+    height: 200px; /* Велика емблема для ТБ */
+  }
 `;
+
 const FooterAdress = styled.div`
   display: flex;
   flex-direction: column;
   gap: 10px;
   color: ${(props) => (props.$isDarkMode ? "black" : "black")};
+  
+  /* TV VERSION */
+  @media (min-width: 1920px) {
+    gap: 25px;
+  }
 `;
+
 const FooterAdressText = styled.h1`
   font-family: var(--second-family);
   font-weight: 500;
@@ -60,7 +83,13 @@ const FooterAdressText = styled.h1`
   @media (min-width: 768px) {
     text-align: start;
   }
+  /* TV VERSION */
+  @media (min-width: 1920px) {
+    font-size: 42px; /* Великий заголовок секції */
+    text-align: center;
+  }
 `;
+
 const FooterAdressInfo = styled.h1`
   font-family: var(--second-family);
   font-weight: 500;
@@ -69,7 +98,13 @@ const FooterAdressInfo = styled.h1`
   @media (min-width: 768px) {
     text-align: start;
   }
+  /* TV VERSION */
+  @media (min-width: 1920px) {
+    font-size: 32px; /* Читабельний текст адреси */
+    text-align: center;
+  }
 `;
+
 const FooterContactsText = styled.h2`
   font-family: var(--second-family);
   font-weight: 500;
@@ -78,12 +113,28 @@ const FooterContactsText = styled.h2`
   @media (min-width: 768px) {
     text-align: start;
   }
+  /* TV VERSION */
+  @media (min-width: 1920px) {
+    font-size: 42px;
+    text-align: center;
+    margin-bottom: 10px;
+  }
 `;
+
 const Facebook = styled.a`
   height: 40px;
   width: 40px;
   background: url(${facebok}) center no-repeat;
+  background-size: contain;
+  
+  /* TV VERSION */
+  @media (min-width: 1920px) {
+    height: 90px;
+    width: 90px;
+    align-self: center;
+  }
 `;
+
 const Footer = () => {
   return (
     <FooterDiv>
@@ -92,10 +143,10 @@ const Footer = () => {
         <FooterAdressText>Адреса</FooterAdressText>
         <FooterAdressInfo>Конотоп. Україна</FooterAdressInfo>
       </FooterAdress>
-        <FooterAdress>
+      <FooterAdress>
         <FooterContactsText>Мій контакт</FooterContactsText>
-          <Facebook href="https://www.facebook.com/share/g/15cVdicVtGc/"></Facebook>
-        </FooterAdress>
+        <Facebook href="https://www.facebook.com/share/g/15cVdicVtGc/"></Facebook>
+      </FooterAdress>
       <FooterAdress>
         <FooterAdressText>Версія</FooterAdressText>
         <FooterAdressInfo>1.9.8</FooterAdressInfo>
@@ -103,4 +154,5 @@ const Footer = () => {
     </FooterDiv>
   );
 };
+
 export default Footer;

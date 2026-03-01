@@ -9,6 +9,12 @@ const pulse = keyframes`
   100% { transform: scale(1); opacity: 1; }
 `;
 
+const flow = keyframes`
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+`;
+
 const IconWrapper = styled.div`
   position: relative;
   display: flex;
@@ -32,12 +38,14 @@ const NotificationBadge = styled.div`
   border: 1px solid white;
   animation: ${pulse} 1.5s infinite ease-in-out;
   pointer-events: none;
-`;
 
-const flow = keyframes`
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+  @media (min-width: 1920px) {
+    width: 26px;
+    height: 26px;
+    font-size: 18px;
+    top: -10px;
+    right: -5px;
+  }
 `;
 
 const VipTextWrapper = styled.div`
@@ -52,39 +60,24 @@ const RainbowText = styled.h1`
   font-size: 9px;
   font-weight: bold;
   margin: 0;
-  background: linear-gradient(
-    45deg,
-    #ff0000,
-    #ff7f00,
-    #ffff00,
-    #00ff00,
-    #0000ff,
-    #8b00ff
-  );
+  background: linear-gradient(45deg, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #8b00ff);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
   transition: opacity 0.5s ease-in-out;
   opacity: ${(props) => (props.$show ? 1 : 0)};
 
-  @media (min-width: 768px) {
-    font-size: 15px;
-  }
+  @media (min-width: 768px) { font-size: 15px; }
+  @media (min-width: 1920px) { font-size: 32px; }
 `;
+
 const UltraText = styled.h1`
   grid-area: 1 / 1;
   font-family: "Inter", sans-serif;
   font-size: 9px;
   font-weight: bold;
   margin: 0;
-  background: linear-gradient(
-    270deg,
-    #ff7eb3,
-    #ff758c,
-    #7afcff,
-    #feffb7,
-    #58e2c2
-  );
+  background: linear-gradient(270deg, #ff7eb3, #ff758c, #7afcff, #feffb7, #58e2c2);
   background-size: 400% 400%;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -93,9 +86,8 @@ const UltraText = styled.h1`
   transition: opacity 0.5s ease-in-out;
   opacity: ${(props) => (props.$show ? 1 : 0)};
 
-  @media (min-width: 768px) {
-    font-size: 15px;
-  }
+  @media (min-width: 768px) { font-size: 15px; }
+  @media (min-width: 1920px) { font-size: 32px; }
 `;
 
 const HeaderDiv = styled.div`
@@ -112,25 +104,19 @@ const HeaderDiv = styled.div`
   right: 0;
   z-index: 100;
   transition: background-color 0.3s ease;
-  @media (min-width: 768px) {
-    height: 70px;
-    padding: 0 30px;
-  }
-  @media (min-width: 1200px) {
-    height: 80px;
-  }
+  
+  @media (min-width: 768px) { height: 70px; padding: 0 30px; }
+  @media (min-width: 1200px) { height: 80px; }
+  @media (min-width: 1920px) { height: 130px; padding: 0 60px; } /* ТБ версія */
 `;
 
 const HeaderFix = styled.div`
   display: flex;
   align-items: center;
   gap: 3px;
-  @media (min-width: 768px) {
-    gap: 20px;
-  }
-  @media (min-width: 1200px) {
-    gap: 29px;
-  }
+  @media (min-width: 768px) { gap: 20px; }
+  @media (min-width: 1200px) { gap: 29px; }
+  @media (min-width: 1920px) { gap: 60px; }
 `;
 
 const ThemeButton = styled.button`
@@ -142,15 +128,10 @@ const ThemeButton = styled.button`
   justify-content: center;
   font-size: ${(props) => (props.$isDarkMode ? "13px" : "12px")};
   transition: transform 0.2s ease;
-  &:hover {
-    transform: scale(1.1);
-  }
-  @media (min-width: 768px) {
-    font-size: ${(props) => (props.$isDarkMode ? "21px" : "18px")};
-  }
-  @media (min-width: 1200px) {
-    font-size: ${(props) => (props.$isDarkMode ? "23px" : "20px")};
-  }
+  &:hover { transform: scale(1.1); }
+  @media (min-width: 768px) { font-size: ${(props) => (props.$isDarkMode ? "21px" : "18px")}; }
+  @media (min-width: 1200px) { font-size: ${(props) => (props.$isDarkMode ? "23px" : "20px")}; }
+  @media (min-width: 1920px) { font-size: 45px; }
 `;
 
 const LoginLink = styled.span`
@@ -162,12 +143,8 @@ const LoginLink = styled.span`
   text-decoration: underline;
   color: ${(props) => (props.$isDarkMode ? "#ffb36c" : "#555")};
   font-weight: 600;
-  &:hover {
-    opacity: 0.8;
-  }
-  @media (min-width: 768px) {
-    font-size: 15px;
-  }
+  @media (min-width: 768px) { font-size: 15px; }
+  @media (min-width: 1920px) { font-size: 28px; padding: 20px 40px; border-radius: 15px; }
 `;
 
 const HeaderButton = styled.button`
@@ -178,13 +155,8 @@ const HeaderButton = styled.button`
   border-radius: 8px;
   padding: 9px 18px;
   font-size: 11px;
-  transition: background 0.2s;
-  &:hover {
-    background: #ffa04d;
-  }
-  @media (min-width: 768px) {
-    font-size: 15px;
-  }
+  @media (min-width: 768px) { font-size: 15px; }
+  @media (min-width: 1920px) { font-size: 28px; padding: 20px 40px; border-radius: 15px; }
 `;
 
 const IconButton = styled.button`
@@ -195,32 +167,25 @@ const IconButton = styled.button`
   display: flex;
   color: ${(props) => (props.$isDarkMode ? "#fff" : "#1a1a1a")};
   align-items: center;
-  @media (min-width: 768px) {
-    font-size: 16px;
-  }
-  @media (min-width: 1200px) {
-    font-size: 19px;
-  }
+  @media (min-width: 768px) { font-size: 16px; }
+  @media (min-width: 1200px) { font-size: 19px; }
+  @media (min-width: 1920px) { font-size: 45px; }
 `;
 
 const CounterText = styled.span`
   font-size: 6px;
   font-weight: 700;
   letter-spacing: -0.5px;
-  @media (min-width: 768px) {
-    font-size: 10px;
-  }
+  @media (min-width: 768px) { font-size: 10px; }
+  @media (min-width: 1920px) { font-size: 22px; margin-right: 10px; }
 `;
 
 const HeaderLogo = styled.img`
   height: 45px;
   border-radius: 50%;
-  @media (min-width: 768px) {
-    height: 65px;
-  }
-  @media (min-width: 1200px) {
-    height: 75px;
-  }
+  @media (min-width: 768px) { height: 65px; }
+  @media (min-width: 1200px) { height: 75px; }
+  @media (min-width: 1920px) { height: 110px; }
 `;
 
 const HeaderAvatar = styled.img`
@@ -236,63 +201,34 @@ const HeaderAvatar = styled.img`
       : "none"};
   background-origin: border-box;
   background-clip: content-box, border-box;
-  background-color: ${(props) =>
-    props.$bColor?.includes("linear-gradient") ? "transparent" : "transparent"};
-  border-color: ${(props) =>
-    props.$bColor?.includes("linear-gradient")
-      ? "transparent"
-      : props.$bColor || "transparent"};
-  ${(props) =>
-    props.$bColor?.includes("270deg") &&
-    css`
-      background-size:
-        100% 100%,
-        400% 400%;
-      animation: ${flow} 5s ease infinite;
-    `}
+  border-color: ${(props) => (props.$bColor?.includes("linear-gradient") ? "transparent" : props.$bColor || "transparent")};
 
-  @media (min-width: 768px) {
-    width: 40px;
-    height: 40px;
-  }
-  @media (min-width: 1200px) {
-    width: 50px;
-    height: 50px;
-  }
+  @media (min-width: 768px) { width: 40px; height: 40px; }
+  @media (min-width: 1200px) { width: 50px; height: 50px; }
+  @media (min-width: 1920px) { width: 90px; height: 90px; border-width: 5px; }
 `;
 
 const UserName = styled.span`
   font-size: 9px;
   font-weight: bold;
   margin-right: 5px;
+  @media (min-width: 768px) { font-size: 15px; margin-right: 5px; }
+  @media (min-width: 1920px) { font-size: 30px; margin-right: 15px; }
+
   ${(props) => {
     const isGradient = props.$uColor?.includes("linear");
-    const isAnimated = props.$uColor?.includes("270deg");
     if (isGradient) {
       return css`
         background: ${props.$uColor};
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
-        ${isAnimated &&
-        css`
-          background-size: 400% 400%;
-          animation: ${flow} 5s ease infinite;
-        `}
-      `;
-    } else {
-      return css`
-        color: ${props.$uColor || "inherit"};
-        background: none;
-        -webkit-background-clip: none;
-        -webkit-text-fill-color: currentcolor;
+        background-size: 400% 400%;
+        animation: ${flow} 5s ease infinite;
       `;
     }
+    return `color: ${props.$uColor || "inherit"};`;
   }}
-  @media (min-width: 768px) {
-    font-size: 15px;
-    margin-right: 5px;
-  }
 `;
 
 const Header = ({
@@ -326,7 +262,7 @@ const Header = ({
   return (
     <HeaderDiv $isDarkMode={isDarkMode}>
       <HeaderFix>
-        <HeaderLogo src={logo}/>
+        <HeaderLogo src={logo} alt="Logo" />
         {user && (
           <VipTextWrapper onClick={onOpenVip}>
             <RainbowText $show={!showUltra}>Стихія+</RainbowText>
@@ -341,34 +277,18 @@ const Header = ({
         {user ? (
           <>
             <IconWrapper>
-              <IconButton
-                onClick={onOpenShop}
-                title="Магазин конвертів"
-                $isDarkMode={isDarkMode}
-              >
+              <IconButton onClick={onOpenShop} title="Магазин" $isDarkMode={isDarkMode}>
                 <CounterText>2000/2000</CounterText>🧧
               </IconButton>
               <NotificationBadge>!</NotificationBadge>
             </IconWrapper>
-            <IconButton
-              title="Досягнення"
-              onClick={onOpenAchievements}
-              $isDarkMode={isDarkMode}
-            >
+            <IconButton onClick={onOpenAchievements} title="Досягнення" $isDarkMode={isDarkMode}>
               🏆
             </IconButton>
-            <IconButton
-              onClick={onOpenSettings}
-              title="Налаштування"
-              $isDarkMode={isDarkMode}
-            >
+            <IconButton onClick={onOpenSettings} title="Налаштування" $isDarkMode={isDarkMode}>
               ⚙️
             </IconButton>
-            <IconButton
-              onClick={onLogout}
-              title="Вийти"
-              $isDarkMode={isDarkMode}
-            >
+            <IconButton onClick={onLogout} title="Вийти" $isDarkMode={isDarkMode}>
               🚪
             </IconButton>
             <UserName $uColor={user.textColor}>{user.firstName}</UserName>
@@ -384,4 +304,5 @@ const Header = ({
     </HeaderDiv>
   );
 };
+
 export default Header;

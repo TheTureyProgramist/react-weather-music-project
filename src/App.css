@@ -71,9 +71,7 @@ td {
   font-weight: normal;
   vertical-align: baseline;
 }
-:focus {
-  outline: 0;
-}
+
 body {
   line-height: 1;
   color: black;
@@ -132,6 +130,14 @@ q {
     padding: 0 0px;
   }
 }
+
+@media (min-width: 1920px) {
+  .container {
+    max-width: 1800px;
+    padding: 0 50px;
+  }
+}
+
 span {
   font-size: 10.8px;
 }
