@@ -45,12 +45,6 @@ const FooterImage = styled.img`
     height: 105px;
   }
 `;
-const FooterContacts = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  color: ${(props) => (props.$isDarkMode ? "black" : "black")};
-`;
 const FooterAdress = styled.div`
   display: flex;
   flex-direction: column;
@@ -85,10 +79,6 @@ const FooterContactsText = styled.h2`
     text-align: start;
   }
 `;
-const FooterContactsFix = styled.div`
-  display: flex;
-  gap: 20px;
-`;
 const Facebook = styled.a`
   height: 40px;
   width: 40px;
@@ -102,12 +92,10 @@ const Footer = () => {
         <FooterAdressText>Адреса</FooterAdressText>
         <FooterAdressInfo>Конотоп. Україна</FooterAdressInfo>
       </FooterAdress>
-      <FooterContacts>
+        <FooterAdress>
         <FooterContactsText>Мій контакт</FooterContactsText>
-        <FooterContactsFix>
           <Facebook href="https://www.facebook.com/share/g/15cVdicVtGc/"></Facebook>
-        </FooterContactsFix>
-      </FooterContacts>
+        </FooterAdress>
       <FooterAdress>
         <FooterAdressText>Версія</FooterAdressText>
         <FooterAdressInfo>1.9.8</FooterAdressInfo>
