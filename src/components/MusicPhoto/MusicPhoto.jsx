@@ -756,14 +756,6 @@ const musicCards = [
     duration: 45,
   },
   {
-    id: 8,
-    image: require("../../photos/vip-images/flame.jpg"),
-    audio: require("../../mp3/darkness-and--flame.mp3"),
-    text: "Епічна гра головоломка від 5-bn games 4 частини доступно - чекаємо на 5-ту.",
-    lyrics: "Текст відсутній.",
-    duration: 200,
-  },
-  {
     id: 9,
     image: require("../../photos/vip-images/vip-dragons.jpg"),
     audio: require("../../mp3/dragon.mp3"),

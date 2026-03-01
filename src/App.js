@@ -178,9 +178,9 @@ const ProgressBar = styled.div`
 
 const LoaderText = styled.p`
   color: #fff;
-  margin-top: 15px;
+  margin-top: 13px;
   letter-spacing: 3px;
-  font-size: 15px;
+  font-size: 13px;
   font-weight: bold;
   opacity: 0.8;
   text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.7);
@@ -560,10 +560,10 @@ const App = () => {
               <ProgressContainer>
                 <ProgressBar />
               </ProgressContainer>
-              <LoaderText>TurkeyStudio Presents...</LoaderText>
+              <LoaderText>Версія 1.9.8. Конотоп-Україна</LoaderText>
               <LoaderText
                 style={{
-                  fontSize: "13px",
+                  fontSize: "11px",
                   marginTop: "5px",
                   color: "#00c6ff",
                   textTransform: "none",
@@ -577,7 +577,7 @@ const App = () => {
               <ProgressContainer>
                 <ProgressBar />
               </ProgressContainer>
-              <LoaderText>TheTurkeyStudio Presents...</LoaderText>
+              <LoaderText>Версія 1.9.8. Конотоп-Україна</LoaderText>
               <LoaderText
                 style={{
                   fontSize: "13px",

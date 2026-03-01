@@ -113,7 +113,7 @@ const FanArt = ({ isDarkMode, user, onOpenRegister }) => {
   const allImages = [
     turkeys, nicerone, dragons, horse, lebid, monody, 
     rooster, soloveyko, volcano, flame, dizel,
-    turkeys, nicerone, dragons, horse
+    turkeys, nicerone, 
   ];
 
   const [visibleCount, setVisibleCount] = useState(10);
