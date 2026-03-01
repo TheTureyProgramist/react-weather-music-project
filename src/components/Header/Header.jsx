@@ -330,7 +330,7 @@ const Header = ({
         {user && (
           <VipTextWrapper onClick={onOpenVip}>
             <RainbowText $show={!showUltra}>Стихія+</RainbowText>
-            <UltraText $show={showUltra}>Стихія+ Ультра</UltraText>
+            <UltraText $show={showUltra}>Стихія+ Ultra</UltraText>
           </VipTextWrapper>
         )}
       </HeaderFix>

@@ -561,12 +561,12 @@ const VipModal = ({ onClose }) => {
           onClick={() => handleTierSwitch(tier === "plus" ? "ultra" : "plus")}
         >
           <AnimatedText $variant={tier} key={`title-${tier}`}>
-            {tier === "plus" ? "Стихія+" : "Стихія+ Ультра"}
+            {tier === "plus" ? "Стихія+" : "Стихія+ Ultra"}
           </AnimatedText>
         </HeaderToggle>
 
  <SwitchBackText onClick={() => handleTierSwitch(tier === "plus" ? "ultra" : "plus")}>
-  {tier === "plus" ? "Переглянути переваги Стихія+ Ультра" : "Повернутись до переваг Стихія+"}
+  {tier === "plus" ? "Переглянути переваги Стихія+ Ultra" : "Повернутись до переваг Стихія+"}
 </SwitchBackText>
         <VipBlock>
           <VipFixScroll key={`scroll-area-${tier}`}>
@@ -637,8 +637,8 @@ const VipModal = ({ onClose }) => {
           зміниться. І коли підписка закінчиться привілегії(не всі) зникнуть.
         </VipWarning>
         <VipWarning>
-          Примітка: 3.Переваги Стихії+ оптимізовані в Стихія+ Ультра, ті що не
-          були вказані в Стихія+ Ультра(присутні, але ті самі як в Стихія+.).  Деякі функції в розробці.
+          Примітка: 3.Переваги Стихії+ оптимізовані в Стихія+ Ultrа, ті що не
+          були вказані в Стихія+ Ultra(присутні, але ті самі як в Стихія+.).  Деякі функції в розробці.
         </VipWarning>
       </VipModalDiv>
     </Overlay>
