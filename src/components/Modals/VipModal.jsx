@@ -488,7 +488,7 @@ const VipModal = ({ onClose }) => {
       },
       {
         src: document,
-        text: "Доступно 8 останніх новин, а не 4.",
+        text: "Доступно 10 останніх новин, а не 5.",
       },
       {
         src: puzzle5,
@@ -540,7 +540,7 @@ const VipModal = ({ onClose }) => {
       { src: rainbow, text: "Райдужне ім'я та рамка доступні зразу." },
       {
         src: document,
-        text: "Досуп до 16 останніх новин.",
+        text: "Досуп до 20 останніх новин.",
       },
       {
         src: puzzle5,

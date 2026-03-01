@@ -101,7 +101,7 @@ const News = ({ $isDarkMode }) => {
           return !STOP_WORDS.some(word => content.includes(word));
         });
 
-        const limited = clean.slice(0, 4);
+        const limited = clean.slice(0, 5);
 
         const translated = await Promise.all(limited.map(async (item) => {
           const cleanDesc = (item.description || "").replace(/<[^>]*>?/gm, "").trim();
