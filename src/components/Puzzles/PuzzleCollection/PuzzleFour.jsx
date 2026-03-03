@@ -1,4 +1,10 @@
-import React, { useState, useEffect, useCallback, useMemo, useRef } from "react";
+import React, {
+  useState,
+  useEffect,
+  useCallback,
+  useMemo,
+  useRef,
+} from "react";
 import styled, { keyframes, css } from "styled-components";
 
 const fadeIn = keyframes`from { opacity: 0; } to { opacity: 1; }`;
@@ -20,9 +26,10 @@ const GameWrapper = styled.div`
   overflow: hidden;
   font-family: "Segoe UI", sans-serif;
   ${(props) =>
-    props.$isHit &&
+    (props.$isHit || props.$isPhase3) &&
     css`
-      animation: ${shake} 0.2s ease-in-out 2;
+      animation: ${shake} 0.2s ease-in-out infinite;
+      animation-play-state: ${props.$isHit ? "running" : props.$isPhase3 ? "running" : "paused"};
     `}
 `;
 
@@ -35,23 +42,35 @@ const GameBoard = styled.div`
   max-width: 380px;
   aspect-ratio: 1 / 1;
   background: #222;
-  border: 3px solid #444;
+  border: 3px solid ${(props) => (props.$isPhase3 ? "#ff0000" : "#444")};
   padding: 2px;
   position: relative;
+  box-shadow: ${(props) => (props.$isPhase3 ? "0 0 20px #ff0000" : "none")};
 `;
 
 const Cell = styled.div`
   width: 100%;
   height: 100%;
-  background: ${(props) => (props.$type === "wall" ? "#333" : "#1a1a1a")};
-  border: ${(props) =>
-    props.$type === "target" ? "1.5px dashed #ffb36c" : "none"};
+  background: ${(props) => {
+    if (props.$type === "wall") return "#333";
+    if (props.$isEvacPoint) return "#003366";
+    if (props.$isStart && props.$isPhase3) return "#7b1fa2"; 
+    if (props.$isStart && props.$canFinish) return "#1b5e20";
+    return "#1a1a1a";
+  }};
+  border: ${(props) => {
+    if (props.$isActiveTarget) return "1.5px dashed #ffb36c";
+    if (props.$isEvacPoint) return "2px solid #00e5ff";
+    return "none";
+  }};
   box-sizing: border-box;
+  transition: background 0.3s;
 `;
 
 const MovingObject = styled.div.attrs((props) => ({
-  style: {
+  style: { 
     transform: `translate(${props.$x * 100}%, ${props.$y * 100}%)`,
+    opacity: props.$invisible ? 0 : 1,
   },
 }))`
   position: absolute;
@@ -62,30 +81,41 @@ const MovingObject = styled.div.attrs((props) => ({
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s;
   z-index: 10;
 `;
 
 const PlayerIcon = styled.div`
   width: 70%;
   height: 70%;
-  background: #ffb36c;
+  background: ${(props) => (props.$isPhase3 ? "#e91e63" : "#ffb36c")};
   border-radius: 50%;
-  box-shadow: 0 0 15px #ffb36c;
+  box-shadow: 0 0 15px ${(props) => (props.$isPhase3 ? "#e91e63" : "#ffb36c")};
 `;
 
 const BoxIcon = styled.div`
   width: 75%;
   height: 75%;
-  background: ${(props) => (props.$onTarget ? "#4caf50" : "#795548")};
-  border: 2px solid ${(props) => (props.$onTarget ? "#1b5e20" : "#3e2723")};
+  background: ${(props) => (props.$locked ? "#4caf50" : "#795548")};
+  border: 2px solid ${(props) => (props.$locked ? "#1b5e20" : "#3e2723")};
   border-radius: 4px;
+  opacity: ${(props) => (props.$isGhosting ? 0.4 : 1)};
+  position: relative;
+  &::after {
+    content: "${(props) => (props.$locked ? "🔒" : "")}";
+    font-size: 8px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
 `;
 
 const SawIcon = styled.div`
   width: 80%;
   height: 80%;
-  background: #f44336;
+  background: ${(props) =>
+    props.$safe ? "#4caf50" : props.$isPhase3 ? "#ff0000" : "#f44336"};
   border-radius: 3px;
   display: flex;
   align-items: center;
@@ -165,7 +195,13 @@ const ModalContent = styled.div`
 `;
 
 const PuzzleFour = ({ onExit }) => {
+  // Додано діагональні напрямки для пил
   const directions = useMemo(() => ["up", "down", "left", "right"], []);
+  const sawDirections = useMemo(() => [
+    "up", "down", "left", "right", 
+    "up-left", "up-right", "down-left", "down-right"
+  ], []);
+
   const levelMap = useMemo(() => [
     [1, 1, 1, 1, 1, 1, 1, 1],
     [1, 0, 0, 0, 0, 0, 2, 1],
@@ -177,133 +213,197 @@ const PuzzleFour = ({ onExit }) => {
     [1, 1, 1, 1, 1, 1, 1, 1],
   ], []);
 
+  const targets = useMemo(() => [{ x: 6, y: 1 }, { x: 6, y: 5 }, { x: 1, y: 6 }], []);
+
   const [player, setPlayer] = useState({ x: 1, y: 1 });
-  const [boxes, setBoxes] = useState([
-    { x: 3, y: 1 },
-    { x: 5, y: 2 },
-    { x: 3, y: 4 },
-  ]);
-  const [saws, setSaws] = useState([
-    { x: 6, y: 1 },
-    { x: 1, y: 6 },
-    { x: 6, y: 6 },
-  ]);
+  const [boxes, setBoxes] = useState([{ x: 3, y: 1, locked: false }, { x: 5, y: 2, locked: false }, { x: 3, y: 4, locked: false }]);
+  const [saws, setSaws] = useState([{ x: 6, y: 1 }, { x: 1, y: 6 }, { x: 6, y: 6 }]);
+  const [activeTargetIdx, setActiveTargetIdx] = useState(0);
   const [moves, setMoves] = useState(0);
-  const [lives, setLives] = useState(3);
-  const [timeLeft, setTimeLeft] = useState(150);
+  const [lives, setLives] = useState(9); // Змінено на 9 життів
+  const [timeLeft, setTimeLeft] = useState(250);
+  const [bonusTime, setBonusTime] = useState(0);
   const [isProcessing, setIsProcessing] = useState(false);
   const [blockedDir, setBlockedDir] = useState("up");
   const [statusMsg, setStatusMsg] = useState(null);
   const [isHit, setIsHit] = useState(false);
-  const [bonusClaimed, setBonusClaimed] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
 
-  // Використовуємо ref для актуальної позиції гравця в асинхронних циклах пил
+  const [evacPoints, setEvacPoints] = useState([]);
+  const [isEvacuating, setIsEvacuating] = useState(false);
+  const [evacStepsDone, setEvacStepsDone] = useState(0);
+  const [ghostModeTime, setGhostModeTime] = useState(0);
+  const [sawsVisibleFlash, setSawsVisibleFlash] = useState(false);
+  
+  const [isPhase3, setIsPhase3] = useState(false);
+  const [phase3StepsLeft, setPhase3StepsLeft] = useState(33);
+  const [spontaneousButtons, setSpontaneousButtons] = useState(["up", "down", "left", "right"]);
+  const [finalWin, setFinalWin] = useState(false);
+
   const playerRef = useRef(player);
   useEffect(() => { playerRef.current = player; }, [player]);
 
-  const isWon = boxes.every((box) => levelMap[box.y][box.x] === 2);
-
   const resetGame = useCallback(() => {
     setPlayer({ x: 1, y: 1 });
-    setBoxes([{ x: 3, y: 1 }, { x: 5, y: 2 }, { x: 3, y: 4 }]);
+    setBoxes([{ x: 3, y: 1, locked: false }, { x: 5, y: 2, locked: false }, { x: 3, y: 4, locked: false }]);
     setSaws([{ x: 6, y: 1 }, { x: 1, y: 6 }, { x: 6, y: 6 }]);
-    setMoves(0);
-    setLives(3);
-    setTimeLeft(150);
-    setIsProcessing(false);
-    setBlockedDir("up");
-    setStatusMsg(null);
-    setBonusClaimed(false);
-  }, []);
+    setActiveTargetIdx(Math.floor(Math.random() * targets.length));
+    setMoves(0); setLives(9); setTimeLeft(250); setBonusTime(0);
+    setIsProcessing(false); setBlockedDir("up"); setStatusMsg(null);
+    setIsEvacuating(false); setEvacPoints([]); setEvacStepsDone(0);
+    setGhostModeTime(0); setFinalWin(false); setIsPhase3(false); setPhase3StepsLeft(33);
+  }, [targets]);
 
   const handleHit = useCallback(() => {
+    if (bonusTime > 0) return;
     setIsHit(true);
     setTimeout(() => setIsHit(false), 400);
-    if (lives <= 1) {
-      alert("ГРУ ЗАКІНЧЕНО");
-      resetGame();
-    } else {
-      setLives((l) => l - 1);
-      setPlayer({ x: 1, y: 1 });
-    }
-  }, [lives, resetGame]);
+    if (lives <= 1) { alert("КРИТИЧНА ПОМИЛКА: СИСТЕМА ЗНИЩЕНА"); resetGame(); }
+    else { setLives((l) => l - 1); setPlayer({ x: 1, y: 1 }); }
+  }, [lives, resetGame, bonusTime]);
 
   const moveSaws = useCallback(async () => {
     setIsProcessing(true);
     let currentSaws = [...saws];
-    
     for (let step = 0; step < 3; step++) {
-      // Чекаємо завершення анімації попереднього кроку
       await new Promise((r) => setTimeout(r, 350));
-      
       currentSaws = currentSaws.map((saw) => {
-        const valid = directions.filter((d) => {
-          const nx = saw.x + (d === "left" ? -1 : d === "right" ? 1 : 0);
-          const ny = saw.y + (d === "up" ? -1 : d === "down" ? 1 : 0);
+        const valid = sawDirections.filter((d) => {
+          let dx = 0, dy = 0;
+          if (d.includes("up")) dy = -1;
+          if (d.includes("down")) dy = 1;
+          if (d.includes("left")) dx = -1;
+          if (d.includes("right")) dx = 1;
+          const nx = saw.x + dx, ny = saw.y + dy;
           const hasBox = boxes.some((b) => b.x === nx && b.y === ny);
-          return levelMap[ny]?.[nx] !== 1 && !hasBox;
+          return levelMap[ny]?.[nx] === 0 && (ghostModeTime > 0 ? true : !hasBox);
         });
         const move = valid[Math.floor(Math.random() * valid.length)];
         if (!move) return saw;
-        return {
-          x: saw.x + (move === "left" ? -1 : move === "right" ? 1 : 0),
-          y: saw.y + (move === "up" ? -1 : move === "down" ? 1 : 0),
-        };
+        let dx = 0, dy = 0;
+        if (move.includes("up")) dy = -1;
+        if (move.includes("down")) dy = 1;
+        if (move.includes("left")) dx = -1;
+        if (move.includes("right")) dx = 1;
+        return { x: saw.x + dx, y: saw.y + dy };
       });
-
       setSaws([...currentSaws]);
-
-      // ПЕРЕВІРКА ПІСЛЯ КОЖНОГО КРОКУ:
-      const hit = currentSaws.find(s => s.x === playerRef.current.x && s.y === playerRef.current.y);
-      if (hit) {
-        // Даємо 100мс, щоб око зафіксувало пилу на клітинці гравця
-        await new Promise(r => setTimeout(r, 100));
-        handleHit();
-        setIsProcessing(false);
-        return; // Зупиняємо цикл руху пил
+      if (currentSaws.find((s) => s.x === playerRef.current.x && s.y === playerRef.current.y)) {
+        handleHit(); setIsProcessing(false); return;
       }
     }
-    
     setBlockedDir(directions[Math.floor(Math.random() * 4)]);
+    if (isPhase3) {
+      const count = Math.floor(Math.random() * 3) + 2;
+      setSpontaneousButtons([...directions].sort(() => 0.5 - Math.random()).slice(0, count));
+    }
     setIsProcessing(false);
-  }, [saws, boxes, levelMap, directions, handleHit]);
+  }, [saws, boxes, levelMap, directions, sawDirections, handleHit, isPhase3, ghostModeTime]);
 
-  const completeStep = useCallback((nx, ny) => {
-    setPlayer({ x: nx, y: ny });
-    // Перевірка чи не став гравець на пилу сам
-    if (saws.some((s) => s.x === nx && s.y === ny)) {
-      handleHit();
-    } else {
-      setMoves((m) => {
-        const nextMoves = m + 1;
-        if (nextMoves % 3 === 0) {
-          // Затримка перед початком руху пил, щоб гравець завершив свій хід
-          setTimeout(() => moveSaws(), 200);
+  // Функція телепортації при застряганні
+  const emergencyEscape = useCallback(() => {
+    const emptyCells = [];
+    levelMap.forEach((row, y) => {
+      row.forEach((cell, x) => {
+        if (cell === 0 && !boxes.some(b => b.x === x && b.y === y)) {
+          // Розраховуємо відстань до найближчої пили
+          let minDist = 100;
+          saws.forEach(s => {
+            const d = Math.abs(s.x - x) + Math.abs(s.y - y);
+            if (d < minDist) minDist = d;
+          });
+          emptyCells.push({ x, y, dist: minDist });
         }
-        return nextMoves;
+      });
+    });
+    // Вибираємо клітинку найдалі від пил
+    const bestCell = emptyCells.sort((a, b) => b.dist - a.dist)[0];
+    if (bestCell) {
+      setPlayer({ x: bestCell.x, y: bestCell.y });
+      setStatusMsg("КВАНТОВИЙ СУНУВ 🌀");
+    }
+  }, [levelMap, boxes, saws]);
+
+  const completeStep = useCallback((nx, ny, newBoxes) => {
+    setPlayer({ x: nx, y: ny });
+    
+    if (isEvacuating && !isPhase3) {
+      const atEvac = evacPoints.findIndex(p => p.x === nx && p.y === ny && !p.active);
+      if (atEvac !== -1) {
+        const updatedEvac = [...evacPoints];
+        updatedEvac[atEvac].active = true;
+        setEvacPoints(updatedEvac);
+        setStatusMsg("СИГНАЛ ПРИЙНЯТО");
+        setSawsVisibleFlash(true);
+        setTimeout(() => setSawsVisibleFlash(false), 300);
+      }
+      if (nx === 1 && ny === 1 && evacPoints.every(p => p.active)) {
+        setIsPhase3(true);
+        setStatusMsg("ФАЗА 3: СТАБІЛІЗАЦІЯ");
+        setGhostModeTime(3);
+        return;
+      }
+    }
+
+    if (isPhase3) {
+      setPhase3StepsLeft(prev => {
+        const next = prev - 1;
+        if (next <= 0 && nx === 1 && ny === 1) setFinalWin(true);
+        return next;
       });
     }
-  }, [saws, handleHit, moveSaws]);
 
-  const isPhysicallyBlocked = useCallback((x, y, dir) => {
-    const dx = dir === "left" ? -1 : dir === "right" ? 1 : 0;
-    const dy = dir === "up" ? -1 : dir === "down" ? 1 : 0;
-    const nx = x + dx, ny = y + dy;
-    if (levelMap[ny]?.[nx] === 1) return true;
-    const boxIdx = boxes.findIndex((b) => b.x === nx && b.y === ny);
-    if (boxIdx !== -1) {
-      const bnx = nx + dx, bny = ny + dy;
-      return (
-        levelMap[bny]?.[bnx] === 1 ||
-        boxes.some((b) => b.x === bnx && b.y === bny)
-      );
+    const currentTarget = targets[activeTargetIdx];
+    const boxOnActiveIdx = newBoxes.findIndex((b) => b.x === currentTarget.x && b.y === currentTarget.y && !b.locked);
+
+    if (boxOnActiveIdx !== -1 && !isEvacuating) {
+      const updatedBoxes = [...newBoxes];
+      updatedBoxes[boxOnActiveIdx].locked = true;
+      setBoxes(updatedBoxes);
+      const lockedCount = updatedBoxes.filter((b) => b.locked).length;
+      
+      if (lockedCount === 1) { 
+        setBonusTime(6); // Бонус змінено на 6 секунд
+        setStatusMsg("НЕВРАЗЛИВІСТЬ! 🛡️"); 
+      }
+      if (lockedCount === 3) {
+        setIsEvacuating(true); setGhostModeTime(3); setEvacStepsDone(0); setStatusMsg("ЕВАКУАЦІЯ!");
+        const points = [];
+        while(points.length < 2) {
+          const rx = Math.floor(Math.random() * 6) + 1, ry = Math.floor(Math.random() * 6) + 1;
+          if (levelMap[ry][rx] === 0 && !points.some(p => p.x === rx && p.y === ry)) points.push({ x: rx, y: ry, active: false });
+        }
+        setEvacPoints(points);
+      } else {
+        const rem = targets.map((_, i) => i).filter(i => !updatedBoxes.some(b => b.locked && b.x === targets[i].x && b.y === targets[i].y));
+        if (rem.length > 0) setActiveTargetIdx(rem[Math.floor(Math.random() * rem.length)]);
+      }
     }
-    return false;
-  }, [boxes, levelMap]);
 
-  const movePlayer = useCallback((dir, force = false) => {
-    if (isWon || isProcessing || (!force && dir === blockedDir)) return;
+    if (saws.some((s) => s.x === nx && s.y === ny)) handleHit();
+    else {
+      setMoves((m) => {
+        const nextMoves = m + 1;
+        if (nextMoves >= 200) { alert("ЕНЕРГІЯ ВИЧЕРПАНА"); resetGame(); return 0; }
+        if (nextMoves % 3 === 0) setTimeout(() => moveSaws(), 200);
+        return nextMoves;
+      });
+      if (isEvacuating) setEvacStepsDone(prev => prev + 1);
+    }
+  }, [saws, handleHit, moveSaws, activeTargetIdx, targets, isEvacuating, evacPoints, levelMap, resetGame, isPhase3]);
+
+  const movePlayer = useCallback((dir) => {
+    const isAnomalyDisabled = (isEvacuating && evacStepsDone < 3) || (isPhase3 && evacStepsDone < 3);
+    const isButtonAvailable = isPhase3 ? spontaneousButtons.includes(dir) : true;
+
+    // Перевірка на застрягання: якщо аномалія блокує хід і це єдина можливість
+    if (!isAnomalyDisabled && dir === blockedDir && !isProcessing) {
+        emergencyEscape();
+        return;
+    }
+
+    if (finalWin || isProcessing || (!isAnomalyDisabled && !isButtonAvailable)) return;
+    
     const dx = dir === "left" ? -1 : dir === "right" ? 1 : 0;
     const dy = dir === "up" ? -1 : dir === "down" ? 1 : 0;
     const nx = player.x + dx, ny = player.y + dy;
@@ -312,132 +412,74 @@ const PuzzleFour = ({ onExit }) => {
 
     const boxIdx = boxes.findIndex((b) => b.x === nx && b.y === ny);
     if (boxIdx !== -1) {
+      if (ghostModeTime > 0) { completeStep(nx, ny, boxes); return; }
+      if (boxes[boxIdx].locked) return;
       const bnx = nx + dx, bny = ny + dy;
-      if (
-        levelMap[bny]?.[bnx] !== 1 &&
-        !boxes.some((b) => b.x === bnx && b.y === bny)
-      ) {
-        setBoxes((prev) => {
-          const newBoxes = [...prev];
-          newBoxes[boxIdx] = { x: bnx, y: bny };
-          return newBoxes;
-        });
-        completeStep(nx, ny);
+      if (levelMap[bny]?.[bnx] === 0 && !boxes.some((b) => b.x === bnx && b.y === bny)) {
+        const nextBoxes = [...boxes];
+        nextBoxes[boxIdx] = { ...nextBoxes[boxIdx], x: bnx, y: bny };
+        setBoxes(nextBoxes); completeStep(nx, ny, nextBoxes);
       }
-    } else {
-      completeStep(nx, ny);
-    }
-  }, [isWon, isProcessing, blockedDir, player, levelMap, boxes, completeStep]);
+    } else completeStep(nx, ny, boxes);
+  }, [finalWin, isProcessing, blockedDir, player, levelMap, boxes, completeStep, isEvacuating, evacStepsDone, ghostModeTime, isPhase3, spontaneousButtons, emergencyEscape]);
 
   useEffect(() => {
-    if (timeLeft <= 0 && !isWon) {
-      resetGame();
-      setStatusMsg("ЧАС ВИЧЕРПАНО! ⌛");
-      setTimeout(() => setStatusMsg(null), 2000);
-    }
-  }, [timeLeft, isWon, resetGame]);
-
-  useEffect(() => {
-    if (!bonusClaimed) {
-      const onTarget = boxes.filter((b) => levelMap[b.y][b.x] === 2).length;
-      if (onTarget >= 2) {
-        setBonusClaimed(true);
-        setStatusMsg("БОНУС! 🎁 +30с | +1❤️");
-        setTimeLeft((t) => t + 30);
-        setLives((l) => Math.min(3, l + 1));
-        setMoves((m) => Math.max(0, m - 10));
-        setTimeout(() => setStatusMsg(null), 2000);
-      }
-    }
-  }, [boxes, bonusClaimed, levelMap]);
-
-  useEffect(() => {
-    if (isProcessing || isWon) return;
-    const possible = directions.filter(
-      (d) => !isPhysicallyBlocked(player.x, player.y, d),
-    );
-    if (possible.length === 1 && possible[0] === blockedDir) {
-      setStatusMsg("КВАНТОВИЙ СТРИБОК ⚡");
-      const timer = setTimeout(() => {
-        movePlayer(blockedDir, true);
-        setTimeout(() => setStatusMsg(null), 1000);
-      }, 600);
-      return () => clearTimeout(timer);
-    }
-  }, [player, blockedDir, isPhysicallyBlocked, directions, isProcessing, isWon, movePlayer]);
-
-  useEffect(() => {
-    const t = setInterval(
-      () => !isWon && timeLeft > 0 && setTimeLeft((prev) => prev - 1),
-      1000,
-    );
+    const t = setInterval(() => {
+      if (!finalWin && timeLeft > 0) setTimeLeft((prev) => prev - 1);
+      if (bonusTime > 0) setBonusTime((prev) => prev - 1);
+      if (ghostModeTime > 0) setGhostModeTime((prev) => prev - 1);
+    }, 1000);
     return () => clearInterval(t);
-  }, [isWon, timeLeft]);
+  }, [finalWin, timeLeft, bonusTime, ghostModeTime]);
 
   return (
-    <GameWrapper $isHit={isHit}>
+    <GameWrapper $isHit={isHit} $isPhase3={isPhase3}>
       <div style={{ textAlign: "center", color: "#ffb36c" }}>
-        <h4 style={{ margin: 0 }}>МАГНІТНА ПАСТКА</h4>
-        <small style={{ color: "#f44336" }}>
-          🚫 АНОМАЛІЯ: {blockedDir.toUpperCase()}
+        <h4 style={{ margin: 0 }}>{isPhase3 ? "ФАЗА 3: СТАБІЛІЗАЦІЯ" : isEvacuating ? "ФАЗА 2: ЕВАКУАЦІЯ" : "ФАЗА 1: ЗАХОПЛЕННЯ"}</h4>
+        <small style={{ color: (bonusTime > 0 || (evacStepsDone < 3)) ? "#4caf50" : "#f44336", fontWeight: "bold" }}>
+          {isPhase3 ? `🌀 КРОКІВ ДО ЗЛАМУ: ${Math.max(0, phase3StepsLeft)}` : 
+           ghostModeTime > 0 ? `👻 КВАНТОВИЙ СТРИБОК: ${ghostModeTime}с` : 
+           `🚫 АНОМАЛІЯ: ${blockedDir.toUpperCase()}`}
         </small>
       </div>
 
-      <GameBoard>
-        {levelMap.map((row, y) =>
-          row.map((cell, x) => (
-            <Cell
-              key={`${x}-${y}`}
-              $type={cell === 1 ? "wall" : cell === 2 ? "target" : "empty"}
-            />
-          )),
-        )}
+      <GameBoard $isPhase3={isPhase3}>
+        {levelMap.map((row, y) => row.map((cell, x) => (
+          <Cell key={`${x}-${y}`} $type={cell === 1 ? "wall" : "empty"} 
+                $isActiveTarget={!isEvacuating && targets[activeTargetIdx].x === x && targets[activeTargetIdx].y === y}
+                $isEvacPoint={evacPoints.find(p => p.x === x && p.y === y && !p.active)} 
+                $isStart={x === 1 && y === 1} 
+                $canFinish={isEvacuating && evacPoints.every(p => p.active)} />
+        )))}
 
-        <MovingObject $x={player.x} $y={player.y} style={{ zIndex: 20 }}>
-          <PlayerIcon />
-        </MovingObject>
+        <MovingObject $x={player.x} $y={player.y} style={{ zIndex: 20 }}><PlayerIcon $isPhase3={isPhase3} /></MovingObject>
+        {boxes.map((b, i) => (<MovingObject key={`box-${i}`} $x={b.x} $y={b.y}><BoxIcon $locked={b.locked} $isGhosting={ghostModeTime > 0} /></MovingObject>))}
+        {saws.map((s, i) => (<MovingObject key={`saw-${i}`} $x={s.x} $y={s.y} $invisible={isEvacuating && !sawsVisibleFlash && bonusTime <= 0}><SawIcon $safe={bonusTime > 0} $isPhase3={isPhase3}/></MovingObject>))}
 
-        {boxes.map((b, i) => (
-          <MovingObject key={`box-${i}`} $x={b.x} $y={b.y}>
-            <BoxIcon $onTarget={levelMap[b.y][b.x] === 2} />
-          </MovingObject>
-        ))}
-
-        {saws.map((s, i) => (
-          <MovingObject key={`saw-${i}`} $x={s.x} $y={s.y} style={{ transition: 'transform 0.3s linear' }}>
-            <SawIcon />
-          </MovingObject>
-        ))}
-
-        {statusMsg && (
-          <FloatingText $color={statusMsg.includes("⚡") ? "#00e5ff" : "#4caf50"}>
-            {statusMsg}
-          </FloatingText>
-        )}
-        
-        {isWon && (
-          <div style={{
-              position: "absolute", inset: 0, background: "rgba(0,0,0,0.8)",
-              color: "#4caf50", display: "flex", alignItems: "center",
-              justifyContent: "center", fontSize: "24px", zIndex: 50,
-            }}>
-            ПЕРЕМОГА!
+        {statusMsg && <FloatingText $color={isPhase3 ? "#e91e63" : "#00e5ff"}>{statusMsg}</FloatingText>}
+        {finalWin && (
+          <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.9)", color: "#4caf50", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", zIndex: 50, textAlign: "center" }}>
+            <h2>🏆 СИСТЕМУ ЗЛАМАНО</h2>
+            <p>Ви врятували ядро!</p>
+            <GameButton onClick={resetGame} style={{width: "auto", padding: "0 20px"}}>ПОВТОРИТИ</GameButton>
           </div>
         )}
       </GameBoard>
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 44px)", gap: "4px" }}>
         <div />
-        <GameButton disabled={isProcessing || blockedDir === "up"} onClick={() => movePlayer("up")}>▲</GameButton>
+        <GameButton disabled={isProcessing || (isPhase3 && !spontaneousButtons.includes("up"))} onClick={() => movePlayer("up")}>▲</GameButton>
         <div />
-        <GameButton disabled={isProcessing || blockedDir === "left"} onClick={() => movePlayer("left")}>◀</GameButton>
-        <GameButton disabled={isProcessing || blockedDir === "down"} onClick={() => movePlayer("down")}>▼</GameButton>
-        <GameButton disabled={isProcessing || blockedDir === "right"} onClick={() => movePlayer("right")}>▶</GameButton>
+        <GameButton disabled={isProcessing || (isPhase3 && !spontaneousButtons.includes("left"))} onClick={() => movePlayer("left")}>◀</GameButton>
+        <div />
+        <GameButton disabled={isProcessing || (isPhase3 && !spontaneousButtons.includes("right"))} onClick={() => movePlayer("right")}>▶</GameButton>
+        <div />
+        <GameButton disabled={isProcessing || (isPhase3 && !spontaneousButtons.includes("down"))} onClick={() => movePlayer("down")}>▼</GameButton>
       </div>
 
       <BottomPanel>
         <div style={{ fontSize: "11px", fontWeight: "bold" }}>
-          ❤️{lives}/3 | ⏳{timeLeft}с/150с | 👣{moves}/90
+          ❤️{lives}/9 | ⏳{timeLeft}с | 👣{moves}
         </div>
         <div style={{ display: "flex", gap: "10px" }}>
           <GameButton onClick={() => setShowHelp(true)} style={{ width: 36, height: 36, fontSize: 16 }}>?</GameButton>
@@ -449,18 +491,15 @@ const PuzzleFour = ({ onExit }) => {
       {showHelp && (
         <ModalOverlay onClick={() => setShowHelp(false)}>
           <ModalContent onClick={(e) => e.stopPropagation()}>
-            <h3 style={{ color: "#ffb36c", marginTop: 0 }}>Правила гри</h3>
-            <ul style={{ paddingLeft: "20px", fontSize: "14px", color: "#ffb36c" }}>
-              <li><b>Мета:</b> Розставити всі ящики на пунктирні цілі.</li>
-              <li><b>Аномалія:</b> Один напрямок заблокований (зміна кожні 3 ходи).</li>
-              <li><b>Пили:</b> Рухаються випадково кожні 3 ходи. Уникайте їх!</li>
-              <li><b>Бонус:</b> 2 ящики на цілях дають +30с та +1❤️.</li>
-              <li><b>Квантовий стрибок:</b> Авто-рух, якщо ви застрягли через аномалію.</li>
+            <h3 style={{ color: "#ffb36c", marginTop: 0 }}>Протокол Виживання</h3>
+            <ul style={{ paddingLeft: "20px", fontSize: "13px", color: "#ffb36c" }}>
+              <li><b>Діагональні Пили:</b> Тепер вороги рухаються у 8 напрямках!</li>
+              <li><b>Застрягання:</b> Якщо аномалія закрила хід — тисність на заблоковану кнопку для телепортації.</li>
+              <li><b>9 Життів:</b> Тепер ви маєте більше шансів на помилку.</li>
+              <li><b>Бонус:</b> Перший ящик дає 6с невразливості.</li>
+              <li><b>Фаза 3:</b> Зробіть 33 ходи і поверніться у (1,1) при нестабільному керуванні.</li>
             </ul>
-            <button onClick={() => setShowHelp(false)} style={{
-                width: "100%", padding: "10px", background: "#ffb36c",
-                border: "none", borderRadius: "5px", fontWeight: "bold", cursor: "pointer"
-              }}>ЗРОЗУМІЛО</button>
+            <button onClick={() => setShowHelp(false)} style={{ width: "100%", padding: "10px", background: "#ffb36c", border: "none", borderRadius: "5px", fontWeight: "bold", cursor: "pointer" }}>ЗРОЗУМІЛО</button>
           </ModalContent>
         </ModalOverlay>
       )}

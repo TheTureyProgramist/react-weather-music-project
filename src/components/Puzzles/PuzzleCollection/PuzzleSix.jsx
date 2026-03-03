@@ -269,7 +269,7 @@ const PuzzleSix = ({ imageUrl, onExit }) => {
         </StatsBlock>
 
         <Controls>
-          <GameButton onClick={initGame}>🔄</GameButton>
+          <GameButton onClick={initGame}>⏭</GameButton>
           <GameButton onClick={onExit}>✖</GameButton>
         </Controls>
       </BottomPanel>
