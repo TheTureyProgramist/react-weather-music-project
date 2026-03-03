@@ -5,7 +5,6 @@ import "./App.css";
 import Header from "./components/Header/Header.jsx";
 import Hero from "./components/Hero/Hero.jsx";
 import MusicPhoto from "./components/MusicPhoto/MusicPhoto.jsx";
-import Footer from "./components/Footer/Footer.jsx";
 import Modal from "./components/Modals/Modal.jsx";
 import LoginModal from "./components/Modals/LoginModal.jsx";
 import UserSettingsModal from "./components/Modals/UserSettingsModal.jsx";
@@ -918,9 +917,6 @@ const App = () => {
               return null;
             })}
           </div>
-
-          <Footer toggleTheme={toggleTheme} />
-
           {isModalOpen && (
             <Modal
               onClose={() => setIsModalOpen(false)}

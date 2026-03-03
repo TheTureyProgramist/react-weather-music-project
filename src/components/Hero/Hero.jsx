@@ -12,11 +12,8 @@ const HeroDiv = styled.div`
   margin-bottom: 35px;
   display: flex;
   background-size: cover;
-  background-image: linear-gradient(
-      to right,
-      rgba(47, 48, 58, 0),
-      rgba(47, 48, 58, 0)
-    ),
+  background-image:
+    linear-gradient(to right, rgba(47, 48, 58, 0), rgba(47, 48, 58, 0)),
     url(${hills});
   background-repeat: no-repeat;
   flex-direction: column;
@@ -110,7 +107,7 @@ const HeroLine = styled.div`
   display: none;
   @media (min-width: 768px) {
     width: 2px;
-    height: 75px;
+    height: 105px;
     background: rgba(255, 255, 255, 0.95);
     border-radius: 1px;
     display: flex;
@@ -247,7 +244,9 @@ const HeroButton = styled.button`
     top: 50%;
     transform: translate(-50%, -50%) scale(0.5);
     opacity: 0;
-    transition: opacity 200ms ease, transform 200ms ease;
+    transition:
+      opacity 200ms ease,
+      transform 200ms ease;
     pointer-events: none;
     z-index: 2;
     font-size: 18px;
@@ -311,9 +310,7 @@ const HeroTextLink = styled.a`
     margin-top: 20px;
   }
 `;
-const HeroDecorsFix = styled.div`
-
-`
+const HeroDecorsFix = styled.div``;
 const Hero = ({ heroDateString, onAddCity }) => {
   const [inputValue, setInputValue] = useState("");
 
@@ -339,16 +336,23 @@ const Hero = ({ heroDateString, onAddCity }) => {
         <HeroYellow>хія</HeroYellow>
       </HeroDecors>
       <HeroTitle>
-        Безкоштовна панель погоди, музики, фан-артів, технологіями ШІ та системою 🧧 та 🏆.
+        Безкоштовна панель погоди, музики, фан-артів, технологіями ШІ та
+        системою 🧧 та 🏆.
       </HeroTitle>
       <HeroDecor>
         <HeroLineMobile />
         <HeroFix>
           <HeroDecorsFix>
             <HeroText>
-            Створіть свій особистий список погодних умов у 3 точках світу.
-          </HeroText>
-            <HeroTextLink href="https://www.sat24.com/en-gb">Посилання на кліматичну мапу</HeroTextLink>
+              Створіть особистий список погодних карток у 3 точках світу.
+            </HeroText>
+            <HeroTextLink href="https://www.sat24.com/en-gb">
+              Посилання на кліматичну мапу
+            </HeroTextLink>
+            <HeroText>та мій</HeroText>
+            <HeroTextLink href="https://www.facebook.com/share/g/15cVdicVtGc/">
+              фейсбук канал
+            </HeroTextLink>
           </HeroDecorsFix>
           <HeroLine />
           <HeroDate>{heroDateString}</HeroDate>

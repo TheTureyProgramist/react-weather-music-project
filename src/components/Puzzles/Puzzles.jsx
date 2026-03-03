@@ -1,34 +1,91 @@
+import React, { useState } from "react";
 import styled from "styled-components";
-const PuzzlesDiv = styled.div`
-  margin-top: 35px;
-  @media (min-width: 768px) {
-    margin-top: 50px;
-  }
-  @media (min-width: 1200px) {
-    margin-top: 80px;
-  }
-`;
-const PuzzlesTitle = styled.div`
-  font-size: 14px;
+import PuzzleOne from "./PuzzleCollection/PuzzleOne";
+import puzzleImage from "../../photos/hero-header/start-image.jpg";
+import PuzzleTwo from "./PuzzleCollection/PuzzleTwo";
+import PuzzleThree from "./PuzzleCollection/PuzzleThree";
+import PuzzleFour from "./PuzzleCollection/PuzzleFour";
+import PuzzleSix from "./PuzzleCollection/PuzzleSix";
+import PuzzleFive from "./PuzzleCollection/PuzzleFive";
+const MainTitle = styled.h2`
   text-align: center;
-  font-family: var(--font-family);
-  font-weight: 600;
-  color: ${(props) => (props.$isDarkMode ? "black" : "white")};
-  margin-bottom: 35px;
-  @media (min-width: 768px) {
-    font-size: 20px;
-    margin-bottom: 50px;
-  }
-  @media (min-width: 1200px) {
-    font-size: 30px;
-    margin-bottom: 80px;
-  }
+  font-size: 32px;
+  color: white;
+  margin-bottom: 30px;
+  font-family: 'Montserrat', sans-serif;
 `;
-const Aihelp = () => {
+
+const PuzzlesGrid = styled.div`
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 30px;
+`;
+
+const PuzzleCard = styled.div`
+  cursor: pointer;
+  transition: transform 0.3s;
+  text-align: center;
+  &:hover { transform: translateY(-10px); }
+`;
+
+const PreviewImage = styled.img`
+  width: 250px; 
+  height: auto;
+  border-radius: 12px;
+  border: 3px solid #ffb36c;
+`;
+const FullscreenOverlay = styled.div`
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw; height: 100vh;
+  background: rgba(0,0,0,0.95);
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;const Puzzles = () => {
+  const [activeGame, setActiveGame] = useState(null);
+
+  const puzzleData = [
+    { id: 1, title: "Галерея 1", img: puzzleImage, type: "puzzle" },
+    { id: 2, title: "Пам'ять", img: "...", type: "memory" },
+    { id: 3, title: "Код", img: "...", type: "code" },
+    { id: 4, title: "Лабіринт", img: "...", type: "move" },
+    { id: 5, title: "Квантові цикли", img: "...", type: "rotate" },
+    { id: 6, title: "Оптична лінза", img: puzzleImage, type: "lens" }, // Додано
+  ];
+
+  const renderGame = () => {
+    if (!activeGame) return null;
+
+    switch (activeGame.type) {
+      case "puzzle": return <PuzzleOne imageUrl={activeGame.img} onExit={() => setActiveGame(null)} />;
+      case "memory": return <PuzzleTwo onExit={() => setActiveGame(null)} />;
+      case "code": return <PuzzleThree onExit={() => setActiveGame(null)} />;
+      case "move": return <PuzzleFour onExit={() => setActiveGame(null)} />;
+      case "rotate": return <PuzzleFive onExit={() => setActiveGame(null)} />;
+      case "lens": return <PuzzleSix imageUrl={activeGame.img} onExit={() => setActiveGame(null)} />; // Додано
+      default: return null;
+    }
+  };
   return (
-    <PuzzlesDiv>
-      <PuzzlesTitle>Головоломки!</PuzzlesTitle>
-    </PuzzlesDiv>
+    <div style={{ padding: '40px 20px' }}>
+      <MainTitle>ОБЕРІТЬ ГОЛОВОЛОМКУ</MainTitle>
+      <PuzzlesGrid>
+        {puzzleData.map(p => (
+          <PuzzleCard key={p.id} onClick={() => setActiveGame(p)}>
+            <PreviewImage src={p.img} alt={p.title} />
+          </PuzzleCard>
+        ))}
+      </PuzzlesGrid>
+
+      {activeGame && (
+        <FullscreenOverlay>
+          {renderGame()}
+        </FullscreenOverlay>
+      )}
+    </div>
   );
 };
-export default Aihelp;
+export default Puzzles;
