@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/react-weather-music-project/static/css/main.b14654ef.css",
-    "main.js": "/react-weather-music-project/static/js/main.718bf326.js",
+    "main.js": "/react-weather-music-project/static/js/main.45603c03.js",
     "static/media/kolada.mp3": "/react-weather-music-project/static/media/kolada.c30c2bfb2e7bb6342ba7.mp3",
     "static/media/thefatrat-monody.mp3": "/react-weather-music-project/static/media/thefatrat-monody.c51de64d7aa6397fbf66.mp3",
     "static/media/horror.mp3": "/react-weather-music-project/static/media/horror.89a58099b35140ad889a.mp3",
@@ -71,10 +71,10 @@
     "static/media/document.webp": "/react-weather-music-project/static/media/document.5b6c056b22794272794d.webp",
     "static/media/search.webp": "/react-weather-music-project/static/media/search.aa0aed371ca317289398.webp",
     "main.b14654ef.css.map": "/react-weather-music-project/static/css/main.b14654ef.css.map",
-    "main.718bf326.js.map": "/react-weather-music-project/static/js/main.718bf326.js.map"
+    "main.45603c03.js.map": "/react-weather-music-project/static/js/main.45603c03.js.map"
   },
   "entrypoints": [
     "static/css/main.b14654ef.css",
-    "static/js/main.718bf326.js"
+    "static/js/main.45603c03.js"
   ]
 }
