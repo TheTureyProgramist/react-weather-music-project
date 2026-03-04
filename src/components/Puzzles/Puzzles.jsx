@@ -7,6 +7,7 @@ import PuzzleThree from "./PuzzleCollection/PuzzleThree";
 import PuzzleFour from "./PuzzleCollection/PuzzleFour";
 import PuzzleSix from "./PuzzleCollection/PuzzleSix";
 import PuzzleFive from "./PuzzleCollection/PuzzleFive";
+import PuzzleSeven from "./PuzzleCollection/PuzzleSeven";
 const MainTitle = styled.h2`
   text-align: center;
   font-size: 32px;
@@ -53,7 +54,8 @@ const FullscreenOverlay = styled.div`
     { id: 3, title: "Код", img: "...", type: "code" },
     { id: 4, title: "Лабіринт", img: "...", type: "move" },
     { id: 5, title: "Квантові цикли", img: "...", type: "rotate" },
-    { id: 6, title: "Оптична лінза", img: puzzleImage, type: "lens" }, // Додано
+    { id: 6, title: "Оптична лінза", img: puzzleImage, type: "lens" }, 
+        { id: 7, title: "Лабіринт ІІ", img: "...", type: "line" }, 
   ];
 
   const renderGame = () => {
@@ -65,7 +67,8 @@ const FullscreenOverlay = styled.div`
       case "code": return <PuzzleThree onExit={() => setActiveGame(null)} />;
       case "move": return <PuzzleFour onExit={() => setActiveGame(null)} />;
       case "rotate": return <PuzzleFive onExit={() => setActiveGame(null)} />;
-      case "lens": return <PuzzleSix imageUrl={activeGame.img} onExit={() => setActiveGame(null)} />; // Додано
+      case "lens": return <PuzzleSix imageUrl={activeGame.img} onExit={() => setActiveGame(null)} />; 
+            case "line": return <PuzzleSeven onExit={() => setActiveGame(null)} />; 
       default: return null;
     }
   };

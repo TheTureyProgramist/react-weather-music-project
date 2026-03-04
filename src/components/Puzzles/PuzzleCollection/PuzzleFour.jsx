@@ -28,8 +28,8 @@ const Cell = styled.div`
     if (props.$isPortal) return "#1a237e";
     if (props.$type === "wall") return "#444";
     if (props.$isEvacPoint) {
-       if (props.$isHiddenPoint && !props.$isNear && !props.$activated) return "#1a1a1a";
-       return props.$activated ? "#00e676" : "#003366";
+        if (props.$isHiddenPoint && !props.$isNear && !props.$activated) return "#1a1a1a";
+        return props.$activated ? "#00e676" : "#003366";
     }
     return "#1a1a1a";
   }};
@@ -53,7 +53,7 @@ const Cell = styled.div`
 const MovingObject = styled.div.attrs((props) => ({
   style: { 
     transform: `translate(${props.$x * 100}%, ${props.$y * 100}%)`, 
-    opacity: props.$invisible ? (props.$isNear ? 0.3 : 0) : 1 
+    opacity: props.$invisible ? (props.$isNear ? 0.3 : 0) : (props.$isTransparent ? 0.3 : 1) 
   },
 }))`
   position: absolute; top: 0; left: 0; width: 12.5%; height: 12.5%;
@@ -162,7 +162,7 @@ const PuzzleFour = ({ onExit }) => {
     setBoxes([{ x: 4, y: 1, locked: false }, { x: 1, y: 3, locked: false }, { x: 3, y: 5, locked: false }, { x: 2, y: 6, locked: false }]);
     setSaws([{ x: 7, y: 2 }, { x: 4, y: 3 }, { x: 6, y: 5 }, { x: 3, y: 7 }]);
     setActiveTargetIdx(0); setMoves(0); setLives(4); setTimeLeft(240);
-    setPortalCooldown(0); setIsEvacuating(false); setFinalWin(false); setStatusMsg(null); setEvacPoints([]);
+    setPortalCooldown(0); setIsEvacuating(false); setFinalWin(false); setStatusMsg(null); setEvacPoints([]); setBonusTime(0);
   }, []);
 
   const handleHit = useCallback(() => {
@@ -176,6 +176,9 @@ const PuzzleFour = ({ onExit }) => {
   }, [resetGame, bonusTime]);
 
   const moveSaws = useCallback(() => {
+    // Пили іноді стоять на місці (ймовірність 30%)
+    if (Math.random() < 0.3) return;
+
     setSaws(prevSaws => {
       const nextSaws = prevSaws.map(saw => {
         const dirs = [{x:0,y:-1},{x:0,y:1},{x:-1,y:0},{x:1,y:0},{x:1,y:1},{x:-1,y:-1},{x:1,y:-1},{x:-1,y:1}];
@@ -226,6 +229,7 @@ const PuzzleFour = ({ onExit }) => {
       updated[boxIdx].locked = true;
       setBoxes(updated);
       const lockedCount = updated.filter(b => b.locked).length;
+      
       if (lockedCount <= 2) {
         setLives(l => Math.min(4, l + 1));
         setTimeLeft(t => t + 10);
@@ -233,9 +237,18 @@ const PuzzleFour = ({ onExit }) => {
         setStatusMsg("BONUS!");
         setTimeout(() => setStatusMsg(null), 1200);
       }
+      
       if (lockedCount === 4) {
-        setBonusTime(10); setIsEvacuating(true);
-        setEvacPoints([{x:1,y:1,active:false,hidden:false}, {x:6,y:6,active:false,hidden:false}, {x:6,y:1,active:false,hidden:true}, {x:1,y:6,active:false,hidden:true}, {x:3,y:4,active:false,hidden:true}, {x:4,y:3,active:false,hidden:true}]);
+        // Бонус після 4-го ящика: 8 секунд безпеки
+        setBonusTime(8); 
+        setIsEvacuating(true);
+        // 8 контрольних точок (2 видимі, 6 прихованих)
+        setEvacPoints([
+            {x:1,y:1,active:false,hidden:false}, {x:6,y:6,active:false,hidden:false}, 
+            {x:6,y:1,active:false,hidden:true}, {x:1,y:6,active:false,hidden:true}, 
+            {x:3,y:4,active:false,hidden:true}, {x:4,y:3,active:false,hidden:true},
+            {x:0,y:4,active:false,hidden:true}, {x:7,y:3,active:false,hidden:true}
+        ]);
       } else setActiveTargetIdx(prev => (prev + 1) % targets.length);
     }
     setMoves(m => { if (m >= 99) { alert("ЕНЕРГІЯ 0%"); resetGame(); return 0; } return m + 1; });
@@ -301,9 +314,26 @@ const PuzzleFour = ({ onExit }) => {
         }))}
         <MovingObject $x={player.x} $y={player.y} style={{ zIndex: 25 }}><PlayerIcon>{!finalWin && !showHelp && (<>{canMove("up") && <NavArrow $dir="up" onClick={() => moveAction("up")}>▲</NavArrow>}{canMove("down") && <NavArrow $dir="down" onClick={() => moveAction("down")}>▼</NavArrow>}{canMove("left") && <NavArrow $dir="left" onClick={() => moveAction("left")}>◀</NavArrow>}{canMove("right") && <NavArrow $dir="right" onClick={() => moveAction("right")}>▶</NavArrow>}</>)}</PlayerIcon></MovingObject>
         {boxes.map((b, i) => <MovingObject key={`b-${i}`} $x={b.x} $y={b.y} $invisible={isEvacuating} $isNear={Math.sqrt(Math.pow(b.x - player.x, 2) + Math.pow(b.y - player.y, 2)) < 1.6}><BoxIcon $locked={b.locked} /></MovingObject>)}
-        {saws.map((s, i) => <MovingObject key={`s-${i}`} $x={s.x} $y={s.y} $invisible={isEvacuating && !sawsVisibleFlash && bonusTime <= 0} $isNear={Math.sqrt(Math.pow(s.x - player.x, 2) + Math.pow(s.y - player.y, 2)) < 1.6}><SawIcon $safe={bonusTime > 0} $isOrange={bonusTime > 0 && bonusTime <= 2} /></MovingObject>)}
+        
+        {saws.map((s, i) => {
+            const isTransparent = bonusTime > 0;
+            const isInvisible = isEvacuating && !sawsVisibleFlash && bonusTime <= 0;
+            return (
+                <MovingObject 
+                  key={`s-${i}`} 
+                  $x={s.x} 
+                  $y={s.y} 
+                  $invisible={isInvisible} 
+                  $isTransparent={isTransparent}
+                  $isNear={Math.sqrt(Math.pow(s.x - player.x, 2) + Math.pow(s.y - player.y, 2)) < 1.6}
+                >
+                    <SawIcon $safe={bonusTime > 0} $isOrange={bonusTime > 0 && bonusTime <= 2} />
+                </MovingObject>
+            );
+        })}
+
         {statusMsg && <FloatingText key={statusMsg + moves}>{statusMsg}</FloatingText>}
-        {showHelp && <Modal><h3>ПРОТОКОЛ "РАДАР X"</h3><p style={{fontSize: '11px', textAlign: 'left'}}>• 🎁 <b>БОНУС:</b> Перші 2 ящики: +1 життя, +10с, -20 ходів!<br/>• 👣 <b>ЛІМІТ:</b> 100 ходів.<br/>• ⚙️ <b>БЕЗПЕКА:</b> Пили не заходять у старт.</p><GameButton style={{width: 'auto', padding: '0 20px'}} onClick={() => setShowHelp(false)}>ПОЧАТИ</GameButton></Modal>}
+        {showHelp && <Modal><h3>ПРОТОКОЛ "РАДАР X"</h3><p style={{fontSize: '11px', textAlign: 'left'}}>• 🎁 <b>БОНУС:</b> Ящики: +життя, +10с, -20 ходів!<br/>• ⚡ <b>ФІНАЛ:</b> 8с безпеки після 4-го ящика (пили прозорі).<br/>• 📍 <b>ЕВАКУАЦІЯ:</b> 8 точок (6 прихованих).<br/>• ⚙️ <b>ПИЛИ:</b> Можуть зупинятися для сканування.</p><GameButton style={{width: 'auto', padding: '0 20px'}} onClick={() => setShowHelp(false)}>ПОЧАТИ</GameButton></Modal>}
       </GameBoard>
       <BottomPanel>
         <StatsGrid>
@@ -311,6 +341,7 @@ const PuzzleFour = ({ onExit }) => {
           <span>⏳ {Math.floor(timeLeft/60)}:{String(timeLeft%60).padStart(2,'0')}</span>
           <span>👣 {moves}/100</span>
           <span style={{color: "#3f51b5"}}>🌀 {portalCooldown > 0 ? portalCooldown : "OK"}</span>
+          {bonusTime > 0 && <span style={{color: "#4caf50"}}>🛡️ {bonusTime}s</span>}
         </StatsGrid>
         <div style={{ display: "flex", gap: "5px" }}>
           <GameButton onClick={() => setShowHelp(true)}>?</GameButton>
