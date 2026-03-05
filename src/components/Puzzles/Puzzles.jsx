@@ -8,6 +8,7 @@ import PuzzleFour from "./PuzzleCollection/PuzzleFour";
 import PuzzleSix from "./PuzzleCollection/PuzzleSix";
 import PuzzleFive from "./PuzzleCollection/PuzzleFive";
 import PuzzleSeven from "./PuzzleCollection/PuzzleSeven";
+import pluta from "../../photos/hero-header/plutu.webp";
 const MainTitle = styled.h2`
   text-align: center;
   font-size: 32px;
@@ -31,8 +32,8 @@ const PuzzleCard = styled.div`
 `;
 
 const PreviewImage = styled.img`
-  width: 250px; 
-  height: auto;
+  width: 320px; 
+  height: 200px;
   border-radius: 12px;
   border: 3px solid #ffb36c;
 `;
@@ -50,7 +51,7 @@ const FullscreenOverlay = styled.div`
 
   const puzzleData = [
     { id: 1, title: "Галерея 1", img: puzzleImage, type: "puzzle" },
-    { id: 2, title: "Пам'ять", img: "...", type: "memory" },
+    { id: 2, title: "Пам'ять", img: pluta, type: "memory" },
     { id: 3, title: "Код", img: "...", type: "code" },
     { id: 4, title: "Лабіринт", img: "...", type: "move" },
     { id: 5, title: "Квантові цикли", img: "...", type: "rotate" },
@@ -78,7 +79,7 @@ const FullscreenOverlay = styled.div`
       <PuzzlesGrid>
         {puzzleData.map(p => (
           <PuzzleCard key={p.id} onClick={() => setActiveGame(p)}>
-            <PreviewImage src={p.img} alt={p.title} />
+            <PreviewImage src={p.img} alt={p.title}/>
           </PuzzleCard>
         ))}
       </PuzzlesGrid>
