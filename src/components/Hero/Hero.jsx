@@ -346,12 +346,8 @@ const Hero = ({ heroDateString, onAddCity }) => {
             <HeroText>
               Створіть особистий список погодних карток у 3 точках світу.
             </HeroText>
-            <HeroTextLink href="https://www.sat24.com/en-gb">
-              Посилання на кліматичну мапу
-            </HeroTextLink>
-            <HeroText>та мій</HeroText>
             <HeroTextLink href="https://www.facebook.com/share/g/15cVdicVtGc/">
-              фейсбук канал
+            Мій фейсбук канал. Долучайтесь.
             </HeroTextLink>
           </HeroDecorsFix>
           <HeroLine />

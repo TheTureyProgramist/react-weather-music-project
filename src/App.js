@@ -16,6 +16,7 @@ import ShopModal from "./components/Modals/ShopModal.jsx";
 import News from "./components/News/News.jsx";
 import AchivmentsModal from "./components/Modals/AchivmentsModal.jsx";
 import Puzzles from "./components/Puzzles/Puzzles.jsx";
+import ClimateMap from "./components/ClimateMap/ClimateMap.jsx";
 // Імпорт аватарів
 import loadimage from "./photos/hero-header/start-image.jpg";
 import turkeys from "./photos/vip-images/ultra-vip-turkeys.webp";
@@ -615,6 +616,7 @@ const App = () => {
   const heroDateString = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}:${String(now.getSeconds()).padStart(2, "0")} ${weekday}, ${now.getDate()}.${month}.${now.getFullYear()}`;
   const DEFAULT_SITE_SECTIONS = [
     { key: "weather", label: "Погода" },
+    { key: "map", label: "Кліматична мапа" },
     { key: "puzzles", label: "Пазли" },
     { key: "aihelp", label: "AI-допомога" },
     { key: "news", label: "Новини" },
@@ -1075,6 +1077,7 @@ const App = () => {
                   </WeatherCardsContainer>
                 );
               }
+              if (section.key === "map") return <ClimateMap key="map" />;
               if (section.key === "puzzles") return <Puzzles key="puzzles" />;
               if (section.key === "aihelp")
                 return <Aihelp key="aihelp" isDarkMode={isDarkMode} />;
