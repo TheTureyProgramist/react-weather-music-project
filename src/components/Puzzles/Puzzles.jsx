@@ -14,7 +14,7 @@ const MainTitle = styled.h2`
   font-size: 32px;
   color: white;
   margin-bottom: 30px;
-  font-family: 'Montserrat', sans-serif;
+  font-family: "Montserrat", sans-serif;
 `;
 
 const PuzzlesGrid = styled.div`
@@ -28,25 +28,30 @@ const PuzzleCard = styled.div`
   cursor: pointer;
   transition: transform 0.3s;
   text-align: center;
-  &:hover { transform: translateY(-10px); }
+  &:hover {
+    transform: translateY(-10px);
+  }
 `;
 
 const PreviewImage = styled.img`
-  width: 320px; 
+  width: 320px;
   height: 200px;
   border-radius: 12px;
   border: 3px solid #ffb36c;
 `;
 const FullscreenOverlay = styled.div`
   position: fixed;
-  top: 0; left: 0;
-  width: 100vw; height: 100vh;
-  background: rgba(0,0,0,0.95);
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.95);
   z-index: 2000;
   display: flex;
   align-items: center;
   justify-content: center;
-`;const Puzzles = () => {
+`;
+const Puzzles = () => {
   const [activeGame, setActiveGame] = useState(null);
 
   const puzzleData = [
@@ -55,40 +60,54 @@ const FullscreenOverlay = styled.div`
     { id: 3, title: "Код", img: "...", type: "code" },
     { id: 4, title: "Лабіринт", img: "...", type: "move" },
     { id: 5, title: "Квантові цикли", img: "...", type: "rotate" },
-    { id: 6, title: "Оптична лінза", img: puzzleImage, type: "lens" }, 
-        { id: 7, title: "Лабіринт ІІ", img: "...", type: "line" }, 
+    { id: 6, title: "Оптична лінза", img: puzzleImage, type: "lens" },
+    { id: 7, title: "Лабіринт ІІ", img: "...", type: "line" },
   ];
 
   const renderGame = () => {
     if (!activeGame) return null;
 
     switch (activeGame.type) {
-      case "puzzle": return <PuzzleOne imageUrl={activeGame.img} onExit={() => setActiveGame(null)} />;
-      case "memory": return <PuzzleTwo onExit={() => setActiveGame(null)} />;
-      case "code": return <PuzzleThree onExit={() => setActiveGame(null)} />;
-      case "move": return <PuzzleFour onExit={() => setActiveGame(null)} />;
-      case "rotate": return <PuzzleFive onExit={() => setActiveGame(null)} />;
-      case "lens": return <PuzzleSix imageUrl={activeGame.img} onExit={() => setActiveGame(null)} />; 
-            case "line": return <PuzzleSeven onExit={() => setActiveGame(null)} />; 
-      default: return null;
+      case "puzzle":
+        return (
+          <PuzzleOne
+            imageUrl={activeGame.img}
+            onExit={() => setActiveGame(null)}
+          />
+        );
+      case "memory":
+        return <PuzzleTwo onExit={() => setActiveGame(null)} />;
+      case "code":
+        return <PuzzleThree onExit={() => setActiveGame(null)} />;
+      case "move":
+        return <PuzzleFour onExit={() => setActiveGame(null)} />;
+      case "rotate":
+        return <PuzzleFive onExit={() => setActiveGame(null)} />;
+      case "lens":
+        return (
+          <PuzzleSix
+            imageUrl={activeGame.img}
+            onExit={() => setActiveGame(null)}
+          />
+        );
+      case "line":
+        return <PuzzleSeven onExit={() => setActiveGame(null)} />;
+      default:
+        return null;
     }
   };
   return (
-    <div style={{ padding: '40px 20px' }}>
+    <div style={{ padding: "40px 20px" }}>
       <MainTitle>ОБЕРІТЬ ГОЛОВОЛОМКУ</MainTitle>
       <PuzzlesGrid>
-        {puzzleData.map(p => (
+        {puzzleData.map((p) => (
           <PuzzleCard key={p.id} onClick={() => setActiveGame(p)}>
-            <PreviewImage src={p.img} alt={p.title}/>
+            <PreviewImage src={p.img} alt={p.title} />
           </PuzzleCard>
         ))}
       </PuzzlesGrid>
 
-      {activeGame && (
-        <FullscreenOverlay>
-          {renderGame()}
-        </FullscreenOverlay>
-      )}
+      {activeGame && <FullscreenOverlay>{renderGame()}</FullscreenOverlay>}
     </div>
   );
 };

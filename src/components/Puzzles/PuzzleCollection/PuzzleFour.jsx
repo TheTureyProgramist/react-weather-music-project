@@ -336,46 +336,40 @@ const PuzzleFour = ({ onExit }) => {
     if (bonusTime > 0) return;
     setIsHit(true);
     setTimeout(() => setIsHit(false), 300);
+    
+    // x2 шкода у фазі евакуації
+    const damage = isEvacuating ? 2 : 1;
+
     setLives((l) => {
-      if (l <= 1) {
+      if (l <= damage) {
         alert("СИСТЕМУ ЗНИЩЕНО");
         resetGame();
         return 4;
       }
       setPlayer({ x: 0, y: 0 });
       playerRef.current = { x: 0, y: 0 };
-      return l - 1;
+      return l - damage;
     });
-  }, [resetGame, bonusTime]);
+  }, [resetGame, bonusTime, isEvacuating]);
 
   const moveSaws = useCallback(() => {
-    // Пили іноді стоять на місці (ймовірність 30%)
     if (Math.random() < 0.3) return;
 
     setSaws((prevSaws) => {
       const nextSaws = prevSaws.map((saw) => {
         const dirs = [
-          { x: 0, y: -1 },
-          { x: 0, y: 1 },
-          { x: -1, y: 0 },
-          { x: 1, y: 0 },
-          { x: 1, y: 1 },
-          { x: -1, y: -1 },
-          { x: 1, y: -1 },
-          { x: -1, y: 1 },
+          { x: 0, y: -1 }, { x: 0, y: 1 }, { x: -1, y: 0 }, { x: 1, y: 0 },
+          { x: 1, y: 1 }, { x: -1, y: -1 }, { x: 1, y: -1 }, { x: -1, y: 1 },
         ];
         const valid = dirs.filter((d) => {
-          let nx = saw.x + d.x,
-            ny = saw.y + d.y;
+          let nx = saw.x + d.x, ny = saw.y + d.y;
           if (nx <= 1 && ny <= 1) return false;
-          if (nx < 0 || nx > 7 || ny < 0 || ny > 7 || levelMap[ny][nx] === 1)
-            return false;
+          if (nx < 0 || nx > 7 || ny < 0 || ny > 7 || levelMap[ny][nx] === 1) return false;
           return !boxes.some((b) => b.x === nx && b.y === ny);
         });
         const move = valid[Math.floor(Math.random() * valid.length)];
         if (!move) return saw;
-        let fx = saw.x + move.x,
-          fy = saw.y + move.y;
+        let fx = saw.x + move.x, fy = saw.y + move.y;
         if (fx === portalA.x && fy === portalA.y) return portalB;
         if (fx === portalB.x && fy === portalB.y) return portalA;
         return { x: fx, y: fy };
@@ -393,18 +387,13 @@ const PuzzleFour = ({ onExit }) => {
 
   const completeStep = useCallback(
     (nx, ny, newBoxes) => {
-      let finalX = nx,
-        finalY = ny;
+      let finalX = nx, finalY = ny;
       let usedPortal = false;
       if (portalCooldown === 0) {
         if (nx === portalA.x && ny === portalA.y) {
-          finalX = portalB.x;
-          finalY = portalB.y;
-          usedPortal = true;
+          finalX = portalB.x; finalY = portalB.y; usedPortal = true;
         } else if (nx === portalB.x && ny === portalB.y) {
-          finalX = portalA.x;
-          finalY = portalA.y;
-          usedPortal = true;
+          finalX = portalA.x; finalY = portalA.y; usedPortal = true;
         }
       }
       setPlayer({ x: finalX, y: finalY });
@@ -441,19 +430,10 @@ const PuzzleFour = ({ onExit }) => {
         setBoxes(updated);
         const lockedCount = updated.filter((b) => b.locked).length;
 
-        if (lockedCount <= 2) {
-          setLives((l) => Math.min(4, l + 1));
-          setTimeLeft((t) => t + 10);
-          setMoves((m) => Math.max(0, m - 20));
-          setStatusMsg("BONUS!");
-          setTimeout(() => setStatusMsg(null), 1200);
-        }
-
         if (lockedCount === 4) {
-          // Бонус після 4-го ящика: 8 секунд безпеки
+          setStatusMsg("SAFE MODE!");
           setBonusTime(8);
           setIsEvacuating(true);
-          // 8 контрольних точок (2 видимі, 6 прихованих)
           setEvacPoints([
             { x: 1, y: 1, active: false, hidden: false },
             { x: 6, y: 6, active: false, hidden: false },
@@ -464,7 +444,9 @@ const PuzzleFour = ({ onExit }) => {
             { x: 0, y: 4, active: false, hidden: true },
             { x: 7, y: 3, active: false, hidden: true },
           ]);
-        } else setActiveTargetIdx((prev) => (prev + 1) % targets.length);
+        } else {
+            setActiveTargetIdx((prev) => (prev + 1) % targets.length);
+        }
       }
       setMoves((m) => {
         if (m >= 99) {
@@ -476,41 +458,24 @@ const PuzzleFour = ({ onExit }) => {
       });
       moveSaws();
     },
-    [
-      portalCooldown,
-      isEvacuating,
-      evacPoints,
-      targets,
-      activeTargetIdx,
-      moveSaws,
-      resetGame,
-      portalA,
-      portalB,
-    ],
+    [portalCooldown, isEvacuating, evacPoints, targets, activeTargetIdx, moveSaws, resetGame, portalA, portalB],
   );
 
   const canMove = useCallback(
     (dir) => {
       const dx = dir === "left" ? -1 : dir === "right" ? 1 : 0;
       const dy = dir === "up" ? -1 : dir === "down" ? 1 : 0;
-      const nx = player.x + dx,
-        ny = player.y + dy;
-      if (nx < 0 || nx > 7 || ny < 0 || ny > 7 || levelMap[ny][nx] === 1)
-        return false;
+      const nx = player.x + dx, ny = player.y + dy;
+      if (nx < 0 || nx > 7 || ny < 0 || ny > 7 || levelMap[ny][nx] === 1) return false;
       const boxIdx = boxes.findIndex((b) => b.x === nx && b.y === ny);
       if (boxIdx !== -1) {
         if (boxes[boxIdx].locked) return false;
-        const bnx = nx + dx,
-          bny = ny + dy;
+        const bnx = nx + dx, bny = ny + dy;
         if (
-          bnx < 0 ||
-          bnx > 7 ||
-          bny < 0 ||
-          bny > 7 ||
+          bnx < 0 || bnx > 7 || bny < 0 || bny > 7 ||
           levelMap[bny][bnx] === 1 ||
           boxes.some((b) => b.x === bnx && b.y === bny)
-        )
-          return false;
+        ) return false;
       }
       return true;
     },
@@ -523,16 +488,14 @@ const PuzzleFour = ({ onExit }) => {
       if (!canMove(dir)) return;
       const dx = dir === "left" ? -1 : dir === "right" ? 1 : 0;
       const dy = dir === "up" ? -1 : dir === "down" ? 1 : 0;
-      const nx = player.x + dx,
-        ny = player.y + dy;
+      const nx = player.x + dx, ny = player.y + dy;
       if (saws.some((s) => s.x === nx && s.y === ny)) {
         handleHit();
         return;
       }
       const boxIdx = boxes.findIndex((b) => b.x === nx && b.y === ny);
       if (boxIdx !== -1) {
-        const bnx = nx + dx,
-          bny = ny + dy;
+        const bnx = nx + dx, bny = ny + dy;
         const nextBoxes = [...boxes];
         nextBoxes[boxIdx] = { ...nextBoxes[boxIdx], x: bnx, y: bny };
         setBoxes(nextBoxes);
@@ -573,28 +536,19 @@ const PuzzleFour = ({ onExit }) => {
   return (
     <GameWrapper $isHit={isHit}>
       <h4 style={{ margin: 0, color: "#ffb36c" }}>
-        {isEvacuating ? "ФАЗА РАДАРУ" : "ЗБІР МОДУЛІВ"}
+        {isEvacuating ? "ФАЗА РАДАРУ (x2 DAMAGE)" : "ЗБІР МОДУЛІВ"}
       </h4>
       <GameBoard>
         {levelMap.map((row, y) =>
           row.map((cell, x) => {
             const evac = evacPoints.find((p) => p.x === x && p.y === y);
-            const dist = Math.sqrt(
-              Math.pow(x - player.x, 2) + Math.pow(y - player.y, 2),
-            );
+            const dist = Math.sqrt(Math.pow(x - player.x, 2) + Math.pow(y - player.y, 2));
             return (
               <Cell
                 key={`${x}-${y}`}
                 $type={cell === 1 ? "wall" : "empty"}
-                $isPortal={
-                  (x === portalA.x && y === portalA.y) ||
-                  (x === portalB.x && y === portalB.y)
-                }
-                $isActiveTarget={
-                  !isEvacuating &&
-                  targets[activeTargetIdx].x === x &&
-                  targets[activeTargetIdx].y === y
-                }
+                $isPortal={(x === portalA.x && y === portalA.y) || (x === portalB.x && y === portalB.y)}
+                $isActiveTarget={!isEvacuating && targets[activeTargetIdx].x === x && targets[activeTargetIdx].y === y}
                 $isEvacPoint={!!evac}
                 $activated={evac?.active}
                 $isHiddenPoint={evac?.hidden}
@@ -607,26 +561,10 @@ const PuzzleFour = ({ onExit }) => {
           <PlayerIcon>
             {!finalWin && !showHelp && (
               <>
-                {canMove("up") && (
-                  <NavArrow $dir="up" onClick={() => moveAction("up")}>
-                    ▲
-                  </NavArrow>
-                )}
-                {canMove("down") && (
-                  <NavArrow $dir="down" onClick={() => moveAction("down")}>
-                    ▼
-                  </NavArrow>
-                )}
-                {canMove("left") && (
-                  <NavArrow $dir="left" onClick={() => moveAction("left")}>
-                    ◀
-                  </NavArrow>
-                )}
-                {canMove("right") && (
-                  <NavArrow $dir="right" onClick={() => moveAction("right")}>
-                    ▶
-                  </NavArrow>
-                )}
+                {canMove("up") && <NavArrow $dir="up" onClick={() => moveAction("up")}>▲</NavArrow>}
+                {canMove("down") && <NavArrow $dir="down" onClick={() => moveAction("down")}>▼</NavArrow>}
+                {canMove("left") && <NavArrow $dir="left" onClick={() => moveAction("left")}>◀</NavArrow>}
+                {canMove("right") && <NavArrow $dir="right" onClick={() => moveAction("right")}>▶</NavArrow>}
               </>
             )}
           </PlayerIcon>
@@ -634,14 +572,9 @@ const PuzzleFour = ({ onExit }) => {
         {boxes.map((b, i) => (
           <MovingObject
             key={`b-${i}`}
-            $x={b.x}
-            $y={b.y}
+            $x={b.x} $y={b.y}
             $invisible={isEvacuating}
-            $isNear={
-              Math.sqrt(
-                Math.pow(b.x - player.x, 2) + Math.pow(b.y - player.y, 2),
-              ) < 1.6
-            }
+            $isNear={Math.sqrt(Math.pow(b.x - player.x, 2) + Math.pow(b.y - player.y, 2)) < 1.6}
           >
             <BoxIcon $locked={b.locked} />
           </MovingObject>
@@ -649,20 +582,14 @@ const PuzzleFour = ({ onExit }) => {
 
         {saws.map((s, i) => {
           const isTransparent = bonusTime > 0;
-          const isInvisible =
-            isEvacuating && !sawsVisibleFlash && bonusTime <= 0;
+          const isInvisible = isEvacuating && !sawsVisibleFlash && bonusTime <= 0;
           return (
             <MovingObject
               key={`s-${i}`}
-              $x={s.x}
-              $y={s.y}
+              $x={s.x} $y={s.y}
               $invisible={isInvisible}
               $isTransparent={isTransparent}
-              $isNear={
-                Math.sqrt(
-                  Math.pow(s.x - player.x, 2) + Math.pow(s.y - player.y, 2),
-                ) < 1.6
-              }
+              $isNear={Math.sqrt(Math.pow(s.x - player.x, 2) + Math.pow(s.y - player.y, 2)) < 1.6}
             >
               <SawIcon
                 $safe={bonusTime > 0}
@@ -672,19 +599,20 @@ const PuzzleFour = ({ onExit }) => {
           );
         })}
 
-        {statusMsg && (
-          <FloatingText key={statusMsg + moves}>{statusMsg}</FloatingText>
-        )}
+        {statusMsg && <FloatingText key={statusMsg + moves}>{statusMsg}</FloatingText>}
         {showHelp && (
           <Modal>
             <h3>Рішення головоломки</h3>
             <p style={{ fontSize: "11px", textAlign: "left" }}>
-               <b>Рух</b>: По горизонталі та діагоналі. Карта: 8х8.<br/>
-               <b>Пили</b>: Забирають 1життя, після вашого руху їхній рух у випадковому напрямку! Можуть по діагоналі, вертикалі, горизонталі або не переміститися. 4шт.<br/>
-              <b>БОНУС</b>: Ящики: +життя, +10с, -20 ходів! При втановлені блоку у потрібне місце.
-              <br /><b>Фаза 2</b>: Коли ви встановите всі ящики на місце, пили стануть безпечними(зеленими, щоправда блокуватимуть вам шлях) на 8с(в останні 2с оранжеві), після цього вони забиратимуть 2 життя у вас! Та ще й будуть невидимими, вони видимі лише на відстані 1блок!
-              <br /><b>Як вижити в ІІетапі?</b> Є 8 точок (6 прихованих). Знайдіть для перемоги. При наступанні на неї пили видимі 1с.
-              • <b>Портал:</b> Має дуже малу перезарядку! Пили проходять без обмежень!
+              <b>Ціль</b>: Встановити 4 модулі на позиції ⚡.
+              <br />
+              <b>Пили</b>: Випадковий рух. У Фазі 1 забирають 1❤️.
+              <br />
+              <b>НЕВРАЗЛИВІСТЬ</b>: Після 4-го модуля — 8с безпеки (зелені пили).
+              <br />
+              <b>ФАЗА ЕВАКУАЦІЇ</b>: Пили стають невидимими (радіус 1) і наносять <b>x2 ШКОДИ (2❤️)</b>!
+              <br />
+              <b>Як вижити?</b> Активуйте 8 точок 📍. При кожній активації пили стають видимими на 1с.
             </p>
             <GameButton
               style={{ width: "auto", padding: "0 20px", marginTop: "10px" }}
@@ -698,24 +626,15 @@ const PuzzleFour = ({ onExit }) => {
       <BottomPanel>
         <StatsGrid>
           <span>❤️ {lives}/4</span>
-          <span>
-            ⏳ {Math.floor(timeLeft / 60)}:
-            {String(timeLeft % 60).padStart(2, "0")}
-          </span>
+          <span>⏳ {Math.floor(timeLeft / 60)}:{String(timeLeft % 60).padStart(2, "0")}</span>
           <span>👣 {moves}/100</span>
-          <span style={{ color: "#3f51b5" }}>
-            🌀 {portalCooldown > 0 ? portalCooldown : "OK"}
-          </span>
-          {bonusTime > 0 && (
-            <span style={{ color: "#4caf50" }}>🛡️ {bonusTime}s</span>
-          )}
+          <span style={{ color: "#3f51b5" }}>🌀 {portalCooldown > 0 ? portalCooldown : "OK"}</span>
+          {bonusTime > 0 && <span style={{ color: "#4caf50" }}>🛡️ {bonusTime}s</span>}
         </StatsGrid>
         <div style={{ display: "flex", gap: "5px" }}>
           <GameButton onClick={() => setShowHelp(true)}>?</GameButton>
           <GameButton onClick={resetGame}>⏭</GameButton>
-          <GameButton onClick={onExit} style={{ color: "#f44336" }}>
-            ✖
-          </GameButton>
+          <GameButton onClick={onExit} style={{ color: "#f44336" }}>✖</GameButton>
         </div>
       </BottomPanel>
     </GameWrapper>

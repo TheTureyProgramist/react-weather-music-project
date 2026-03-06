@@ -2,11 +2,11 @@ const express = require("express");
 const cors = require("cors");
 const dotenv = require("dotenv");
 const { GoogleGenerativeAI } = require("@google/generative-ai");
-const path = require('path');
+const path = require("path");
 
 // Спочатку пробуємо знайти .env у корені проєкту (на рівень вище), потім у поточній папці
-dotenv.config({ path: path.resolve(__dirname, '../.env') });
-dotenv.config({ path: path.resolve(__dirname, '.env') });
+dotenv.config({ path: path.resolve(__dirname, "../.env") });
+dotenv.config({ path: path.resolve(__dirname, ".env") });
 
 const apiKey = process.env.GEMINI_API_KEY;
 console.log("Ключ завантажено:", apiKey ? "Так ✅" : "Ні ❌");
@@ -23,10 +23,10 @@ app.post("/api/help", async (req, res) => {
     const { prompt } = req.body;
     if (!prompt) return res.status(400).json({ error: "Запит порожній" });
 
-      // Використовуємо стабільну назву моделі
-      const model = genAI.getGenerativeModel({ 
-         model: "gemini-1.5-flash",
-         systemInstruction: `
+    // Використовуємо стабільну назву моделі
+    const model = genAI.getGenerativeModel({
+      model: "gemini-1.5-flash",
+      systemInstruction: `
 Ти — TurkeyHelper, офіційний інтелектуальний асистент TurkeyStudio. 
 Твоя мета: допомагати користувачам з навігацією, пояснювати роботу плеєра, умови підписок та розважати темами кіно та ігор.
 
@@ -64,13 +64,13 @@ app.post("/api/help", async (req, res) => {
 СТИЛЬ СПІЛКУВАННЯ:
 - Будь дружнім, використовуй емодзі (🦃, ✨, 🧧, 🎵).
 - Якщо користувач має кілька акаунтів для "добутку", нагадуй, що кожен акаунт має власні ліміти конвертів залежно від рівня підписки.
-`
+`,
     });
 
     const result = await model.generateContent(prompt);
     const response = await result.response;
     const text = response.text();
-    
+
     res.json({ text });
   } catch (error) {
     // Якщо все ще 404, виведемо повний об'єкт помилки для діагностики

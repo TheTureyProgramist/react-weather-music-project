@@ -113,7 +113,9 @@ const PlayAllButton = styled.button`
   font-size: 16px;
   font-weight: bold;
   cursor: pointer;
-  transition: background 0.3s, transform 0.2s;
+  transition:
+    background 0.3s,
+    transform 0.2s;
   &:hover {
     background: #e69500;
     transform: scale(1.05);
@@ -323,8 +325,8 @@ const VolumeSlider = styled.input`
   background: linear-gradient(
     to right,
     orange 0%,
-    orange ${(props) => (props.value * 100) || 0}%,
-    #ccc ${(props) => (props.value * 100) || 0}%,
+    orange ${(props) => props.value * 100 || 0}%,
+    #ccc ${(props) => props.value * 100 || 0}%,
     #ccc 100%
   );
   border-radius: 2px;
@@ -409,7 +411,8 @@ const ModalOverlay = styled.div`
   justify-content: center;
   align-items: center;
   z-index: 1000;
-  animation: ${(props) => (props.$isClosing ? fadeOut : "none")} 0.5s ease-out forwards;
+  animation: ${(props) => (props.$isClosing ? fadeOut : "none")} 0.5s ease-out
+    forwards;
 `;
 
 const ModalContent = styled.div`
@@ -421,7 +424,8 @@ const ModalContent = styled.div`
   max-height: 85vh;
   overflow-y: auto;
   position: relative;
-  animation: ${(props) => (props.$isClosing ? slideOut : slideIn)} 0.5s ease-out forwards;
+  animation: ${(props) => (props.$isClosing ? slideOut : slideIn)} 0.5s ease-out
+    forwards;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
   &::-webkit-scrollbar {
     width: 6px;
@@ -483,7 +487,7 @@ const MusicCard = ({
   const [isLooping, setIsLooping] = useState(false);
   const [volume, setVolume] = useState(1);
   const [prevVolume, setPrevVolume] = useState(1);
-  const [playbackRate, setPlaybackRate] = useState(1); 
+  const [playbackRate, setPlaybackRate] = useState(1);
   const [bufferedTime, setBufferedTime] = useState(0);
 
   const isCurrentTrack = activeTrackId === id;
@@ -515,7 +519,7 @@ const MusicCard = ({
       audioRef.current.volume = volume;
     }
   }, [volume]);
-  
+
   useEffect(() => {
     if (audioRef.current) {
       audioRef.current.playbackRate = playbackRate;
@@ -530,11 +534,11 @@ const MusicCard = ({
         setBufferedTime(audioEl.buffered.end(audioEl.buffered.length - 1));
       }
     };
-    audioEl.addEventListener('progress', updateBuffered);
-    audioEl.addEventListener('loadedmetadata', updateBuffered);
+    audioEl.addEventListener("progress", updateBuffered);
+    audioEl.addEventListener("loadedmetadata", updateBuffered);
     return () => {
-      audioEl.removeEventListener('progress', updateBuffered);
-      audioEl.removeEventListener('loadedmetadata', updateBuffered);
+      audioEl.removeEventListener("progress", updateBuffered);
+      audioEl.removeEventListener("loadedmetadata", updateBuffered);
     };
   }, []);
 
@@ -592,7 +596,9 @@ const MusicCard = ({
         <HeartButton
           $active={isFavorite}
           onClick={() => onToggleFavorite(id)}
-          title={isFavorite ? "Прибрати з улюблених" : "Додати в улюблені (ліміт 3)"}
+          title={
+            isFavorite ? "Прибрати з улюблених" : "Додати в улюблені (ліміт 3)"
+          }
         >
           {isFavorite ? "❤️" : "🤍"}
         </HeartButton>
@@ -636,15 +642,20 @@ const MusicCard = ({
             <TimeDisplay>
               {formatTime(currentTime)} / {formatTime(duration)}
               {bufferedTime > currentTime && (
-                <span style={{ color: '#aaa', marginLeft: 4 }} title="Завантажено">({formatTime(bufferedTime)})</span>
+                <span
+                  style={{ color: "#aaa", marginLeft: 4 }}
+                  title="Завантажено"
+                >
+                  ({formatTime(bufferedTime)})
+                </span>
               )}
             </TimeDisplay>
           </PlayerRow>
           <SliderRow>
-            <span 
-              className="icon" 
-              title={volume === 0 ? "Увімкнути звук" : "Вимкнути звук"} 
-              onClick={toggleMute} 
+            <span
+              className="icon"
+              title={volume === 0 ? "Увімкнути звук" : "Вимкнути звук"}
+              onClick={toggleMute}
               style={{ cursor: "pointer" }}
             >
               {volume === 0 ? "🔇" : "🔈"}
@@ -658,13 +669,15 @@ const MusicCard = ({
               onChange={(e) => {
                 const newVol = parseFloat(e.target.value);
                 setVolume(newVol);
-                if (newVol > 0) setPrevVolume(newVol); 
+                if (newVol > 0) setPrevVolume(newVol);
               }}
             />
             <span className="value">{Math.round(volume * 100)}%</span>
           </SliderRow>
           <SliderRow>
-            <span className="icon" title="Швидкість">⚡</span>
+            <span className="icon" title="Швидкість">
+              ⚡
+            </span>
             <SpeedSlider
               type="range"
               min="0.2"
@@ -684,13 +697,19 @@ const MusicCard = ({
           </LoopButton>
         </ControlsContainerPlayer>
       )}
-      
+
       {text && <MusicText title={text}>{text}</MusicText>}
-      
+
       <ActionButtonsContainer>
-        <ActionButton title="Скачати пісню" onClick={handleDownload}>⇩</ActionButton>
-        <ActionButton title="Роздрукувати фан-арт" onClick={handlePrint}>⎙</ActionButton>
-        <ActionButton title="Текст пісні" onClick={() => onOpenModal(cardData)}>✎</ActionButton>
+        <ActionButton title="Скачати пісню" onClick={handleDownload}>
+          ⇩
+        </ActionButton>
+        <ActionButton title="Роздрукувати фан-арт" onClick={handlePrint}>
+          ⎙
+        </ActionButton>
+        <ActionButton title="Текст пісні" onClick={() => onOpenModal(cardData)}>
+          ✎
+        </ActionButton>
       </ActionButtonsContainer>
     </CardWrapper>
   );
@@ -844,21 +863,22 @@ const musicCards = [
     lyrics: "Текст відсутній.",
     duration: 140,
   },
-    {
+  {
     id: 21,
     image: require("../../photos/vip-images/mechannic.jpg"),
     audio: require("../../mp3/mechanik-kindom.mp3"),
     text: "GeometryDash(DJ-Nate - Theory of everything II). Ця пісня варта уваги!",
     lyrics: "Текст відсутній.",
     duration: 140,
-  },  {
+  },
+  {
     id: 22,
     image: require("../../photos/vip-images/mechannic.jpg"),
     audio: require("../../mp3/mechanik-kindom.mp3"),
     text: "GeometryDash(F-777 - Deadlocked). Моторошна, але епічна пісня. Друг фанат цього рівня :).",
     lyrics: "Текст відсутній.",
     duration: 140,
-  },  
+  },
 ];
 const MusicPhoto = ({ user, onOpenRegister }) => {
   const [visibleCount, setVisibleCount] = useState(8);
@@ -898,7 +918,7 @@ const MusicPhoto = ({ user, onOpenRegister }) => {
       setIsClosing(false);
     }, 500);
   };
-  
+
   const processedCards = useMemo(() => {
     let filtered = musicCards.filter((card) =>
       card.text.toLowerCase().includes(searchQuery.toLowerCase()),
@@ -915,7 +935,9 @@ const MusicPhoto = ({ user, onOpenRegister }) => {
     } else if (sortOption === "name") {
       return [...filtered].sort((a, b) => a.text.localeCompare(b.text));
     } else if (sortOption === "duration") {
-      return [...filtered].sort((a, b) => (a.duration || 0) - (b.duration || 0));
+      return [...filtered].sort(
+        (a, b) => (a.duration || 0) - (b.duration || 0),
+      );
     }
     return filtered;
   }, [searchQuery, favorites, sortOption]);
@@ -979,33 +1001,35 @@ const MusicPhoto = ({ user, onOpenRegister }) => {
         <PlayAllButton onClick={handlePlayAll}>Грати все</PlayAllButton>
       </ControlsContainer>
 
-     <MusicPhotoFix>
-  {processedCards.slice(0, visibleCount).map((card) => (
-    <MusicCard
-      key={card.id}
-      cardData={card}
-      user={user}
-      isFavorite={favorites.includes(card.id)}
-      onToggleFavorite={handleToggleFavorite}
-      onOpenModal={setModalData}
-      onOpenRegister={onOpenRegister}
-      activeTrackId={activeTrackId}
-      onPlay={setActiveTrackId}
-      onTrackEnd={handleTrackEnd}
-    />
-  ))}
-</MusicPhotoFix>
+      <MusicPhotoFix>
+        {processedCards.slice(0, visibleCount).map((card) => (
+          <MusicCard
+            key={card.id}
+            cardData={card}
+            user={user}
+            isFavorite={favorites.includes(card.id)}
+            onToggleFavorite={handleToggleFavorite}
+            onOpenModal={setModalData}
+            onOpenRegister={onOpenRegister}
+            activeTrackId={activeTrackId}
+            onPlay={setActiveTrackId}
+            onTrackEnd={handleTrackEnd}
+          />
+        ))}
+      </MusicPhotoFix>
       {visibleCount < processedCards.length && (
-  <LoadMoreButton onClick={() => {
-    if (visibleCount === 8) {
-      setVisibleCount(16);
-    } else {
-      setVisibleCount(processedCards.length);
-    }
-  }}>
-    {visibleCount === 8 ?  "︾" :  "︾"}
-  </LoadMoreButton>
-)}
+        <LoadMoreButton
+          onClick={() => {
+            if (visibleCount === 8) {
+              setVisibleCount(16);
+            } else {
+              setVisibleCount(processedCards.length);
+            }
+          }}
+        >
+          {visibleCount === 8 ? "︾" : "︾"}
+        </LoadMoreButton>
+      )}
       {modalData && (
         <ModalOverlay $isClosing={isClosing} onClick={handleCloseModal}>
           <ModalContent

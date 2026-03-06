@@ -228,9 +228,17 @@ const WeatherCard = styled.div`
   @media (min-width: 1920px) {
     max-width: 460px;
     padding: 30px;
-    h1 { font-size: 3rem !important; }
-    p, div, span { font-size: 16px !important; }
-    h3 { font-size: 1.5rem !important; }
+    h1 {
+      font-size: 3rem !important;
+    }
+    p,
+    div,
+    span {
+      font-size: 16px !important;
+    }
+    h3 {
+      font-size: 1.5rem !important;
+    }
   }
 `;
 
@@ -317,8 +325,15 @@ const SettingsContainer = styled.div`
   @media (min-width: 1920px) {
     max-width: 1600px;
     padding: 24px;
-    h4 { font-size: 22px !important; }
-    label, input, button, span { font-size: 18px !important; }
+    h4 {
+      font-size: 22px !important;
+    }
+    label,
+    input,
+    button,
+    span {
+      font-size: 18px !important;
+    }
   }
 `;
 
@@ -330,8 +345,13 @@ const SectionOrderContainer = styled.div`
   box-shadow: 0 2px 8px #0001;
   @media (min-width: 1920px) {
     padding: 24px;
-    h4 { font-size: 22px !important; }
-    span, button { font-size: 18px !important; }
+    h4 {
+      font-size: 22px !important;
+    }
+    span,
+    button {
+      font-size: 18px !important;
+    }
   }
 `;
 
@@ -400,16 +420,16 @@ const App = () => {
           id: isMain ? "main-card" : Date.now(),
           isMain: isMain,
           locationName: displayName,
-          lat: targetLat, 
-          lon: targetLon, 
+          lat: targetLat,
+          lon: targetLon,
           current: {
             temp: `${Math.round(d.current.temperature_2m)}°C`,
-            tempNum: Math.round(d.current.temperature_2m), 
+            tempNum: Math.round(d.current.temperature_2m),
             feels_like: `${Math.round(d.current.apparent_temperature)}°C`,
             humidity: `${d.current.relative_humidity_2m}%`,
             pressure: `${Math.round(d.current.surface_pressure)} hPa`,
             wind_speed: `${d.current.wind_speed_10m} м/с`,
-            windNum: d.current.wind_speed_10m, 
+            windNum: d.current.wind_speed_10m,
             uv_index: d.daily.uv_index_max[0],
             description: "За кодом: " + d.current.weather_code,
             iconPlaceholder: getWeatherIcon(d.current.weather_code),
@@ -417,7 +437,7 @@ const App = () => {
           hourly: d.hourly.time.slice(0, 12).map((t, i) => ({
             time: new Date(t).getHours() + ":00",
             temp: `${Math.round(d.hourly.temperature_2m[i])}°C`,
-            tempNum: Math.round(d.hourly.temperature_2m[i]), 
+            tempNum: Math.round(d.hourly.temperature_2m[i]),
             iconPlaceholder: getWeatherIcon(d.hourly.weather_code[i]),
           })),
           daily16: d.daily.time.map((t, i) => ({
@@ -509,13 +529,21 @@ const App = () => {
       return;
     }
     let hours = 1;
-    const ask = window.confirm("Ви дійсно хочете видалити картку погоди?\n\nВи можете приховати це підтвердження на певний час.\n\nНатисніть ОК для видалення, або Скасувати для відміни.");
+    const ask = window.confirm(
+      "Ви дійсно хочете видалити картку погоди?\n\nВи можете приховати це підтвердження на певний час.\n\nНатисніть ОК для видалення, або Скасувати для відміни.",
+    );
     if (ask) {
-      let input = window.prompt("Скільки годин не показувати це підтвердження? (1-72)", "1");
+      let input = window.prompt(
+        "Скільки годин не показувати це підтвердження? (1-72)",
+        "1",
+      );
       if (input !== null) {
         const num = Math.max(1, Math.min(72, parseInt(input)));
         hours = isNaN(num) ? 1 : num;
-        localStorage.setItem("hideDeleteModalUntil", (now + hours * 3600 * 1000).toString());
+        localStorage.setItem(
+          "hideDeleteModalUntil",
+          (now + hours * 3600 * 1000).toString(),
+        );
         setHideDeleteModalUntil(now + hours * 3600 * 1000);
       }
       setWeatherCards((prev) => prev.filter((card) => card.id !== id));
@@ -684,67 +712,153 @@ const App = () => {
 
           <div className="container">
             <SettingsContainer>
-              <h4 style={{ fontWeight: 700, fontSize: 16, marginBottom: 10 }}>Налаштування підтвердження видалення картки погоди</h4>
+              <h4 style={{ fontWeight: 700, fontSize: 16, marginBottom: 10 }}>
+                Налаштування підтвердження видалення картки погоди
+              </h4>
               <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                <label htmlFor="hideDeleteModalHours" style={{ fontWeight: 500 }}>Час приховування (1-72 год):</label>
+                <label
+                  htmlFor="hideDeleteModalHours"
+                  style={{ fontWeight: 500 }}
+                >
+                  Час приховування (1-72 год):
+                </label>
                 <input
                   id="hideDeleteModalHours"
                   type="number"
                   min={1}
                   max={72}
-                  value={hideDeleteModalUntil > Date.now() ? Math.ceil((hideDeleteModalUntil - Date.now()) / 3600000) : 1}
-                  onChange={e => {
-                    let val = Math.max(1, Math.min(72, parseInt(e.target.value)));
+                  value={
+                    hideDeleteModalUntil > Date.now()
+                      ? Math.ceil((hideDeleteModalUntil - Date.now()) / 3600000)
+                      : 1
+                  }
+                  onChange={(e) => {
+                    let val = Math.max(
+                      1,
+                      Math.min(72, parseInt(e.target.value)),
+                    );
                     const newUntil = Date.now() + val * 3600 * 1000;
-                    localStorage.setItem("hideDeleteModalUntil", newUntil.toString());
+                    localStorage.setItem(
+                      "hideDeleteModalUntil",
+                      newUntil.toString(),
+                    );
                     setHideDeleteModalUntil(newUntil);
                   }}
-                  style={{ width: 60, fontSize: 16, borderRadius: 6, border: "1px solid #aaa", padding: "2px 8px" }}
+                  style={{
+                    width: 60,
+                    fontSize: 16,
+                    borderRadius: 6,
+                    border: "1px solid #aaa",
+                    padding: "2px 8px",
+                  }}
                 />
                 <button
-                  style={{ marginLeft: 10, padding: "4px 12px", borderRadius: 8, border: "1px solid #aaa", background: "#ffe0b2", fontWeight: 600, cursor: "pointer" }}
+                  style={{
+                    marginLeft: 10,
+                    padding: "4px 12px",
+                    borderRadius: 8,
+                    border: "1px solid #aaa",
+                    background: "#ffe0b2",
+                    fontWeight: 600,
+                    cursor: "pointer",
+                  }}
                   onClick={() => {
                     localStorage.removeItem("hideDeleteModalUntil");
                     setHideDeleteModalUntil(0);
                   }}
-                >Показувати завжди</button>
+                >
+                  Показувати завжди
+                </button>
                 {hideDeleteModalUntil > Date.now() && (
-                  <span style={{ color: "#ff7b00", fontWeight: 500, marginLeft: 10 }}>
-                    Активно ще {Math.ceil((hideDeleteModalUntil - Date.now()) / 3600000)} год.
+                  <span
+                    style={{
+                      color: "#ff7b00",
+                      fontWeight: 500,
+                      marginLeft: 10,
+                    }}
+                  >
+                    Активно ще{" "}
+                    {Math.ceil((hideDeleteModalUntil - Date.now()) / 3600000)}{" "}
+                    год.
                   </span>
                 )}
               </div>
             </SettingsContainer>
             <SectionOrderContainer>
-              <h4 style={{ fontWeight: 700, fontSize: 16, margin: "15px" }}>Порядок секцій сайту:</h4>
+              <h4 style={{ fontWeight: 700, fontSize: 16, margin: "15px" }}>
+                Порядок секцій сайту:
+              </h4>
               {siteSections.map((section, idx) => (
-                <div key={section.key} style={{ display: "flex", alignItems: "center", marginBottom: 6 }}>
-                  <span style={{ minWidth: 120, fontWeight: 500 }}>{section.label}</span>
+                <div
+                  key={section.key}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    marginBottom: 6,
+                  }}
+                >
+                  <span style={{ minWidth: 120, fontWeight: 500 }}>
+                    {section.label}
+                  </span>
                   <button
-                    style={{ fontSize: "16px", padding: "2px 8px", borderRadius: "6px", border: "1px solid #aaa", background: "#eee", marginLeft: 8, cursor: idx === 0 ? "not-allowed" : "pointer" }}
+                    style={{
+                      fontSize: "16px",
+                      padding: "2px 8px",
+                      borderRadius: "6px",
+                      border: "1px solid #aaa",
+                      background: "#eee",
+                      marginLeft: 8,
+                      cursor: idx === 0 ? "not-allowed" : "pointer",
+                    }}
                     disabled={idx === 0}
                     onClick={() => moveSiteSection(idx, -1)}
                     title="Вище"
-                  >↑</button>
+                  >
+                    ↑
+                  </button>
                   <button
-                    style={{ fontSize: "16px", padding: "2px 8px", borderRadius: "6px", border: "1px solid #aaa", background: "#eee", marginLeft: 4, cursor: idx === siteSections.length - 1 ? "not-allowed" : "pointer" }}
+                    style={{
+                      fontSize: "16px",
+                      padding: "2px 8px",
+                      borderRadius: "6px",
+                      border: "1px solid #aaa",
+                      background: "#eee",
+                      marginLeft: 4,
+                      cursor:
+                        idx === siteSections.length - 1
+                          ? "not-allowed"
+                          : "pointer",
+                    }}
                     disabled={idx === siteSections.length - 1}
                     onClick={() => moveSiteSection(idx, 1)}
                     title="Нижче"
-                  >↓</button>
+                  >
+                    ↓
+                  </button>
                 </div>
               ))}
               <button
-                style={{ marginTop: 10, padding: "6px 18px", borderRadius: "8px", border: "1px solid #aaa", background: "#ffe0b2", fontWeight: 600, cursor: "pointer" }}
+                style={{
+                  marginTop: 10,
+                  padding: "6px 18px",
+                  borderRadius: "8px",
+                  border: "1px solid #aaa",
+                  background: "#ffe0b2",
+                  fontWeight: 600,
+                  cursor: "pointer",
+                }}
                 onClick={resetSiteSections}
-              >Скинути порядок</button>
+              >
+                Скинути порядок
+              </button>
             </SectionOrderContainer>
             {siteSections.map((section) => {
               if (section.key === "weather") {
                 return (
                   <WeatherCardsContainer key="weather">
                     {weatherCards.map((card) => {
-                      const isExtremeTemp = card.current.tempNum > 30 || card.current.tempNum < -10;
+                      const isExtremeTemp =
+                        card.current.tempNum > 30 || card.current.tempNum < -10;
                       const isExtremeWind = card.current.windNum > 10;
                       const isExtremeUV = card.current.uv_index > 7;
 
@@ -760,24 +874,45 @@ const App = () => {
                                 {card.locationName} {card.isMain && "📍"}
                               </h3>
                               {card.isMain && (
-                                <p style={{ margin: "5px 0 0 0", fontSize: "11px", color: "#888" }}>
-                                  Широта: {card.lat ? card.lat.toFixed(4) : "—"}, Довгота: {card.lon ? card.lon.toFixed(4) : "—"}
+                                <p
+                                  style={{
+                                    margin: "5px 0 0 0",
+                                    fontSize: "11px",
+                                    color: "#888",
+                                  }}
+                                >
+                                  Широта: {card.lat ? card.lat.toFixed(4) : "—"}
+                                  , Довгота:{" "}
+                                  {card.lon ? card.lon.toFixed(4) : "—"}
                                 </p>
                               )}
                             </div>
                             <ActionButtons>
                               {card.isMain && (
                                 <button
-                                  onClick={() => setIsLocationEnabled(!isLocationEnabled)}
-                                  style={{ background: isLocationEnabled ? "#444" : "#ff4d4d", fontSize: "12px" }}
+                                  onClick={() =>
+                                    setIsLocationEnabled(!isLocationEnabled)
+                                  }
+                                  style={{
+                                    background: isLocationEnabled
+                                      ? "#444"
+                                      : "#ff4d4d",
+                                    fontSize: "12px",
+                                  }}
                                   title="Ввімкнути/вимкнути доступ до вашої локації"
                                 >
-                                  {isLocationEnabled ? "GPS Увімк." : "GPS Вимк."}
+                                  {isLocationEnabled
+                                    ? "GPS Увімк."
+                                    : "GPS Вимк."}
                                 </button>
                               )}
-                              <button onClick={() => handleRefreshCard(card)}>↺</button>
+                              <button onClick={() => handleRefreshCard(card)}>
+                                ↺
+                              </button>
                               {!card.isMain && (
-                                <button onClick={() => handleDeleteCard(card.id)}>
+                                <button
+                                  onClick={() => handleDeleteCard(card.id)}
+                                >
                                   🗑
                                 </button>
                               )}
@@ -794,7 +929,12 @@ const App = () => {
                               {card.current.iconPlaceholder}
                             </ImagePlaceholder>
                             <div>
-                              <h1 style={{ margin: "0 0 5px 0", color: isExtremeTemp ? "#ff4d4d" : "inherit" }}>
+                              <h1
+                                style={{
+                                  margin: "0 0 5px 0",
+                                  color: isExtremeTemp ? "#ff4d4d" : "inherit",
+                                }}
+                              >
                                 {card.current.temp}
                               </h1>
                               <p style={{ margin: "0", fontSize: "12px" }}>
@@ -814,18 +954,28 @@ const App = () => {
                             <div>
                               Вологість: <b>{card.current.humidity}</b>
                             </div>
-                            <div style={{ color: isExtremeWind ? "#ff4d4d" : "inherit" }}>
+                            <div
+                              style={{
+                                color: isExtremeWind ? "#ff4d4d" : "inherit",
+                              }}
+                            >
                               Вітер: <b>{card.current.wind_speed}</b>
                             </div>
                             <div>
                               Тиск: <b>{card.current.pressure}</b>
                             </div>
-                            <div style={{ color: isExtremeUV ? "#ff4d4d" : "inherit" }}>
+                            <div
+                              style={{
+                                color: isExtremeUV ? "#ff4d4d" : "inherit",
+                              }}
+                            >
                               УФ-індекс: <b>{card.current.uv_index}</b>
                             </div>
                           </div>
 
-                          <h4 style={{ margin: "0 0 10px 0" }}>Годинний прогноз:</h4>
+                          <h4 style={{ margin: "0 0 10px 0" }}>
+                            Годинний прогноз:
+                          </h4>
                           <div
                             style={{
                               display: "flex",
@@ -849,13 +999,25 @@ const App = () => {
                                     borderRadius: "10px",
                                   }}
                                 >
-                                  <span style={{ fontSize: "12px", marginBottom: "5px" }}>
+                                  <span
+                                    style={{
+                                      fontSize: "12px",
+                                      marginBottom: "5px",
+                                    }}
+                                  >
                                     {h.time}
                                   </span>
-                                  <span style={{ fontSize: "20px", marginBottom: "5px" }}>
+                                  <span
+                                    style={{
+                                      fontSize: "20px",
+                                      marginBottom: "5px",
+                                    }}
+                                  >
                                     {h.iconPlaceholder}
                                   </span>
-                                  <span style={{ fontWeight: "bold" }}>{h.temp}</span>
+                                  <span style={{ fontWeight: "bold" }}>
+                                    {h.temp}
+                                  </span>
                                 </div>
                               ))}
                           </div>
@@ -865,7 +1027,7 @@ const App = () => {
                           </h4>
                           <div
                             style={{
-                              maxHeight: "400px", 
+                              maxHeight: "400px",
                               overflowY: "auto",
                               paddingRight: "10px",
                             }}
@@ -883,8 +1045,12 @@ const App = () => {
                                   paddingBottom: "5px",
                                 }}
                               >
-                                <span style={{ width: "40px" }}>{day.date}</span>
-                                <span style={{ width: "30px", fontWeight: "bold" }}>
+                                <span style={{ width: "40px" }}>
+                                  {day.date}
+                                </span>
+                                <span
+                                  style={{ width: "30px", fontWeight: "bold" }}
+                                >
                                   {day.day}
                                 </span>
                                 <ImagePlaceholder
@@ -910,10 +1076,26 @@ const App = () => {
                 );
               }
               if (section.key === "puzzles") return <Puzzles key="puzzles" />;
-              if (section.key === "aihelp") return <Aihelp key="aihelp" isDarkMode={isDarkMode} />;
+              if (section.key === "aihelp")
+                return <Aihelp key="aihelp" isDarkMode={isDarkMode} />;
               if (section.key === "news") return <News key="news" />;
-              if (section.key === "music") return <MusicPhoto key="music" user={user} onOpenRegister={() => setIsModalOpen(true)} />;
-              if (section.key === "fanart") return <FanArt key="fanart" isDarkMode={isDarkMode} user={user} onOpenRegister={() => setIsModalOpen(true)} />;
+              if (section.key === "music")
+                return (
+                  <MusicPhoto
+                    key="music"
+                    user={user}
+                    onOpenRegister={() => setIsModalOpen(true)}
+                  />
+                );
+              if (section.key === "fanart")
+                return (
+                  <FanArt
+                    key="fanart"
+                    isDarkMode={isDarkMode}
+                    user={user}
+                    onOpenRegister={() => setIsModalOpen(true)}
+                  />
+                );
               return null;
             })}
           </div>

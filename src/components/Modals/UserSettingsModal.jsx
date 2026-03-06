@@ -301,7 +301,9 @@ const PasswordStrengthBar = styled.div`
   border-radius: 3px;
   background-color: ${(props) => props.$color || "transparent"};
   width: ${(props) => props.$width || "0%"};
-  transition: width 0.3s ease, background-color 0.3s ease;
+  transition:
+    width 0.3s ease,
+    background-color 0.3s ease;
 `;
 
 const PasswordStrengthLabel = styled.span`
@@ -469,7 +471,8 @@ const UserSettingsModal = ({ onClose, user, availableAvatars, onUpdate }) => {
     if (/[^A-Za-z0-9]/.test(password)) score += 1;
 
     if (score <= 2) return { width: "33%", color: "#ff4d4d", label: "Слабкий" };
-    if (score <= 4) return { width: "66%", color: "#ffb36c", label: "Середній" };
+    if (score <= 4)
+      return { width: "66%", color: "#ffb36c", label: "Середній" };
     return { width: "100%", color: "#4caf50", label: "Надійний" };
   };
 
@@ -532,18 +535,24 @@ const UserSettingsModal = ({ onClose, user, availableAvatars, onUpdate }) => {
           if (section === "name") {
             content = (
               <Section key="name">
-                <label style={{ fontSize: "13px", fontWeight: "bold" }}>Ім'я</label>
+                <label style={{ fontSize: "13px", fontWeight: "bold" }}>
+                  Ім'я
+                </label>
                 <NameInput
                   $textColor={formData.textColor}
                   value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, name: e.target.value })
+                  }
                 />
               </Section>
             );
           } else if (section === "birthDate") {
             content = (
               <Section key="birthDate">
-                <label style={{ fontSize: "13px", fontWeight: "bold" }}>Дата народження</label>
+                <label style={{ fontSize: "13px", fontWeight: "bold" }}>
+                  Дата народження
+                </label>
                 <DateRow>
                   <Select
                     value={formData.day}
@@ -553,7 +562,9 @@ const UserSettingsModal = ({ onClose, user, availableAvatars, onUpdate }) => {
                   >
                     <option value="">День</option>
                     {days.map((d) => (
-                      <option key={d} value={d}>{d}</option>
+                      <option key={d} value={d}>
+                        {d}
+                      </option>
                     ))}
                   </Select>
                   <Select
@@ -564,7 +575,9 @@ const UserSettingsModal = ({ onClose, user, availableAvatars, onUpdate }) => {
                   >
                     <option value="">Місяць</option>
                     {months.map((m, i) => (
-                      <option key={i} value={i + 1}>{m}</option>
+                      <option key={i} value={i + 1}>
+                        {m}
+                      </option>
                     ))}
                   </Select>
                   <Select
@@ -575,26 +588,36 @@ const UserSettingsModal = ({ onClose, user, availableAvatars, onUpdate }) => {
                   >
                     <option value="">Рік</option>
                     {years.map((y) => (
-                      <option key={y} value={y}>{y}</option>
+                      <option key={y} value={y}>
+                        {y}
+                      </option>
                     ))}
                   </Select>
                 </DateRow>
                 {isInvalidDate && (
-                  <span style={{ color: "red", fontSize: "11px" }}>Такої дати не існує!</span>
+                  <span style={{ color: "red", fontSize: "11px" }}>
+                    Такої дати не існує!
+                  </span>
                 )}
               </Section>
             );
           } else if (section === "security") {
             content = (
               <Section key="security">
-                <label style={{ fontSize: "13px", fontWeight: "bold" }}>Безпека</label>
+                <label style={{ fontSize: "13px", fontWeight: "bold" }}>
+                  Безпека
+                </label>
                 <Input
                   type="password"
                   placeholder="Поточний пароль"
                   disabled
                   readOnly
                   value="********"
-                  style={{ marginBottom: "8px", opacity: 0.6, cursor: "not-allowed" }}
+                  style={{
+                    marginBottom: "8px",
+                    opacity: 0.6,
+                    cursor: "not-allowed",
+                  }}
                 />
                 <Input
                   type="password"
@@ -621,7 +644,10 @@ const UserSettingsModal = ({ onClose, user, availableAvatars, onUpdate }) => {
                   type="password"
                   placeholder="Підтвердіть новий пароль"
                   onChange={(e) =>
-                    setFormData({ ...formData, confirmPassword: e.target.value })
+                    setFormData({
+                      ...formData,
+                      confirmPassword: e.target.value,
+                    })
                   }
                 />
               </Section>
@@ -629,7 +655,9 @@ const UserSettingsModal = ({ onClose, user, availableAvatars, onUpdate }) => {
           } else if (section === "textColor") {
             content = (
               <Section key="textColor">
-                <label style={{ fontSize: "13px", fontWeight: "bold" }}>Колір тексту</label>
+                <label style={{ fontSize: "13px", fontWeight: "bold" }}>
+                  Колір тексту
+                </label>
                 <ColorContainer>
                   {COLORS.map((color, i) => (
                     <ColorCircle
@@ -637,7 +665,9 @@ const UserSettingsModal = ({ onClose, user, availableAvatars, onUpdate }) => {
                       $color={color.value}
                       $isSelected={formData.textColor === color.value}
                       title={color.name}
-                      onClick={() => setFormData({ ...formData, textColor: color.value })}
+                      onClick={() =>
+                        setFormData({ ...formData, textColor: color.value })
+                      }
                     />
                   ))}
                 </ColorContainer>
@@ -646,7 +676,9 @@ const UserSettingsModal = ({ onClose, user, availableAvatars, onUpdate }) => {
           } else if (section === "borderColor") {
             content = (
               <Section key="borderColor">
-                <label style={{ fontSize: "13px", fontWeight: "bold" }}>Колір рамки аватара</label>
+                <label style={{ fontSize: "13px", fontWeight: "bold" }}>
+                  Колір рамки аватара
+                </label>
                 <ColorContainer>
                   {COLORS.map((color, i) => (
                     <ColorCircle
@@ -654,7 +686,9 @@ const UserSettingsModal = ({ onClose, user, availableAvatars, onUpdate }) => {
                       $color={color.value}
                       $isSelected={formData.borderColor === color.value}
                       title={color.name}
-                      onClick={() => setFormData({ ...formData, borderColor: color.value })}
+                      onClick={() =>
+                        setFormData({ ...formData, borderColor: color.value })
+                      }
                     />
                   ))}
                 </ColorContainer>
@@ -663,8 +697,17 @@ const UserSettingsModal = ({ onClose, user, availableAvatars, onUpdate }) => {
           } else if (section === "avatar") {
             content = (
               <Section key="avatar">
-                <div style={{ fontSize: "12px", fontWeight: "bold", color: "grey" }}>
-                  Аватар оберіть, 1-ий доступний з<AnimatedText>Стихія+</AnimatedText>, наступні 2 за <GreenText>досягнення</GreenText>. Та ще 3 за 🧧, та сама логіка з вибором кольору імені, та рамки аватара.
+                <div
+                  style={{
+                    fontSize: "12px",
+                    fontWeight: "bold",
+                    color: "grey",
+                  }}
+                >
+                  Аватар оберіть, 1-ий доступний з
+                  <AnimatedText>Стихія+</AnimatedText>, наступні 2 за{" "}
+                  <GreenText>досягнення</GreenText>. Та ще 3 за 🧧, та сама
+                  логіка з вибором кольору імені, та рамки аватара.
                 </div>
                 <AvatarSlider>
                   {availableAvatars.map((img, i) => (
@@ -672,7 +715,9 @@ const UserSettingsModal = ({ onClose, user, availableAvatars, onUpdate }) => {
                       key={i}
                       $isSelected={formData.avatarIndex === i}
                       $borderColor={formData.borderColor}
-                      onClick={() => setFormData({ ...formData, avatarIndex: i })}
+                      onClick={() =>
+                        setFormData({ ...formData, avatarIndex: i })
+                      }
                     >
                       <img src={img} alt="avatar" />
                     </AvatarOption>
@@ -684,10 +729,17 @@ const UserSettingsModal = ({ onClose, user, availableAvatars, onUpdate }) => {
           return content;
         })}
         <div style={{ marginTop: 30, marginBottom: 10 }}>
-          <h4 style={{ fontWeight: 700, fontSize: 16, marginBottom: 10 }}>Порядок секцій:</h4>
+          <h4 style={{ fontWeight: 700, fontSize: 16, marginBottom: 10 }}>
+            Порядок секцій:
+          </h4>
           {sectionsOrder.map((section, idx) => (
-            <div key={section} style={{ display: "flex", alignItems: "center", marginBottom: 6 }}>
-              <span style={{ minWidth: 120, fontWeight: 500 }}>{SECTION_LABELS[section]}</span>
+            <div
+              key={section}
+              style={{ display: "flex", alignItems: "center", marginBottom: 6 }}
+            >
+              <span style={{ minWidth: 120, fontWeight: 500 }}>
+                {SECTION_LABELS[section]}
+              </span>
               <OrderButton
                 disabled={idx === 0}
                 onClick={() => moveSection(idx, -1)}

@@ -60,15 +60,27 @@ const RainbowText = styled.h1`
   font-size: 9px;
   font-weight: bold;
   margin: 0;
-  background: linear-gradient(45deg, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #8b00ff);
+  background: linear-gradient(
+    45deg,
+    #ff0000,
+    #ff7f00,
+    #ffff00,
+    #00ff00,
+    #0000ff,
+    #8b00ff
+  );
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
   transition: opacity 0.5s ease-in-out;
   opacity: ${(props) => (props.$show ? 1 : 0)};
 
-  @media (min-width: 768px) { font-size: 15px; }
-  @media (min-width: 1920px) { font-size: 32px; }
+  @media (min-width: 768px) {
+    font-size: 15px;
+  }
+  @media (min-width: 1920px) {
+    font-size: 32px;
+  }
 `;
 
 const UltraText = styled.h1`
@@ -77,7 +89,14 @@ const UltraText = styled.h1`
   font-size: 9px;
   font-weight: bold;
   margin: 0;
-  background: linear-gradient(270deg, #ff7eb3, #ff758c, #7afcff, #feffb7, #58e2c2);
+  background: linear-gradient(
+    270deg,
+    #ff7eb3,
+    #ff758c,
+    #7afcff,
+    #feffb7,
+    #58e2c2
+  );
   background-size: 400% 400%;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -86,8 +105,12 @@ const UltraText = styled.h1`
   transition: opacity 0.5s ease-in-out;
   opacity: ${(props) => (props.$show ? 1 : 0)};
 
-  @media (min-width: 768px) { font-size: 15px; }
-  @media (min-width: 1920px) { font-size: 32px; }
+  @media (min-width: 768px) {
+    font-size: 15px;
+  }
+  @media (min-width: 1920px) {
+    font-size: 32px;
+  }
 `;
 
 const HeaderDiv = styled.div`
@@ -104,19 +127,33 @@ const HeaderDiv = styled.div`
   right: 0;
   z-index: 100;
   transition: background-color 0.3s ease;
-  
-  @media (min-width: 768px) { height: 70px; padding: 0 30px; }
-  @media (min-width: 1200px) { height: 80px; }
-  @media (min-width: 1920px) { height: 130px; padding: 0 60px; } /* ТБ версія */
+
+  @media (min-width: 768px) {
+    height: 70px;
+    padding: 0 30px;
+  }
+  @media (min-width: 1200px) {
+    height: 80px;
+  }
+  @media (min-width: 1920px) {
+    height: 130px;
+    padding: 0 60px;
+  } /* ТБ версія */
 `;
 
 const HeaderFix = styled.div`
   display: flex;
   align-items: center;
   gap: 3px;
-  @media (min-width: 768px) { gap: 20px; }
-  @media (min-width: 1200px) { gap: 29px; }
-  @media (min-width: 1920px) { gap: 60px; }
+  @media (min-width: 768px) {
+    gap: 20px;
+  }
+  @media (min-width: 1200px) {
+    gap: 29px;
+  }
+  @media (min-width: 1920px) {
+    gap: 60px;
+  }
 `;
 
 const ThemeButton = styled.button`
@@ -128,10 +165,18 @@ const ThemeButton = styled.button`
   justify-content: center;
   font-size: ${(props) => (props.$isDarkMode ? "13px" : "12px")};
   transition: transform 0.2s ease;
-  &:hover { transform: scale(1.1); }
-  @media (min-width: 768px) { font-size: ${(props) => (props.$isDarkMode ? "21px" : "18px")}; }
-  @media (min-width: 1200px) { font-size: ${(props) => (props.$isDarkMode ? "23px" : "20px")}; }
-  @media (min-width: 1920px) { font-size: 45px; }
+  &:hover {
+    transform: scale(1.1);
+  }
+  @media (min-width: 768px) {
+    font-size: ${(props) => (props.$isDarkMode ? "21px" : "18px")};
+  }
+  @media (min-width: 1200px) {
+    font-size: ${(props) => (props.$isDarkMode ? "23px" : "20px")};
+  }
+  @media (min-width: 1920px) {
+    font-size: 45px;
+  }
 `;
 
 const LoginLink = styled.span`
@@ -143,8 +188,14 @@ const LoginLink = styled.span`
   text-decoration: underline;
   color: ${(props) => (props.$isDarkMode ? "#ffb36c" : "#555")};
   font-weight: 600;
-  @media (min-width: 768px) { font-size: 15px; }
-  @media (min-width: 1920px) { font-size: 28px; padding: 20px 40px; border-radius: 15px; }
+  @media (min-width: 768px) {
+    font-size: 15px;
+  }
+  @media (min-width: 1920px) {
+    font-size: 28px;
+    padding: 20px 40px;
+    border-radius: 15px;
+  }
 `;
 
 const HeaderButton = styled.button`
@@ -155,8 +206,14 @@ const HeaderButton = styled.button`
   border-radius: 8px;
   padding: 9px 18px;
   font-size: 11px;
-  @media (min-width: 768px) { font-size: 15px; }
-  @media (min-width: 1920px) { font-size: 28px; padding: 20px 40px; border-radius: 15px; }
+  @media (min-width: 768px) {
+    font-size: 15px;
+  }
+  @media (min-width: 1920px) {
+    font-size: 28px;
+    padding: 20px 40px;
+    border-radius: 15px;
+  }
 `;
 
 const IconButton = styled.button`
@@ -167,25 +224,42 @@ const IconButton = styled.button`
   display: flex;
   color: ${(props) => (props.$isDarkMode ? "#fff" : "#1a1a1a")};
   align-items: center;
-  @media (min-width: 768px) { font-size: 16px; }
-  @media (min-width: 1200px) { font-size: 19px; }
-  @media (min-width: 1920px) { font-size: 45px; }
+  @media (min-width: 768px) {
+    font-size: 16px;
+  }
+  @media (min-width: 1200px) {
+    font-size: 19px;
+  }
+  @media (min-width: 1920px) {
+    font-size: 45px;
+  }
 `;
 
 const CounterText = styled.span`
   font-size: 6px;
   font-weight: 700;
   letter-spacing: -0.5px;
-  @media (min-width: 768px) { font-size: 10px; }
-  @media (min-width: 1920px) { font-size: 22px; margin-right: 10px; }
+  @media (min-width: 768px) {
+    font-size: 10px;
+  }
+  @media (min-width: 1920px) {
+    font-size: 22px;
+    margin-right: 10px;
+  }
 `;
 
 const HeaderLogo = styled.img`
   height: 45px;
   border-radius: 50%;
-  @media (min-width: 768px) { height: 65px; }
-  @media (min-width: 1200px) { height: 75px; }
-  @media (min-width: 1920px) { height: 110px; }
+  @media (min-width: 768px) {
+    height: 65px;
+  }
+  @media (min-width: 1200px) {
+    height: 75px;
+  }
+  @media (min-width: 1920px) {
+    height: 110px;
+  }
 `;
 
 const HeaderAvatar = styled.img`
@@ -201,19 +275,38 @@ const HeaderAvatar = styled.img`
       : "none"};
   background-origin: border-box;
   background-clip: content-box, border-box;
-  border-color: ${(props) => (props.$bColor?.includes("linear-gradient") ? "transparent" : props.$bColor || "transparent")};
+  border-color: ${(props) =>
+    props.$bColor?.includes("linear-gradient")
+      ? "transparent"
+      : props.$bColor || "transparent"};
 
-  @media (min-width: 768px) { width: 40px; height: 40px; }
-  @media (min-width: 1200px) { width: 50px; height: 50px; }
-  @media (min-width: 1920px) { width: 90px; height: 90px; border-width: 5px; }
+  @media (min-width: 768px) {
+    width: 40px;
+    height: 40px;
+  }
+  @media (min-width: 1200px) {
+    width: 50px;
+    height: 50px;
+  }
+  @media (min-width: 1920px) {
+    width: 90px;
+    height: 90px;
+    border-width: 5px;
+  }
 `;
 
 const UserName = styled.span`
   font-size: 9px;
   font-weight: bold;
   margin-right: 5px;
-  @media (min-width: 768px) { font-size: 15px; margin-right: 5px; }
-  @media (min-width: 1920px) { font-size: 30px; margin-right: 15px; }
+  @media (min-width: 768px) {
+    font-size: 15px;
+    margin-right: 5px;
+  }
+  @media (min-width: 1920px) {
+    font-size: 30px;
+    margin-right: 15px;
+  }
 
   ${(props) => {
     const isGradient = props.$uColor?.includes("linear");
@@ -277,18 +370,34 @@ const Header = ({
         {user ? (
           <>
             <IconWrapper>
-              <IconButton onClick={onOpenShop} title="Магазин" $isDarkMode={isDarkMode}>
+              <IconButton
+                onClick={onOpenShop}
+                title="Магазин"
+                $isDarkMode={isDarkMode}
+              >
                 <CounterText>2000/2000</CounterText>🧧
               </IconButton>
               <NotificationBadge>!</NotificationBadge>
             </IconWrapper>
-            <IconButton onClick={onOpenAchievements} title="Досягнення" $isDarkMode={isDarkMode}>
+            <IconButton
+              onClick={onOpenAchievements}
+              title="Досягнення"
+              $isDarkMode={isDarkMode}
+            >
               🏆
             </IconButton>
-            <IconButton onClick={onOpenSettings} title="Налаштування" $isDarkMode={isDarkMode}>
+            <IconButton
+              onClick={onOpenSettings}
+              title="Налаштування"
+              $isDarkMode={isDarkMode}
+            >
               ⚙️
             </IconButton>
-            <IconButton onClick={onLogout} title="Вийти" $isDarkMode={isDarkMode}>
+            <IconButton
+              onClick={onLogout}
+              title="Вийти"
+              $isDarkMode={isDarkMode}
+            >
               🚪
             </IconButton>
             <UserName $uColor={user.textColor}>{user.firstName}</UserName>

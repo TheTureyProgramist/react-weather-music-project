@@ -3,16 +3,29 @@ import styled from "styled-components";
 import rainbow from "../../photos/vip-images/stars.jpg";
 const SOURCES = [
   "https://www.nationalgeographic.com/animals/index.rss",
-  "https://phys.org/rss-feed/biology-news/animals-news/"
+  "https://phys.org/rss-feed/biology-news/animals-news/",
 ];
 
-const STOP_WORDS = ["війна", "політика", "кримінал", "суд", "затримано", "казино", "ставки", "корупція"];
+const STOP_WORDS = [
+  "війна",
+  "політика",
+  "кримінал",
+  "суд",
+  "затримано",
+  "казино",
+  "ставки",
+  "корупція",
+];
 
 const NewsDiv = styled.div`
   margin-top: 35px;
   padding: 0 20px;
-  @media (min-width: 768px) { margin-top: 50px; }
-  @media (min-width: 1200px) { margin-top: 80px; }
+  @media (min-width: 768px) {
+    margin-top: 50px;
+  }
+  @media (min-width: 1200px) {
+    margin-top: 80px;
+  }
 `;
 
 const AihelpTitle = styled.div`
@@ -22,7 +35,10 @@ const AihelpTitle = styled.div`
   font-weight: 600;
   color: ${(props) => (props.$isDarkMode ? "black" : "white")};
   margin-bottom: 35px;
-  @media (min-width: 768px) { font-size: 24px; margin-bottom: 50px; }
+  @media (min-width: 768px) {
+    font-size: 24px;
+    margin-bottom: 50px;
+  }
 `;
 
 const Grid = styled.div`
@@ -31,8 +47,12 @@ const Grid = styled.div`
   gap: 25px;
   max-width: 1400px;
   margin: 0 auto;
-  @media (min-width: 576px) { grid-template-columns: repeat(2, 1fr); }
-  @media (min-width: 992px) { grid-template-columns: repeat(4, 1fr); }
+  @media (min-width: 576px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  @media (min-width: 992px) {
+    grid-template-columns: repeat(4, 1fr);
+  }
 `;
 
 const Card = styled.a`
@@ -44,11 +64,11 @@ const Card = styled.a`
   display: flex;
   flex-direction: column;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
   height: 100%;
-  &:hover { 
+  &:hover {
     transform: translateY(-8px);
-    box-shadow: 0 12px 30px rgba(0,0,0,0.3);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
   }
 `;
 
@@ -75,10 +95,14 @@ const News = ({ $isDarkMode }) => {
     const translateText = async (text) => {
       if (!text || text.length < 3) return text;
       try {
-        const res = await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=uk&dt=t&q=${encodeURIComponent(text)}`);
+        const res = await fetch(
+          `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=uk&dt=t&q=${encodeURIComponent(text)}`,
+        );
         const data = await res.json();
-        return data[0].map(s => s[0]).join("");
-      } catch { return text; }
+        return data[0].map((s) => s[0]).join("");
+      } catch {
+        return text;
+      }
     };
 
     const getData = async () => {
@@ -87,33 +111,46 @@ const News = ({ $isDarkMode }) => {
         let allItems = [];
         for (const url of SOURCES) {
           try {
-            const res = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(url)}`);
+            const res = await fetch(
+              `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(url)}`,
+            );
             const data = await res.json();
-            if (data.status === 'ok' && data.items.length > 0) {
+            if (data.status === "ok" && data.items.length > 0) {
               allItems = data.items;
-              break; 
+              break;
             }
-          } catch (e) { continue; }
+          } catch (e) {
+            continue;
+          }
         }
 
-        const clean = allItems.filter(i => {
+        const clean = allItems.filter((i) => {
           const content = (i.title + (i.description || "")).toLowerCase();
-          return !STOP_WORDS.some(word => content.includes(word));
+          return !STOP_WORDS.some((word) => content.includes(word));
         });
 
         const limited = clean.slice(0, 5);
 
-        const translated = await Promise.all(limited.map(async (item) => {
-          const cleanDesc = (item.description || "").replace(/<[^>]*>?/gm, "").trim();
-          const bestImg = (item.enclosure && item.enclosure.link) || item.thumbnail || rainbow;
+        const translated = await Promise.all(
+          limited.map(async (item) => {
+            const cleanDesc = (item.description || "")
+              .replace(/<[^>]*>?/gm, "")
+              .trim();
+            const bestImg =
+              (item.enclosure && item.enclosure.link) ||
+              item.thumbnail ||
+              rainbow;
 
-          return {
-            title: await translateText(item.title),
-            description: await translateText(cleanDesc.substring(0, 80) + "..."),
-            link: item.link,
-            displayImage: bestImg
-          };
-        }));
+            return {
+              title: await translateText(item.title),
+              description: await translateText(
+                cleanDesc.substring(0, 80) + "...",
+              ),
+              link: item.link,
+              displayImage: bestImg,
+            };
+          }),
+        );
 
         setItems(translated);
       } catch (e) {
@@ -130,17 +167,45 @@ const News = ({ $isDarkMode }) => {
     <NewsDiv>
       <AihelpTitle $isDarkMode={$isDarkMode}>Світ природи</AihelpTitle>
       {loading ? (
-        <div style={{ textAlign: "center", color: "gray", padding: "50px" }}>Шукаємо цікавинки...</div>
+        <div style={{ textAlign: "center", color: "gray", padding: "50px" }}>
+          Шукаємо цікавинки...
+        </div>
       ) : items.length > 0 ? (
         <Grid>
           {items.map((item, idx) => (
-            <Card key={idx} href={item.link} target="_blank" rel="noopener noreferrer" $isDarkMode={$isDarkMode}>
-              <NewsImg src={item.displayImage} alt="" onError={(e) => { e.target.src = rainbow; }} />
+            <Card
+              key={idx}
+              href={item.link}
+              target="_blank"
+              rel="noopener noreferrer"
+              $isDarkMode={$isDarkMode}
+            >
+              <NewsImg
+                src={item.displayImage}
+                alt=""
+                onError={(e) => {
+                  e.target.src = rainbow;
+                }}
+              />
               <CardContent>
-                <h4 style={{ margin: "0 0 10px 0", fontSize: "18px", fontWeight: "700", lineHeight: "1.3" }}>
+                <h4
+                  style={{
+                    margin: "0 0 10px 0",
+                    fontSize: "18px",
+                    fontWeight: "700",
+                    lineHeight: "1.3",
+                  }}
+                >
                   {item.title}
                 </h4>
-                <p style={{ fontSize: "14px", opacity: 0.7, margin: 0, lineHeight: "1.5" }}>
+                <p
+                  style={{
+                    fontSize: "14px",
+                    opacity: 0.7,
+                    margin: 0,
+                    lineHeight: "1.5",
+                  }}
+                >
                   {item.description}
                 </p>
               </CardContent>

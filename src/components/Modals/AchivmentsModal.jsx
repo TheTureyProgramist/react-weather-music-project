@@ -120,7 +120,7 @@ const ModalContent = styled.div`
           ${slideIn} 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards
         `};
   @media (min-width: 1920px) {
-    max-width: 1890px; 
+    max-width: 1890px;
     padding: 10px;
   }
 `;
@@ -172,7 +172,7 @@ const CategoryTitle = styled.div`
     animation-delay: ${$delay || "0.2s"};
   `}
   @media (min-width: 1920px) {
-    grid-column: 1 / -1; 
+    grid-column: 1 / -1;
     font-size: 34px;
     margin-bottom: 10px;
   }

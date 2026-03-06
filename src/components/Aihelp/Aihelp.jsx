@@ -1,7 +1,14 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 
-const BANNED_KEYWORDS = ["війна", "вибори", "депутат", "рецепт", "порно", "казино"];
+const BANNED_KEYWORDS = [
+  "війна",
+  "вибори",
+  "депутат",
+  "рецепт",
+  "порно",
+  "казино",
+];
 
 const AihelpDiv = styled.div`
   margin-top: 35px;
@@ -10,8 +17,12 @@ const AihelpDiv = styled.div`
   align-items: center;
   gap: 20px;
   padding: 0 20px;
-  @media (min-width: 768px) { margin-top: 50px; }
-  @media (min-width: 1200px) { margin-top: 80px; }
+  @media (min-width: 768px) {
+    margin-top: 50px;
+  }
+  @media (min-width: 1200px) {
+    margin-top: 80px;
+  }
 `;
 
 const AihelpTitle = styled.div`
@@ -20,8 +31,12 @@ const AihelpTitle = styled.div`
   font-family: var(--font-family);
   font-weight: 600;
   color: ${(props) => (props.$isDarkMode ? "black" : "white")};
-  @media (min-width: 768px) { font-size: 20px; }
-  @media (min-width: 1200px) { font-size: 30px; }
+  @media (min-width: 768px) {
+    font-size: 20px;
+  }
+  @media (min-width: 1200px) {
+    font-size: 30px;
+  }
 `;
 
 const TextArea = styled.textarea`
@@ -43,8 +58,13 @@ const SendButton = styled.button`
   border-radius: 5px;
   cursor: pointer;
   transition: background 0.3s;
-  &:disabled { background: #ccc; cursor: not-allowed; }
-  &:hover:not(:disabled) { background: #0056b3; }
+  &:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+  }
+  &:hover:not(:disabled) {
+    background: #0056b3;
+  }
 `;
 
 const ResponseBox = styled.div`
@@ -68,12 +88,14 @@ const Aihelp = ({ $isDarkMode }) => {
     const trimmedPrompt = prompt.trim();
     if (!trimmedPrompt) return;
 
-    const containsBanned = BANNED_KEYWORDS.some(word => 
-      trimmedPrompt.toLowerCase().includes(word.toLowerCase())
+    const containsBanned = BANNED_KEYWORDS.some((word) =>
+      trimmedPrompt.toLowerCase().includes(word.toLowerCase()),
     );
 
     if (containsBanned) {
-      setResponse("Вибачте, але я не можу відповідати на запитання на цю тему.");
+      setResponse(
+        "Вибачте, але я не можу відповідати на запитання на цю тему.",
+      );
       return;
     }
 
@@ -97,7 +119,9 @@ const Aihelp = ({ $isDarkMode }) => {
         setResponse(data.error || "Сталася помилка на сервері.");
       }
     } catch (error) {
-      setResponse("Не вдалося зв'язатися з сервером. Переконайтеся, що бекенд запущено.");
+      setResponse(
+        "Не вдалося зв'язатися з сервером. Переконайтеся, що бекенд запущено.",
+      );
       console.error("Помилка:", error);
     } finally {
       setLoading(false);
@@ -107,14 +131,14 @@ const Aihelp = ({ $isDarkMode }) => {
   return (
     <AihelpDiv>
       <AihelpTitle $isDarkMode={$isDarkMode}>Допомога ШІ</AihelpTitle>
-      
-      <TextArea 
-        placeholder="Напишіть ваше запитання..." 
+
+      <TextArea
+        placeholder="Напишіть ваше запитання..."
         value={prompt}
         onChange={(e) => setPrompt(e.target.value)}
         rows={3}
       />
-      
+
       <SendButton onClick={handleAsk} disabled={loading || !prompt.trim()}>
         {loading ? "Думаю..." : "Запитати ШІ"}
       </SendButton>

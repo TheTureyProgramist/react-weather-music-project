@@ -242,8 +242,12 @@ const BuyButton = styled.button`
 
   @media (min-width: 1900px) {
     padding: 18px;
-    span { font-size: 18px; }
-    .old-price { font-size: 13px; }
+    span {
+      font-size: 18px;
+    }
+    .old-price {
+      font-size: 13px;
+    }
   }
 `;
 
@@ -318,7 +322,9 @@ const InfoItem = styled.li`
   @media (min-width: 1900px) {
     font-size: 16px;
     margin-bottom: 20px;
-    .price { font-size: 15px; }
+    .price {
+      font-size: 15px;
+    }
   }
 `;
 
@@ -412,29 +418,27 @@ const ShopModal = ({ onClose }) => {
                 </InfoItem>
                 <InfoItem>
                   <span>
-                    Створення, видалення погодної картки(окремо за
-                    кожний процес). Доступ до JPS/доба 
+                    Створення, видалення погодної картки(окремо за кожний
+                    процес). Доступ до JPS/доба
                   </span>
                   <span className="price">2 🧧</span>
                 </InfoItem>
                 <InfoItem>
                   <span>
-                    3 Спец-аватари, кольори імені та автару (випадково в ціні). Поліпшіть 
-                    з <RainbowSpan>Підписками</RainbowSpan>.
+                    3 Спец-аватари, кольори імені та автару (випадково в ціні).
+                    Поліпшіть з <RainbowSpan>Підписками</RainbowSpan>.
                   </span>
                   <span className="price">20-40 🧧</span>
                 </InfoItem>
                 <InfoItem>
-                  <span>
-                     Зміни в налаштуваннях.
-                  </span>
+                  <span>Зміни в налаштуваннях.</span>
                   <span className="price">4 🧧</span>
                 </InfoItem>
                 <InfoItem>
                   <span>
-                    Запит до ШІ (спроби за 🧧, далі 🧧 + гроші). Прискорення перезарядки
-                    кнопок(регулюється к-сть) 1 🧧 = -12с.
-                    Поліпшіть з <RainbowSpan>Підписками</RainbowSpan>.
+                    Запит до ШІ (спроби за 🧧, далі 🧧 + гроші). Прискорення
+                    перезарядки кнопок(регулюється к-сть) 1 🧧 = -12с. Поліпшіть
+                    з <RainbowSpan>Підписками</RainbowSpan>.
                   </span>
                   <span className="price">5 🧧</span>
                 </InfoItem>
@@ -446,14 +450,15 @@ const ShopModal = ({ onClose }) => {
                 <InfoItem>
                   <span>
                     Щоденний безкоштовнй бонус за вхід, проходження 1
-                    головоломки. Поліпшіть <RainbowSpan>Підписками</RainbowSpan>.
+                    головоломки. Поліпшіть <RainbowSpan>Підписками</RainbowSpan>
+                    .
                   </span>
                   <span className="price">+10 🧧</span>
                 </InfoItem>
                 <InfoItem>
                   <span>
-                    Джекпот з шансом 20%(можливий на початку добу). 
-                    Покращіть <RainbowSpan>Підписками</RainbowSpan>.
+                    Джекпот з шансом 20%(можливий на початку добу). Покращіть{" "}
+                    <RainbowSpan>Підписками</RainbowSpan>.
                   </span>
                   <span className="price">+20 🧧</span>
                 </InfoItem>
@@ -466,7 +471,8 @@ const ShopModal = ({ onClose }) => {
                 <InfoItem>
                   <span>
                     Стартовий набір, усі зібрані аватари, стилі імені та всі
-                    пройдені головоломки. Поліпшіть доступність в ціні/аватарів,<RainbowSpan>Підписками</RainbowSpan>.
+                    пройдені головоломки. Поліпшіть доступність в ціні/аватарів,
+                    <RainbowSpan>Підписками</RainbowSpan>.
                   </span>
                   <span className="price">+40 🧧</span>
                 </InfoItem>
@@ -493,8 +499,10 @@ const ShopModal = ({ onClose }) => {
           }}
         >
           * Для власників <RainbowSpan>Стихія+</RainbowSpan> ціна знижена на
-          ≈20%, а <RainbowSpan>Стихія+ Ultra</RainbowSpan> на ≈50%. Знижка діє і для обмежених подій. Початок нової доби о 0:00 за Київським часом.
-          Ліміт конвертів 2500, ті що перевищують ліміт, будуть анульовані(збільште ліміт з підписками).
+          ≈20%, а <RainbowSpan>Стихія+ Ultra</RainbowSpan> на ≈50%. Знижка діє і
+          для обмежених подій. Початок нової доби о 0:00 за Київським часом.
+          Ліміт конвертів 2500, ті що перевищують ліміт, будуть
+          анульовані(збільште ліміт з підписками).
         </div>
       </ShopContainer>
     </Overlay>

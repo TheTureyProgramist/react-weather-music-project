@@ -62,19 +62,21 @@ const BenefitImage = styled.img`
   object-fit: cover;
   height: auto;
   cursor: pointer;
-  transition: transform 0.3s ease, opacity 0.3s ease;
+  transition:
+    transform 0.3s ease,
+    opacity 0.3s ease;
   &:hover {
     transform: scale(1.05);
     opacity: 0.9;
   }
   @media (min-width: 768px) {
-    width: 210px; 
+    width: 210px;
   }
   @media (min-width: 1200px) {
-    width: 270px; 
+    width: 270px;
   }
   @media (min-width: 1920px) {
-    width: 310px; 
+    width: 310px;
     border-radius: 25px;
   }
 `;
@@ -90,7 +92,9 @@ const LoadMoreButton = styled.button`
   padding: 12px 14px;
   font-size: 14px;
   font-family: var(--font-family);
-  transition: background 0.2s, transform 0.2s;
+  transition:
+    background 0.2s,
+    transform 0.2s;
 
   &:hover {
     background: #ffa04d;
@@ -111,9 +115,19 @@ const LoadMoreButton = styled.button`
 
 const FanArt = ({ isDarkMode, user, onOpenRegister }) => {
   const allImages = [
-    turkeys, nicerone, dragons, horse, lebid, monody, 
-    rooster, soloveyko, volcano, flame, dizel,
-    turkeys, nicerone, 
+    turkeys,
+    nicerone,
+    dragons,
+    horse,
+    lebid,
+    monody,
+    rooster,
+    soloveyko,
+    volcano,
+    flame,
+    dizel,
+    turkeys,
+    nicerone,
   ];
 
   const [visibleCount, setVisibleCount] = useState(10);
@@ -129,7 +143,7 @@ const FanArt = ({ isDarkMode, user, onOpenRegister }) => {
     }
     const printWindow = window.open("", "_blank");
     printWindow.document.write(
-      `<html><head><title>Print Fan Art</title></head><body style="text-align:center;"><img src="${imgSrc}" style="max-width:100%;" onload="window.print();window.close()" /></body></html>`
+      `<html><head><title>Print Fan Art</title></head><body style="text-align:center;"><img src="${imgSrc}" style="max-width:100%;" onload="window.print();window.close()" /></body></html>`,
     );
     printWindow.document.close();
   };
@@ -139,7 +153,7 @@ const FanArt = ({ isDarkMode, user, onOpenRegister }) => {
       <FanArtTitle $isDarkMode={isDarkMode}>
         Фан-арти (Клікніть на картинку для друку)
       </FanArtTitle>
-      
+
       <FanBlock>
         {allImages.slice(0, visibleCount).map((img, index) => (
           <BenefitImage
@@ -153,9 +167,7 @@ const FanArt = ({ isDarkMode, user, onOpenRegister }) => {
       </FanBlock>
 
       {visibleCount < allImages.length && (
-        <LoadMoreButton onClick={showMoreImages}>
-          Показати ще
-        </LoadMoreButton>
+        <LoadMoreButton onClick={showMoreImages}>Показати ще</LoadMoreButton>
       )}
     </FanArtDiv>
   );
