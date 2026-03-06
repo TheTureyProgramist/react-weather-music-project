@@ -413,13 +413,13 @@ const ShopModal = ({ onClose }) => {
               <InfoTitle>🎫 Як витратити:</InfoTitle>
               <InfoList>
                 <InfoItem>
-                  <span>Підказка в головоломці.</span>
+                  <span>Створення, видалення погодної картки(окремо за кожний
+                    процес).</span>
                   <span className="price">1 🧧</span>
                 </InfoItem>
                 <InfoItem>
                   <span>
-                    Створення, видалення погодної картки(окремо за кожний
-                    процес). Доступ до JPS/доба
+                 Доступ до JPS/доба.
                   </span>
                   <span className="price">2 🧧</span>
                 </InfoItem>

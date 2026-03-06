@@ -559,6 +559,31 @@ const MusicCard = ({
     }
   };
 
+  const handleImageClick = (e) => {
+    if (!audioRef.current) {
+      return;
+    }
+    if (!isPlaying) {
+      onPlay(id);
+      return;
+    }
+    const rect = e.target.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+
+    if (x < rect.width / 2) {
+      audioRef.current.currentTime = Math.max(
+        0,
+        audioRef.current.currentTime - 10,
+      );
+    } else {
+      // Fast-forward
+      audioRef.current.currentTime = Math.min(
+        duration,
+        audioRef.current.currentTime + 10,
+      );
+    }
+  };
+
   const handleDownload = () => {
     if (!user) {
       onOpenRegister();
@@ -602,7 +627,7 @@ const MusicCard = ({
         >
           {isFavorite ? "❤️" : "🤍"}
         </HeartButton>
-        <MusicImage src={image} alt="Music" onClick={togglePlayPause} />
+        <MusicImage src={image} alt="Music" onClick={handleImageClick} />
         {audio && (
           <audio
             ref={audioRef}

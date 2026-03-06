@@ -20,7 +20,8 @@ import letters from "../../photos/fan-art/letters.webp";
 import document from "../../photos/fan-art/document.webp";
 import puzzle5 from "../../photos/fan-art/puzzle-5.webp";
 import puzzle2 from "../../photos/fan-art/puzzle-2.webp";
-
+import puzzle3 from "../../photos/fan-art/puzzle-3.webp";
+import puzzle4 from "../../photos/fan-art/puzzle-4.webp";
 const appearAndShrink = keyframes`
   0% { opacity: 0; transform: scale(1.3); filter: blur(10px); }
   50% { opacity: 0.5; transform: scale(1.1); filter: blur(2px); }
@@ -532,7 +533,7 @@ const VipModal = ({ onClose }) => {
       },
       {
         src: horrordog,
-        text: "Промотувачі 10с вперед/назад для муз. карток. Натискайте на зображення для цієї механіки. Назавжди!",
+        text: "Промотувачі 10с вперед/назад для муз. карток. Натискайте на зображення ліва/права половина для цієї механіки(безкоштовна механіка). Потужність часу промотувача можна регулювати вище кнопки автоповтору(5-25с)(Механіка через підписку)! Назавжди!. ",
       },
       {
         src: letters,
@@ -564,6 +565,14 @@ const VipModal = ({ onClose }) => {
       {
         src: document,
         text: "Доступно 10 останніх новин, а не 5.",
+      },
+            {
+        src: puzzle3,
+        text: "Прив'язуйте до акаунту 3пристрої, не 2. Та перемикайтесь між 3 акаунтамина сайті, не 2. Назавжди!",
+      },
+      {
+        src: puzzle4,
+        text: "Передавайте до 250🧧/добу, не 125. Втрата конвертів піля передачі 40%, не 60%.",
       },
       {
         src: puzzle5,
@@ -597,7 +606,7 @@ const VipModal = ({ onClose }) => {
       },
       {
         src: horrordog,
-        text: "Потужність часу промотувача можна регулювати вище кнопки автоповтору(5-25с)! Назавжди!",
+        text: "Текст пісні підсвічується під час програвання(не всі пісні маютьцю механіку)! Назавжди!",
       },
       {
         src: letters,
@@ -625,6 +634,14 @@ const VipModal = ({ onClose }) => {
       {
         src: document,
         text: "Досуп до 20 останніх новин.",
+      },
+                  {
+        src: puzzle3,
+        text: "Прив'язуйте до акаунту 4пристрої. Та перемикайтесь між 4 акаунтамина сайті. Назавжди!",
+      },
+            {
+        src: puzzle4,
+        text: "Передавайте до 250🧧/добу, не 125. Втрата конвертів піля передачі 40%, не 60%.",
       },
       {
         src: puzzle5,
