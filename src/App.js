@@ -1,5 +1,18 @@
 import { useState, useEffect, useCallback } from "react";
 import styled from "styled-components";
+import WeatherCardComponent from "./components/Weather/Weather.jsx";
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+  Filler,
+} from "chart.js";
+import { Line } from "react-chartjs-2";
 import axios from "axios";
 import "./App.css";
 import Header from "./components/Header/Header.jsx";
@@ -50,6 +63,17 @@ const AVAILABLE_AVATARS = [
   dizel,
   flame,
 ];
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+  Filler,
+);
 
 const getWeatherIcon = (code) => {
   if (code === 0) return "☀️";
@@ -395,28 +419,38 @@ const App = () => {
   }, [weatherCards]);
 
   const fetchWeather = useCallback(
-    async (city, isMain, lat = null, lon = null) => {
+    async (cityData, isMain, lat = null, lon = null) => {
       try {
         let targetLat = lat;
         let targetLon = lon;
-        let displayName = city || "Ваша локація";
+        let displayName = typeof cityData === "string" ? cityData : (cityData?.fullName || "Ваша локація");
 
-        if (city) {
+        // Якщо передано об'єкт з Hero (з координатами)
+        if (cityData && typeof cityData === "object" && cityData.lat) {
+          targetLat = cityData.lat;
+          targetLon = cityData.lon;
+          displayName = cityData.fullName;
+        } 
+        // Якщо передано просто назву (старий метод або автозапуск)
+        else if (typeof cityData === "string") {
           const geo = await axios.get(
-            `https://geocoding-api.open-meteo.com/v1/search?name=${city}&count=1&language=uk`,
+            `https://geocoding-api.open-meteo.com/v1/search?name=${cityData}&count=1&language=uk`,
           );
           if (geo.data.results && geo.data.results[0]) {
             targetLat = geo.data.results[0].latitude;
             targetLon = geo.data.results[0].longitude;
             displayName = geo.data.results[0].name;
           } else {
-            alert("Місто не знайдено");
+            alert("Місто не знайдено в базі Open-Meteo");
             return;
           }
         }
+
+        // Сам запит до погоди (залишається як був)
         const url = `https://api.open-meteo.com/v1/forecast?latitude=${targetLat}&longitude=${targetLon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m,surface_pressure&hourly=temperature_2m,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min,uv_index_max&timezone=auto&forecast_days=16`;
         const res = await axios.get(url);
         const d = res.data;
+
         const newCardData = {
           id: isMain ? "main-card" : Date.now(),
           isMain: isMain,
@@ -435,35 +469,29 @@ const App = () => {
             description: "За кодом: " + d.current.weather_code,
             iconPlaceholder: getWeatherIcon(d.current.weather_code),
           },
-          hourly: d.hourly.time.slice(0, 12).map((t, i) => ({
+          hourly: d.hourly.time.slice(0, 24).map((t, i) => ({
             time: new Date(t).getHours() + ":00",
             temp: `${Math.round(d.hourly.temperature_2m[i])}°C`,
             tempNum: Math.round(d.hourly.temperature_2m[i]),
             iconPlaceholder: getWeatherIcon(d.hourly.weather_code[i]),
           })),
           daily16: d.daily.time.map((t, i) => ({
-            date: new Date(t).toLocaleDateString("uk", {
-              day: "numeric",
-              month: "2-digit",
-            }),
+            date: new Date(t).toLocaleDateString("uk", { day: "numeric", month: "2-digit" }),
             day: new Date(t).toLocaleDateString("uk", { weekday: "short" }),
             temp_day: `${Math.round(d.daily.temperature_2m_max[i])}°C`,
             temp_night: `${Math.round(d.daily.temperature_2m_min[i])}°C`,
-            description: "Код " + d.daily.weather_code[i],
             iconPlaceholder: getWeatherIcon(d.daily.weather_code[i]),
           })),
         };
+
         setWeatherCards((prev) => {
           if (isMain) {
             const filtered = prev.filter((c) => !c.isMain);
             return [newCardData, ...filtered];
           } else {
-            const index = prev.findIndex((c) => c.locationName === displayName);
-            if (index !== -1) {
-              const updated = [...prev];
-              updated[index] = { ...newCardData, id: prev[index].id };
-              return updated;
-            }
+            // Запобігаємо дублікатам
+            const exists = prev.find(c => c.lat === targetLat && c.lon === targetLon);
+            if (exists) return prev;
             if (prev.length >= 4) return prev;
             return [...prev, newCardData];
           }
@@ -472,7 +500,7 @@ const App = () => {
         console.error("Помилка завантаження погоди", error);
       }
     },
-    [],
+    [getWeatherIcon] 
   );
 
   const getInitialLocation = useCallback(() => {
@@ -509,13 +537,12 @@ const App = () => {
       }
     });
   }, [weatherCards, fetchWeather]);
-
-  const handleAddCityFromHero = (cityName) => {
+  const handleAddCityFromHero = (cityObj) => {
     if (!user) {
       alert("Створювати картки погоди можуть лише зареєстровані користувачі!");
       return;
     }
-    fetchWeather(cityName, false);
+    fetchWeather(cityObj, false);
   };
 
   const [hideDeleteModalUntil, setHideDeleteModalUntil] = useState(() => {
@@ -859,219 +886,50 @@ const App = () => {
                 return (
                   <WeatherCardsContainer key="weather">
                     {weatherCards.map((card) => {
-                      const isExtremeTemp =
-                        card.current.tempNum > 30 || card.current.tempNum < -10;
+                      const isExtremeTemp = card.current.tempNum > 30 || card.current.tempNum < -10;
                       const isExtremeWind = card.current.windNum > 10;
                       const isExtremeUV = card.current.uv_index > 7;
-
+                      const chartData = {
+                        labels: card.hourly?.map((h) => h.time) || [],
+                        datasets: [
+                          {
+                            label: "Температура (°C)",
+                            data: card.hourly?.map((h) => h.tempNum) || [],
+                            fill: true,
+                            backgroundColor: "rgba(255, 179, 108, 0.2)",
+                            borderColor: "rgba(255, 179, 108, 1)",
+                            tension: 0.4,
+                            pointBackgroundColor: "rgba(255, 179, 108, 1)",
+                            pointBorderColor: "#fff",
+                          },
+                        ],
+                      };
+                      const chartOptions = {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                          legend: { display: false },
+                        },
+                        scales: {
+                          x: { display: true, grid: { display: false } },
+                          y: { display: true, grid: { display: false } },
+                        },
+                      };
                       return (
-                        <WeatherCard
+                        <WeatherCardComponent
                           key={card.id}
-                          $isMain={card.isMain}
-                          $isDarkMode={isDarkMode}
-                        >
-                          <CardHeader $isMain={card.isMain}>
-                            <div>
-                              <h3>
-                                {card.locationName} {card.isMain && "📍"}
-                              </h3>
-                              {card.isMain && (
-                                <p
-                                  style={{
-                                    margin: "5px 0 0 0",
-                                    fontSize: "11px",
-                                    color: "#888",
-                                  }}
-                                >
-                                  Широта: {card.lat ? card.lat.toFixed(4) : "—"}
-                                  , Довгота:{" "}
-                                  {card.lon ? card.lon.toFixed(4) : "—"}
-                                </p>
-                              )}
-                            </div>
-                            <ActionButtons>
-                              {card.isMain && (
-                                <button
-                                  onClick={() =>
-                                    setIsLocationEnabled(!isLocationEnabled)
-                                  }
-                                  style={{
-                                    background: isLocationEnabled
-                                      ? "#444"
-                                      : "#ff4d4d",
-                                    fontSize: "12px",
-                                  }}
-                                  title="Ввімкнути/вимкнути доступ до вашої локації"
-                                >
-                                  {isLocationEnabled
-                                    ? "GPS Увімк."
-                                    : "GPS Вимк."}
-                                </button>
-                              )}
-                              <button onClick={() => handleRefreshCard(card)}>
-                                ↺
-                              </button>
-                              {!card.isMain && (
-                                <button
-                                  onClick={() => handleDeleteCard(card.id)}
-                                >
-                                  🗑
-                                </button>
-                              )}
-                            </ActionButtons>
-                          </CardHeader>
-                          <div
-                            style={{
-                              display: "flex",
-                              gap: "20px",
-                              marginBottom: "15px",
-                            }}
-                          >
-                            <ImagePlaceholder size="80px">
-                              {card.current.iconPlaceholder}
-                            </ImagePlaceholder>
-                            <div>
-                              <h1
-                                style={{
-                                  margin: "0 0 5px 0",
-                                  color: isExtremeTemp ? "#ff4d4d" : "inherit",
-                                }}
-                              >
-                                {card.current.temp}
-                              </h1>
-                              <p style={{ margin: "0", fontSize: "12px" }}>
-                                Відчувається: {card.current.feels_like}
-                              </p>
-                            </div>
-                          </div>
-                          <div
-                            style={{
-                              display: "grid",
-                              gridTemplateColumns: "1fr 1fr",
-                              gap: "10px",
-                              fontSize: "12px",
-                              marginBottom: "20px",
-                            }}
-                          >
-                            <div>
-                              Вологість: <b>{card.current.humidity}</b>
-                            </div>
-                            <div
-                              style={{
-                                color: isExtremeWind ? "#ff4d4d" : "inherit",
-                              }}
-                            >
-                              Вітер: <b>{card.current.wind_speed}</b>
-                            </div>
-                            <div>
-                              Тиск: <b>{card.current.pressure}</b>
-                            </div>
-                            <div
-                              style={{
-                                color: isExtremeUV ? "#ff4d4d" : "inherit",
-                              }}
-                            >
-                              УФ-індекс: <b>{card.current.uv_index}</b>
-                            </div>
-                          </div>
-
-                          <h4 style={{ margin: "0 0 10px 0" }}>
-                            Годинний прогноз:
-                          </h4>
-                          <div
-                            style={{
-                              display: "flex",
-                              overflowX: "auto",
-                              gap: "10px",
-                              paddingBottom: "10px",
-                              marginBottom: "15px",
-                            }}
-                          >
-                            {card.hourly &&
-                              card.hourly.map((h, i) => (
-                                <div
-                                  key={i}
-                                  style={{
-                                    minWidth: "60px",
-                                    display: "flex",
-                                    flexDirection: "column",
-                                    alignItems: "center",
-                                    background: isDarkMode ? "#333" : "#e0e0e0",
-                                    padding: "10px",
-                                    borderRadius: "10px",
-                                  }}
-                                >
-                                  <span
-                                    style={{
-                                      fontSize: "12px",
-                                      marginBottom: "5px",
-                                    }}
-                                  >
-                                    {h.time}
-                                  </span>
-                                  <span
-                                    style={{
-                                      fontSize: "20px",
-                                      marginBottom: "5px",
-                                    }}
-                                  >
-                                    {h.iconPlaceholder}
-                                  </span>
-                                  <span style={{ fontWeight: "bold" }}>
-                                    {h.temp}
-                                  </span>
-                                </div>
-                              ))}
-                          </div>
-
-                          <h4 style={{ margin: "15px 0 10px 0" }}>
-                            Прогноз на 16 днів:
-                          </h4>
-                          <div
-                            style={{
-                              maxHeight: "400px",
-                              overflowY: "auto",
-                              paddingRight: "10px",
-                            }}
-                          >
-                            {card.daily16.map((day, idx) => (
-                              <div
-                                key={idx}
-                                style={{
-                                  display: "flex",
-                                  justifyContent: "space-between",
-                                  alignItems: "center",
-                                  marginBottom: "8px",
-                                  fontSize: "12px",
-                                  borderBottom: "1px solid #444",
-                                  paddingBottom: "5px",
-                                }}
-                              >
-                                <span style={{ width: "40px" }}>
-                                  {day.date}
-                                </span>
-                                <span
-                                  style={{ width: "30px", fontWeight: "bold" }}
-                                >
-                                  {day.day}
-                                </span>
-                                <ImagePlaceholder
-                                  size="30px"
-                                  margin="0 20px"
-                                  fontSize="14px"
-                                >
-                                  {day.iconPlaceholder}
-                                </ImagePlaceholder>
-                                <div style={{ display: "flex", gap: "10px" }}>
-                                  <span>Д: {day.temp_day}</span>
-                                  <span style={{ color: "#aaa" }}>
-                                    Н: {day.temp_night}
-                                  </span>
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        </WeatherCard>
+                          card={card}
+                          isDarkMode={isDarkMode}
+                          isLocationEnabled={isLocationEnabled}
+                          isExtremeTemp={isExtremeTemp}
+                          isExtremeWind={isExtremeWind}
+                          isExtremeUV={isExtremeUV}
+                          chartOptions={chartOptions}
+                          chartData={chartData}
+                          handleRefreshCard={handleRefreshCard}
+                          handleDeleteCard={handleDeleteCard}
+                          setIsLocationEnabled={setIsLocationEnabled}
+                        />
                       );
                     })}
                   </WeatherCardsContainer>
@@ -1140,5 +998,4 @@ const App = () => {
     </>
   );
 };
-
 export default App;
