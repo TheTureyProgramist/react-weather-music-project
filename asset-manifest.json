@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/react-weather-music-project/static/css/main.b14654ef.css",
-    "main.js": "/react-weather-music-project/static/js/main.7c658718.js",
+    "main.js": "/react-weather-music-project/static/js/main.0f4e307c.js",
     "static/media/registrationscene.mp4": "/react-weather-music-project/static/media/registrationscene.5d9e7522945f81f97a85.mp4",
     "static/media/kolada.mp3": "/react-weather-music-project/static/media/kolada.c30c2bfb2e7bb6342ba7.mp3",
     "static/media/thefatrat-monody.mp3": "/react-weather-music-project/static/media/thefatrat-monody.c51de64d7aa6397fbf66.mp3",
@@ -15,6 +15,7 @@
     "static/media/horse.mp3": "/react-weather-music-project/static/media/horse.cf201415f1443a5bbab2.mp3",
     "static/media/logo.png": "/react-weather-music-project/static/media/logo.b68cd4fee668d7687cc6.png",
     "static/media/wind.mp3": "/react-weather-music-project/static/media/wind.b1b5f8028768e8a5b78d.mp3",
+    "static/media/katscene.mp3": "/react-weather-music-project/static/media/katscene.f38233c9757d420f836b.mp3",
     "static/media/puzzle-2.webp": "/react-weather-music-project/static/media/puzzle-2.c1eaa80769d78a4cd7f5.webp",
     "static/media/puzzle-5.webp": "/react-weather-music-project/static/media/puzzle-5.0c43d163f543414b616d.webp",
     "static/media/puzzle-3.webp": "/react-weather-music-project/static/media/puzzle-3.54999b3c8bd6af9bc657.webp",
@@ -74,10 +75,10 @@
     "static/media/document.webp": "/react-weather-music-project/static/media/document.5b6c056b22794272794d.webp",
     "static/media/search.webp": "/react-weather-music-project/static/media/search.aa0aed371ca317289398.webp",
     "main.b14654ef.css.map": "/react-weather-music-project/static/css/main.b14654ef.css.map",
-    "main.7c658718.js.map": "/react-weather-music-project/static/js/main.7c658718.js.map"
+    "main.0f4e307c.js.map": "/react-weather-music-project/static/js/main.0f4e307c.js.map"
   },
   "entrypoints": [
     "static/css/main.b14654ef.css",
-    "static/js/main.7c658718.js"
+    "static/js/main.0f4e307c.js"
   ]
 }
