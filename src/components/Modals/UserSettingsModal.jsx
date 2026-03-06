@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from "react";
 import styled, { keyframes, css } from "styled-components";
 import InfoModal from "./InfoModal";
-
+import KatSceneModal from "./KatSceneModal";
 const slideIn = keyframes`
   0% { 
     transform: translateY(100%) scale(0.5);
@@ -525,263 +525,293 @@ const UserSettingsModal = ({ onClose, user, availableAvatars, onUpdate }) => {
   };
 
   const accepted = true;
+  const [showKatScene, setShowKatScene] = useState(false);
+  const handleKatSceneClose = () => {
+    setShowKatScene(false);
+    handleClose();
+  };
   return (
-    <ModalOverlay $isClosing={isClosing} onClick={handleClose}>
-      <ModalContent $isClosing={isClosing} onClick={(e) => e.stopPropagation()}>
-        <CloseButton onClick={handleClose}>&times;</CloseButton>
-        <Title style={{ textAlign: "center" }}>Налаштування</Title>
-        {sectionsOrder.map((section) => {
-          let content = null;
-          if (section === "name") {
-            content = (
-              <Section key="name">
-                <label style={{ fontSize: "13px", fontWeight: "bold" }}>
-                  Ім'я
-                </label>
-                <NameInput
-                  $textColor={formData.textColor}
-                  value={formData.name}
-                  onChange={(e) =>
-                    setFormData({ ...formData, name: e.target.value })
-                  }
-                />
-              </Section>
-            );
-          } else if (section === "birthDate") {
-            content = (
-              <Section key="birthDate">
-                <label style={{ fontSize: "13px", fontWeight: "bold" }}>
-                  Дата народження
-                </label>
-                <DateRow>
-                  <Select
-                    value={formData.day}
+    <>
+      {showKatScene && <KatSceneModal onClose={handleKatSceneClose} />}
+      <ModalOverlay $isClosing={isClosing} onClick={handleClose}>
+        <ModalContent $isClosing={isClosing} onClick={(e) => e.stopPropagation()}>
+          <CloseButton onClick={handleClose}>&times;</CloseButton>
+          <Title style={{ textAlign: "center" }}>Налаштування</Title>
+          <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 10 }}>
+            <button
+              style={{
+                background: "#ffb36c",
+                color: "#000",
+                border: "none",
+                borderRadius: 8,
+                fontWeight: 600,
+                fontSize: 14,
+                padding: "6px 18px",
+                cursor: "pointer",
+                boxShadow: "0 2px 8px #0002",
+                marginRight: 0,
+              }}
+              onClick={() => setShowKatScene(true)}
+            >
+              Невелика кат-сцена
+            </button>
+          </div>
+          {/* ВСІ секції */}
+          {sectionsOrder.map((section) => {
+            let content = null;
+            if (section === "name") {
+              content = (
+                <Section key="name">
+                  <label style={{ fontSize: "13px", fontWeight: "bold" }}>
+                    Ім'я
+                  </label>
+                  <NameInput
+                    $textColor={formData.textColor}
+                    value={formData.name}
                     onChange={(e) =>
-                      setFormData({ ...formData, day: e.target.value })
+                      setFormData({ ...formData, name: e.target.value })
                     }
-                  >
-                    <option value="">День</option>
-                    {days.map((d) => (
-                      <option key={d} value={d}>
-                        {d}
-                      </option>
-                    ))}
-                  </Select>
-                  <Select
-                    value={formData.month}
-                    onChange={(e) =>
-                      setFormData({ ...formData, month: e.target.value })
-                    }
-                  >
-                    <option value="">Місяць</option>
-                    {months.map((m, i) => (
-                      <option key={i} value={i + 1}>
-                        {m}
-                      </option>
-                    ))}
-                  </Select>
-                  <Select
-                    value={formData.year}
-                    onChange={(e) =>
-                      setFormData({ ...formData, year: e.target.value })
-                    }
-                  >
-                    <option value="">Рік</option>
-                    {years.map((y) => (
-                      <option key={y} value={y}>
-                        {y}
-                      </option>
-                    ))}
-                  </Select>
-                </DateRow>
-                {isInvalidDate && (
-                  <span style={{ color: "red", fontSize: "11px" }}>
-                    Такої дати не існує!
-                  </span>
-                )}
-              </Section>
-            );
-          } else if (section === "security") {
-            content = (
-              <Section key="security">
-                <label style={{ fontSize: "13px", fontWeight: "bold" }}>
-                  Безпека
-                </label>
-                <Input
-                  type="password"
-                  placeholder="Поточний пароль"
-                  disabled
-                  readOnly
-                  value="********"
-                  style={{
-                    marginBottom: "8px",
-                    opacity: 0.6,
-                    cursor: "not-allowed",
-                  }}
-                />
-                <Input
-                  type="password"
-                  placeholder="Новий пароль"
-                  onChange={(e) =>
-                    setFormData({ ...formData, newPassword: e.target.value })
-                  }
-                  style={{ marginBottom: formData.newPassword ? "4px" : "8px" }}
-                />
-                {formData.newPassword && (
-                  <>
-                    <PasswordStrengthContainer>
-                      <PasswordStrengthBar
-                        $width={pwStrength.width}
-                        $color={pwStrength.color}
-                      />
-                    </PasswordStrengthContainer>
-                    <PasswordStrengthLabel $color={pwStrength.color}>
-                      Надійність: {pwStrength.label}
-                    </PasswordStrengthLabel>
-                  </>
-                )}
-                <Input
-                  type="password"
-                  placeholder="Підтвердіть новий пароль"
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      confirmPassword: e.target.value,
-                    })
-                  }
-                />
-              </Section>
-            );
-          } else if (section === "textColor") {
-            content = (
-              <Section key="textColor">
-                <label style={{ fontSize: "13px", fontWeight: "bold" }}>
-                  Колір тексту
-                </label>
-                <ColorContainer>
-                  {COLORS.map((color, i) => (
-                    <ColorCircle
-                      key={i}
-                      $color={color.value}
-                      $isSelected={formData.textColor === color.value}
-                      title={color.name}
-                      onClick={() =>
-                        setFormData({ ...formData, textColor: color.value })
-                      }
-                    />
-                  ))}
-                </ColorContainer>
-              </Section>
-            );
-          } else if (section === "borderColor") {
-            content = (
-              <Section key="borderColor">
-                <label style={{ fontSize: "13px", fontWeight: "bold" }}>
-                  Колір рамки аватара
-                </label>
-                <ColorContainer>
-                  {COLORS.map((color, i) => (
-                    <ColorCircle
-                      key={i}
-                      $color={color.value}
-                      $isSelected={formData.borderColor === color.value}
-                      title={color.name}
-                      onClick={() =>
-                        setFormData({ ...formData, borderColor: color.value })
-                      }
-                    />
-                  ))}
-                </ColorContainer>
-              </Section>
-            );
-          } else if (section === "avatar") {
-            content = (
-              <Section key="avatar">
-                <div
-                  style={{
-                    fontSize: "12px",
-                    fontWeight: "bold",
-                    color: "grey",
-                  }}
-                >
-                  Аватар оберіть, 1-ий доступний з
-                  <AnimatedText>Стихія+</AnimatedText>, наступні 2 за{" "}
-                  <GreenText>досягнення</GreenText>. Та ще 3 за 🧧, та сама
-                  логіка з вибором кольору імені, та рамки аватара.
-                </div>
-                <AvatarSlider>
-                  {availableAvatars.map((img, i) => (
-                    <AvatarOption
-                      key={i}
-                      $isSelected={formData.avatarIndex === i}
-                      $borderColor={formData.borderColor}
-                      onClick={() =>
-                        setFormData({ ...formData, avatarIndex: i })
+                  />
+                </Section>
+              );
+            } else if (section === "birthDate") {
+              content = (
+                <Section key="birthDate">
+                  <label style={{ fontSize: "13px", fontWeight: "bold" }}>
+                    Дата народження
+                  </label>
+                  <DateRow>
+                    <Select
+                      value={formData.day}
+                      onChange={(e) =>
+                        setFormData({ ...formData, day: e.target.value })
                       }
                     >
-                      <img src={img} alt="avatar" />
-                    </AvatarOption>
-                  ))}
-                </AvatarSlider>
-              </Section>
-            );
-          }
-          return content;
-        })}
-        <div style={{ marginTop: 30, marginBottom: 10 }}>
-          <h4 style={{ fontWeight: 700, fontSize: 16, marginBottom: 10 }}>
-            Порядок секцій:
-          </h4>
-          {sectionsOrder.map((section, idx) => (
-            <div
-              key={section}
-              style={{ display: "flex", alignItems: "center", marginBottom: 6 }}
-            >
-              <span style={{ minWidth: 120, fontWeight: 500 }}>
-                {SECTION_LABELS[section]}
-              </span>
-              <OrderButton
-                disabled={idx === 0}
-                onClick={() => moveSection(idx, -1)}
-                title="Вище"
+                      <option value="">День</option>
+                      {days.map((d) => (
+                        <option key={d} value={d}>
+                          {d}
+                        </option>
+                      ))}
+                    </Select>
+                    <Select
+                      value={formData.month}
+                      onChange={(e) =>
+                        setFormData({ ...formData, month: e.target.value })
+                      }
+                    >
+                      <option value="">Місяць</option>
+                      {months.map((m, i) => (
+                        <option key={i} value={i + 1}>
+                          {m}
+                        </option>
+                      ))}
+                    </Select>
+                    <Select
+                      value={formData.year}
+                      onChange={(e) =>
+                        setFormData({ ...formData, year: e.target.value })
+                      }
+                    >
+                      <option value="">Рік</option>
+                      {years.map((y) => (
+                        <option key={y} value={y}>
+                          {y}
+                        </option>
+                      ))}
+                    </Select>
+                  </DateRow>
+                  {isInvalidDate && (
+                    <span style={{ color: "red", fontSize: "11px" }}>
+                      Такої дати не існує!
+                    </span>
+                  )}
+                </Section>
+              );
+            } else if (section === "security") {
+              content = (
+                <Section key="security">
+                  <label style={{ fontSize: "13px", fontWeight: "bold" }}>
+                    Безпека
+                  </label>
+                  <Input
+                    type="password"
+                    placeholder="Поточний пароль"
+                    disabled
+                    readOnly
+                    value="********"
+                    style={{
+                      marginBottom: "8px",
+                      opacity: 0.6,
+                      cursor: "not-allowed",
+                    }}
+                  />
+                  <Input
+                    type="password"
+                    placeholder="Новий пароль"
+                    onChange={(e) =>
+                      setFormData({ ...formData, newPassword: e.target.value })
+                    }
+                    style={{ marginBottom: formData.newPassword ? "4px" : "8px" }}
+                  />
+                  {formData.newPassword && (
+                    <>
+                      <PasswordStrengthContainer>
+                        <PasswordStrengthBar
+                          $width={pwStrength.width}
+                          $color={pwStrength.color}
+                        />
+                      </PasswordStrengthContainer>
+                      <PasswordStrengthLabel $color={pwStrength.color}>
+                        Надійність: {pwStrength.label}
+                      </PasswordStrengthLabel>
+                    </>
+                  )}
+                  <Input
+                    type="password"
+                    placeholder="Підтвердіть новий пароль"
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        confirmPassword: e.target.value,
+                      })
+                    }
+                  />
+                </Section>
+              );
+            } else if (section === "textColor") {
+              content = (
+                <Section key="textColor">
+                  <label style={{ fontSize: "13px", fontWeight: "bold" }}>
+                    Колір тексту
+                  </label>
+                  <ColorContainer>
+                    {COLORS.map((color, i) => (
+                      <ColorCircle
+                        key={i}
+                        $color={color.value}
+                        $isSelected={formData.textColor === color.value}
+                        title={color.name}
+                        onClick={() =>
+                          setFormData({ ...formData, textColor: color.value })
+                        }
+                      />
+                    ))}
+                  </ColorContainer>
+                </Section>
+              );
+            } else if (section === "borderColor") {
+              content = (
+                <Section key="borderColor">
+                  <label style={{ fontSize: "13px", fontWeight: "bold" }}>
+                    Колір рамки аватара
+                  </label>
+                  <ColorContainer>
+                    {COLORS.map((color, i) => (
+                      <ColorCircle
+                        key={i}
+                        $color={color.value}
+                        $isSelected={formData.borderColor === color.value}
+                        title={color.name}
+                        onClick={() =>
+                          setFormData({ ...formData, borderColor: color.value })
+                        }
+                      />
+                    ))}
+                  </ColorContainer>
+                </Section>
+              );
+            } else if (section === "avatar") {
+              content = (
+                <Section key="avatar">
+                  <div
+                    style={{
+                      fontSize: "12px",
+                      fontWeight: "bold",
+                      color: "grey",
+                    }}
+                  >
+                    Аватар оберіть, 1-ий доступний з
+                    <AnimatedText>Стихія+</AnimatedText>, наступні 2 за{" "}
+                    <GreenText>досягнення</GreenText>. Та ще 3 за 🧧, та сама
+                    логіка з вибором кольору імені, та рамки аватара.
+                  </div>
+                  <AvatarSlider>
+                    {availableAvatars.map((img, i) => (
+                      <AvatarOption
+                        key={i}
+                        $isSelected={formData.avatarIndex === i}
+                        $borderColor={formData.borderColor}
+                        onClick={() =>
+                          setFormData({ ...formData, avatarIndex: i })
+                        }
+                      >
+                        <img src={img} alt="avatar" />
+                      </AvatarOption>
+                    ))}
+                  </AvatarSlider>
+                </Section>
+              );
+            }
+            return content;
+          })}
+          {/* Порядок секцій */}
+          <div style={{ marginTop: 30, marginBottom: 10 }}>
+            <h4 style={{ fontWeight: 700, fontSize: 16, marginBottom: 10 }}>
+              Порядок секцій:
+            </h4>
+            {sectionsOrder.map((section, idx) => (
+              <div
+                key={section}
+                style={{ display: "flex", alignItems: "center", marginBottom: 6 }}
               >
-                ↑
-              </OrderButton>
-              <OrderButton
-                disabled={idx === sectionsOrder.length - 1}
-                onClick={() => moveSection(idx, 1)}
-                title="Нижче"
-              >
-                ↓
-              </OrderButton>
-            </div>
-          ))}
-          <ResetOrderButton onClick={resetSectionsOrder}>
-            Скинути порядок
-          </ResetOrderButton>
-        </div>
-        <CheckboxRow>
-          <input
-            type="checkbox"
-            checked={accepted}
-            readOnly
-            style={{ accentColor: "#ffb36c" }}
-          />
-          <label>
-            Ви погодились з{" "}
-            <TermsBtn onClick={() => setShowTerms(true)}>Угодою</TermsBtn>
-          </label>
-        </CheckboxRow>
-        <div style={{ display: "flex", gap: "10px", marginTop: "10px" }}>
-          <CancelButton onClick={handleClose}>Назад</CancelButton>
-          <SaveButton onClick={handleSubmit} disabled={isInvalidDate}>
-            Зберегти
-          </SaveButton>
-        </div>
-        {showTerms && <InfoModal onClose={() => setShowTerms(false)} />}
-      </ModalContent>
-    </ModalOverlay>
+                <span style={{ minWidth: 120, fontWeight: 500 }}>
+                  {SECTION_LABELS[section]}
+                </span>
+                <OrderButton
+                  disabled={idx === 0}
+                  onClick={() => moveSection(idx, -1)}
+                  title="Вище"
+                >
+                  ↑
+                </OrderButton>
+                <OrderButton
+                  disabled={idx === sectionsOrder.length - 1}
+                  onClick={() => moveSection(idx, 1)}
+                  title="Нижче"
+                >
+                  ↓
+                </OrderButton>
+              </div>
+            ))}
+            <ResetOrderButton onClick={resetSectionsOrder}>
+              Скинути порядок
+            </ResetOrderButton>
+          </div>
+          {/* Чекбокс та кнопки */}
+          <CheckboxRow>
+            <input
+              type="checkbox"
+              checked={accepted}
+              readOnly
+              style={{ accentColor: "#ffb36c" }}
+            />
+            <label>
+              Ви погодились з{" "}
+              <TermsBtn onClick={() => setShowTerms(true)}>Угодою</TermsBtn>
+            </label>
+          </CheckboxRow>
+          <div style={{ display: "flex", gap: "10px", marginTop: "10px" }}>
+            <CancelButton onClick={handleClose}>Назад</CancelButton>
+            <SaveButton onClick={handleSubmit} disabled={isInvalidDate}>
+              Зберегти
+            </SaveButton>
+          </div>
+          {showTerms && <InfoModal onClose={() => setShowTerms(false)} />}
+        </ModalContent>
+      </ModalOverlay>
+    </>
   );
-};
+}
 
 export default UserSettingsModal;
