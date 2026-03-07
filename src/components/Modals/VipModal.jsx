@@ -22,6 +22,7 @@ import puzzle5 from "../../photos/fan-art/puzzle-5.webp";
 import puzzle2 from "../../photos/fan-art/puzzle-2.webp";
 import puzzle3 from "../../photos/fan-art/puzzle-3.webp";
 import puzzle4 from "../../photos/fan-art/puzzle-4.webp";
+import fototwo from "../../photos/vip-images/vip-dragons.jpg"
 const appearAndShrink = keyframes`
   0% { opacity: 0; transform: scale(1.3); filter: blur(10px); }
   50% { opacity: 0.5; transform: scale(1.1); filter: blur(2px); }

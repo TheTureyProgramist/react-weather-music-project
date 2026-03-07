@@ -800,7 +800,7 @@ const musicCards = [
     duration: 45,
   },
   {
-    id: 9,
+    id: 8,
     image: require("../../photos/vip-images/vip-dragons.jpg"),
     audio: require("../../mp3/dragon.mp3"),
     text: "І знову дракони, музика доісторичного світу. Картина взята з мультфільму Динофроз, а музика з гри (My Little Universe-Drаgonora). Звучить при комбінації.",
@@ -808,7 +808,7 @@ const musicCards = [
     duration: 180,
   },
   {
-    id: 10,
+    id: 9,
     image: require("../../photos/vip-images/vip-soloveyko.jpg"),
     audio: require("../../mp3/soloveyko.mp3"),
     text: "Голосування хто кращий по звукам соловеко чи індик. Зроблено за ідеї сім'ї.",
@@ -816,7 +816,7 @@ const musicCards = [
     duration: 90,
   },
   {
-    id: 12,
+    id: 10,
     image: require("../../photos/vip-images/asium.jpg"),
     audio: require("../../mp3/harmonic-japan.mp3"),
     text: "My little universe. Спокійна і прекрасна музика в японському стилі.",
@@ -824,7 +824,7 @@ const musicCards = [
     duration: 160,
   },
   {
-    id: 13,
+    id: 11,
     image: require("../../photos/vip-images/mechannic.jpg"),
     audio: require("../../mp3/mechanik-kindom.mp3"),
     text: "My little universe. Спокійна і прекрасна музика в механічному стилі.",
@@ -832,7 +832,7 @@ const musicCards = [
     duration: 160,
   },
   {
-    id: 14,
+    id: 12,
     image: require("../../photos/vip-images/mechannic.jpg"),
     audio: require("../../mp3/mechanik-kindom.mp3"),
     text: "Зоотрополіс(Disney)-рекомендую. Shakira-Try Everything.",
@@ -840,7 +840,7 @@ const musicCards = [
     duration: 200,
   },
   {
-    id: 15,
+    id: 13,
     image: require("../../photos/vip-images/mechannic.jpg"),
     audio: require("../../mp3/mechanik-kindom.mp3"),
     text: "Продовження історої зоотрополісу(Disney). Чекатиму, через 5років продовження. Skakira, Ed Sheeran - Zoo.",
@@ -848,7 +848,7 @@ const musicCards = [
     duration: 200,
   },
   {
-    id: 16,
+    id: 14,
     image: require("../../photos/vip-images/mechannic.jpg"),
     audio: require("../../mp3/mechanik-kindom.mp3"),
     text: "Мія та я. Не пожалкуєте.",
@@ -856,7 +856,7 @@ const musicCards = [
     duration: 180,
   },
   {
-    id: 17,
+    id: 15,
     image: require("../../photos/vip-images/mechannic.jpg"),
     audio: require("../../mp3/mechanik-kindom.mp3"),
     text: "My little universe. Спокійна і прекрасна музика в механічному стилі.",
@@ -865,23 +865,23 @@ const musicCards = [
     duration: 180,
   },
   {
+    id: 16,
+    image: require("../../photos/vip-images/mechannic.jpg"),
+    audio: require("../../mp3/mechanik-kindom.mp3"),
+    text: "My little universe. Спокійна і прекрасна музика в механічному стилі.",
+    lyrics: "Текст відсутній.",
+    duration: 160,
+  },
+  {
+    id: 17,
+    image: require("../../photos/vip-images/mechannic.jpg"),
+    audio: require("../../mp3/mechanik-kindom.mp3"),
+    text: "My little universe. Спокійна і прекрасна музика в механічному стилі.",
+    lyrics: "Текст відсутній.",
+    duration: 160,
+  },
+  {
     id: 18,
-    image: require("../../photos/vip-images/mechannic.jpg"),
-    audio: require("../../mp3/mechanik-kindom.mp3"),
-    text: "My little universe. Спокійна і прекрасна музика в механічному стилі.",
-    lyrics: "Текст відсутній.",
-    duration: 160,
-  },
-  {
-    id: 19,
-    image: require("../../photos/vip-images/mechannic.jpg"),
-    audio: require("../../mp3/mechanik-kindom.mp3"),
-    text: "My little universe. Спокійна і прекрасна музика в механічному стилі.",
-    lyrics: "Текст відсутній.",
-    duration: 160,
-  },
-  {
-    id: 20,
     image: require("../../photos/vip-images/mechannic.jpg"),
     audio: require("../../mp3/mechanik-kindom.mp3"),
     text: "GeometryDash(MDK-Fingerdash) Гаряча мелодія I-ша в режимі анімованості. Ласково просимо в хаос!",
@@ -889,7 +889,7 @@ const musicCards = [
     duration: 140,
   },
   {
-    id: 21,
+    id: 19,
     image: require("../../photos/vip-images/mechannic.jpg"),
     audio: require("../../mp3/mechanik-kindom.mp3"),
     text: "GeometryDash(DJ-Nate - Theory of everything II). Ця пісня варта уваги!",
@@ -897,7 +897,7 @@ const musicCards = [
     duration: 140,
   },
   {
-    id: 22,
+    id: 20,
     image: require("../../photos/vip-images/mechannic.jpg"),
     audio: require("../../mp3/mechanik-kindom.mp3"),
     text: "GeometryDash(F-777 - Deadlocked). Моторошна, але епічна пісня. Друг фанат цього рівня :).",

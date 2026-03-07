@@ -1,9 +1,11 @@
-import React, { useState } from "react";
-import styled, { keyframes } from "styled-components";
+import React, { useState, useEffect } from "react";
+import styled, { keyframes, css } from "styled-components";
 import time from "../../photos/vip-images/mechannic.jpg";
 import dinofroz from "../../photos/vip-images/vip-dinofroz.webp";
 import turkeys from "../../photos/vip-images/collectors-edition.jpg";
-
+import ultra from "../../photos/vip-modal/realultra.jpg";
+import turkey from "../../photos/vip-images/ultra-vip-turkeys.webp";
+import VipModal from "./VipModal";
 const slideIn = keyframes`
   0% { transform: translateY(100%) scale(0.5); opacity: 0; }
   100% { transform: translateY(0%) scale(1); opacity: 1; }
@@ -63,7 +65,6 @@ const ShopContainer = styled.div`
     border-radius: 10px;
   }
 
-  /* Оптимізація для 1920x1080 */
   @media (min-width: 1900px) {
     max-width: 1300px;
     padding: 30px;
@@ -79,6 +80,7 @@ const CloseButton = styled.button`
   color: #ff6c6c;
   font-size: 36px;
   cursor: pointer;
+  z-index: 20;
   transition: 0.3s;
   &:hover {
     transform: scale(1.1) rotate(90deg);
@@ -128,41 +130,85 @@ const Badge = styled.div`
     padding: 6px 12px;
   }
 `;
-
 const PackGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: 15px;
+  @media (max-width: 1024px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
   @media (max-width: 650px) {
     grid-template-columns: 1fr;
   }
+
   @media (min-width: 1900px) {
     gap: 30px;
     margin-bottom: 40px;
   }
 `;
-
 const PackCard = styled.div`
   position: relative;
-  background: ${(props) =>
-    props.$isSpecial ? "rgba(255, 108, 108, 0.2)" : "rgba(255, 108, 108, 0.1)"};
+  background: #2a1212;
   border: 1px solid #ff6c6c;
   border-radius: 15px;
   padding: 15px;
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
   gap: 15px;
+  min-height: 270px;
   animation: ${(props) => (props.$isSpecial ? pulse : "none")} 2s infinite;
   transition: 0.3s;
+  z-index: 1;
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: url(${(props) => props.$bgImage});
+    background-size: cover;
+    background-position: center;
+    opacity: 0.25;  
+    z-index: -1;
+    transition: opacity 0.3s ease;
+  }
+
+  ${(props) => props.$isSub && css`
+    &::before {
+      opacity: ${(props) => (props.$activeImg === "turkeys" ? 0.4 : 0)};
+      background-image: url(${turkeys});
+      transition: opacity 1.5s ease-in-out;
+    }
+    &::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-image: url(${ultra});
+      background-size: cover;
+      background-position: center;
+      opacity: ${(props) => (props.$activeImg === "ultra" ? 0.4 : 0)};
+      z-index: -1;
+      transition: opacity 1.5s ease-in-out;
+    }
+  `}
+
   &:hover {
     transform: translateY(-8px);
-    background: rgba(255, 108, 108, 0.25);
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
+    &::before, &::after {
+        opacity: ${(props) => (props.$isSub ? 0.6 : 0.4)};
+    }
   }
 
   @media (min-width: 1900px) {
     padding: 25px;
     gap: 20px;
+    min-height: 350px;
   }
 `;
 
@@ -170,19 +216,7 @@ const PackInfo = styled.div`
   display: flex;
   align-items: center;
   gap: 12px;
-`;
-
-const PackImageFrame = styled.img`
-  width: 60px;
-  height: 60px;
-  border-radius: 10px;
-  object-fit: cover;
-  border: 1px solid rgba(255, 108, 108, 0.4);
-
-  @media (min-width: 1900px) {
-    width: 90px;
-    height: 90px;
-  }
+  text-shadow: 0 2px 4px rgba(0,0,0,0.8);
 `;
 
 const PackContent = styled.div`
@@ -221,6 +255,7 @@ const BuyButton = styled.button`
   flex-direction: column;
   align-items: center;
   transition: 0.2s;
+  z-index: 2;
 
   .old-price {
     text-decoration: line-through;
@@ -349,10 +384,21 @@ const RainbowSpan = styled.span`
 
 const ShopModal = ({ onClose }) => {
   const [isClosing, setIsClosing] = useState(false);
+  const [activeSubImg, setActiveSubImg] = useState("turkeys"); 
+  const [showVipModal, setShowVipModal] = useState(false);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+        setActiveSubImg((prev) => (prev === "turkeys" ? "ultra" : "turkeys"));
+    }, 6000);
+    return () => clearInterval(interval);
+  }, []);
+
   const handleClose = () => {
     setIsClosing(true);
     setTimeout(onClose, 500);
   };
+
   const packs = [
     {
       name: "Механічний",
@@ -364,7 +410,7 @@ const ShopModal = ({ onClose }) => {
     {
       name: "Бундючий",
       count: 750,
-      img: turkeys,
+      img: turkey,
       oldPrice: "50.00грн",
       buttonText: "34.99грн",
       badge: "≈-25% Популярний, ∞ в лімітах",
@@ -378,7 +424,21 @@ const ShopModal = ({ onClose }) => {
       buttonText: "39.99грн",
       badge: "≈-30%! Найвигідніший, Раз/добу",
     },
+    {
+      name: "Підписка",
+      count: "Стихія+",
+      img: null, 
+      special: true,
+      buttonText: "Розблокувати",
+      badge: "Преміум",
+      isSub: true,
+    },
   ];
+
+  if (showVipModal) {
+    return <VipModal onClose={() => setShowVipModal(false)} />;
+  }
+
   return (
     <Overlay onClick={handleClose}>
       <ShopContainer
@@ -389,16 +449,21 @@ const ShopModal = ({ onClose }) => {
         <ShopTitle>🧧 Магазин Конвертів</ShopTitle>
         <PackGrid>
           {packs.map((pack) => (
-            <PackCard key={pack.count} $isSpecial={pack.special}>
+            <PackCard 
+                key={pack.name} 
+                $isSpecial={pack.special} 
+                $bgImage={pack.img}
+                $isSub={pack.isSub}
+                $activeImg={activeSubImg}
+            >
               {pack.badge && <Badge>{pack.badge}</Badge>}
               <PackInfo>
-                <PackImageFrame src={pack.img} alt={pack.name} />
                 <PackContent>
                   <PackLabel>{pack.name}</PackLabel>
-                  <PackName>{pack.count} 🧧</PackName>
+                  <PackName>{pack.isSub ? pack.count : `${pack.count} 🧧`}</PackName>
                 </PackContent>
               </PackInfo>
-              <BuyButton>
+              <BuyButton onClick={() => pack.isSub && setShowVipModal(true)}>
                 {pack.oldPrice && (
                   <span className="old-price">{pack.oldPrice}</span>
                 )}
