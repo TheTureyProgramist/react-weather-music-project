@@ -110,91 +110,7 @@ const WeatherCardsContainer = styled.div`
   }
 `;
 
-const WeatherCard = styled.div`
-  background: ${(props) => (props.$isDarkMode ? "#1e1e1e" : "#f5f5f5")};
-  color: ${(props) => (props.$isDarkMode ? "#fff" : "#333")};
-  border-radius: 15px;
-  padding: 20px;
-  width: 100%;
-  max-width: 320px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-  border: ${(props) => (props.$isMain ? "2px solid gold" : "1px solid #444")};
-  @media (min-width: 1920px) {
-    max-width: 460px;
-    padding: 30px;
-    h1 {
-      font-size: 3rem !important;
-    }
-    p,
-    div,
-    span {
-      font-size: 16px !important;
-    }
-    h3 {
-      font-size: 1.5rem !important;
-    }
-  }
-`;
-
-const CardHeader = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-bottom: 1px solid #444;
-  padding-bottom: 10px;
-  margin-bottom: 15px;
-
-  h3 {
-    margin: 0;
-    color: ${(props) => (props.$isMain ? "gold" : "skyblue")};
-  }
-`;
-
-const ActionButtons = styled.div`
-  display: flex;
-  gap: 10px;
-
-  button {
-    background: #333;
-    color: #fff;
-    border: none;
-    padding: 5px 10px;
-    border-radius: 5px;
-    cursor: pointer;
-    &:hover {
-      background: #555;
-    }
-  }
-  @media (min-width: 1920px) {
-    button {
-      font-size: 16px;
-      padding: 8px 16px;
-    }
-  }
-`;
-
-const ImagePlaceholder = styled.div`
-  width: ${(props) => props.size || "50px"};
-  height: ${(props) => props.size || "50px"};
-  background: #3a3a3a;
-  border: 1px dashed #888;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 10px;
-  font-size: ${(props) => props.fontSize || "24px"};
-  color: #fff;
-  text-align: center;
-  margin: ${(props) => props.margin || "0"};
-  @media (min-width: 1920px) {
-    transform: scale(1.3);
-    margin: 10px;
-    font-size: 36px !important;
-  }
-`;
-
 const LOADING_PHRASES = [
-  ".",
   "Підпішіться на мій фейсбук, щоб знати, що буде в наступній версії! Проект погода.",
   "Інструкція з використання і отримування 🧧, розміщеннна у магазині конвертів!",
   "Головоломки та кат-сцени в розробці🧩",
@@ -206,7 +122,6 @@ const LOADING_PHRASES = [
   "Скиньте мені в фейсбук, картинку до треків деяких, а також моторошнішу історію, бо моя не дуже :)",
   "У вас характер Ніцерона, індика, чи кого?",
   "СлівкіШоу та Дизель шоу, це легенди.",
-  "0 казино, 0 реклами, 0 політики.",
 ];
 
 const SettingsContainer = styled.div`

@@ -2,7 +2,6 @@ import React, { useState, useMemo } from "react";
 import styled, { keyframes, css } from "styled-components";
 import InfoModal from "./InfoModal";
 import KatSceneModal from "./KatSceneModal";
-import katscene from "../../mp3/registrationscene.mp4";
 const slideIn = keyframes`
   0% { 
     transform: translateY(100%) scale(0.5);

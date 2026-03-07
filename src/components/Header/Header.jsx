@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import styled, { keyframes, css } from "styled-components";
 import logo from "../../photos/hero-header/logo.png";
 import bell from "../../mp3/bell.mp3";
+import UserSearchModal from "../Modals/UserSearchModal.jsx";
 
 const pulse = keyframes`
   0% { transform: scale(1); opacity: 1; }
@@ -339,6 +340,9 @@ const Header = ({
 }) => {
   const [showUltra, setShowUltra] = useState(false);
 
+  // --- User search modal state ---
+  const [isUserSearchOpen, setIsUserSearchOpen] = useState(false);
+
   useEffect(() => {
     const interval = setInterval(() => {
       setShowUltra((prev) => !prev);
@@ -353,64 +357,82 @@ const Header = ({
   };
 
   return (
-    <HeaderDiv $isDarkMode={isDarkMode}>
-      <HeaderFix>
-        <HeaderLogo src={logo} alt="Logo" />
-        {user && (
-          <VipTextWrapper onClick={onOpenVip}>
-            <RainbowText $show={!showUltra}>Стихія+</RainbowText>
-            <UltraText $show={showUltra}>Стихія+ Ultra</UltraText>
-          </VipTextWrapper>
-        )}
-      </HeaderFix>
-      <HeaderFix>
-        <ThemeButton onClick={handleThemeToggle} $isDarkMode={isDarkMode}>
-          {isDarkMode ? "☀️" : "🌑"}
-        </ThemeButton>
-        {user ? (
-          <>
-            <IconWrapper>
+    <>
+      <HeaderDiv $isDarkMode={isDarkMode}>
+        <HeaderFix>
+          <HeaderLogo src={logo} alt="Logo" />
+          {user && (
+            <VipTextWrapper onClick={onOpenVip}>
+              <RainbowText $show={!showUltra}>Стихія+</RainbowText>
+              <UltraText $show={showUltra}>Стихія+ Ultra</UltraText>
+            </VipTextWrapper>
+          )}
+        </HeaderFix>
+        <HeaderFix>
+          {/* Додаємо кнопку + */}
+          {user && (
+            <IconButton
+              onClick={() => setIsUserSearchOpen(true)}
+              title="Додати користувача"
+              $isDarkMode={isDarkMode}
+            >
+              <span style={{fontSize: 28, fontWeight: 700, lineHeight: 1}}>+</span>
+            </IconButton>
+          )}
+          <ThemeButton onClick={handleThemeToggle} $isDarkMode={isDarkMode}>
+            {isDarkMode ? "☀️" : "🌑"}
+          </ThemeButton>
+          {user ? (
+            <>
+              <IconWrapper>
+                <IconButton
+                  onClick={onOpenShop}
+                  title="Магазин"
+                  $isDarkMode={isDarkMode}
+                >
+                  <CounterText>2000/2000</CounterText>🧧
+                </IconButton>
+                <NotificationBadge>!</NotificationBadge>
+              </IconWrapper>
               <IconButton
-                onClick={onOpenShop}
-                title="Магазин"
+                onClick={onOpenAchievements}
+                title="Досягнення"
                 $isDarkMode={isDarkMode}
               >
-                <CounterText>2000/2000</CounterText>🧧
+                🏆
               </IconButton>
-              <NotificationBadge>!</NotificationBadge>
-            </IconWrapper>
-            <IconButton
-              onClick={onOpenAchievements}
-              title="Досягнення"
-              $isDarkMode={isDarkMode}
-            >
-              🏆
-            </IconButton>
-            <IconButton
-              onClick={onOpenSettings}
-              title="Налаштування"
-              $isDarkMode={isDarkMode}
-            >
-              ⚙️
-            </IconButton>
-            <IconButton
-              onClick={onLogout}
-              title="Вийти"
-              $isDarkMode={isDarkMode}
-            >
-              🚪
-            </IconButton>
-            <UserName $uColor={user.textColor}>{user.firstName}</UserName>
-            <HeaderAvatar src={currentAvatar} $bColor={user.borderColor} />
-          </>
-        ) : (
-          <>
-            <LoginLink onClick={onOpenLogin}>Увійти</LoginLink>
-            <HeaderButton onClick={onOpenRegister}>Реєстрація</HeaderButton>
-          </>
-        )}
-      </HeaderFix>
-    </HeaderDiv>
+              <IconButton
+                onClick={onOpenSettings}
+                title="Налаштування"
+                $isDarkMode={isDarkMode}
+              >
+                ⚙️
+              </IconButton>
+              <IconButton
+                onClick={onLogout}
+                title="Вийти"
+                $isDarkMode={isDarkMode}
+              >
+                🚪
+              </IconButton>
+              <UserName $uColor={user.textColor}>{user.firstName}</UserName>
+              <HeaderAvatar src={currentAvatar} $bColor={user.borderColor} />
+            </>
+          ) : (
+            <>
+              <LoginLink onClick={onOpenLogin}>Увійти</LoginLink>
+              <HeaderButton onClick={onOpenRegister}>Реєстрація</HeaderButton>
+            </>
+          )}
+        </HeaderFix>
+      </HeaderDiv>
+      {/* Окремий компонент модалки пошуку користувачів */}
+      <UserSearchModal
+        isOpen={isUserSearchOpen}
+        onClose={() => setIsUserSearchOpen(false)}
+        currentAvatar={currentAvatar}
+      />
+    </>
   );
 };
 
