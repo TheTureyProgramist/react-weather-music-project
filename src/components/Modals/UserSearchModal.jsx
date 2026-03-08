@@ -1,7 +1,5 @@
  import React, { useState, useEffect } from "react";
  import styled, { keyframes } from "styled-components";
- 
- // Анімація для градієнтного тексту (якщо є 270deg)
  const flow = keyframes`
    0% { background-position: 0% 50%; }
    50% { background-position: 100% 50%; }

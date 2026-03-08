@@ -148,15 +148,15 @@ const PackGrid = styled.div`
 `;
 const PackCard = styled.div`
   position: relative;
-  background: #2a1212;
+  background: #2a121215;
   border: 1px solid #ff6c6c;
   border-radius: 15px;
-  padding: 15px;
+  padding: 10px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   gap: 15px;
-  min-height: 270px;
+  min-height: 250px;
   animation: ${(props) => (props.$isSpecial ? pulse : "none")} 2s infinite;
   transition: 0.3s;
   z-index: 1;
@@ -199,7 +199,7 @@ const PackCard = styled.div`
 
   &:hover {
     transform: translateY(-8px);
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
     &::before, &::after {
         opacity: ${(props) => (props.$isSub ? 0.6 : 0.4)};
     }
@@ -216,7 +216,7 @@ const PackInfo = styled.div`
   display: flex;
   align-items: center;
   gap: 12px;
-  text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.13);
 `;
 
 const PackContent = styled.div`
@@ -426,7 +426,7 @@ const ShopModal = ({ onClose }) => {
     },
     {
       name: "Підписка",
-      count: "Стихія+",
+      count: "Стихія+ та Стихія+ Ultra",
       img: null, 
       special: true,
       buttonText: "Розблокувати",
