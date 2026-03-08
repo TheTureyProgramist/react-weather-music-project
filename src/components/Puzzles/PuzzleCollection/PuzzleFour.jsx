@@ -6,12 +6,23 @@ import React, {
   useRef,
 } from "react";
 import styled, { keyframes, css } from "styled-components";
+import { motion, AnimatePresence } from "framer-motion";
+import asium from "../../../mp3/theory-of-everyting.mp3";
 
 // --- Анімації ---
 const fadeIn = keyframes`from { opacity: 0; } to { opacity: 1; }`;
 const bonusAnim = keyframes`0% { transform: scale(1); opacity: 1; } 100% { transform: scale(2); opacity: 0; }`;
 const shake = keyframes`0%, 100% { transform: translateX(0); } 25% { transform: translateX(-4px); } 75% { transform: translateX(4px); }`;
 const pulseRed = keyframes`0% { background: #1a1a1a; } 50% { background: #420000; } 100% { background: #1a1a1a; }`;
+const rotate = keyframes`
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+`;
+
+const rotateRev = keyframes`
+  from { transform: rotate(0deg); }
+  to { transform: rotate(-360deg); }
+`;
 
 // --- Стилі ---
 const GameWrapper = styled.div`
@@ -149,7 +160,7 @@ const NavArrow = styled.div`
   ${(props) => props.$dir === "right" && "right: -135%;"}
 `;
 
-const Modal = styled.div`
+const HelpModal = styled.div`
   position: absolute;
   top: 50%;
   left: 50%;
@@ -230,19 +241,136 @@ const StatsGrid = styled.div`
 `;
 
 const GameButton = styled.button`
-  width: 36px;
-  height: 36px;
-  border: 2px solid #ffb36c;
+  width: 40px;
+  height: 40px;
   background: transparent;
+  border: 2px solid #ffb36c;
   color: #ffb36c;
-  font-size: 16px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  &:active {
+  font-size: 18px;
+  transition: all 0.2s;
+  flex-shrink: 0;
+
+  &:hover {
+    background: rgba(255, 179, 108, 0.1);
+    transform: scale(1.05);
+  }
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+`;
+
+const GearContainer = styled(GameButton)`
+  position: relative;
+  overflow: hidden;
+  .g {
+    position: absolute;
+    font-size: 16px;
+    transition: 0.3s;
+  }
+  .g1 {
+    top: 4px;
+    left: 14px;
+  }
+  .g2 {
+    bottom: 6px;
+    left: 6px;
+  }
+  .g3 {
+    bottom: 6px;
+    right: 6px;
+  }
+
+  &:hover .g1 {
+    animation: ${rotate} 3s linear infinite;
+  }
+  &:hover .g2 {
+    animation: ${rotateRev} 3s linear infinite;
+  }
+  &:hover .g3 {
+    animation: ${rotate} 3s linear infinite;
+  }
+`;
+
+const ModalOverlay = styled(motion.div)`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.85);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 100;
+`;
+
+const Modal = styled.div`
+  background: #2e1a16;
+  border: 3px solid #ffb36c;
+  padding: 20px;
+  width: 340px;
+  max-height: 90vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  scrollbar-width: thin;
+  scrollbar-color: #ffb36c #2e1a16;
+`;
+
+const DifficultyBtn = styled.button`
+  background: #3e2723;
+  color: #ffb36c;
+  border: 1px solid #ffb36c;
+  padding: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 14px;
+  &:hover {
     background: #ffb36c;
-    color: #222;
+    color: #3e2723;
+  }
+`;
+
+const VolumeControl = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(0, 0, 0, 0.2);
+  padding: 5px 10px;
+  border-radius: 4px;
+  border: 1px solid rgba(255, 179, 108, 0.3);
+
+  input {
+    width: 60px;
+    accent-color: #ffb36c;
+    cursor: pointer;
+  }
+  span {
+    font-size: 16px;
+    min-width: 20px;
+  }
+`;
+
+const CustomRow = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+  color: #ffb36c;
+
+  select,
+  input {
+    accent-color: #ffb36c;
+    cursor: pointer;
+    background: #3e2723;
+    color: #ffb36c;
+    border: 1px solid #ffb36c;
   }
 `;
 
@@ -273,6 +401,18 @@ const PuzzleFour = ({ onExit }) => {
     [],
   );
 
+  const [config, setConfig] = useState({
+    label: "Середня",
+    time: 300,
+    maxMoves: 100,
+    sawsCount: 4,
+    lives: 4,
+    portalCooldown: 6,
+    sawMovement: "random",
+    sawsUsePortals: true,
+  });
+  const [tempConfig, setTempConfig] = useState(config);
+
   const [player, setPlayer] = useState({ x: 0, y: 0 });
   const [boxes, setBoxes] = useState([
     { x: 4, y: 1, locked: false },
@@ -280,17 +420,12 @@ const PuzzleFour = ({ onExit }) => {
     { x: 3, y: 5, locked: false },
     { x: 2, y: 6, locked: false },
   ]);
-  const [saws, setSaws] = useState([
-    { x: 7, y: 2 },
-    { x: 4, y: 3 },
-    { x: 6, y: 5 },
-    { x: 3, y: 7 },
-  ]);
+  const [saws, setSaws] = useState([]);
   const [portalCooldown, setPortalCooldown] = useState(0);
   const [activeTargetIdx, setActiveTargetIdx] = useState(0);
   const [moves, setMoves] = useState(0);
-  const [lives, setLives] = useState(4);
-  const [timeLeft, setTimeLeft] = useState(240);
+  const [lives, setLives] = useState(config.lives);
+  const [timeLeft, setTimeLeft] = useState(config.time);
   const [bonusTime, setBonusTime] = useState(0);
   const [statusMsg, setStatusMsg] = useState(null);
   const [isHit, setIsHit] = useState(false);
@@ -299,11 +434,37 @@ const PuzzleFour = ({ onExit }) => {
   const [sawsVisibleFlash, setSawsVisibleFlash] = useState(false);
   const [finalWin, setFinalWin] = useState(false);
   const [showHelp, setShowHelp] = useState(true);
+  const [showSettings, setShowSettings] = useState(false);
+
+  const audioRef = useRef(null);
+  const [volume, setVolume] = useState(0.5);
 
   const playerRef = useRef(player);
   useEffect(() => {
     playerRef.current = player;
   }, [player]);
+
+  useEffect(() => {
+    audioRef.current = new Audio(asium);
+    audioRef.current.loop = true;
+    audioRef.current.volume = volume;
+
+    const playAudio = () => {
+      audioRef.current.play().catch(() => {});
+    };
+    playAudio();
+
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    if (audioRef.current) audioRef.current.volume = volume;
+  }, [volume]);
 
   const resetGame = useCallback(() => {
     setPlayer({ x: 0, y: 0 });
@@ -314,64 +475,74 @@ const PuzzleFour = ({ onExit }) => {
       { x: 3, y: 5, locked: false },
       { x: 2, y: 6, locked: false },
     ]);
-    setSaws([
-      { x: 7, y: 2 },
-      { x: 4, y: 3 },
-      { x: 6, y: 5 },
-      { x: 3, y: 7 },
-    ]);
+    const initialSaws = [ { x: 7, y: 2 }, { x: 4, y: 3 }, { x: 6, y: 5 }, { x: 3, y: 7 }, ];
+    setSaws(initialSaws.slice(0, config.sawsCount));
+
     setActiveTargetIdx(0);
     setMoves(0);
-    setLives(4);
-    setTimeLeft(240);
+    setLives(config.lives);
+    setTimeLeft(config.time);
     setPortalCooldown(0);
     setIsEvacuating(false);
     setFinalWin(false);
     setStatusMsg(null);
     setEvacPoints([]);
     setBonusTime(0);
-  }, []);
+  }, [config]);
 
+  useEffect(() => { resetGame(); }, [resetGame]);
+  
   const handleHit = useCallback(() => {
     if (bonusTime > 0) return;
     setIsHit(true);
     setTimeout(() => setIsHit(false), 300);
-    
+
     // x2 шкода у фазі евакуації
     const damage = isEvacuating ? 2 : 1;
 
     setLives((l) => {
       if (l <= damage) {
         alert("СИСТЕМУ ЗНИЩЕНО");
-        resetGame();
-        return 4;
+        resetGame(); // resetGame will set lives from config
+        return config.lives;
       }
       setPlayer({ x: 0, y: 0 });
       playerRef.current = { x: 0, y: 0 };
       return l - damage;
     });
-  }, [resetGame, bonusTime, isEvacuating]);
+  }, [resetGame, bonusTime, isEvacuating, config.lives]);
 
   const moveSaws = useCallback(() => {
-    if (Math.random() < 0.3) return;
+    const { sawMovement } = config;
+
+    if (sawMovement === "hv_pause" && Math.random() < 0.4) return;
+    if (sawMovement === "random" && Math.random() < 0.3) return;
 
     setSaws((prevSaws) => {
       const nextSaws = prevSaws.map((saw) => {
-        const dirs = [
-          { x: 0, y: -1 }, { x: 0, y: 1 }, { x: -1, y: 0 }, { x: 1, y: 0 },
-          { x: 1, y: 1 }, { x: -1, y: -1 }, { x: 1, y: -1 }, { x: -1, y: 1 },
-        ];
+        const dirs = [ { x: 0, y: -1 }, { x: 0, y: 1 }, { x: -1, y: 0 }, { x: 1, y: 0 }, { x: 1, y: 1 }, { x: -1, y: -1 }, { x: 1, y: -1 }, { x: -1, y: 1 }, ];
         const valid = dirs.filter((d) => {
-          let nx = saw.x + d.x, ny = saw.y + d.y;
+          let nx = saw.x + d.x,
+            ny = saw.y + d.y;
           if (nx <= 1 && ny <= 1) return false;
-          if (nx < 0 || nx > 7 || ny < 0 || ny > 7 || levelMap[ny][nx] === 1) return false;
+          if (nx < 0 || nx > 7 || ny < 0 || ny > 7 || levelMap[ny][nx] === 1)
+            return false;
           return !boxes.some((b) => b.x === nx && b.y === ny);
         });
+
         const move = valid[Math.floor(Math.random() * valid.length)];
         if (!move) return saw;
-        let fx = saw.x + move.x, fy = saw.y + move.y;
-        if (fx === portalA.x && fy === portalA.y) return portalB;
-        if (fx === portalB.x && fy === portalB.y) return portalA;
+
+        let fx = saw.x + move.x,
+          fy = saw.y + move.y;
+
+        if (config.sawsUsePortals) {
+          if (fx === portalA.x && fy === portalA.y) return portalB;
+          if (fx === portalB.x && fy === portalB.y) return portalA;
+        } else {
+          if ((fx === portalA.x && fy === portalA.y) || (fx === portalB.x && fy === portalB.y)) return saw;
+        }
+
         return { x: fx, y: fy };
       });
       if (
@@ -383,22 +554,27 @@ const PuzzleFour = ({ onExit }) => {
       }
       return nextSaws;
     });
-  }, [boxes, levelMap, handleHit, portalA, portalB]);
+  }, [boxes, levelMap, handleHit, portalA, portalB, config]);
 
   const completeStep = useCallback(
     (nx, ny, newBoxes) => {
-      let finalX = nx, finalY = ny;
+      let finalX = nx,
+        finalY = ny;
       let usedPortal = false;
       if (portalCooldown === 0) {
         if (nx === portalA.x && ny === portalA.y) {
-          finalX = portalB.x; finalY = portalB.y; usedPortal = true;
+          finalX = portalB.x;
+          finalY = portalB.y;
+          usedPortal = true;
         } else if (nx === portalB.x && ny === portalB.y) {
-          finalX = portalA.x; finalY = portalA.y; usedPortal = true;
+          finalX = portalA.x;
+          finalY = portalA.y;
+          usedPortal = true;
         }
       }
       setPlayer({ x: finalX, y: finalY });
       playerRef.current = { x: finalX, y: finalY };
-      if (usedPortal) setPortalCooldown(6);
+      if (usedPortal) setPortalCooldown(config.portalCooldown);
       setPortalCooldown((prev) => Math.max(0, prev - 1));
 
       if (isEvacuating) {
@@ -445,11 +621,11 @@ const PuzzleFour = ({ onExit }) => {
             { x: 7, y: 3, active: false, hidden: true },
           ]);
         } else {
-            setActiveTargetIdx((prev) => (prev + 1) % targets.length);
+          setActiveTargetIdx((prev) => (prev + 1) % targets.length);
         }
       }
       setMoves((m) => {
-        if (m >= 99) {
+        if (m >= config.maxMoves - 1) {
           alert("ЕНЕРГІЯ 0%");
           resetGame();
           return 0;
@@ -458,24 +634,42 @@ const PuzzleFour = ({ onExit }) => {
       });
       moveSaws();
     },
-    [portalCooldown, isEvacuating, evacPoints, targets, activeTargetIdx, moveSaws, resetGame, portalA, portalB],
+    [
+      portalCooldown,
+      isEvacuating,
+      evacPoints,
+      targets,
+      activeTargetIdx,
+      moveSaws,
+      resetGame,
+      portalA,
+      portalB,
+      config,
+    ],
   );
 
   const canMove = useCallback(
     (dir) => {
       const dx = dir === "left" ? -1 : dir === "right" ? 1 : 0;
       const dy = dir === "up" ? -1 : dir === "down" ? 1 : 0;
-      const nx = player.x + dx, ny = player.y + dy;
-      if (nx < 0 || nx > 7 || ny < 0 || ny > 7 || levelMap[ny][nx] === 1) return false;
+      const nx = player.x + dx,
+        ny = player.y + dy;
+      if (nx < 0 || nx > 7 || ny < 0 || ny > 7 || levelMap[ny][nx] === 1)
+        return false;
       const boxIdx = boxes.findIndex((b) => b.x === nx && b.y === ny);
       if (boxIdx !== -1) {
         if (boxes[boxIdx].locked) return false;
-        const bnx = nx + dx, bny = ny + dy;
+        const bnx = nx + dx,
+          bny = ny + dy;
         if (
-          bnx < 0 || bnx > 7 || bny < 0 || bny > 7 ||
+          bnx < 0 ||
+          bnx > 7 ||
+          bny < 0 ||
+          bny > 7 ||
           levelMap[bny][bnx] === 1 ||
           boxes.some((b) => b.x === bnx && b.y === bny)
-        ) return false;
+        )
+          return false;
       }
       return true;
     },
@@ -488,14 +682,16 @@ const PuzzleFour = ({ onExit }) => {
       if (!canMove(dir)) return;
       const dx = dir === "left" ? -1 : dir === "right" ? 1 : 0;
       const dy = dir === "up" ? -1 : dir === "down" ? 1 : 0;
-      const nx = player.x + dx, ny = player.y + dy;
+      const nx = player.x + dx,
+        ny = player.y + dy;
       if (saws.some((s) => s.x === nx && s.y === ny)) {
         handleHit();
         return;
       }
       const boxIdx = boxes.findIndex((b) => b.x === nx && b.y === ny);
       if (boxIdx !== -1) {
-        const bnx = nx + dx, bny = ny + dy;
+        const bnx = nx + dx,
+          bny = ny + dy;
         const nextBoxes = [...boxes];
         nextBoxes[boxIdx] = { ...nextBoxes[boxIdx], x: bnx, y: bny };
         setBoxes(nextBoxes);
@@ -520,10 +716,10 @@ const PuzzleFour = ({ onExit }) => {
     const t = setInterval(() => {
       if (!showHelp && !finalWin) {
         setTimeLeft((p) => {
-          if (p <= 1) {
+          if (p <= 1 && !finalWin) {
             alert("ЧАС ВИЙШОВ");
             resetGame();
-            return 240;
+            return config.time;
           }
           return p - 1;
         });
@@ -531,7 +727,37 @@ const PuzzleFour = ({ onExit }) => {
       if (bonusTime > 0) setBonusTime((p) => p - 1);
     }, 1000);
     return () => clearInterval(t);
-  }, [resetGame, bonusTime, showHelp, finalWin]);
+  }, [resetGame, bonusTime, showHelp, finalWin, config.time]);
+
+  const setDifficulty = (type, customParams = null) => {
+    let newConfig;
+    if (customParams) {
+      newConfig = { ...customParams, label: "Власна" };
+    } else {
+      const presets = {
+        easy: {
+          label: "Легка", time: 300, maxMoves: 200, sawsCount: 3, lives: 8, portalCooldown: 3, sawMovement: "hv_pause", sawsUsePortals: false,
+        },
+        normal: {
+          label: "Середня", time: 300, maxMoves: 100, sawsCount: 4, lives: 4, portalCooldown: 6, sawMovement: "random", sawsUsePortals: true,
+        },
+        hard: {
+          label: "Важка", time: 300, maxMoves: 100, sawsCount: 4, lives: 6, portalCooldown: 10, sawMovement: "all_no_pause", sawsUsePortals: true,
+        },
+      };
+      newConfig = presets[type];
+    }
+    setConfig(newConfig);
+    setTempConfig(newConfig);
+    setShowSettings(false);
+  };
+
+  const formatTime = (s) =>
+    `${Math.floor(s / 60)}:${(s % 60).toString().padStart(2, "0")}`;
+
+  useEffect(() => {
+    setTempConfig(config);
+  }, [config]);
 
   return (
     <GameWrapper $isHit={isHit}>
@@ -542,13 +768,22 @@ const PuzzleFour = ({ onExit }) => {
         {levelMap.map((row, y) =>
           row.map((cell, x) => {
             const evac = evacPoints.find((p) => p.x === x && p.y === y);
-            const dist = Math.sqrt(Math.pow(x - player.x, 2) + Math.pow(y - player.y, 2));
+            const dist = Math.sqrt(
+              Math.pow(x - player.x, 2) + Math.pow(y - player.y, 2),
+            );
             return (
               <Cell
                 key={`${x}-${y}`}
                 $type={cell === 1 ? "wall" : "empty"}
-                $isPortal={(x === portalA.x && y === portalA.y) || (x === portalB.x && y === portalB.y)}
-                $isActiveTarget={!isEvacuating && targets[activeTargetIdx].x === x && targets[activeTargetIdx].y === y}
+                $isPortal={
+                  (x === portalA.x && y === portalA.y) ||
+                  (x === portalB.x && y === portalB.y)
+                }
+                $isActiveTarget={
+                  !isEvacuating &&
+                  targets[activeTargetIdx].x === x &&
+                  targets[activeTargetIdx].y === y
+                }
                 $isEvacPoint={!!evac}
                 $activated={evac?.active}
                 $isHiddenPoint={evac?.hidden}
@@ -561,10 +796,26 @@ const PuzzleFour = ({ onExit }) => {
           <PlayerIcon>
             {!finalWin && !showHelp && (
               <>
-                {canMove("up") && <NavArrow $dir="up" onClick={() => moveAction("up")}>▲</NavArrow>}
-                {canMove("down") && <NavArrow $dir="down" onClick={() => moveAction("down")}>▼</NavArrow>}
-                {canMove("left") && <NavArrow $dir="left" onClick={() => moveAction("left")}>◀</NavArrow>}
-                {canMove("right") && <NavArrow $dir="right" onClick={() => moveAction("right")}>▶</NavArrow>}
+                {canMove("up") && (
+                  <NavArrow $dir="up" onClick={() => moveAction("up")}>
+                    ▲
+                  </NavArrow>
+                )}
+                {canMove("down") && (
+                  <NavArrow $dir="down" onClick={() => moveAction("down")}>
+                    ▼
+                  </NavArrow>
+                )}
+                {canMove("left") && (
+                  <NavArrow $dir="left" onClick={() => moveAction("left")}>
+                    ◀
+                  </NavArrow>
+                )}
+                {canMove("right") && (
+                  <NavArrow $dir="right" onClick={() => moveAction("right")}>
+                    ▶
+                  </NavArrow>
+                )}
               </>
             )}
           </PlayerIcon>
@@ -572,9 +823,14 @@ const PuzzleFour = ({ onExit }) => {
         {boxes.map((b, i) => (
           <MovingObject
             key={`b-${i}`}
-            $x={b.x} $y={b.y}
+            $x={b.x}
+            $y={b.y}
             $invisible={isEvacuating}
-            $isNear={Math.sqrt(Math.pow(b.x - player.x, 2) + Math.pow(b.y - player.y, 2)) < 1.6}
+            $isNear={
+              Math.sqrt(
+                Math.pow(b.x - player.x, 2) + Math.pow(b.y - player.y, 2),
+              ) < 1.6
+            }
           >
             <BoxIcon $locked={b.locked} />
           </MovingObject>
@@ -582,14 +838,20 @@ const PuzzleFour = ({ onExit }) => {
 
         {saws.map((s, i) => {
           const isTransparent = bonusTime > 0;
-          const isInvisible = isEvacuating && !sawsVisibleFlash && bonusTime <= 0;
+          const isInvisible =
+            isEvacuating && !sawsVisibleFlash && bonusTime <= 0;
           return (
             <MovingObject
               key={`s-${i}`}
-              $x={s.x} $y={s.y}
+              $x={s.x}
+              $y={s.y}
               $invisible={isInvisible}
               $isTransparent={isTransparent}
-              $isNear={Math.sqrt(Math.pow(s.x - player.x, 2) + Math.pow(s.y - player.y, 2)) < 1.6}
+              $isNear={
+                Math.sqrt(
+                  Math.pow(s.x - player.x, 2) + Math.pow(s.y - player.y, 2),
+                ) < 1.6
+              }
             >
               <SawIcon
                 $safe={bonusTime > 0}
@@ -599,20 +861,25 @@ const PuzzleFour = ({ onExit }) => {
           );
         })}
 
-        {statusMsg && <FloatingText key={statusMsg + moves}>{statusMsg}</FloatingText>}
+        {statusMsg && (
+          <FloatingText key={statusMsg + moves}>{statusMsg}</FloatingText>
+        )}
         {showHelp && (
-          <Modal>
+          <HelpModal>
             <h3>Рішення головоломки</h3>
             <p style={{ fontSize: "11px", textAlign: "left" }}>
               <b>Ціль</b>: Встановити 4 модулі на позиції ⚡.
               <br />
               <b>Пили</b>: Випадковий рух. У Фазі 1 забирають 1❤️.
               <br />
-              <b>НЕВРАЗЛИВІСТЬ</b>: Після 4-го модуля — 8с безпеки (зелені пили).
+              <b>НЕВРАЗЛИВІСТЬ</b>: Після 4-го модуля — 8с безпеки (зелені
+              пили).
               <br />
-              <b>ФАЗА ЕВАКУАЦІЇ</b>: Пили стають невидимими (радіус 1) і наносять <b>x2 ШКОДИ (2❤️)</b>!
+              <b>ФАЗА ЕВАКУАЦІЇ</b>: Пили стають невидимими (радіус 1) і
+              наносять <b>x2 ШКОДИ (2❤️)</b>!
               <br />
-              <b>Як вижити?</b> Активуйте 8 точок 📍. При кожній активації пили стають видимими на 1с.
+              <b>Як вижити?</b> Активуйте 8 точок 📍. При кожній активації пили
+              стають видимими на 1с.
             </p>
             <GameButton
               style={{ width: "auto", padding: "0 20px", marginTop: "10px" }}
@@ -620,23 +887,122 @@ const PuzzleFour = ({ onExit }) => {
             >
               ПОЧАТИ
             </GameButton>
-          </Modal>
+          </HelpModal>
         )}
       </GameBoard>
       <BottomPanel>
         <StatsGrid>
-          <span>❤️ {lives}/4</span>
-          <span>⏳ {Math.floor(timeLeft / 60)}:{String(timeLeft % 60).padStart(2, "0")}</span>
-          <span>👣 {moves}/100</span>
-          <span style={{ color: "#3f51b5" }}>🌀 {portalCooldown > 0 ? portalCooldown : "OK"}</span>
-          {bonusTime > 0 && <span style={{ color: "#4caf50" }}>🛡️ {bonusTime}s</span>}
+          <span>❤️ {lives}/{config.lives}</span>
+          <span>
+            ⏳ {Math.floor(timeLeft / 60)}:
+            {String(timeLeft % 60).padStart(2, "0")}
+          </span>
+          <span>👣 {moves}/{config.maxMoves}</span>
+          <span style={{ color: "#3f51b5" }}>
+            🌀 {portalCooldown > 0 ? portalCooldown : "OK"}
+          </span>
+          {bonusTime > 0 && (
+            <span style={{ color: "#4caf50" }}>🛡️ {bonusTime}s</span>
+          )}
         </StatsGrid>
         <div style={{ display: "flex", gap: "5px" }}>
+          <VolumeControl>
+            <span>{volume === 0 ? "🔇" : "🎵"}</span>
+            <input
+              type="range"
+              min="0"
+              max="1"
+              step="0.01"
+              value={volume}
+              onChange={(e) => setVolume(parseFloat(e.target.value))}
+            />
+          </VolumeControl>
           <GameButton onClick={() => setShowHelp(true)}>?</GameButton>
+          <GearContainer onClick={() => setShowSettings(true)} title="Налаштування">
+            <span className="g g1">⚙</span>
+            <span className="g g2">⚙</span>
+            <span className="g g3">⚙</span>
+          </GearContainer>
           <GameButton onClick={resetGame}>⏭</GameButton>
-          <GameButton onClick={onExit} style={{ color: "#f44336" }}>✖</GameButton>
+          <GameButton onClick={onExit} style={{ borderColor: "#f44336", color: "#f44336" }}>
+            ✖
+          </GameButton>
         </div>
       </BottomPanel>
+      <AnimatePresence>
+        {showSettings && (
+          <ModalOverlay
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setShowSettings(false)}
+          >
+            <Modal onClick={(e) => e.stopPropagation()}>
+              <h3 style={{ margin: "0", color: "#ffb36c", textAlign: "center" }}>
+                Налаштування
+              </h3>
+
+              <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                <DifficultyBtn onClick={() => setDifficulty("easy")}>
+                  Легка (5хв, 200х, 3 пили, 8❤️)
+                </DifficultyBtn>
+                <DifficultyBtn onClick={() => setDifficulty("normal")}>
+                  Середня (5хв, 100х, 4 пили, 4❤️)
+                </DifficultyBtn>
+                <DifficultyBtn onClick={() => setDifficulty("hard")}>
+                  Важка (5хв, 100х, 4 пили, 6❤️)
+                </DifficultyBtn>
+              </div>
+
+              <hr style={{ borderColor: "#ffb36c", width: "100%", margin: "5px 0" }} />
+
+              <span style={{ fontSize: "14px", textAlign: "center", color: "#ffb36c" }}>
+                Власні параметри:
+              </span>
+
+              <CustomRow>
+                <span>Ходи: {tempConfig.maxMoves}</span>
+                <input type="range" min="50" max="200" step="10" value={tempConfig.maxMoves} onChange={(e) => setTempConfig({ ...tempConfig, maxMoves: parseInt(e.target.value) })} />
+              </CustomRow>
+              <CustomRow>
+                <span>Пили: {tempConfig.sawsCount}</span>
+                <input type="range" min="2" max="4" value={tempConfig.sawsCount} onChange={(e) => setTempConfig({ ...tempConfig, sawsCount: parseInt(e.target.value) })} />
+              </CustomRow>
+              <CustomRow>
+                <span>Життя: {tempConfig.lives}</span>
+                <input type="range" min="1" max="8" value={tempConfig.lives} onChange={(e) => setTempConfig({ ...tempConfig, lives: parseInt(e.target.value) })} />
+              </CustomRow>
+              <CustomRow>
+                <span>Перезарядка порталу: {tempConfig.portalCooldown} ходів</span>
+                <input type="range" min="1" max="10" value={tempConfig.portalCooldown} onChange={(e) => setTempConfig({ ...tempConfig, portalCooldown: parseInt(e.target.value) })} />
+              </CustomRow>
+              <CustomRow>
+                <span>Рух пил:</span>
+                <select value={tempConfig.sawMovement} onChange={(e) => setTempConfig({ ...tempConfig, sawMovement: e.target.value })}>
+                  <option value="hv_pause">Всі напрямки (з паузами)</option>
+                  <option value="random">Випадковий (з паузами)</option>
+                  <option value="all_no_pause">Всі напрямки (без пауз)</option>
+                </select>
+              </CustomRow>
+              <CustomRow>
+                <span>Пили крізь портал:</span>
+                <select value={tempConfig.sawsUsePortals} onChange={(e) => setTempConfig({ ...tempConfig, sawsUsePortals: e.target.value === 'true' })}>
+                  <option value="true">Так</option>
+                  <option value="false">Ні</option>
+                </select>
+              </CustomRow>
+
+              <DifficultyBtn onClick={() => setDifficulty("custom", tempConfig)} style={{ background: "#4e342e", marginTop: "10px" }}>
+                Застосувати власні
+              </DifficultyBtn>
+
+              <DifficultyBtn onClick={() => setShowSettings(false)} style={{ background: "#1b110f" }}>
+                Закрити
+              </DifficultyBtn>
+            </Modal>
+          </ModalOverlay>
+        )}
+      </AnimatePresence>
     </GameWrapper>
   );
 };

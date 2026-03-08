@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import PuzzleOne from "./PuzzleCollection/PuzzleOne";
-import puzzleImage from "../../photos/vip-modal/puzzle.jpeg";
+import puzzl from "../../photos/vip-modal/puzzle.jpeg";
 import PuzzleTwo from "./PuzzleCollection/PuzzleTwo";
 import PuzzleThree from "./PuzzleCollection/PuzzleThree";
 import PuzzleFour from "./PuzzleCollection/PuzzleFour";
@@ -60,7 +60,7 @@ const Puzzles = () => {
   const [activeGame, setActiveGame] = useState(null);
 
   const puzzleData = [
-    { id: 1, title: "Галерея 1", img: puzzleImage, type: "puzzle" },
+    { id: 1, title: "Галерея 1", img: puzzl, type: "puzzle" },
     { id: 2, title: "Пам'ять", img: pluta, type: "memory" },
     { id: 3, title: "Код", img: cod, type: "code" },
     { id: 4, title: "Лабіринт", img: laby, type: "move" },

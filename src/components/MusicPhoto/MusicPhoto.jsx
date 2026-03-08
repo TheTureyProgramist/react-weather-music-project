@@ -960,7 +960,7 @@ const musicCards = [
   {
     id: 16,
     image: require("../../photos/vip-images/mechannic.jpg"),
-    audio: require("../../mp3/mechanik-kindom.mp3"),
+    audio: require("../../mp3/electrodynamix.mp3"),
     text: "Dj-Nate (Electrodynamix). Гра",
     category: "ігри",
     lyrics: "Текст відсутній.",
@@ -968,8 +968,8 @@ const musicCards = [
   },
   {
     id: 17,
-    image: require("../../photos/vip-images/mechannic.jpg"),
-    audio: require("../../mp3/mechanik-kindom.mp3"),
+    image: require("../../photos/fan-art/clubstep.jpg"),
+    audio: require("../../mp3/clubstep.mp3"),
     text: "Dj-Nate (Clubstep). Гра.",
     category: "ігри",
     lyrics: "Текст відсутній.",
@@ -986,8 +986,8 @@ const musicCards = [
   },
   {
     id: 19,
-    image: require("../../photos/vip-images/mechannic.jpg"),
-    audio: require("../../mp3/mechanik-kindom.mp3"),
+    image: require("../../photos/fan-art/theorytwo.jpg"),
+    audio: require("../../mp3/theoty-of-everything-ll.mp3"),
     text: "GeometryDash(DJ-Nate - Theory of everything II). Ця пісня варта уваги! Гра.",
     category: "ігри",
     lyrics: "Текст відсутній.",
@@ -995,8 +995,8 @@ const musicCards = [
   },
   {
     id: 20,
-    image: require("../../photos/vip-images/mechannic.jpg"),
-    audio: require("../../mp3/mechanik-kindom.mp3"),
+    image: require("../../photos/fan-art/deadlocked.jpg"),
+    audio: require("../../mp3/deadlocked.mp3"),
     text: "GeometryDash(F-777 - Deadlocked). Моторошна, але епічна пісня. Друг фанат цього рівня :). Гра.",
     category: "ігри",
     lyrics: "Текст відсутній.",
@@ -1004,8 +1004,8 @@ const musicCards = [
   },
     {
     id: 21,
-    image: require("../../photos/vip-images/mechannic.jpg"),
-    audio: require("../../mp3/mechanik-kindom.mp3"),
+    image: require("../../photos/fan-art/theory.jpg"),
+    audio: require("../../mp3/theory-of-everyting.mp3"),
     text: "GeometryDash(DJ-Nate - Theory of everything). Ця пісня варта уваги! Гра.",
     category: "ігри",
     lyrics: "Текст відсутній.",

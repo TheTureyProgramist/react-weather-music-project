@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import styled, { keyframes } from "styled-components";
 import { motion, AnimatePresence } from "framer-motion";
-import image from "../../../photos/hero-header/start-image.jpg";
+import imaged from "../../../photos/hero-header/start-image.jpg";
 import asium from "../../../mp3/harmonic-japan.mp3";
 import lamp from "../../../photos/hero-header/lamp.jpeg";
 const fadeIn = keyframes`
@@ -18,7 +18,25 @@ const rotateRev = keyframes`
   from { transform: rotate(0deg); }
   to { transform: rotate(-360deg); }
 `;
+const VolumeControl = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(0, 0, 0, 0.2);
+  padding: 5px 10px;
+  border-radius: 4px;
+  border: 1px solid rgba(255, 179, 108, 0.3);
 
+  input {
+    width: 80px;
+    accent-color: #ffb36c;
+    cursor: pointer;
+  }
+  span {
+    font-size: 16px;
+    min-width: 20px;
+  }
+`;
 const GameWrapper = styled.div`
   display: flex;
   flex-direction: column;
@@ -55,6 +73,7 @@ const Tile = styled(motion.div)`
     ${(props) => props.$rows * 100}%;
   background-position: ${(props) => props.$bgPosX}% ${(props) => props.$bgPosY}%;
   cursor: ${(props) => (props.$isCorrect ? "default" : "pointer")};
+  background-repeat: no-repeat;
   filter: ${(props) =>
     props.$isSelected
       ? "brightness(1.4) contrast(1.2)"
@@ -206,9 +225,8 @@ const HintImage = styled.img`
   background-size: cover;
   background-position: center;
 `;
-
 const PuzzleOne = ({ imageUrl, onExit }) => {
-  const finalImage = imageUrl || image;
+  const finalImage = imaged;
 
   const [config, setConfig] = useState({
     cols: 6,
@@ -224,11 +242,38 @@ const PuzzleOne = ({ imageUrl, onExit }) => {
   const [moves, setMoves] = useState(0);
   const [timeLeft, setTimeLeft] = useState(config.maxTime);
   const [showSettings, setShowSettings] = useState(false);
+  const [volume, setVolume] = useState(0.5);
 
-  const [volume, setVolume] = useState(1);
-  const [isMuted, setIsMuted] = useState(false);
-  const audioRef = useRef(new Audio(asium));
-  const longPressTimer = useRef(null);
+  const audioRef = useRef(null);
+
+  // Ініціалізація аудіо
+  useEffect(() => {
+    audioRef.current = new Audio(asium);
+    audioRef.current.loop = true;
+    audioRef.current.volume = volume;
+    
+    const playAudio = () => {
+        audioRef.current.play().catch(() => {
+            console.log("Очікування взаємодії користувача для відтворення музики");
+        });
+    };
+
+    playAudio();
+
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
+      }
+    };
+  }, []);
+
+  // Синхронізація гучності
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.volume = volume;
+    }
+  }, [volume]);
 
   const initGame = useCallback(() => {
     const total = config.cols * config.rows;
@@ -245,30 +290,6 @@ const PuzzleOne = ({ imageUrl, onExit }) => {
   }, [config]);
 
   useEffect(() => {
-    const audio = audioRef.current;
-    audio.loop = true;
-    audio.volume = isMuted ? 0 : volume;
-    audio.play().catch(() => {});
-    return () => audio.pause();
-  }, [volume, isMuted]);
-
-  const handleMusicDown = () => {
-    longPressTimer.current = setTimeout(() => {
-      setIsMuted(!isMuted);
-      longPressTimer.current = null;
-    }, 1000);
-  };
-
-  const handleMusicUp = () => {
-    if (longPressTimer.current) {
-      clearTimeout(longPressTimer.current);
-      if (volume === 1) setVolume(0.5);
-      else if (volume === 0.5) setVolume(0.1);
-      else setVolume(1);
-    }
-  };
-
-  useEffect(() => {
     initGame();
   }, [initGame]);
 
@@ -282,23 +303,20 @@ const PuzzleOne = ({ imageUrl, onExit }) => {
     }
   }, [timeLeft, isWon, initGame]);
 
-  const checkAutoRestart = useCallback(
-    (currentTiles, currentMoves) => {
-      const incorrectCount = currentTiles.reduce(
-        (acc, tile, idx) => (tile.id !== idx ? acc + 1 : acc),
-        0,
-      );
-      const movesLeft = config.maxMoves - currentMoves;
+  const checkAutoRestart = useCallback((currentTiles, currentMoves) => {
+    const incorrectCount = currentTiles.reduce(
+      (acc, tile, idx) => (tile.id !== idx ? acc + 1 : acc),
+      0
+    );
+    const movesLeft = config.maxMoves - currentMoves;
 
-      if (incorrectCount > movesLeft && !isWon) {
-        alert("Недостатньо ходів для завершення! Перезапуск...");
-        initGame();
-        return true;
-      }
-      return false;
-    },
-    [config.maxMoves, isWon, initGame],
-  );
+    if (incorrectCount > movesLeft && !isWon) {
+      alert("Недостатньо ходів для завершення! Перезапуск...");
+      initGame();
+      return true;
+    }
+    return false;
+  }, [config.maxMoves, isWon, initGame]);
 
   const handleTileClick = (index) => {
     if (isWon) return;
@@ -311,10 +329,7 @@ const PuzzleOne = ({ imageUrl, onExit }) => {
         return;
       }
       const newTiles = [...tiles];
-      [newTiles[selectedIdx], newTiles[index]] = [
-        newTiles[index],
-        newTiles[selectedIdx],
-      ];
+      [newTiles[selectedIdx], newTiles[index]] = [newTiles[index], newTiles[selectedIdx]];
 
       const newMoves = moves + 1;
       setTiles(newTiles);
@@ -323,13 +338,11 @@ const PuzzleOne = ({ imageUrl, onExit }) => {
 
       if (newTiles.every((t, i) => t.id === i)) {
         setIsWon(true);
+      } else if (newMoves >= config.maxMoves) {
+        alert("Ходи закінчились!");
+        initGame();
       } else {
-        if (newMoves >= config.maxMoves) {
-          alert("Ходи закінчились!");
-          initGame();
-        } else {
-          checkAutoRestart(newTiles, newMoves);
-        }
+        checkAutoRestart(newTiles, newMoves);
       }
     }
   };
@@ -342,9 +355,7 @@ const PuzzleOne = ({ imageUrl, onExit }) => {
 
     if (incorrectIndices.length > 0) {
       const targetIdx = incorrectIndices[0];
-      const currentIdxOfCorrectTile = tiles.findIndex(
-        (t) => t.id === targetIdx,
-      );
+      const currentIdxOfCorrectTile = tiles.findIndex((t) => t.id === targetIdx);
 
       const newTiles = [...tiles];
       [newTiles[targetIdx], newTiles[currentIdxOfCorrectTile]] = [
@@ -357,11 +368,8 @@ const PuzzleOne = ({ imageUrl, onExit }) => {
       setMoves(newMoves);
       setSelectedIdx(null);
 
-      if (newTiles.every((t, i) => t.id === i)) {
-        setIsWon(true);
-      } else {
-        checkAutoRestart(newTiles, newMoves);
-      }
+      if (newTiles.every((t, i) => t.id === i)) setIsWon(true);
+      else checkAutoRestart(newTiles, newMoves);
     }
   };
 
@@ -369,36 +377,17 @@ const PuzzleOne = ({ imageUrl, onExit }) => {
     if (customParams) {
       setConfig({ ...customParams, label: "Власна" });
     } else {
-      if (type === "easy")
-        setConfig({
-          cols: 5,
-          rows: 3,
-          maxMoves: 200,
-          maxTime: 240,
-          label: "Легка",
-        });
-      else if (type === "normal")
-        setConfig({
-          cols: 6,
-          rows: 4,
-          maxMoves: 150,
-          maxTime: 180,
-          label: "Нормальна",
-        });
-      else if (type === "hard")
-        setConfig({
-          cols: 8,
-          rows: 5,
-          maxMoves: 100,
-          maxTime: 120,
-          label: "Екстремальна",
-        });
+      const presets = {
+        easy: { cols: 5, rows: 3, maxMoves: 200, maxTime: 240, label: "Легка" },
+        normal: { cols: 6, rows: 4, maxMoves: 150, maxTime: 180, label: "Нормальна" },
+        hard: { cols: 8, rows: 5, maxMoves: 100, maxTime: 120, label: "Екстремальна" }
+      };
+      setConfig(presets[type]);
     }
     setShowSettings(false);
   };
 
-  const formatTime = (s) =>
-    `${Math.floor(s / 60)}:${(s % 60).toString().padStart(2, "0")}`;
+  const formatTime = (s) => `${Math.floor(s / 60)}:${(s % 60).toString().padStart(2, "0")}`;
 
   return (
     <GameWrapper>
@@ -427,52 +416,45 @@ const PuzzleOne = ({ imageUrl, onExit }) => {
         })}
       </Board>
 
-      <div style={{ height: "20px" }}>
+      <div style={{ height: "30px" }}>
         {isWon && <h2 style={{ color: "#4caf50", margin: 0 }}>Перемога! 🏆</h2>}
       </div>
 
       <BottomPanel>
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            fontSize: "13px",
-            lineHeight: "1.4",
-          }}
-        >
+        <div style={{ display: "flex", flexDirection: "column", fontSize: "13px", lineHeight: "1.4" }}>
+          <span><strong>Рівень:</strong> {config.label} ({config.cols}x{config.rows})</span>
           <span>
-            <strong>Рівень:</strong> {config.label} ({config.cols}x{config.rows}
-            )
-          </span>
-          <span>
-            <strong>Час:</strong>{" "}
-            <span style={{ color: timeLeft < 30 ? "#ff5252" : "#ffb36c" }}>
-              {formatTime(timeLeft)}
-            </span>{" "}
-            | <strong>Ходи:</strong> {moves}/{config.maxMoves}
+            <strong>Час:</strong> <span style={{ color: timeLeft < 30 ? "#ff5252" : "#ffb36c" }}>{formatTime(timeLeft)}</span>
+            {" "}| <strong>Ходи:</strong> {moves}/{config.maxMoves}
           </span>
         </div>
 
         <Controls>
-          <HintImage
-            src={lamp}
-            onClick={handleHint}
-            disabled={isWon}
-          ></HintImage>
-          <GameButton onMouseDown={handleMusicDown} onMouseUp={handleMusicUp}>
-            {isMuted ? "🔇" : volume === 0.1 ? "🔈" : "🎵"}
-          </GameButton>
-          <GearContainer onClick={() => setShowSettings(true)}>
+          <VolumeControl title="Гучність музики">
+            <span>{volume === 0 ? "🔇" : "🎵"}</span>
+            <input 
+              type="range" 
+              min="0" 
+              max="1" 
+              step="0.01" 
+              value={volume} 
+              onChange={(e) => setVolume(parseFloat(e.target.value))} 
+            />
+          </VolumeControl>
+
+          <HintImage src={lamp} onClick={handleHint} title="Підказка" />
+          
+          <GearContainer onClick={() => setShowSettings(true)} title="Налаштування">
             <span className="g g1">⚙</span>
             <span className="g g2">⚙</span>
             <span className="g g3">⚙</span>
           </GearContainer>
-          <GameButton onClick={initGame}>⏭</GameButton>
-          <GameButton onClick={onExit}>✖</GameButton>
+
+          <GameButton onClick={initGame} title="Перезапустити">⏭</GameButton>
+          <GameButton onClick={onExit} title="Вийти">✖</GameButton>
         </Controls>
       </BottomPanel>
-
-      <AnimatePresence>
+<AnimatePresence>
         {showSettings && (
           <ModalOverlay
             initial={{ opacity: 0 }}
@@ -481,101 +463,72 @@ const PuzzleOne = ({ imageUrl, onExit }) => {
             onClick={() => setShowSettings(false)}
           >
             <Modal onClick={(e) => e.stopPropagation()}>
-              <h3
-                style={{ margin: "0", color: "#ffb36c", textAlign: "center" }}
-              >
+              <h3 style={{ margin: "0", color: "#ffb36c", textAlign: "center" }}>
                 Налаштування
               </h3>
 
-              <div
-                style={{ display: "flex", flexDirection: "column", gap: "8px" }}
-              >
+              <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
                 <DifficultyBtn onClick={() => setDifficulty("easy")}>
-                  Легка (5x3, 240с)
+                  Легка (5x3, 240с, 200ходів, 4хв)
                 </DifficultyBtn>
                 <DifficultyBtn onClick={() => setDifficulty("normal")}>
-                  Нормальна (6x4, 180с)
+                  Нормальна (6x4, 180с, 150х, 3хв)
                 </DifficultyBtn>
                 <DifficultyBtn onClick={() => setDifficulty("hard")}>
-                  Екстремальна (8x5, 120с)
+                  Екстремальна (8x5, 120с, 100х, 2хв)
                 </DifficultyBtn>
               </div>
 
-              <hr
-                style={{
-                  borderColor: "#ffb36c",
-                  width: "100%",
-                  margin: "5px 0",
-                }}
-              />
-              <span
-                style={{
-                  fontSize: "14px",
-                  textAlign: "center",
-                  color: "#ffb36c",
-                }}
-              >
-                Регуляція параметрів:
+              <hr style={{ borderColor: "#ffb36c", width: "100%", margin: "5px 0" }} />
+              
+              <span style={{ fontSize: "14px", textAlign: "center", color: "#ffb36c" }}>
+                Власні параметри:
               </span>
+
               <CustomRow>
-                <span>Стовпці: {config.cols} (від 5 до 8)</span>
-                <input
-                  type="range"
-                  min="5"
-                  max="8"
-                  value={config.cols}
-                  onChange={(e) =>
-                    setConfig({ ...config, cols: parseInt(e.target.value) })
-                  }
-                />
-              </CustomRow>
-              <CustomRow>
-                <span>Ряди: {config.rows} (від 3 до 5)</span>
-                <input
-                  type="range"
-                  min="3"
-                  max="5"
-                  value={config.rows}
-                  onChange={(e) =>
-                    setConfig({ ...config, rows: parseInt(e.target.value) })
-                  }
-                />
-              </CustomRow>
-              <CustomRow>
-                <span>Ходи: {config.maxMoves} (100 - 200)</span>
-                <input
-                  type="range"
-                  min="100"
-                  max="200"
-                  step="10"
-                  value={config.maxMoves}
-                  onChange={(e) =>
-                    setConfig({ ...config, maxMoves: parseInt(e.target.value) })
-                  }
-                />
-              </CustomRow>
-              <CustomRow>
-                <span>Час: {formatTime(config.maxTime)} (120с - 240с)</span>
-                <input
-                  type="range"
-                  min="120"
-                  max="240"
-                  step="10"
-                  value={config.maxTime}
-                  onChange={(e) =>
-                    setConfig({ ...config, maxTime: parseInt(e.target.value) })
-                  }
+                <span>Стовпці: {config.cols}</span>
+                <input 
+                  type="range" min="5" max="8" 
+                  value={config.cols} 
+                  onChange={(e) => setConfig({ ...config, cols: parseInt(e.target.value) })} 
                 />
               </CustomRow>
 
-              <DifficultyBtn
-                onClick={() => setDifficulty("custom", config)}
-                style={{ background: "#4e342e", marginTop: "5px" }}
+              <CustomRow>
+                <span>Ряди: {config.rows}</span>
+                <input 
+                  type="range" min="3" max="5" 
+                  value={config.rows} 
+                  onChange={(e) => setConfig({ ...config, rows: parseInt(e.target.value) })} 
+                />
+              </CustomRow>
+              <CustomRow>
+                <span>Макс. ходів: {config.maxMoves}</span>
+                <input 
+                  type="range" min="50" max="300" step="10"
+                  value={config.maxMoves} 
+                  onChange={(e) => setConfig({ ...config, maxMoves: parseInt(e.target.value) })} 
+                />
+              </CustomRow>
+
+              <CustomRow>
+                <span>Час: {formatTime(config.maxTime)}</span>
+                <input 
+                  type="range" min="60" max="600" step="10"
+                  value={config.maxTime} 
+                  onChange={(e) => setConfig({ ...config, maxTime: parseInt(e.target.value) })} 
+                />
+              </CustomRow>
+
+              <DifficultyBtn 
+                onClick={() => setDifficulty("custom", config)} 
+                style={{ background: "#4e342e", marginTop: "10px" }}
               >
                 Застосувати власні
               </DifficultyBtn>
-              <DifficultyBtn
-                onClick={() => setShowSettings(false)}
+              
+              <DifficultyBtn 
+                onClick={() => setShowSettings(false)} 
                 style={{ background: "#1b110f" }}
               >
                 Закрити
