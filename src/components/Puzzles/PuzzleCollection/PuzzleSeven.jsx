@@ -265,19 +265,13 @@ const SawIcon = styled.div`
   align-items: center;
   justify-content: center;
   background: ${(props) =>
-    props.$isBoss
-      ? "#ff0000"
-      : props.$safe
-        ? "#4caf50"
-        : props.$hunting
-          ? "#ff5722"
-          : "#f44336"};
+    props.$safe ? "#4caf50" : props.$hunting ? "#ff5722" : "#f44336"};
   box-shadow: ${(props) =>
-    props.$hunting || props.$isBoss ? "0 0 12px #ff0000" : "none"};
-  border: ${(props) => (props.$isBoss ? "2px solid #fff" : "none")};
+    props.$hunting ? "0 0 12px #ff5722" : "none"};
+  border: none;
   &::after {
-    content: "${(props) => (props.$isBoss ? "💀" : "⚙️")}";
-    font-size: ${(props) => (props.$isBoss ? "12px" : "10px")};
+    content: "⚙️";
+    font-size: 10px;
     animation: rotate 2s linear infinite;
   }
   @keyframes rotate {
@@ -375,7 +369,26 @@ const PuzzleSeven = ({ onExit }) => {
     [],
   );
 
-  const initialState = 
+  const initialState = useMemo(
+    () => ({
+      player: PLAYER_START,
+      boxes: BOXES_START.map((b) => ({ ...b, locked: false })),
+      saws: SAWS_START,
+      stepPoints: [],
+      activeBoxIdx: 0,
+      lives: 7,
+      portalCooldown: 0,
+      timeLeft: 120,
+      phase: 1,
+      bonusTime: 16,
+      evacPoints: [],
+      isHit: false,
+      showHelp: true,
+      huntTicks: 0,
+      discoveredKillZones: [],
+      sawRevealTimer: 0,
+      isWinner: false,
+    }),
     [BOXES_START, PLAYER_START, SAWS_START],
   );
 
@@ -546,23 +559,9 @@ const PuzzleSeven = ({ onExit }) => {
       if (newEvac.every((p) => p.active)) winner = true;
     }
 
-    const newSaws = state.saws.map((saw, index) => {
-      const isBoss = index === 0;
+    const newSaws = state.saws.map((saw) => {
       let snx, sny;
-
-      if (isBoss) {
-        // Boss-Saw: Випадковий кут, дальність 1-2, проходить крізь стіни
-        const dist = Math.random() > 0.5 ? 2 : 1;
-        const dirs = [
-          [1, 1],
-          [1, -1],
-          [-1, 1],
-          [-1, -1],
-        ];
-        const d = dirs[Math.floor(Math.random() * dirs.length)];
-        snx = saw.x + d[0] * dist;
-        sny = saw.y + d[1] * dist;
-      } else if (newHuntTicks > 0) {
+      if (newHuntTicks > 0) {
         snx = saw.x + (nx > saw.x ? 1 : nx < saw.x ? -1 : 0);
         sny = saw.y + (ny > saw.y ? 1 : ny < saw.y ? -1 : 0);
         if (isDiagonalBlocked(saw.x, saw.y, snx, sny)) {
@@ -594,28 +593,27 @@ const PuzzleSeven = ({ onExit }) => {
       sny = Math.max(0, Math.min(GRID_SIZE - 1, sny));
 
       // Перевірка стін для звичайних пил
-      if (!isBoss && isWallAt(snx, sny)) {
+      if (isWallAt(snx, sny)) {
         snx = saw.x;
         sny = saw.y;
       }
-      if (!isBoss && isDiagonalBlocked(saw.x, saw.y, snx, sny)) {
+      if (isDiagonalBlocked(saw.x, saw.y, snx, sny)) {
         snx = saw.x;
         sny = saw.y;
       }
 
-      if (isInSafeZone(snx, sny))
-        return isBoss ? { x: 0, y: 9 } : { x: 9, y: 9 };
+      if (isInSafeZone(snx, sny)) return { x: 9, y: 9 };
       return { x: snx, y: sny };
     });
 
     let hit = false;
-    newSaws.forEach((s, idx) => {
+    newSaws.forEach((s) => {
       if (
         s.x === nx &&
         s.y === ny &&
         (newPhase === 1 || state.bonusTime <= 0)
       ) {
-        newLives -= idx === 0 ? 2 : 1; // Босс зносить 2 HP
+        newLives -= 1;
         hit = true;
       }
     });
@@ -741,7 +739,6 @@ const PuzzleSeven = ({ onExit }) => {
               <SawIcon
                 $safe={state.bonusTime > 0}
                 $hunting={state.huntTicks > 0}
-                $isBoss={i === 0}
               />
             </MovingObject>
           );
@@ -853,18 +850,17 @@ const PuzzleSeven = ({ onExit }) => {
       {state.showHelp && (
         <Modal>
           <h3 style={{ color: "#ffb36c", fontSize: "16px" }}>
-            2 кімната: Boss Update
+            2 кімната: Полювання
           </h3>
           <p style={{ fontSize: "10px", textAlign: "left", lineHeight: "1.4" }}>
-            • <b>Boss-Saw 💀:</b> Червона пила. Проходить крізь стіни! Стрибає
-            на 1-2 клітинки по діагоналі. Зносить <b>2 HP</b>.<br />•{" "}
-            <b>Блокування 🧱:</b> Ви та звичайні пили не можете пройти по
+            • <b>Пили ⚙️:</b> Завжди наносять <b>1 HP</b> шкоди.
+            <br />• <b>Блокування 🧱:</b> Ви та пили не можете пройти по
             діагоналі крізь кут стіни.
             <br />• <b>Життя:</b> Ви починаєте з 7 ❤️.
-            <br />• <b>Евакуація 📍:</b> 8 точок. Бонус безпеки 16с діє лише на
-            звичайні пили!
-            <br />• <b>Захист 🛡️:</b> Пили (крім Босса) телепортуються при
-            контакті. Босс просто ігнорує зони.
+            <br />• <b>Евакуація 📍:</b> 8 точок. Бонус безпеки 16с діє на
+            всі пили.
+            <br />• <b>Захист 🛡️:</b> Пили телепортуються при контакті з
+            безпечною зоною.
             <br />• <b>Пастка 💀:</b> Активує режим HUNT (всі пили біжать до
             вас).
           </p>
