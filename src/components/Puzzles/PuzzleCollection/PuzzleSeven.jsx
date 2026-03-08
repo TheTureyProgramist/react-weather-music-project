@@ -375,25 +375,9 @@ const PuzzleSeven = ({ onExit }) => {
     [],
   );
 
-  const initialState = {
-    player: PLAYER_START,
-    boxes: BOXES_START.map((b) => ({ ...b, locked: false })),
-    saws: SAWS_START,
-    stepPoints: [],
-    activeBoxIdx: 0,
-    lives: 7,
-    portalCooldown: 0,
-    timeLeft: 120,
-    phase: 1,
-    bonusTime: 16,
-    evacPoints: [],
-    isHit: false,
-    showHelp: true,
-    huntTicks: 0,
-    discoveredKillZones: [],
-    sawRevealTimer: 0,
-    isWinner: false,
-  };
+  const initialState = 
+    [BOXES_START, PLAYER_START, SAWS_START],
+  );
 
   const [state, setState] = useState(initialState);
 

@@ -375,8 +375,8 @@ const CustomRow = styled.div`
 `;
 
 const PuzzleFour = ({ onExit }) => {
-  const portalA = { x: 0, y: 7 },
-    portalB = { x: 7, y: 0 };
+  const portalA = useMemo(() => ({ x: 0, y: 7 }), []);
+  const portalB = useMemo(() => ({ x: 7, y: 0 }), []);
   const levelMap = useMemo(
     () => [
       [0, 0, 0, 0, 0, 0, 0, 0],
@@ -447,7 +447,6 @@ const PuzzleFour = ({ onExit }) => {
   useEffect(() => {
     audioRef.current = new Audio(asium);
     audioRef.current.loop = true;
-    audioRef.current.volume = volume;
 
     const playAudio = () => {
       audioRef.current.play().catch(() => {});
@@ -894,8 +893,7 @@ const PuzzleFour = ({ onExit }) => {
         <StatsGrid>
           <span>❤️ {lives}/{config.lives}</span>
           <span>
-            ⏳ {Math.floor(timeLeft / 60)}:
-            {String(timeLeft % 60).padStart(2, "0")}
+            ⏳ {formatTime(timeLeft)}
           </span>
           <span>👣 {moves}/{config.maxMoves}</span>
           <span style={{ color: "#3f51b5" }}>

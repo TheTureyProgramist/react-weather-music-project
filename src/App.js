@@ -14,7 +14,7 @@ import {
   Legend,
   Filler,
 } from "chart.js";
-import { Line } from "react-chartjs-2";
+// import { Line } from "react-chartjs-2";
 import axios from "axios";
 import "./App.css";
 import Header from "./components/Header/Header.jsx";
@@ -33,7 +33,7 @@ import AchivmentsModal from "./components/Modals/AchivmentsModal.jsx";
 import Puzzles from "./components/Puzzles/Puzzles.jsx";
 import ClimateMap from "./components/ClimateMap/ClimateMap.jsx";
 // Імпорт аватарів
-import loadimage from "./photos/hero-header/start-image.jpg";
+// import loadimage from "./photos/hero-header/start-image.jpg";
 import turkeys from "./photos/vip-images/ultra-vip-turkeys.webp";
 import dragons from "./photos/vip-images/vip-dragons.jpg";
 import horrordog from "./photos/vip-images/horror.jpg";

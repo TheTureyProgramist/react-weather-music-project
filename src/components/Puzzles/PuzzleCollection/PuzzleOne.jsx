@@ -250,7 +250,6 @@ const PuzzleOne = ({ imageUrl, onExit }) => {
   useEffect(() => {
     audioRef.current = new Audio(asium);
     audioRef.current.loop = true;
-    audioRef.current.volume = volume;
     
     const playAudio = () => {
         audioRef.current.play().catch(() => {
