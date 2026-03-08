@@ -1,14 +1,19 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import PuzzleOne from "./PuzzleCollection/PuzzleOne";
-import puzzleImage from "../../photos/hero-header/start-image.jpg";
+import puzzleImage from "../../photos/vip-modal/puzzle.jpeg";
 import PuzzleTwo from "./PuzzleCollection/PuzzleTwo";
 import PuzzleThree from "./PuzzleCollection/PuzzleThree";
 import PuzzleFour from "./PuzzleCollection/PuzzleFour";
 import PuzzleSix from "./PuzzleCollection/PuzzleSix";
 import PuzzleFive from "./PuzzleCollection/PuzzleFive";
 import PuzzleSeven from "./PuzzleCollection/PuzzleSeven";
-import pluta from "../../photos/hero-header/plutu.webp";
+import pluta from "../../photos/vip-modal/brain.jpeg";
+import cod from "../../photos/vip-modal/cod.jpeg";
+import laby from "../../photos/vip-modal/laby.jpeg";
+import labytwo from "../../photos/vip-modal/labytwo.jpeg";
+import puz from "../../photos/vip-modal/puz.jpeg";
+import disk from "../../photos/vip-modal/disk.jpeg";
 const MainTitle = styled.h2`
   text-align: center;
   font-size: 32px;
@@ -57,11 +62,11 @@ const Puzzles = () => {
   const puzzleData = [
     { id: 1, title: "Галерея 1", img: puzzleImage, type: "puzzle" },
     { id: 2, title: "Пам'ять", img: pluta, type: "memory" },
-    { id: 3, title: "Код", img: "...", type: "code" },
-    { id: 4, title: "Лабіринт", img: "...", type: "move" },
-    { id: 5, title: "Квантові цикли", img: "...", type: "rotate" },
-    { id: 6, title: "Оптична лінза", img: puzzleImage, type: "lens" },
-    { id: 7, title: "Лабіринт ІІ", img: "...", type: "line" },
+    { id: 3, title: "Код", img: cod, type: "code" },
+    { id: 4, title: "Лабіринт", img: laby, type: "move" },
+    { id: 5, title: "Квантові цикли", img: puz, type: "rotate" },
+    { id: 6, title: "Оптична лінза", img: disk, type: "lens" },
+    { id: 7, title: "Лабіринт ІІ", img: labytwo, type: "line" },
   ];
 
   const renderGame = () => {
@@ -106,7 +111,6 @@ const Puzzles = () => {
           </PuzzleCard>
         ))}
       </PuzzlesGrid>
-
       {activeGame && <FullscreenOverlay>{renderGame()}</FullscreenOverlay>}
     </div>
   );

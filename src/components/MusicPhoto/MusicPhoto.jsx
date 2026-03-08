@@ -656,7 +656,6 @@ const MusicCard = ({
         audioRef.current.currentTime - 10,
       );
     } else {
-      // Fast-forward
       audioRef.current.currentTime = Math.min(
         duration,
         audioRef.current.currentTime + 10,
@@ -925,7 +924,7 @@ const musicCards = [
   {
     id: 12,
     image: require("../../photos/vip-images/mechannic.jpg"),
-    audio: require("../../mp3/mechanik-kindom.mp3"),
+    audio: require("../../mp3/zootopia.mp3"),
     category: "мультфільми",
     text: "Зоотрополіс(Disney)-рекомендую. Shakira-Try Everything. Мультфільм.",
     lyrics: "",
@@ -936,14 +935,14 @@ const musicCards = [
     image: require("../../photos/vip-images/mechannic.jpg"),
     audio: require("../../mp3/mechanik-kindom.mp3"),
     category: "мультфільми",
-    text: "Продовження історої зоотрополісу(Disney). Чекатиму, через 5років продовження. Skakira, Ed Sheeran - Zoo. Мультфільм.",
-    lyrics: "",
+    text: "Продовження історої Зоотрополісу(Disney). Чекатиму, через 5років продовження. Skakira, Ed Sheeran - Zoo. Мультфільм.",
+    lyrics: "../../mp3/zootopiatwo.mp3",
     duration: 200,
   },
   {
     id: 14,
     image: require("../../photos/vip-images/mechannic.jpg"),
-    audio: require("../../mp3/mechanik-kindom.mp3"),
+    audio: require("../../mp3/mia-and-me.mp3"),
     category: "мультфільми",
     text: "Мія та я. Не пожалкуєте. Мультфільми.",
     lyrics: "Мія та я. Не пожалкуєте",
@@ -955,7 +954,7 @@ const musicCards = [
     audio: require("../../mp3/mechanik-kindom.mp3"),
     category: "мультфільми",
     text: "Динофроз, показували, з кількома, ще мульфільмами: Якарі, Анна з зелених дахів, Хайді, Острів іпаток, Пригоди в качиному порту, Марко, Лис Микита. Пісні розміщені в 3 частинах. Четверта під питанням. Мультфільми.",
-    lyrics: "",
+    lyrics: "malatkotv-chapterone.mp3",
     duration: 180,
   },
   {
@@ -979,7 +978,7 @@ const musicCards = [
   {
     id: 18,
     image: require("../../photos/vip-images/mechannic.jpg"),
-    audio: require("../../mp3/mechanik-kindom.mp3"),
+    audio: require("../../mp3/fingerdash.mp3"),
     text: "GeometryDash(MDK-Fingerdash) Гаряча мелодія I-ша в режимі анімованості. Ласково просимо в хаос! Гра.",
     category: "ігри",
     lyrics: "Текст відсутній.",
@@ -1025,7 +1024,7 @@ const PLAYLISTS = {
   },
   природа: {
     title: "Природа",
-    image: require("../../photos/vip-images/vip-soloveyko.jpg"),
+    image: require("../../photos/vip-images/ultra-vip-turkeys.webp"),
   },
   хоррор: {
     title: "Хоррор",
@@ -1033,7 +1032,7 @@ const PLAYLISTS = {
   },
   ігри: {
     title: "Ігри",
-    image: require("../../photos/vip-images/vip-dragons.jpg"),
+    image: require("../../photos/vip-images/mechannic.jpg"),
   },
 };
 
