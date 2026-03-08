@@ -1,11 +1,19 @@
 {
   "files": {
     "main.css": "/react-weather-music-project/static/css/main.b14654ef.css",
-    "main.js": "/react-weather-music-project/static/js/main.dd1b42ce.js",
+    "main.js": "/react-weather-music-project/static/js/main.fa367cf0.js",
+    "static/media/theoty-of-everything-ll.mp3": "/react-weather-music-project/static/media/theoty-of-everything-ll.b04c0e12940feebb76e2.mp3",
+    "static/media/deadlocked.mp3": "/react-weather-music-project/static/media/deadlocked.944d6f90fb2fcafe5fab.mp3",
+    "static/media/electrodynamix.mp3": "/react-weather-music-project/static/media/electrodynamix.1982409975590dc5d153.mp3",
     "static/media/registrationscene.mp4": "/react-weather-music-project/static/media/registrationscene.5d9e7522945f81f97a85.mp4",
+    "static/media/theory-of-everyting.mp3": "/react-weather-music-project/static/media/theory-of-everyting.0b1a648ba75f81e57455.mp3",
+    "static/media/clubstep.mp3": "/react-weather-music-project/static/media/clubstep.b459ae4e2dc05812ec9b.mp3",
     "static/media/kolada.mp3": "/react-weather-music-project/static/media/kolada.c30c2bfb2e7bb6342ba7.mp3",
+    "static/media/malatkotv-chapterone.mp3": "/react-weather-music-project/static/media/malatkotv-chapterone.478c060fb1366e1cb2ca.mp3",
+    "static/media/zootopiatwo.mp3": "/react-weather-music-project/static/media/zootopiatwo.b3d2fcbed2205b650b5f.mp3",
     "static/media/thefatrat-monody.mp3": "/react-weather-music-project/static/media/thefatrat-monody.c51de64d7aa6397fbf66.mp3",
     "static/media/horror.mp3": "/react-weather-music-project/static/media/horror.89a58099b35140ad889a.mp3",
+    "static/media/malatkotv-chaptertwo.mp3": "/react-weather-music-project/static/media/malatkotv-chaptertwo.45d817a8abe23135e539.mp3",
     "static/media/zootopia.mp3": "/react-weather-music-project/static/media/zootopia.1beb80c39c98fcb000a5.mp3",
     "static/media/soloveyko.mp3": "/react-weather-music-project/static/media/soloveyko.ec2a80a44af8d03c0de2.mp3",
     "static/media/dragon.mp3": "/react-weather-music-project/static/media/dragon.01a7f1b7fb4b0accd9e1.mp3",
@@ -15,6 +23,7 @@
     "static/media/turkeys.mp3": "/react-weather-music-project/static/media/turkeys.5ee500cbac0f4bc3213f.mp3",
     "static/media/dinofroz.mp3": "/react-weather-music-project/static/media/dinofroz.ce47b1e3caf0d75949d7.mp3",
     "static/media/fingerdash.mp3": "/react-weather-music-project/static/media/fingerdash.e4fae751c6aa35f3fdae.mp3",
+    "static/media/malatkotv-chapterthree.mp3": "/react-weather-music-project/static/media/malatkotv-chapterthree.f06588f2bd5019ad1f73.mp3",
     "static/media/horse.mp3": "/react-weather-music-project/static/media/horse.cf201415f1443a5bbab2.mp3",
     "static/media/logo.png": "/react-weather-music-project/static/media/logo.b68cd4fee668d7687cc6.png",
     "static/media/wind.mp3": "/react-weather-music-project/static/media/wind.b1b5f8028768e8a5b78d.mp3",
@@ -24,8 +33,12 @@
     "static/media/puzzle-3.webp": "/react-weather-music-project/static/media/puzzle-3.54999b3c8bd6af9bc657.webp",
     "static/media/puzzle-1.webp": "/react-weather-music-project/static/media/puzzle-1.48282db7dbffb584d460.webp",
     "static/media/puzzle-4.webp": "/react-weather-music-project/static/media/puzzle-4.0d7c28f596f443c37da1.webp",
+    "static/media/theorytwo.jpg": "/react-weather-music-project/static/media/theorytwo.8f26bbc6bda9e3845bf1.jpg",
     "static/media/vip-rooster.jpg": "/react-weather-music-project/static/media/vip-rooster.ed1a768ce17a482ad155.jpg",
     "static/media/vip.jpg": "/react-weather-music-project/static/media/vip.30ac1dff2d48194eab89.jpg",
+    "static/media/theory.jpg": "/react-weather-music-project/static/media/theory.b576dfbe3ed9176715a9.jpg",
+    "static/media/clubstep.jpg": "/react-weather-music-project/static/media/clubstep.ecdf618a0272f4fbc8a6.jpg",
+    "static/media/deadlocked.jpg": "/react-weather-music-project/static/media/deadlocked.a2b6b1b3edf38a22712b.jpg",
     "static/media/puzzle.jpeg": "/react-weather-music-project/static/media/puzzle.065dba2d625fc962d7fb.jpeg",
     "static/media/mechannic.jpg": "/react-weather-music-project/static/media/mechannic.91800cad27269208e7f8.jpg",
     "static/media/ultra-vip-turkeys.webp": "/react-weather-music-project/static/media/ultra-vip-turkeys.6b502c6c764249db098f.webp",
@@ -83,10 +96,10 @@
     "static/media/user.webp": "/react-weather-music-project/static/media/user.dcd7396d3070abf3abbe.webp",
     "static/media/document.webp": "/react-weather-music-project/static/media/document.5b6c056b22794272794d.webp",
     "main.b14654ef.css.map": "/react-weather-music-project/static/css/main.b14654ef.css.map",
-    "main.dd1b42ce.js.map": "/react-weather-music-project/static/js/main.dd1b42ce.js.map"
+    "main.fa367cf0.js.map": "/react-weather-music-project/static/js/main.fa367cf0.js.map"
   },
   "entrypoints": [
     "static/css/main.b14654ef.css",
-    "static/js/main.dd1b42ce.js"
+    "static/js/main.fa367cf0.js"
   ]
 }
