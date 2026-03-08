@@ -186,7 +186,7 @@ const CardWrapper = styled.div`
   flex-direction: column;
   align-items: center;
   width: 288px;
-  height: 400px;
+  height: 420px;
   background: #fff;
   border-radius: 15px;
   padding-bottom: 15px;
@@ -933,7 +933,7 @@ const musicCards = [
   {
     id: 13,
     image: require("../../photos/vip-images/mechannic.jpg"),
-    audio: require("../../mp3/mechanik-kindom.mp3"),
+    audio: require("../../mp3/zootopiatwo.mp3"),
     category: "мультфільми",
     text: "Продовження історої Зоотрополісу(Disney). Чекатиму, через 5років продовження. Skakira, Ed Sheeran - Zoo. Мультфільм.",
     lyrics: "../../mp3/zootopiatwo.mp3",
@@ -951,14 +951,32 @@ const musicCards = [
   {
     id: 15,
     image: require("../../photos/vip-images/mechannic.jpg"),
-    audio: require("../../mp3/mechanik-kindom.mp3"),
+    audio: require("../../mp3/malatkotv-chapterone.mp3"),
     category: "мультфільми",
-    text: "Динофроз, показували, з кількома, ще мульфільмами: Якарі, Анна з зелених дахів, Хайді, Острів іпаток, Пригоди в качиному порту, Марко, Лис Микита. Пісні розміщені в 3 частинах. Четверта під питанням. Мультфільми.",
-    lyrics: "malatkotv-chapterone.mp3",
+    text: "Динофроз, показували, з кількома, ще мульфільмами: Якарі, Анна з зелених дахів, Хайді, Острів іпаток, Пригоди в качиному порту, Марко, Лис Микита.",
+    lyrics: "../../malatkotv-chapterone.mp3",
+    duration: 180,
+  },
+    {
+    id: 16,
+    image: require("../../photos/vip-images/mechannic.jpg"),
+    audio: require("../../mp3/malatkotv-chaptertwo.mp3"),
+    category: "мультфільми",
+    text: "Друга частина. Пісні розміщені в 3 частинах. Четверта під питанням.",
+    lyrics: "../../malatkotv-chapterone.mp3",
+    duration: 180,
+  },
+    {
+    id: 17,
+    image: require("../../photos/vip-images/mechannic.jpg"),
+    audio: require("../../mp3/malatkotv-chapterthree.mp3"),
+    category: "мультфільми",
+    text: "Третя частина",
+    lyrics: "../../malatkotv-chapterone.mp3",
     duration: 180,
   },
   {
-    id: 16,
+    id: 18,
     image: require("../../photos/vip-images/mechannic.jpg"),
     audio: require("../../mp3/electrodynamix.mp3"),
     text: "Dj-Nate (Electrodynamix). Гра",
@@ -967,7 +985,7 @@ const musicCards = [
     duration: 160,
   },
   {
-    id: 17,
+    id: 19,
     image: require("../../photos/fan-art/clubstep.jpg"),
     audio: require("../../mp3/clubstep.mp3"),
     text: "Dj-Nate (Clubstep). Гра.",
@@ -976,7 +994,7 @@ const musicCards = [
     duration: 160,
   },
   {
-    id: 18,
+    id: 20,
     image: require("../../photos/vip-images/mechannic.jpg"),
     audio: require("../../mp3/fingerdash.mp3"),
     text: "GeometryDash(MDK-Fingerdash) Гаряча мелодія I-ша в режимі анімованості. Ласково просимо в хаос! Гра.",
@@ -985,7 +1003,7 @@ const musicCards = [
     duration: 140,
   },
   {
-    id: 19,
+    id: 21,
     image: require("../../photos/fan-art/theorytwo.jpg"),
     audio: require("../../mp3/theoty-of-everything-ll.mp3"),
     text: "GeometryDash(DJ-Nate - Theory of everything II). Ця пісня варта уваги! Гра.",
@@ -994,7 +1012,7 @@ const musicCards = [
     duration: 140,
   },
   {
-    id: 20,
+    id: 22,
     image: require("../../photos/fan-art/deadlocked.jpg"),
     audio: require("../../mp3/deadlocked.mp3"),
     text: "GeometryDash(F-777 - Deadlocked). Моторошна, але епічна пісня. Друг фанат цього рівня :). Гра.",
@@ -1003,7 +1021,7 @@ const musicCards = [
     duration: 140,
   },
     {
-    id: 21,
+    id: 23,
     image: require("../../photos/fan-art/theory.jpg"),
     audio: require("../../mp3/theory-of-everyting.mp3"),
     text: "GeometryDash(DJ-Nate - Theory of everything). Ця пісня варта уваги! Гра.",
