@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import styled, { keyframes } from "styled-components";
 import mechanic from "../../../mp3/mechanik-kindom.mp3";
-import lamp from "../../../photos/hero-header/lamp.jpeg";
 // --- Animations ---
 const fadeIn = keyframes`from { opacity: 0; } to { opacity: 1; }`;
 
@@ -135,7 +134,6 @@ const VolumeSlider = styled.div`
   }
 `;
 
-// --- Component ---
 const PuzzleThree = ({ onExit }) => {
   const [mode, setMode] = useState("normal");
   const [targetCode, setTargetCode] = useState([]);

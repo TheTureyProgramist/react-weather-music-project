@@ -139,6 +139,47 @@ const ShuffleButton = styled.button`
   }
 `;
 
+const PlaylistGrid = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+  padding: 20px;
+`;
+
+const PlaylistCard = styled.div`
+  width: 250px;
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: transform 0.3s ease;
+  position: relative;
+
+  &:hover {
+    transform: scale(1.05);
+  }
+`;
+
+const PlaylistImage = styled.img`
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+`;
+
+const PlaylistTitle = styled.div`
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(0, 0, 0, 0.6);
+  color: white;
+  padding: 10px;
+  font-weight: bold;
+  font-size: 18px;
+  text-align: center;
+`;
+
 const CardWrapper = styled.div`
   position: relative;
   display: flex;
@@ -415,7 +456,7 @@ const ModalOverlay = styled.div`
     forwards;
 `;
 
-const ModalContent = styled.div`
+const LyricsModalContent = styled.div`
   background: white;
   padding: 10px;
   border-radius: 15px;
@@ -439,7 +480,31 @@ const ModalContent = styled.div`
   }
 `;
 
-const CloseButton = styled.button`
+const PlaylistModalContent = styled.div`
+  background: #e8e8e8;
+  padding: 20px;
+  border-radius: 15px;
+  width: 95%;
+  max-width: 1300px;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  animation: ${(props) => (props.$isClosing ? slideOut : slideIn)} 0.5s ease-out
+    forwards;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: #ffb36c;
+    border-radius: 4px;
+  }
+  &::-webkit-scrollbar-track {
+    background: #dcdcdc;
+  }
+`;
+
+const LyricsCloseButton = styled.button`
   position: absolute;
   top: 8px;
   right: 10px;
@@ -448,6 +513,21 @@ const CloseButton = styled.button`
   font-size: 20px;
   cursor: pointer;
   color: #333;
+  &:hover {
+    color: #ffb36c;
+  }
+`;
+
+const PlaylistCloseButton = styled.button`
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: none;
+  border: none;
+  font-size: 30px;
+  cursor: pointer;
+  color: #333;
+  z-index: 10;
   &:hover {
     color: #ffb36c;
   }
@@ -745,15 +825,17 @@ const musicCards = [
     id: 1,
     image: require("../../photos/vip-images/christmas.jpg"),
     audio: require("../../mp3/kolada.mp3"),
-    text: "'Україна колядує'. Озвучка І. Федишин.",
+    text: "'Україна колядує'. Озвучка І. Федишин. Хіт.",
     lyrics: "Текст відсутній.",
+    category: "хіти",
     duration: 180,
   },
   {
     id: 2,
     image: require("../../photos/vip-images/vip-dinofroz.webp"),
     audio: require("../../mp3/dinofroz.mp3"),
-    text: "Легендарний мультфільм на малятко ТВ(нажаль закритий) Mondo TV - Динофроз. Зображено Імператора дрaконів Ніцерона.",
+    category: "мультфільми",
+    text: "Легендарний мультфільм на малятко ТВ(нажаль закритий) Mondo TV - Динофроз. Зображено Імператора дрaконів Ніцерона. Мультфільми.",
     lyrics:
       "Dinofroze...dinofroze. Четверо друзів знайшли дивну гру. В доісторичну пішли давнину. Там динозаврами стали вони. В цьому карти їм допомогли. У давнині небезпечні дракони. Та з ними впорались наші герої. До бою готові всюди і завжди. І утілюють мірії свої в боротьбі. Dinofroze... Дружні, завзяті, зброя в руках. Dinofroze... Вони Ніцерону не по зубах. Dinofroze... Дружні, завзяті, зброя в руках. Вони Ніцерону не по зубах. Друзі б'ються завзято. Дракони тікають. Четверо друзів майбутнє спасають. До бою завжди готові вони. Ховайтеся, вороги! Dinofroze...",
     duration: 120,
@@ -762,15 +844,17 @@ const musicCards = [
     id: 3,
     image: require("../../photos/vip-images/ultra-vip-turkeys.webp"),
     audio: require("../../mp3/turkeys.mp3"),
-    text: "Насолоджуйтеся звуками індиків. Авторське спостереження.",
+    text: "Насолоджуйтеся звуками індиків. Авторське спостереження. Природа",
+    category: "природа",
     lyrics: "Лише звуки природи.",
     duration: 60,
   },
   {
     id: 4,
     image: require("../../photos/vip-images/vip-forest.webp"),
+    category: "хіти",
     audio: require("../../mp3/thefatrat-monody.mp3"),
-    text: "Цей казковий нічний ліс наповнений сакурами. TheFatRat - Monody.",
+    text: "Цей казковий нічний ліс наповнений сакурами. TheFatRat - Monody. Хіт.",
     lyrics:
       "Текст трохи  змінено для рими: Літо в пагорбах. Ті туманні дні у мене в спогадах. Ми все ще бігали. Весь світ був біля наших ніг. Бачачи зміни сезону. Наші дороги були вкриті пригодами. Гори на шляху. Від моря не могли втримати нас. Ось ми стоїмо з розпростертими обіймами. Це наш дім. Завжди сильні у світі, який ми створили. Я все ще чую тебе у вітрі. Бачу твої тіні на деревах. Тримаючись, спогади ніколи не змінюються.",
     duration: 240,
@@ -779,7 +863,8 @@ const musicCards = [
     id: 5,
     image: require("../../photos/vip-images/vip-desert.webp"),
     audio: require("../../mp3/wind.mp3"),
-    text: "Пустеля розділенна вічно грозовою і сонячною зоною. Невідомий автор. ",
+    category: "природа",
+    text: "Пустеля розділенна вічно грозовою і сонячною зоною. Невідомий автор. Природа.",
     lyrics: "Звуки дощу, допомагають заснути",
     duration: 300,
   },
@@ -787,7 +872,8 @@ const musicCards = [
     id: 6,
     image: require("../../photos/vip-images/horror.jpg"),
     audio: require("../../mp3/horror.mp3"),
-    text: "Ви дивилися моторошне кіно...",
+    category: "хоррор",
+    text: "Ви дивилися моторошне кіно... Хоррор.",
     lyrics: "Атмосферні звуки. Хто може страшніше зробити чекаю)",
     duration: 150,
   },
@@ -795,7 +881,8 @@ const musicCards = [
     id: 7,
     image: require("../../photos/vip-images/horse.jpg"),
     audio: require("../../mp3/horse.mp3"),
-    text: "Кінь друг людини. Телеканал мега(автор звуку).",
+    category: "природа",
+    text: "Кінь друг людини. Телеканал мега(автор звуку). Природа.",
     lyrics: "Тут немає тексту.",
     duration: 45,
   },
@@ -803,7 +890,8 @@ const musicCards = [
     id: 8,
     image: require("../../photos/vip-images/vip-dragons.jpg"),
     audio: require("../../mp3/dragon.mp3"),
-    text: "І знову дракони, музика доісторичного світу. Картина взята з мультфільму Динофроз, а музика з гри (My Little Universe-Drаgonora). Звучить при комбінації.",
+    category: "ігри",
+    text: "І знову дракони, музика доісторичного світу. Картина взята з мультфільму Динофроз, а музика з гри (My Little Universe-Drаgonora). Звучить при комбінації. Ігри.",
     lyrics: "Тут немає тексту.",
     duration: 180,
   },
@@ -811,7 +899,8 @@ const musicCards = [
     id: 9,
     image: require("../../photos/vip-images/vip-soloveyko.jpg"),
     audio: require("../../mp3/soloveyko.mp3"),
-    text: "Голосування хто кращий по звукам соловеко чи індик. Зроблено за ідеї сім'ї.",
+    category: "природа",
+    text: "Голосування хто кращий по звукам соловеко чи індик. Зроблено за ідеї сім'ї. Природа.",
     lyrics: "Спів соловейка.",
     duration: 90,
   },
@@ -819,7 +908,8 @@ const musicCards = [
     id: 10,
     image: require("../../photos/vip-images/asium.jpg"),
     audio: require("../../mp3/harmonic-japan.mp3"),
-    text: "My little universe. Спокійна і прекрасна музика в японському стилі.",
+    category: "ігри",
+    text: "My little universe. Спокійна і прекрасна музика в японському стилі. Гра.",
     lyrics: "Текст відсутній.",
     duration: 160,
   },
@@ -827,7 +917,8 @@ const musicCards = [
     id: 11,
     image: require("../../photos/vip-images/mechannic.jpg"),
     audio: require("../../mp3/mechanik-kindom.mp3"),
-    text: "My little universe. Спокійна і прекрасна музика в механічному стилі.",
+    category: "ігри",
+    text: "My little universe. Спокійна і прекрасна музика в механічному стилі. Гра.",
     lyrics: "Текст відсутній.",
     duration: 160,
   },
@@ -835,7 +926,8 @@ const musicCards = [
     id: 12,
     image: require("../../photos/vip-images/mechannic.jpg"),
     audio: require("../../mp3/mechanik-kindom.mp3"),
-    text: "Зоотрополіс(Disney)-рекомендую. Shakira-Try Everything.",
+    category: "мультфільми",
+    text: "Зоотрополіс(Disney)-рекомендую. Shakira-Try Everything. Мультфільм.",
     lyrics: "",
     duration: 200,
   },
@@ -843,7 +935,8 @@ const musicCards = [
     id: 13,
     image: require("../../photos/vip-images/mechannic.jpg"),
     audio: require("../../mp3/mechanik-kindom.mp3"),
-    text: "Продовження історої зоотрополісу(Disney). Чекатиму, через 5років продовження. Skakira, Ed Sheeran - Zoo.",
+    category: "мультфільми",
+    text: "Продовження історої зоотрополісу(Disney). Чекатиму, через 5років продовження. Skakira, Ed Sheeran - Zoo. Мультфільм.",
     lyrics: "",
     duration: 200,
   },
@@ -851,7 +944,8 @@ const musicCards = [
     id: 14,
     image: require("../../photos/vip-images/mechannic.jpg"),
     audio: require("../../mp3/mechanik-kindom.mp3"),
-    text: "Мія та я. Не пожалкуєте.",
+    category: "мультфільми",
+    text: "Мія та я. Не пожалкуєте. Мультфільми.",
     lyrics: "Мія та я. Не пожалкуєте",
     duration: 180,
   },
@@ -859,16 +953,17 @@ const musicCards = [
     id: 15,
     image: require("../../photos/vip-images/mechannic.jpg"),
     audio: require("../../mp3/mechanik-kindom.mp3"),
-    text: "My little universe. Спокійна і прекрасна музика в механічному стилі.",
-    lyrics:
-      "Динофроз, показували, з кількома, ще мульфільмами: Якарі, Анна з зелених дахів, Хайді, Острів іпаток, Пригоди в качиному порту, Марко, Лис Микита. Пісні розміщені в 3 частинах. Четверта під питанням.",
+    category: "мультфільми",
+    text: "Динофроз, показували, з кількома, ще мульфільмами: Якарі, Анна з зелених дахів, Хайді, Острів іпаток, Пригоди в качиному порту, Марко, Лис Микита. Пісні розміщені в 3 частинах. Четверта під питанням. Мультфільми.",
+    lyrics: "",
     duration: 180,
   },
   {
     id: 16,
     image: require("../../photos/vip-images/mechannic.jpg"),
     audio: require("../../mp3/mechanik-kindom.mp3"),
-    text: "My little universe. Спокійна і прекрасна музика в механічному стилі.",
+    text: "Dj-Nate (Electrodynamix). Гра",
+    category: "ігри",
     lyrics: "Текст відсутній.",
     duration: 160,
   },
@@ -876,7 +971,8 @@ const musicCards = [
     id: 17,
     image: require("../../photos/vip-images/mechannic.jpg"),
     audio: require("../../mp3/mechanik-kindom.mp3"),
-    text: "My little universe. Спокійна і прекрасна музика в механічному стилі.",
+    text: "Dj-Nate (Clubstep). Гра.",
+    category: "ігри",
     lyrics: "Текст відсутній.",
     duration: 160,
   },
@@ -884,7 +980,8 @@ const musicCards = [
     id: 18,
     image: require("../../photos/vip-images/mechannic.jpg"),
     audio: require("../../mp3/mechanik-kindom.mp3"),
-    text: "GeometryDash(MDK-Fingerdash) Гаряча мелодія I-ша в режимі анімованості. Ласково просимо в хаос!",
+    text: "GeometryDash(MDK-Fingerdash) Гаряча мелодія I-ша в режимі анімованості. Ласково просимо в хаос! Гра.",
+    category: "ігри",
     lyrics: "Текст відсутній.",
     duration: 140,
   },
@@ -892,7 +989,8 @@ const musicCards = [
     id: 19,
     image: require("../../photos/vip-images/mechannic.jpg"),
     audio: require("../../mp3/mechanik-kindom.mp3"),
-    text: "GeometryDash(DJ-Nate - Theory of everything II). Ця пісня варта уваги!",
+    text: "GeometryDash(DJ-Nate - Theory of everything II). Ця пісня варта уваги! Гра.",
+    category: "ігри",
     lyrics: "Текст відсутній.",
     duration: 140,
   },
@@ -900,16 +998,51 @@ const musicCards = [
     id: 20,
     image: require("../../photos/vip-images/mechannic.jpg"),
     audio: require("../../mp3/mechanik-kindom.mp3"),
-    text: "GeometryDash(F-777 - Deadlocked). Моторошна, але епічна пісня. Друг фанат цього рівня :).",
+    text: "GeometryDash(F-777 - Deadlocked). Моторошна, але епічна пісня. Друг фанат цього рівня :). Гра.",
+    category: "ігри",
+    lyrics: "Текст відсутній.",
+    duration: 140,
+  },
+    {
+    id: 21,
+    image: require("../../photos/vip-images/mechannic.jpg"),
+    audio: require("../../mp3/mechanik-kindom.mp3"),
+    text: "GeometryDash(DJ-Nate - Theory of everything). Ця пісня варта уваги! Гра.",
+    category: "ігри",
     lyrics: "Текст відсутній.",
     duration: 140,
   },
 ];
-const MusicPhoto = ({ user, onOpenRegister }) => {
+
+const PLAYLISTS = {
+  хіти: {
+    title: "Хіти",
+    image: require("../../photos/vip-images/vip-forest.webp"),
+  },
+  мультфільми: {
+    title: "Мультфільми",
+    image: require("../../photos/vip-images/vip-dinofroz.webp"),
+  },
+  природа: {
+    title: "Природа",
+    image: require("../../photos/vip-images/vip-soloveyko.jpg"),
+  },
+  хоррор: {
+    title: "Хоррор",
+    image: require("../../photos/vip-images/horror.jpg"),
+  },
+  ігри: {
+    title: "Ігри",
+    image: require("../../photos/vip-images/vip-dragons.jpg"),
+  },
+};
+
+const PlaylistModal = ({ playlistKey, onClose, user, onOpenRegister }) => {
   const [visibleCount, setVisibleCount] = useState(8);
-  const [modalData, setModalData] = useState(null);
+  const [lyricsModalData, setLyricsModalData] = useState(null);
   const [activeTrackId, setActiveTrackId] = useState(null);
   const [isClosing, setIsClosing] = useState(false);
+  const [isLyricsClosing, setIsLyricsClosing] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortOption, setSortOption] = useState("favorites");
   const [isShuffle, setIsShuffle] = useState(false);
@@ -935,18 +1068,20 @@ const MusicPhoto = ({ user, onOpenRegister }) => {
     });
   };
 
-  const handleCloseModal = (e) => {
+  const handleCloseLyricsModal = (e) => {
     if (e) e.stopPropagation();
-    setIsClosing(true);
+    setIsLyricsClosing(true);
     setTimeout(() => {
-      setModalData(null);
-      setIsClosing(false);
+      setLyricsModalData(null);
+      setIsLyricsClosing(false);
     }, 500);
   };
 
   const processedCards = useMemo(() => {
-    let filtered = musicCards.filter((card) =>
-      card.text.toLowerCase().includes(searchQuery.toLowerCase()),
+    let filtered = musicCards.filter(
+      (card) =>
+        card.category === playlistKey &&
+        card.text.toLowerCase().includes(searchQuery.toLowerCase()),
     );
 
     if (sortOption === "favorites") {
@@ -965,7 +1100,7 @@ const MusicPhoto = ({ user, onOpenRegister }) => {
       );
     }
     return filtered;
-  }, [searchQuery, favorites, sortOption]);
+  }, [playlistKey, searchQuery, favorites, sortOption]);
 
   const handleTrackEnd = (id) => {
     if (isShuffle) {
@@ -997,96 +1132,199 @@ const MusicPhoto = ({ user, onOpenRegister }) => {
     }
   };
 
+  const handleClose = () => {
+    setIsClosing(true);
+    setTimeout(onClose, 500);
+  };
+
+  return (
+    <ModalOverlay $isClosing={isClosing} onClick={handleClose}>
+      <PlaylistModalContent
+        $isClosing={isClosing}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <PlaylistCloseButton onClick={handleClose}>&times;</PlaylistCloseButton>
+        <h2 style={{ textAlign: "center", color: "#333" }}>
+          {PLAYLISTS[playlistKey].title}
+        </h2>
+        <ControlsContainer>
+          <SearchInput
+            type="text"
+            placeholder="Пошук пісні за описом..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+          <SortSelect
+            value={sortOption}
+            onChange={(e) => setSortOption(e.target.value)}
+          >
+            <option value="favorites">Улюблені</option>
+            <option value="name">Назва</option>
+            <option value="duration">Тривалість</option>
+          </SortSelect>
+          <ShuffleButton
+            $active={isShuffle}
+            onClick={() => setIsShuffle(!isShuffle)}
+            title="Випадковий порядок"
+          >
+            🔀
+          </ShuffleButton>
+          <PlayAllButton onClick={handlePlayAll}>Грати все</PlayAllButton>
+        </ControlsContainer>
+
+        <MusicPhotoFix>
+          {processedCards.slice(0, visibleCount).map((card) => (
+            <MusicCard
+              key={card.id}
+              cardData={card}
+              user={user}
+              isFavorite={favorites.includes(card.id)}
+              onToggleFavorite={handleToggleFavorite}
+              onOpenModal={setLyricsModalData}
+              onOpenRegister={onOpenRegister}
+              activeTrackId={activeTrackId}
+              onPlay={setActiveTrackId}
+              onTrackEnd={handleTrackEnd}
+            />
+          ))}
+        </MusicPhotoFix>
+
+        {visibleCount < processedCards.length && (
+          <LoadMoreButton
+            onClick={() => {
+              if (visibleCount === 8) {
+                setVisibleCount(16);
+              } else {
+                setVisibleCount(processedCards.length);
+              }
+            }}
+          >
+            {visibleCount === 8 ? "︾" : "︾"}
+          </LoadMoreButton>
+        )}
+
+        {lyricsModalData && (
+          <ModalOverlay
+            $isClosing={isLyricsClosing}
+            onClick={handleCloseLyricsModal}
+          >
+            <LyricsModalContent
+              $isClosing={isLyricsClosing}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <LyricsCloseButton onClick={handleCloseLyricsModal}>
+                &times;
+              </LyricsCloseButton>
+              <img
+                src={lyricsModalData.image}
+                style={{
+                  width: "100%",
+                  borderRadius: "15px",
+                  marginBottom: "15px",
+                }}
+                alt="Music"
+              />
+              <h4
+                style={{
+                  textAlign: "center",
+                  color: "#333",
+                  marginBottom: "10px",
+                  marginTop: 0,
+                }}
+              >
+                Текст пісні:
+              </h4>
+              <LyricsContainer>{lyricsModalData.lyrics}</LyricsContainer>
+            </LyricsModalContent>
+          </ModalOverlay>
+        )}
+      </PlaylistModalContent>
+    </ModalOverlay>
+  );
+};
+
+const MusicPhoto = ({ user, onOpenRegister }) => {
+  const [currentPlaylist, setCurrentPlaylist] = useState(null);
+
+  const handleClosePlaylist = () => {
+    setCurrentPlaylist(null);
+  };
   return (
     <MusicPhotoDiv>
-      <MusicPhotoText>Насолоджуйтеся музикою</MusicPhotoText>
-
-      <ControlsContainer>
-        <SearchInput
-          type="text"
-          placeholder="Пошук пісні за описом..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-        />
-        <SortSelect
-          value={sortOption}
-          onChange={(e) => setSortOption(e.target.value)}
-        >
-          <option value="favorites">Улюблені</option>
-          <option value="name">Назва</option>
-          <option value="duration">Тривалість</option>
-        </SortSelect>
-        <ShuffleButton
-          $active={isShuffle}
-          onClick={() => setIsShuffle(!isShuffle)}
-          title="Випадковий порядок"
-        >
-          🔀
-        </ShuffleButton>
-        <PlayAllButton onClick={handlePlayAll}>Грати все</PlayAllButton>
-      </ControlsContainer>
-
-      <MusicPhotoFix>
-        {processedCards.slice(0, visibleCount).map((card) => (
-          <MusicCard
-            key={card.id}
-            cardData={card}
-            user={user}
-            isFavorite={favorites.includes(card.id)}
-            onToggleFavorite={handleToggleFavorite}
-            onOpenModal={setModalData}
-            onOpenRegister={onOpenRegister}
-            activeTrackId={activeTrackId}
-            onPlay={setActiveTrackId}
-            onTrackEnd={handleTrackEnd}
-          />
-        ))}
-      </MusicPhotoFix>
-      {visibleCount < processedCards.length && (
-        <LoadMoreButton
-          onClick={() => {
-            if (visibleCount === 8) {
-              setVisibleCount(16);
-            } else {
-              setVisibleCount(processedCards.length);
-            }
-          }}
-        >
-          {visibleCount === 8 ? "︾" : "︾"}
-        </LoadMoreButton>
-      )}
-      {modalData && (
-        <ModalOverlay $isClosing={isClosing} onClick={handleCloseModal}>
-          <ModalContent
-            $isClosing={isClosing}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <CloseButton onClick={handleCloseModal}>&times;</CloseButton>
-            <img
-              src={modalData.image}
-              style={{
-                width: "100%",
-                borderRadius: "15px",
-                marginBottom: "15px",
-              }}
-              alt="Music"
+      <MusicPhotoText>Оберіть плейлист</MusicPhotoText>
+      <PlaylistGrid>
+        {Object.keys(PLAYLISTS).map((key) => (
+          <PlaylistCard key={key} onClick={() => setCurrentPlaylist(key)}>
+            <PlaylistImage
+              src={PLAYLISTS[key].image}
+              alt={PLAYLISTS[key].title}
             />
-            <h4
-              style={{
-                textAlign: "center",
-                color: "#333",
-                marginBottom: "10px",
-                marginTop: 0,
-              }}
-            >
-              Текст пісні:
-            </h4>
-            <LyricsContainer>{modalData.lyrics}</LyricsContainer>
-          </ModalContent>
-        </ModalOverlay>
+            <PlaylistTitle>{PLAYLISTS[key].title}</PlaylistTitle>
+          </PlaylistCard>
+        ))}
+      </PlaylistGrid>
+
+      {currentPlaylist && (
+        <PlaylistModal
+          playlistKey={currentPlaylist}
+          onClose={handleClosePlaylist}
+          user={user}
+          onOpenRegister={onOpenRegister}
+        />
       )}
     </MusicPhotoDiv>
   );
 };
 
 export default MusicPhoto;
+//           />
+//         ))}
+//       </MusicPhotoFix>
+//       {visibleCount < processedCards.length && (
+//         <LoadMoreButton
+//           onClick={() => {
+//             if (visibleCount === 8) {
+//               setVisibleCount(16);
+//             } else {
+//               setVisibleCount(processedCards.length);
+//             }
+//           }}
+//         >
+//           {visibleCount === 8 ? "︾" : "︾"}
+//         </LoadMoreButton>
+//       )}
+//       {modalData && (
+//         <ModalOverlay $isClosing={isClosing} onClick={handleCloseModal}>
+//           <ModalContent
+//             $isClosing={isClosing}
+//             onClick={(e) => e.stopPropagation()}
+//           >
+//             <CloseButton onClick={handleCloseModal}>&times;</CloseButton>
+//             <img
+//               src={modalData.image}
+//               style={{
+//                 width: "100%",
+//                 borderRadius: "15px",
+//                 marginBottom: "15px",
+//               }}
+//               alt="Music"
+//             />
+//             <h4
+//               style={{
+//                 textAlign: "center",
+//                 color: "#333",
+//                 marginBottom: "10px",
+//                 marginTop: 0,
+//               }}
+//             >
+//               Текст пісні:
+//             </h4>
+//             <LyricsContainer>{modalData.lyrics}</LyricsContainer>
+//           </ModalContent>
+//         </ModalOverlay>
+//       )}
+//     </MusicPhotoDiv>
+//   );
+// };
+
+// export default MusicPhoto;

@@ -3,7 +3,6 @@ import styled, { keyframes } from "styled-components";
 import { motion, AnimatePresence } from "framer-motion";
 import defaultImg from "../../../photos/hero-header/start-image.jpg";
 import dinofroz from "../../../mp3/dinofroz.mp3";
-import lamp from "../../../photos/hero-header/lamp.jpeg";
 // --- Анімації ---
 const fadeIn = keyframes`from { opacity: 0; } to { opacity: 1; }`;
 
