@@ -28,6 +28,11 @@ const pulse = keyframes`
   100% { box-shadow: 0 0 0 0 rgba(255, 108, 108, 0); }
 `;
 
+const fadeIn = keyframes`
+  from { opacity: 0; }
+  to { opacity: 1; }
+`;
+
 const Overlay = styled.div`
   position: fixed;
   top: 0;
@@ -48,7 +53,7 @@ const ShopContainer = styled.div`
   color: #fff;
   width: 90%;
   max-width: 850px;
-  max-height: 90vh;
+  max-height: 95vh;
   padding: 15px;
   border-radius: 20px;
   position: relative;
@@ -98,13 +103,64 @@ const CloseButton = styled.button`
   }
 `;
 
+const ToggleButton = styled.button`
+  position: absolute;
+  top: 10px;
+  left: 15px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  z-index: 20;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  transition: transform 0.2s;
+
+  &:hover {
+    transform: scale(1.1);
+  }
+
+  .icon {
+    font-size: 32px;
+    line-height: 1;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+  }
+
+  .text {
+    font-size: 10px;
+    color: #ff6c6c;
+    margin-top: 4px;
+    font-weight: bold;
+    text-align: center;
+    max-width: 90px;
+    line-height: 1.2;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+  }
+
+  @media (min-width: 1900px) {
+    top: 20px;
+    left: 25px;
+    .icon {
+      font-size: 45px;
+    }
+    .text {
+      font-size: 14px;
+      max-width: 140px;
+    }
+  }
+`;
+
 const ShopTitle = styled.h2`
-  text-align: center;
   color: #ff6c6c;
   letter-spacing: 2px;
-  margin-bottom: 20px;
-  font-size: 24px;
-
+  margin-bottom: 25px;
+  margin-left: 60%;
+  font-size: 13px;
+  @media (min-width: 720px) {
+    font-size: 24px;
+    text-align: center;
+    margin-left: 0px;
+  }
   @media (min-width: 1900px) {
     font-size: 36px;
     margin-bottom: 40px;
@@ -155,53 +211,49 @@ const PackCard = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  gap: 15px;
-  min-height: 250px;
+  gap: 10px;
+  min-height: 220px;
   animation: ${(props) => (props.$isSpecial ? pulse : "none")} 2s infinite;
   transition: 0.3s;
   z-index: 1;
-  &::before {
+ &::before {
     content: "";
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    top: 0; left: 0; right: 0; bottom: 0;
     background-image: url(${(props) => props.$bgImage});
     background-size: cover;
     background-position: center;
-    opacity: 0.25;  
+    opacity: 0.25;
     z-index: -1;
     transition: opacity 0.3s ease;
   }
 
-  ${(props) => props.$isSub && css`
-    &::before {
-      opacity: ${(props) => (props.$activeImg === "turkeys" ? 0.4 : 0)};
-      background-image: url(${turkeys});
-      transition: opacity 1.5s ease-in-out;
-    }
-    &::after {
-      content: "";
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background-image: url(${ultra});
-      background-size: cover;
-      background-position: center;
-      opacity: ${(props) => (props.$activeImg === "ultra" ? 0.4 : 0)};
-      z-index: -1;
-      transition: opacity 1.5s ease-in-out;
-    }
-  `}
-
+  ${(props) =>
+    props.$isSub &&
+    css`
+      &::before {
+        opacity: ${(p) => (p.$activeImg === "turkeys" ? 0.4 : 0)};
+        background-image: url(${turkeys}); 
+        transition: opacity 1.5s ease-in-out;
+      }
+      &::after {
+        content: "";
+        position: absolute;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background-image: url(${ultra});
+        background-size: cover;
+        background-position: center;
+        opacity: ${(p) => (p.$activeImg === "ultra" ? 0.4 : 0)};
+        z-index: -1;
+        transition: opacity 1.5s ease-in-out;
+      }
+    `}
   &:hover {
     transform: translateY(-8px);
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
-    &::before, &::after {
-        opacity: ${(props) => (props.$isSub ? 0.6 : 0.4)};
+    &::before,
+    &::after {
+      opacity: ${(props) => (props.$isSub ? 0.6 : 0.4)};
     }
   }
 
@@ -382,14 +434,19 @@ const RainbowSpan = styled.span`
   animation: ${rainbowText} 3s linear infinite;
 `;
 
+const AnimatedContent = styled.div`
+  animation: ${fadeIn} 0.4s ease-out;
+`;
+
 const ShopModal = ({ onClose }) => {
   const [isClosing, setIsClosing] = useState(false);
-  const [activeSubImg, setActiveSubImg] = useState("turkeys"); 
+  const [activeSubImg, setActiveSubImg] = useState("turkeys");
   const [showVipModal, setShowVipModal] = useState(false);
+  const [showInfo, setShowInfo] = useState(false);
 
   useEffect(() => {
     const interval = setInterval(() => {
-        setActiveSubImg((prev) => (prev === "turkeys" ? "ultra" : "turkeys"));
+      setActiveSubImg((prev) => (prev === "turkeys" ? "ultra" : "turkeys"));
     }, 6000);
     return () => clearInterval(interval);
   }, []);
@@ -402,32 +459,32 @@ const ShopModal = ({ onClose }) => {
   const packs = [
     {
       name: "Механічний",
-      count: 500,
+      count: 1250,
       img: time,
       buttonText: "29.99грн",
       badge: "2 рази/добу",
     },
     {
       name: "Бундючий",
-      count: 750,
+      count: 1500,
       img: turkey,
-      oldPrice: "50.00грн",
-      buttonText: "34.99грн",
+      oldPrice: "70.00грн",
+      buttonText: "39.99грн",
       badge: "≈-25% Популярний, ∞ в лімітах",
     },
     {
       name: "Драконячий",
-      count: 1000,
+      count: 2000,
       img: dinofroz,
       special: true,
-      oldPrice: "60.00грн",
-      buttonText: "39.99грн",
+      oldPrice: "90.00грн",
+      buttonText: "49.99грн",
       badge: "≈-30%! Найвигідніший, Раз/добу",
     },
     {
       name: "Підписка",
       count: "Стихія+ та Стихія+ Ultra",
-      img: null, 
+      img: null,
       special: true,
       buttonText: "Розблокувати",
       badge: "Преміум",
@@ -446,112 +503,133 @@ const ShopModal = ({ onClose }) => {
         onClick={(e) => e.stopPropagation()}
       >
         <CloseButton onClick={handleClose}>&times;</CloseButton>
-        <ShopTitle>🧧 Магазин Конвертів</ShopTitle>
-        <PackGrid>
-          {packs.map((pack) => (
-            <PackCard 
-                key={pack.name} 
-                $isSpecial={pack.special} 
-                $bgImage={pack.img}
-                $isSub={pack.isSub}
-                $activeImg={activeSubImg}
-            >
-              {pack.badge && <Badge>{pack.badge}</Badge>}
-              <PackInfo>
-                <PackContent>
-                  <PackLabel>{pack.name}</PackLabel>
-                  <PackName>{pack.isSub ? pack.count : `${pack.count} 🧧`}</PackName>
-                </PackContent>
-              </PackInfo>
-              <BuyButton onClick={() => pack.isSub && setShowVipModal(true)}>
-                {pack.oldPrice && (
-                  <span className="old-price">{pack.oldPrice}</span>
-                )}
-                <span>{pack.buttonText}</span>
-              </BuyButton>
-            </PackCard>
-          ))}
-        </PackGrid>
-        <InfoSection>
-          <InfoGrid>
-            <div>
-              <InfoTitle>🎫 Як витратити:</InfoTitle>
-              <InfoList>
-                <InfoItem>
-                  <span>Створення, видалення погодної картки(окремо за кожний
-                    процес).</span>
-                  <span className="price">1 🧧</span>
-                </InfoItem>
-                <InfoItem>
-                  <span>
-                 Доступ до JPS/доба.
-                  </span>
-                  <span className="price">2 🧧</span>
-                </InfoItem>
-                <InfoItem>
-                  <span>
-                    3 Спец-аватари, кольори імені та автару (випадково в ціні).
-                    Поліпшіть з <RainbowSpan>Підписками</RainbowSpan>.
-                  </span>
-                  <span className="price">20-40 🧧</span>
-                </InfoItem>
-                <InfoItem>
-                  <span>Зміни в налаштуваннях.</span>
-                  <span className="price">4 🧧</span>
-                </InfoItem>
-                <InfoItem>
-                  <span>
-                    Запит до ШІ (спроби за 🧧, далі 🧧 + гроші). Прискорення
-                    перезарядки кнопок(регулюється к-сть) 1 🧧 = -12с. Поліпшіть
-                    з <RainbowSpan>Підписками</RainbowSpan>.
-                  </span>
-                  <span className="price">5 🧧</span>
-                </InfoItem>
-              </InfoList>
-            </div>
-            <div>
-              <InfoTitle>🎁 Як отримати:</InfoTitle>
-              <InfoList>
-                <InfoItem>
-                  <span>
-                    Щоденний безкоштовнй бонус за вхід, проходження 1
-                    головоломки. Поліпшіть <RainbowSpan>Підписками</RainbowSpan>
-                    .
-                  </span>
-                  <span className="price">+10 🧧</span>
-                </InfoItem>
-                <InfoItem>
-                  <span>
-                    Джекпот з шансом 20%(можливий на початку добу). Покращіть{" "}
-                    <RainbowSpan>Підписками</RainbowSpan>.
-                  </span>
-                  <span className="price">+20 🧧</span>
-                </InfoItem>
-                <InfoItem>
-                  <span>
-                    🏆 Поліпшіть з <RainbowSpan>Підписками</RainbowSpan>.
-                  </span>
-                  <span className="price">20-40 🧧</span>
-                </InfoItem>
-                <InfoItem>
-                  <span>
-                    Стартовий набір, усі зібрані аватари, стилі імені та всі
-                    пройдені головоломки. Поліпшіть доступність в ціні/аватарів,
-                    <RainbowSpan>Підписками</RainbowSpan>.
-                  </span>
-                  <span className="price">+40 🧧</span>
-                </InfoItem>
-                <InfoItem>
-                  <span>
-                    Оплата <RainbowSpan>Підписками</RainbowSpan>{" "}
-                    передоплатою(разово) та місячним тарифом.
-                  </span>
-                  <span className="price">+50, 100 🧧</span>
-                </InfoItem>
-              </InfoList>
-            </div>
-          </InfoGrid>
-        </InfoSection>
+        <ToggleButton onClick={() => setShowInfo(!showInfo)}>
+          <span className="icon">{showInfo ? "🎫" : "🧧"}</span>
+          <span className="text">
+            {showInfo
+              ? "Повернутись до наборів"
+              : "Джерела отримання та витрат"}
+          </span>
+        </ToggleButton>
+        <ShopTitle>Магазин 🧧</ShopTitle>
+        {!showInfo ? (
+          <AnimatedContent key="packs">
+            <PackGrid>
+              {packs.map((pack) => (
+               <PackCard
+  key={pack.name}
+  $isSpecial={pack.special}
+  $bgImage={pack.img}
+  $isSub={pack.isSub}
+  $activeImg={activeSubImg}
+>
+                  {pack.badge && <Badge>{pack.badge}</Badge>}
+                  <PackInfo>
+                    <PackContent>
+                      <PackLabel>{pack.name}</PackLabel>
+                      <PackName>
+                        {pack.isSub ? pack.count : `${pack.count} 🧧`}
+                      </PackName>
+                    </PackContent>
+                  </PackInfo>
+                  <BuyButton
+                    onClick={() => pack.isSub && setShowVipModal(true)}
+                  >
+                    {pack.oldPrice && (
+                      <span className="old-price">{pack.oldPrice}</span>
+                    )}
+                    <span>{pack.buttonText}</span>
+                  </BuyButton>
+                </PackCard>
+              ))}
+            </PackGrid>
+          </AnimatedContent>
+        ) : (
+          <AnimatedContent key="info">
+            <InfoSection>
+              <InfoGrid>
+                <div>
+                  <InfoTitle>🎫 Як витратити:</InfoTitle>
+                  <InfoList>
+                    <InfoItem>
+                      <span>
+                        Створення, видалення погодної картки(окремо за кожний
+                        процес).
+                      </span>
+                      <span className="price">1 🧧</span>
+                    </InfoItem>
+                    <InfoItem>
+                      <span>Доступ до JPS/доба.</span>
+                      <span className="price">2 🧧</span>
+                    </InfoItem>
+                    <InfoItem>
+                      <span>
+                        3 Спец-аватари, кольори імені та автару (випадково в
+                        ціні). Поліпшіть з <RainbowSpan>Підписками</RainbowSpan>
+                        .
+                      </span>
+                      <span className="price">20-40 🧧</span>
+                    </InfoItem>
+                    <InfoItem>
+                      <span>Зміни в налаштуваннях.</span>
+                      <span className="price">4 🧧</span>
+                    </InfoItem>
+                    <InfoItem>
+                      <span>
+                        Запит до ШІ (спроби за 🧧, далі 🧧 + гроші). Прискорення
+                        перезарядки кнопок(регулюється к-сть) 1 🧧 = -12с.
+                        Поліпшіть з <RainbowSpan>Підписками</RainbowSpan>.
+                      </span>
+                      <span className="price">5 🧧</span>
+                    </InfoItem>
+                  </InfoList>
+                </div>
+                <div>
+                  <InfoTitle>🎁 Як отримати:</InfoTitle>
+                  <InfoList>
+                    <InfoItem>
+                      <span>
+                        Щоденний безкоштовнй бонус за вхід, проходження 1
+                        головоломки. Поліпшіть{" "}
+                        <RainbowSpan>Підписками</RainbowSpan>.
+                      </span>
+                      <span className="price">+10 🧧</span>
+                    </InfoItem>
+                    <InfoItem>
+                      <span>
+                        Джекпот з шансом 20%(можливий на початку добу).
+                        Покращіть <RainbowSpan>Підписками</RainbowSpan>.
+                      </span>
+                      <span className="price">+20 🧧</span>
+                    </InfoItem>
+                    <InfoItem>
+                      <span>
+                        🏆 Поліпшіть з <RainbowSpan>Підписками</RainbowSpan>.
+                      </span>
+                      <span className="price">20-40 🧧</span>
+                    </InfoItem>
+                    <InfoItem>
+                      <span>
+                        Стартовий набір, усі зібрані аватари, стилі імені та всі
+                        пройдені головоломки. Поліпшіть доступність в
+                        ціні/аватарів,
+                        <RainbowSpan>Підписками</RainbowSpan>.
+                      </span>
+                      <span className="price">+40 🧧</span>
+                    </InfoItem>
+                    <InfoItem>
+                      <span>
+                        Оплата <RainbowSpan>Підписками</RainbowSpan>{" "}
+                        передоплатою(разово) та місячним тарифом.
+                      </span>
+                      <span className="price">+50, 100 🧧</span>
+                    </InfoItem>
+                  </InfoList>
+                </div>
+              </InfoGrid>
+            </InfoSection>
+          </AnimatedContent>
+        )}
         <div
           style={{
             textAlign: "center",

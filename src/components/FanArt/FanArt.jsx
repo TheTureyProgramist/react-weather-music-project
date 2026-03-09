@@ -9,6 +9,8 @@ import nicerone from "../../photos/vip-images/vip-dinofroz.webp";
 import soloveyko from "../../photos/vip-images/vip-soloveyko.jpg";
 import monody from "../../photos/vip-images/vip-forest.webp";
 import volcano from "../../photos/vip-images/fire.jpg";
+import christmas from "../../photos/vip-images/christmas.jpg";
+import horror from "../../photos/vip-images/horror.jpg";
 import flame from "../../photos/vip-images/flame.jpg";
 import dizel from "../../photos/vip-images/dizel.webp";
 const FanArtDiv = styled.div`
@@ -43,6 +45,31 @@ const FanArtTitle = styled.div`
     margin-bottom: 100px;
   }
 `;
+
+const FilterContainer = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 30px;
+`;
+
+const FilterButton = styled.button`
+  padding: 8px 16px;
+  border-radius: 20px;
+  border: 2px solid #ffb36c;
+  background: ${(props) => (props.$active ? "#ffb36c" : "transparent")};
+  color: ${(props) =>
+    props.$active ? "black" : props.$isDarkMode ? "white" : "black"};
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  &:hover {
+    background: #ffa04d;
+    color: black;
+  }
+`;
+
 const FanBlock = styled.div`
   display: flex;
   flex-wrap: wrap;
@@ -56,12 +83,22 @@ const FanBlock = styled.div`
     gap: 30px;
   }
 `;
+
+const FanArtCard = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  border-radius: 15px;
+  background: rgba(255, 255, 255, 0.05);
+`;
+
 const BenefitImage = styled.img`
   width: 140px;
   border-radius: 15px;
   object-fit: cover;
   height: auto;
-  cursor: pointer;
   transition:
     transform 0.3s ease,
     opacity 0.3s ease;
@@ -78,6 +115,26 @@ const BenefitImage = styled.img`
   @media (min-width: 1920px) {
     width: 310px;
     border-radius: 25px;
+  }
+`;
+
+const ActionButtonsContainer = styled.div`
+  display: flex;
+  gap: 10px;
+  width: 100%;
+  justify-content: center;
+`;
+
+const ActionButton = styled.button`
+  background: #ffb36c;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background 0.2s;
+  &:hover {
+    background: #ffa04d;
   }
 `;
 
@@ -114,29 +171,63 @@ const LoadMoreButton = styled.button`
 `;
 
 const FanArt = ({ isDarkMode, user, onOpenRegister }) => {
-  const allImages = [
-    turkeys,
-    nicerone,
-    dragons,
-    horse,
-    lebid,
-    monody,
-    rooster,
-    soloveyko,
-    volcano,
-    flame,
-    dizel,
-    turkeys,
-    nicerone,
+  const allImagesData = [
+    { src: turkeys, category: "тварини" },
+    { src: nicerone, category: "мультиплікація" },
+    { src: dragons, category: "давні часи" },
+    { src: horse, category: "тварини" },
+    { src: lebid, category: "тварини" },
+    { src: monody, category: "природа" },
+    { src: rooster, category: "тварини" },
+    { src: soloveyko, category: "тварини" },
+    { src: volcano, category: "природа" },
+    { src: christmas, category: "ікони" },
+    { src: horror, category: "хоррор" },
+    { src: flame, category: "природа" },
+    { src: dizel, category: "ікони" },
+    { src: turkeys, category: "тварини" },
+    { src: nicerone, category: "мультиплікація" },
   ];
 
   const [visibleCount, setVisibleCount] = useState(10);
+  const [activeCategory, setActiveCategory] = useState("all");
+
+  const categories = [
+    "all",
+    "ікони",
+    "хоррор",
+    "мультиплікація",
+    "давні часи",
+    "тварини",
+    "природа",
+  ];
+
+  const filteredImages =
+    activeCategory === "all"
+      ? allImagesData
+      : allImagesData.filter((img) => img.category === activeCategory);
+
+  const handleCategoryChange = (category) => {
+    setActiveCategory(category);
+    setVisibleCount(10); // Скидаємо кількість видимих при зміні категорії
+  };
 
   const showMoreImages = () => {
     setVisibleCount((prevCount) => prevCount + 10);
   };
 
-  const handleImageClick = (imgSrc) => {
+  const handleDownload = (imgSrc) => {
+    if (!user) {
+      onOpenRegister();
+      return;
+    }
+    const a = document.createElement("a");
+    a.href = imgSrc;
+    a.download = "fanart.jpg";
+    a.click();
+  };
+
+  const handlePrint = (imgSrc) => {
     if (!user) {
       onOpenRegister();
       return;
@@ -151,22 +242,46 @@ const FanArt = ({ isDarkMode, user, onOpenRegister }) => {
   return (
     <FanArtDiv>
       <FanArtTitle $isDarkMode={isDarkMode}>
-        Фан-арти (Клікніть на картинку для друку)
+        Фан-арти
       </FanArtTitle>
 
+      <FilterContainer>
+        {categories.map((category) => (
+          <FilterButton
+            key={category}
+            $active={activeCategory === category}
+            $isDarkMode={isDarkMode}
+            onClick={() => handleCategoryChange(category)}
+          >
+            {category === "all"
+              ? "Всі"
+              : category.charAt(0).toUpperCase() + category.slice(1)}
+          </FilterButton>
+        ))}
+      </FilterContainer>
+
       <FanBlock>
-        {allImages.slice(0, visibleCount).map((img, index) => (
-          <BenefitImage
-            key={index}
-            src={img}
-            alt="Fan art"
-            onClick={() => handleImageClick(img)}
-            title={user ? "Клік для друку" : "Необхідна реєстрація для друку"}
-          />
+        {filteredImages.slice(0, visibleCount).map((imgData, index) => (
+          <FanArtCard key={index}>
+            <BenefitImage src={imgData.src} alt={`Fan art - ${imgData.category}`} />
+            <ActionButtonsContainer>
+              <ActionButton
+                onClick={() => handleDownload(imgData.src)}
+                title="Скачати"
+              >
+                ⇩
+              </ActionButton>
+              <ActionButton
+                onClick={() => handlePrint(imgData.src)}
+                title="Роздрукувати"
+              >
+                ⎙
+              </ActionButton>
+            </ActionButtonsContainer>
+          </FanArtCard>
         ))}
       </FanBlock>
-
-      {visibleCount < allImages.length && (
+      {visibleCount < filteredImages.length && (
         <LoadMoreButton onClick={showMoreImages}>Показати ще</LoadMoreButton>
       )}
     </FanArtDiv>
@@ -174,3 +289,5 @@ const FanArt = ({ isDarkMode, user, onOpenRegister }) => {
 };
 
 export default FanArt;
+   
+   

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import styled, { keyframes } from "styled-components";
 import mechanic from "../../../mp3/mechanik-kindom.mp3";
+import lamp from "../../../photos/hero-header/lamp.jpeg";
 
 // --- Animations ---
 const fadeIn = keyframes`from { opacity: 0; } to { opacity: 1; }`;
@@ -107,6 +108,29 @@ const ActionButton = styled.button`
   }
 `;
 
+const HintButton = styled.button`
+  width: 40px;
+  height: 40px;
+  border: 2px solid #ffb36c;
+  background: #1a110f;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 5px;
+  padding: 4px;
+  transition: all 0.2s;
+  &:hover {
+    background: #ffb36c;
+    transform: scale(1.05);
+  }
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+`;
+
 const ConfigArea = styled.div`
   display: flex;
   flex-wrap: wrap;
@@ -195,6 +219,24 @@ const PuzzleThree = ({ onExit }) => {
     if (newCode.every((val, i) => val === targetCode[i])) setIsWon(true);
   };
 
+  const handleHint = () => {
+    if (isWon) return;
+    const mismatchIdx = currentCode.findIndex((digit, i) => digit !== targetCode[i]);
+    
+    if (mismatchIdx !== -1) {
+      const current = currentCode[mismatchIdx];
+      const target = targetCode[mismatchIdx];
+      const maxDigit = mode === "normal" ? 5 : 9;
+      const range = maxDigit + 1;
+
+      const distUp = (target - current + range) % range;
+      const distDown = (current - target + range) % range;
+      
+      const delta = distUp <= distDown ? 1 : -1;
+      changeDigit(mismatchIdx, delta);
+    }
+  };
+
   const getDigitColor = (digit, index) => {
     if (isWon) return "#4caf50";
     if (showGreenHint && targetCode[index] === digit) return "#4caf50";
@@ -224,6 +266,9 @@ const PuzzleThree = ({ onExit }) => {
 
           {/* Кнопки Дій */}
           <SideControls>
+            <HintButton onClick={handleHint} title="Підказка">
+              <img src={lamp} alt="Hint" />
+            </HintButton>
             <ActionButton onClick={initGame} title="Скинути">⏭</ActionButton>
             <ActionButton onClick={onExit} title="Вихід">✖</ActionButton>
           </SideControls>

@@ -154,7 +154,9 @@ const PlaylistCard = styled.div`
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
   cursor: pointer;
   transition: transform 0.3s ease;
-  position: relative;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
 
   &:hover {
     transform: scale(1.05);
@@ -168,12 +170,7 @@ const PlaylistImage = styled.img`
 `;
 
 const PlaylistTitle = styled.div`
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background: rgba(0, 0, 0, 0.6);
-  color: white;
+  color: #333;
   padding: 10px;
   font-weight: bold;
   font-size: 18px;
@@ -232,7 +229,7 @@ const HeartButton = styled.button`
   cursor: pointer;
   z-index: 10;
   font-size: 20px;
-  color: ${(props) => (props.$active ? "red" : "#ccc")};
+  color: ${(props) => (props.$isFavorite ? "red" : "#ccc")};
   transition: all 0.2s;
   &:hover {
     transform: scale(1.1);
@@ -301,6 +298,19 @@ const PlayButton = styled.button`
   }
   &:hover svg {
     fill: orange;
+  }
+`;
+
+const SeekButton = styled.button`
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 10px;
+  color: #333;
+  padding: 0 5px;
+  font-weight: bold;
+  &:hover {
+    color: orange;
   }
 `;
 
@@ -409,8 +419,8 @@ const LoopButton = styled.button`
   background: orange;
   border: 1px solid #333;
   border-radius: 10px;
-  color: ${(props) => (props.$active ? "white" : "#333")};
-  background-color: ${(props) => (props.$active ? "#333" : "transparent")};
+  color: ${(props) => (props.$isLooping ? "white" : "#333")};
+  background-color: ${(props) => (props.$isLooping ? "#333" : "transparent")};
   font-size: 10px;
   padding: 4px 8px;
   cursor: pointer;
@@ -431,12 +441,20 @@ const ActionButton = styled.button`
   background: #f0f0f0;
   border: 1px solid #ddd;
   border-radius: 5px;
-  width: 80px;
-  padding: 5px 30px;
+  width: 58px;
+  padding: 5px 15px;
   font-size: 19px;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   &:hover {
     background: #e0e0e0;
+  }
+  svg {
+    width: 20px;
+    height: 20px;
+    fill: #333;
   }
 `;
 
@@ -452,8 +470,7 @@ const ModalOverlay = styled.div`
   justify-content: center;
   align-items: center;
   z-index: 1000;
-  animation: ${(props) => (props.$isClosing ? fadeOut : "none")} 0.5s ease-out
-    forwards;
+  animation: ${(props) => (props.$isClosing ? fadeOut : "none")} forwards;
 `;
 
 const LyricsModalContent = styled.div`
@@ -465,7 +482,7 @@ const LyricsModalContent = styled.div`
   max-height: 85vh;
   overflow-y: auto;
   position: relative;
-  animation: ${(props) => (props.$isClosing ? slideOut : slideIn)} 0.5s ease-out
+  animation: ${(props) => (props.$isClosing ? slideOut : slideIn)}
     forwards;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
   &::-webkit-scrollbar {
@@ -621,14 +638,12 @@ const MusicCard = ({
       audioEl.removeEventListener("loadedmetadata", updateBuffered);
     };
   }, []);
-
   const formatTime = (time) => {
-    if (isNaN(time)) return "0:00";
-    const minutes = Math.floor(time / 60);
-    const seconds = Math.floor(time % 60);
-    return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
-  };
-
+  if (isNaN(time)) return "0:00";
+  const minutes = Math.floor(time / 60);
+  const seconds = Math.floor(time % 60);
+  return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+};
   const togglePlayPause = () => {
     if (audioRef.current) {
       if (isCurrentTrack) {
@@ -663,17 +678,27 @@ const MusicCard = ({
     }
   };
 
-  const handleDownload = () => {
+  const handleDownloadAudio = () => {
     if (!user) {
       onOpenRegister();
       return;
     }
     const a = document.createElement("a");
-    a.href = audio || image;
-    a.download = "file";
+    a.href = audio;
+    a.download = "audio.mp3";
     a.click();
   };
 
+  const handleDownloadImage = () => {
+    if (!user) {
+      onOpenRegister();
+      return;
+    }
+    const a = document.createElement("a");
+    a.href = image;
+    a.download = "image.jpg";
+    a.click();
+  };
   const handlePrint = () => {
     if (!user) {
       onOpenRegister();
@@ -681,8 +706,8 @@ const MusicCard = ({
     }
     const printWindow = window.open("", "_blank");
     printWindow.document.write(
-      `<html><head><title>Print Image</title></head><body style="text-align:center;"><img src="${image}" style="max-width:100%;" onload="window.print();window.close()" /></body></html>`,
-    );
+  `<html><head><title>Print Image</title></head><body style="text-align:center;"><img src="${image}" style="max-width:100%;" onload="window.print();window.close()" /></body></html>`
+);
     printWindow.document.close();
   };
   const toggleMute = () => {
@@ -694,11 +719,23 @@ const MusicCard = ({
     }
   };
 
+  const rewind10 = () => {
+    if (audioRef.current) {
+      audioRef.current.currentTime = Math.max(0, audioRef.current.currentTime - 10);
+    }
+  };
+
+  const forward10 = () => {
+    if (audioRef.current) {
+      audioRef.current.currentTime = Math.min(duration, audioRef.current.currentTime + 10);
+    }
+  };
+
   return (
     <CardWrapper $isFavorite={isFavorite}>
       <MusicImageContainer>
         <HeartButton
-          $active={isFavorite}
+           $isFavorite={isFavorite} 
           onClick={() => onToggleFavorite(id)}
           title={
             isFavorite ? "Прибрати з улюблених" : "Додати в улюблені (ліміт 3)"
@@ -736,6 +773,7 @@ const MusicCard = ({
                 </svg>
               )}
             </PlayButton>
+            <SeekButton onClick={rewind10} title="Назад 10с">-10s</SeekButton>
             <SeekBar
               type="range"
               min="0"
@@ -743,6 +781,7 @@ const MusicCard = ({
               value={currentTime}
               onChange={(e) => (audioRef.current.currentTime = e.target.value)}
             />
+            <SeekButton onClick={forward10} title="Вперед 10с">+10s</SeekButton>
             <TimeDisplay>
               {formatTime(currentTime)} / {formatTime(duration)}
               {bufferedTime > currentTime && (
@@ -794,7 +833,7 @@ const MusicCard = ({
           </SliderRow>
 
           <LoopButton
-            $active={isLooping}
+            $isLooping={isLooping}
             onClick={() => setIsLooping(!isLooping)}
           >
             {isLooping ? "Автоповтор увімкнено" : "Автоповтор вимкнено"}
@@ -805,14 +844,19 @@ const MusicCard = ({
       {text && <MusicText title={text}>{text}</MusicText>}
 
       <ActionButtonsContainer>
-        <ActionButton title="Скачати пісню" onClick={handleDownload}>
-          ⇩
+        {audio && (
+          <ActionButton title="Скачати пісню" onClick={handleDownloadAudio}>
+            <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+          </ActionButton>
+        )}
+        <ActionButton title="Скачати зображення" onClick={handleDownloadImage}>
+          <svg viewBox="0 0 24 24"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>
         </ActionButton>
         <ActionButton title="Роздрукувати фан-арт" onClick={handlePrint}>
-          ⎙
+          <svg viewBox="0 0 24 24"><path d="M19 8h-1V3H6v5H5c-1.66 0-3 1.34-3 3v6h3v4h14v-4h3v-6c0-1.66-1.34-3-3-3zM8 5h8v3H8V5zm8 12v2H8v-4h8v2zm2-2v-2H6v2H4v-4c0-.55.45-1 1-1h14c.55 0 1 .45 1 1v4h-2z"/><circle cx="18" cy="11.5" r="1"/></svg>
         </ActionButton>
         <ActionButton title="Текст пісні" onClick={() => onOpenModal(cardData)}>
-          ✎
+          <svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
         </ActionButton>
       </ActionButtonsContainer>
     </CardWrapper>
@@ -927,7 +971,7 @@ const musicCards = [
     audio: require("../../mp3/zootopia.mp3"),
     category: "мультфільми",
     text: "Зоотрополіс(Disney)-рекомендую. Shakira-Try Everything. Мультфільм.",
-    lyrics: "",
+    lyrics: "......",
     duration: 200,
   },
   {
@@ -936,7 +980,7 @@ const musicCards = [
     audio: require("../../mp3/zootopiatwo.mp3"),
     category: "мультфільми",
     text: "Продовження історої Зоотрополісу(Disney). Чекатиму, через 5років продовження. Skakira, Ed Sheeran - Zoo. Мультфільм.",
-    lyrics: "../../mp3/zootopiatwo.mp3",
+    lyrics: "...............",
     duration: 200,
   },
   {
@@ -954,7 +998,7 @@ const musicCards = [
     audio: require("../../mp3/malatkotv-chapterone.mp3"),
     category: "мультфільми",
     text: "Динофроз, показували, з кількома, ще мульфільмами: Якарі, Анна з зелених дахів, Хайді, Острів іпаток, Пригоди в качиному порту, Марко, Лис Микита.",
-    lyrics: "../../malatkotv-chapterone.mp3",
+    lyrics: "..........",
     duration: 180,
   },
     {
@@ -963,7 +1007,7 @@ const musicCards = [
     audio: require("../../mp3/malatkotv-chaptertwo.mp3"),
     category: "мультфільми",
     text: "Друга частина. Пісні розміщені в 3 частинах. Четверта під питанням.",
-    lyrics: "../../malatkotv-chapterone.mp3",
+    lyrics: "...................",
     duration: 180,
   },
     {
@@ -972,7 +1016,7 @@ const musicCards = [
     audio: require("../../mp3/malatkotv-chapterthree.mp3"),
     category: "мультфільми",
     text: "Третя частина",
-    lyrics: "../../malatkotv-chapterone.mp3",
+    lyrics: ".............",
     duration: 180,
   },
   {
@@ -1109,12 +1153,14 @@ const PlaylistModal = ({ playlistKey, onClose, user, onOpenRegister }) => {
         if (!aFav && bFav) return 1;
         return 0;
       });
-    } else if (sortOption === "name") {
+    } else if (sortOption === "name_asc") {
       return [...filtered].sort((a, b) => a.text.localeCompare(b.text));
-    } else if (sortOption === "duration") {
-      return [...filtered].sort(
-        (a, b) => (a.duration || 0) - (b.duration || 0),
-      );
+    } else if (sortOption === "name_desc") {
+      return [...filtered].sort((a, b) => b.text.localeCompare(a.text));
+    } else if (sortOption === "duration_asc") {
+      return [...filtered].sort((a, b) => (a.duration || 0) - (b.duration || 0));
+    } else if (sortOption === "duration_desc") {
+      return [...filtered].sort((a, b) => (b.duration || 0) - (a.duration || 0));
     }
     return filtered;
   }, [playlistKey, searchQuery, favorites, sortOption]);
@@ -1157,8 +1203,7 @@ const PlaylistModal = ({ playlistKey, onClose, user, onOpenRegister }) => {
   return (
     <ModalOverlay $isClosing={isClosing} onClick={handleClose}>
       <PlaylistModalContent
-        $isClosing={isClosing}
-        onClick={(e) => e.stopPropagation()}
+        $isClosing={isClosing} onClick={(e) => e.stopPropagation()}
       >
         <PlaylistCloseButton onClick={handleClose}>&times;</PlaylistCloseButton>
         <h2 style={{ textAlign: "center", color: "#333" }}>
@@ -1176,12 +1221,13 @@ const PlaylistModal = ({ playlistKey, onClose, user, onOpenRegister }) => {
             onChange={(e) => setSortOption(e.target.value)}
           >
             <option value="favorites">Улюблені</option>
-            <option value="name">Назва</option>
-            <option value="duration">Тривалість</option>
+            <option value="name_asc">Назва (А-Я)</option>
+            <option value="name_desc">Назва (Я-А)</option>
+            <option value="duration_asc">Тривалість (мін-макс)</option>
+            <option value="duration_desc">Тривалість (макс-мін)</option>
           </SortSelect>
           <ShuffleButton
-            $active={isShuffle}
-            onClick={() => setIsShuffle(!isShuffle)}
+            $active={isShuffle} onClick={() => setIsShuffle(!isShuffle)}
             title="Випадковий порядок"
           >
             🔀
@@ -1222,12 +1268,10 @@ const PlaylistModal = ({ playlistKey, onClose, user, onOpenRegister }) => {
 
         {lyricsModalData && (
           <ModalOverlay
-            $isClosing={isLyricsClosing}
-            onClick={handleCloseLyricsModal}
+            $isClosing={isLyricsClosing} onClick={handleCloseLyricsModal}
           >
             <LyricsModalContent
-              $isClosing={isLyricsClosing}
-              onClick={(e) => e.stopPropagation()}
+              $isClosing={isLyricsClosing} onClick={handleCloseLyricsModal}
             >
               <LyricsCloseButton onClick={handleCloseLyricsModal}>
                 &times;
@@ -1260,6 +1304,43 @@ const PlaylistModal = ({ playlistKey, onClose, user, onOpenRegister }) => {
   );
 };
 
+const PlaylistCover = ({ playlistKey, defaultImage }) => {
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  const images = useMemo(() => {
+    const cards = musicCards.filter((c) => c.category === playlistKey);
+    return cards.length > 0 ? cards.map((c) => c.image) : [defaultImage];
+  }, [playlistKey, defaultImage]);
+
+  useEffect(() => {
+    if (images.length <= 1) return;
+    const interval = setInterval(() => {
+      setCurrentIndex((prev) => (prev + 1) % images.length);
+    }, 2000);
+    return () => clearInterval(interval);
+  }, [images]);
+
+  return (
+    <div style={{ position: "relative", width: "100%", height: "150px" }}>
+      {images.map((src, index) => (
+        <PlaylistImage
+          key={index}
+          src={src}
+          alt={playlistKey}
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            opacity: index === currentIndex ? 1 : 0,
+            transition: "opacity 1s ease-in-out",
+            zIndex: index === currentIndex ? 1 : 0,
+          }}
+        />
+      ))}
+    </div>
+  );
+};
+
 const MusicPhoto = ({ user, onOpenRegister }) => {
   const [currentPlaylist, setCurrentPlaylist] = useState(null);
 
@@ -1272,9 +1353,9 @@ const MusicPhoto = ({ user, onOpenRegister }) => {
       <PlaylistGrid>
         {Object.keys(PLAYLISTS).map((key) => (
           <PlaylistCard key={key} onClick={() => setCurrentPlaylist(key)}>
-            <PlaylistImage
-              src={PLAYLISTS[key].image}
-              alt={PLAYLISTS[key].title}
+            <PlaylistCover
+              playlistKey={key}
+              defaultImage={PLAYLISTS[key].image}
             />
             <PlaylistTitle>{PLAYLISTS[key].title}</PlaylistTitle>
           </PlaylistCard>
@@ -1294,54 +1375,3 @@ const MusicPhoto = ({ user, onOpenRegister }) => {
 };
 
 export default MusicPhoto;
-//           />
-//         ))}
-//       </MusicPhotoFix>
-//       {visibleCount < processedCards.length && (
-//         <LoadMoreButton
-//           onClick={() => {
-//             if (visibleCount === 8) {
-//               setVisibleCount(16);
-//             } else {
-//               setVisibleCount(processedCards.length);
-//             }
-//           }}
-//         >
-//           {visibleCount === 8 ? "︾" : "︾"}
-//         </LoadMoreButton>
-//       )}
-//       {modalData && (
-//         <ModalOverlay $isClosing={isClosing} onClick={handleCloseModal}>
-//           <ModalContent
-//             $isClosing={isClosing}
-//             onClick={(e) => e.stopPropagation()}
-//           >
-//             <CloseButton onClick={handleCloseModal}>&times;</CloseButton>
-//             <img
-//               src={modalData.image}
-//               style={{
-//                 width: "100%",
-//                 borderRadius: "15px",
-//                 marginBottom: "15px",
-//               }}
-//               alt="Music"
-//             />
-//             <h4
-//               style={{
-//                 textAlign: "center",
-//                 color: "#333",
-//                 marginBottom: "10px",
-//                 marginTop: 0,
-//               }}
-//             >
-//               Текст пісні:
-//             </h4>
-//             <LyricsContainer>{modalData.lyrics}</LyricsContainer>
-//           </ModalContent>
-//         </ModalOverlay>
-//       )}
-//     </MusicPhotoDiv>
-//   );
-// };
-
-// export default MusicPhoto;

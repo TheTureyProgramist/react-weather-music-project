@@ -1,5 +1,7 @@
-import React, { useState, useEffect, useCallback, useMemo } from "react";
+import React, { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import styled, { keyframes, css } from "styled-components";
+import { motion, AnimatePresence } from "framer-motion";
+import music from "../../../mp3/theoty-of-everything-ll.mp3";
 
 const LEVEL_CONFIG = {
   GRID_SIZE: 10,
@@ -81,6 +83,15 @@ const shake = keyframes`0%, 100% { transform: translateX(0); } 25% { transform: 
 const pulseRed = keyframes`0% { background: #1a1a1a; } 50% { background: #420000; } 100% { background: #1a1a1a; }`;
 const pulseKill = keyframes`0% { border-color: #ff0000; opacity: 0.8; } 50% { border-color: #ff8888; opacity: 1; } 100% { border-color: #ff0000; opacity: 0.8; }`;
 const glowStep = keyframes`0% { box-shadow: 0 0 5px #fbc02d; } 50% { box-shadow: 0 0 15px #fbc02d; } 100% { box-shadow: 0 0 5px #fbc02d; }`;
+const rotate = keyframes`
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+`;
+
+const rotateRev = keyframes`
+  from { transform: rotate(0deg); }
+  to { transform: rotate(-360deg); }
+`;
 
 const GameWrapper = styled.div`
   display: flex;
@@ -274,14 +285,6 @@ const SawIcon = styled.div`
     font-size: 10px;
     animation: rotate 2s linear infinite;
   }
-  @keyframes rotate {
-    from {
-      transform: rotate(0deg);
-    }
-    to {
-      transform: rotate(360deg);
-    }
-  }
 `;
 
 const BottomPanel = styled.div`
@@ -307,23 +310,62 @@ const StatsGrid = styled.div`
 `;
 
 const GameButton = styled.button`
-  width: 34px;
-  height: 34px;
-  border: 2px solid #ffb36c;
+  width: 40px;
+  height: 40px;
   background: transparent;
+  border: 2px solid #ffb36c;
   color: #ffb36c;
-  font-size: 14px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  &:active {
-    background: #ffb36c;
-    color: #222;
+  font-size: 18px;
+  transition: all 0.2s;
+  flex-shrink: 0;
+
+  &:hover {
+    background: rgba(255, 179, 108, 0.1);
+    transform: scale(1.05);
+  }
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
   }
 `;
 
-const Modal = styled.div`
+const GearContainer = styled(GameButton)`
+  position: relative;
+  overflow: hidden;
+  .g {
+    position: absolute;
+    font-size: 16px;
+    transition: 0.3s;
+  }
+  .g1 {
+    top: 4px;
+    left: 14px;
+  }
+  .g2 {
+    bottom: 6px;
+    left: 6px;
+  }
+  .g3 {
+    bottom: 6px;
+    right: 6px;
+  }
+
+  &:hover .g1 {
+    animation: ${rotate} 3s linear infinite;
+  }
+  &:hover .g2 {
+    animation: ${rotateRev} 3s linear infinite;
+  }
+  &:hover .g3 {
+    animation: ${rotate} 3s linear infinite;
+  }
+`;
+
+const HelpModal = styled.div`
   position: absolute;
   top: 50%;
   left: 50%;
@@ -336,6 +378,84 @@ const Modal = styled.div`
   color: #fff;
   z-index: 200;
   text-align: center;
+`;
+
+const ModalOverlay = styled(motion.div)`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.85);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 100;
+`;
+
+const Modal = styled.div`
+  background: #2e1a16;
+  border: 3px solid #ffb36c;
+  padding: 20px;
+  width: 340px;
+  max-height: 90vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  scrollbar-width: thin;
+  scrollbar-color: #ffb36c #2e1a16;
+`;
+
+const DifficultyBtn = styled.button`
+  background: #3e2723;
+  color: #ffb36c;
+  border: 1px solid #ffb36c;
+  padding: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 14px;
+  &:hover {
+    background: #ffb36c;
+    color: #3e2723;
+  }
+`;
+
+const VolumeControl = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(0, 0, 0, 0.2);
+  padding: 5px 10px;
+  border-radius: 4px;
+  border: 1px solid rgba(255, 179, 108, 0.3);
+
+  input {
+    width: 60px;
+    accent-color: #ffb36c;
+    cursor: pointer;
+  }
+  span {
+    font-size: 16px;
+    min-width: 20px;
+  }
+`;
+
+const CustomRow = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+  color: #ffb36c;
+
+  select,
+  input {
+    accent-color: #ffb36c;
+    cursor: pointer;
+    background: #3e2723;
+    color: #ffb36c;
+    border: 1px solid #ffb36c;
+  }
 `;
 
 const PuzzleSeven = ({ onExit }) => {
@@ -369,16 +489,48 @@ const PuzzleSeven = ({ onExit }) => {
     [],
   );
 
+  const [config, setConfig] = useState({
+    label: "Середня",
+    time: 120,
+    lives: 7,
+    portalCooldown: 16,
+    sawsCount: 5,
+  });
+  const [tempConfig, setTempConfig] = useState(config);
+  const [showSettings, setShowSettings] = useState(false);
+
+  const audioRef = useRef(null);
+  const [volume, setVolume] = useState(0.5);
+
+  useEffect(() => {
+    audioRef.current = new Audio(music);
+    audioRef.current.loop = true;
+    const playAudio = () => {
+      audioRef.current.play().catch(() => {});
+    };
+    playAudio();
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    if (audioRef.current) audioRef.current.volume = volume;
+  }, [volume]);
+
   const initialState = useMemo(
     () => ({
       player: PLAYER_START,
       boxes: BOXES_START.map((b) => ({ ...b, locked: false })),
-      saws: SAWS_START,
+      saws: SAWS_START.slice(0, config.sawsCount),
       stepPoints: [],
       activeBoxIdx: 0,
-      lives: 7,
+      lives: config.lives,
       portalCooldown: 0,
-      timeLeft: 120,
+      timeLeft: config.time,
       phase: 1,
       bonusTime: 16,
       evacPoints: [],
@@ -389,7 +541,7 @@ const PuzzleSeven = ({ onExit }) => {
       sawRevealTimer: 0,
       isWinner: false,
     }),
-    [BOXES_START, PLAYER_START, SAWS_START],
+    [BOXES_START, PLAYER_START, SAWS_START, config],
   );
 
   const [state, setState] = useState(initialState);
@@ -470,11 +622,11 @@ const PuzzleSeven = ({ onExit }) => {
       if (nx === PORTAL_A.x && ny === PORTAL_A.y) {
         nx = PORTAL_B.x;
         ny = PORTAL_B.y;
-        newCooldown = 16;
+        newCooldown = config.portalCooldown;
       } else if (nx === PORTAL_B.x && ny === PORTAL_B.y) {
         nx = PORTAL_A.x;
         ny = PORTAL_A.y;
-        newCooldown = 16;
+        newCooldown = config.portalCooldown;
       }
     }
 
@@ -659,6 +811,36 @@ const PuzzleSeven = ({ onExit }) => {
     return () => clearInterval(t);
   }, [state.showHelp, state.isWinner]);
 
+  const setDifficulty = (type, customParams = null) => {
+    let newConfig;
+    if (customParams) {
+      newConfig = { ...customParams, label: "Власна" };
+    } else {
+      const presets = {
+        easy: {
+          label: "Легка", time: 300, lives: 10, portalCooldown: 5, sawsCount: 3,
+        },
+        normal: {
+          label: "Середня", time: 120, lives: 7, portalCooldown: 16, sawsCount: 5,
+        },
+        hard: {
+          label: "Важка", time: 90, lives: 5, portalCooldown: 25, sawsCount: 5,
+        },
+      };
+      newConfig = presets[type];
+    }
+    setConfig(newConfig);
+    setTempConfig(newConfig);
+    setShowSettings(false);
+  };
+
+  const formatTime = (s) =>
+    `${Math.floor(s / 60)}:${(s % 60).toString().padStart(2, "0")}`;
+
+  useEffect(() => {
+    setTempConfig(config);
+  }, [config]);
+
   return (
     <GameWrapper $isHit={state.isHit}>
       <h4 style={{ margin: 0, color: state.isWinner ? "#00e676" : "#ffb36c" }}>
@@ -819,11 +1001,10 @@ const PuzzleSeven = ({ onExit }) => {
       <BottomPanel>
         <StatsGrid>
           <span style={{ color: state.lives < 3 ? "#ff0000" : "inherit" }}>
-            ❤️ {state.lives}/7
+            ❤️ {state.lives}/{config.lives}
           </span>
           <span>
-            ⏳ {Math.floor(state.timeLeft / 60)}:
-            {String(state.timeLeft % 60).padStart(2, "0")}
+            ⏳ {formatTime(state.timeLeft)}
           </span>
           <span style={{ color: "#3f51b5" }}>
             🌀 {state.portalCooldown > 0 ? state.portalCooldown : "READY"}
@@ -833,11 +1014,27 @@ const PuzzleSeven = ({ onExit }) => {
           )}
         </StatsGrid>
         <div style={{ display: "flex", gap: "5px" }}>
+          <VolumeControl>
+            <span>{volume === 0 ? "🔇" : "🎵"}</span>
+            <input
+              type="range"
+              min="0"
+              max="1"
+              step="0.01"
+              value={volume}
+              onChange={(e) => setVolume(parseFloat(e.target.value))}
+            />
+          </VolumeControl>
           <GameButton
             onClick={() => setState((p) => ({ ...p, showHelp: true }))}
           >
             ?
           </GameButton>
+          <GearContainer onClick={() => setShowSettings(true)} title="Налаштування">
+            <span className="g g1">⚙</span>
+            <span className="g g2">⚙</span>
+            <span className="g g3">⚙</span>
+          </GearContainer>
           <GameButton onClick={resetGame}>⏭</GameButton>
           <GameButton
             onClick={onExit}
@@ -848,7 +1045,7 @@ const PuzzleSeven = ({ onExit }) => {
         </div>
       </BottomPanel>
       {state.showHelp && (
-        <Modal>
+        <HelpModal>
           <h3 style={{ color: "#ffb36c", fontSize: "16px" }}>
             2 кімната: Полювання
           </h3>
@@ -870,8 +1067,67 @@ const PuzzleSeven = ({ onExit }) => {
           >
             START
           </GameButton>
-        </Modal>
+        </HelpModal>
       )}
+      <AnimatePresence>
+        {showSettings && (
+          <ModalOverlay
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setShowSettings(false)}
+          >
+            <Modal onClick={(e) => e.stopPropagation()}>
+              <h3 style={{ margin: "0", color: "#ffb36c", textAlign: "center" }}>
+                Налаштування
+              </h3>
+
+              <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                <DifficultyBtn onClick={() => setDifficulty("easy")}>
+                  Легка (5хв, 10❤️, 3 пили, портал 5)
+                </DifficultyBtn>
+                <DifficultyBtn onClick={() => setDifficulty("normal")}>
+                  Середня (2хв, 7❤️, 5 пил, портал 16)
+                </DifficultyBtn>
+                <DifficultyBtn onClick={() => setDifficulty("hard")}>
+                  Важка (1.5хв, 5❤️, 5 пил, портал 25)
+                </DifficultyBtn>
+              </div>
+
+              <hr style={{ borderColor: "#ffb36c", width: "100%", margin: "5px 0" }} />
+
+              <span style={{ fontSize: "14px", textAlign: "center", color: "#ffb36c" }}>
+                Власні параметри:
+              </span>
+
+              <CustomRow>
+                <span>Час: {formatTime(tempConfig.time)}</span>
+                <input type="range" min="60" max="300" step="10" value={tempConfig.time} onChange={(e) => setTempConfig({ ...tempConfig, time: parseInt(e.target.value) })} />
+              </CustomRow>
+              <CustomRow>
+                <span>Пили: {tempConfig.sawsCount}</span>
+                <input type="range" min="1" max="5" value={tempConfig.sawsCount} onChange={(e) => setTempConfig({ ...tempConfig, sawsCount: parseInt(e.target.value) })} />
+              </CustomRow>
+              <CustomRow>
+                <span>Життя: {tempConfig.lives}</span>
+                <input type="range" min="1" max="10" value={tempConfig.lives} onChange={(e) => setTempConfig({ ...tempConfig, lives: parseInt(e.target.value) })} />
+              </CustomRow>
+              <CustomRow>
+                <span>Перезарядка порталу: {tempConfig.portalCooldown} ходів</span>
+                <input type="range" min="1" max="30" value={tempConfig.portalCooldown} onChange={(e) => setTempConfig({ ...tempConfig, portalCooldown: parseInt(e.target.value) })} />
+              </CustomRow>
+
+              <DifficultyBtn onClick={() => setDifficulty("custom", tempConfig)} style={{ background: "#4e342e", marginTop: "10px" }}>
+                Застосувати власні
+              </DifficultyBtn>
+
+              <DifficultyBtn onClick={() => setShowSettings(false)} style={{ background: "#1b110f" }}>
+                Закрити
+              </DifficultyBtn>
+            </Modal>
+          </ModalOverlay>
+        )}
+      </AnimatePresence>
     </GameWrapper>
   );
 };

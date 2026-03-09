@@ -142,22 +142,6 @@ const HeroTextLink = styled.a`
     padding-right: 50px;
   }
 `;
-
-const HeroLine = styled.div`
-  display: none;
-  flex-shrink: 0;
-  @media (min-width: 768px) {
-    display: block;
-    width: 2px;
-    height: 40px;
-    background: white;
-  }
-  @media (min-width: 1920px) {
-    height: 80px;
-    width: 4px;
-  }
-`;
-
 const HeroDate = styled.div`
   color: #fff;
   font-size: 10px;
@@ -179,16 +163,6 @@ const HeroDate = styled.div`
   }
 `;
 
-const HeroLineMobile = styled.div`
-  width: 2px;
-  height: 100px;
-  background: rgba(255, 255, 255, 0.95);
-  @media (min-width: 768px) {
-    display: none;
-  }
-`;
-
-/* СТИЛІ ПОШУКУ */
 const SearchWrapper = styled.div`
   position: relative;
   display: flex;
@@ -450,7 +424,6 @@ const Hero = ({ heroDateString, onAddCity }) => {
       </HeroTitle>
 
       <HeroDecor>
-        <HeroLineMobile />
         <HeroFix>
           <HeroTextLink
             href="https://www.facebook.com/share/g/15cVdicVtGc/"
@@ -458,7 +431,6 @@ const Hero = ({ heroDateString, onAddCity }) => {
           >
             Мій фейсбук канал. Натисніть.
           </HeroTextLink>
-          <HeroLine />
           <HeroDate>{heroDateString}</HeroDate>
         </HeroFix>
       </HeroDecor>
