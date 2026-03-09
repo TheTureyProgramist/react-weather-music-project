@@ -604,7 +604,6 @@ const Header = ({
         
         <BurgerContentGrid>
           <div>
-            <MenuSectionTitle>Навігація (Секції)</MenuSectionTitle>
             <NavLinksList $isDarkMode={isDarkMode}>
               {siteSections && siteSections.map(section => (
                 <li key={section.key}>
@@ -613,7 +612,7 @@ const Header = ({
               ))}
             </NavLinksList>
 
-            <MenuSectionTitle style={{marginTop: "30px"}}>Управління секціями</MenuSectionTitle>
+            <MenuSectionTitle style={{marginTop: "30px"}}>Управління, навігація секціями</MenuSectionTitle>
             <SectionOrderContainer>
               <h4 style={{ fontWeight: 700, fontSize: 16, margin: "0 0 15px 0" }}>
                 Порядок секцій сайту:

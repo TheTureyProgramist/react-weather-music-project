@@ -110,7 +110,7 @@ const PlayAllButton = styled.button`
   border: none;
   border-radius: 25px;
   padding: 12px 25px;
-  font-size: 16px;
+  font-size: 21px;
   font-weight: bold;
   cursor: pointer;
   transition:
@@ -148,7 +148,7 @@ const PlaylistGrid = styled.div`
 `;
 
 const PlaylistCard = styled.div`
-  width: 250px;
+  width: 320px;
   border-radius: 15px;
   overflow: hidden;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
@@ -182,7 +182,7 @@ const CardWrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 288px;
+  width: 308px;
   height: 420px;
   background: #fff;
   border-radius: 15px;
@@ -194,8 +194,8 @@ const CardWrapper = styled.div`
 
 const MusicImageContainer = styled.div`
   position: relative;
-  width: 285px;
-  height: 168px;
+  width: 308px;
+  height: 183px;
   border-radius: 15px 15px 0 0;
   background-color: #a5a5a5;
   overflow: hidden;
@@ -203,7 +203,7 @@ const MusicImageContainer = styled.div`
 `;
 
 const MusicImage = styled.img`
-  width: 280px;
+  width: 308px;
   height: 100%;
   object-fit: cover;
   border-radius: 15px 15px 0 0;
@@ -275,7 +275,7 @@ const ControlsContainerPlayer = styled.div`
 const PlayerRow = styled.div`
   display: flex;
   align-items: center;
-  gap: 1px;
+  gap: 0px;
   width: 100%;
   margin-bottom: 5px;
 `;
@@ -288,8 +288,8 @@ const PlayButton = styled.button`
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 24px;
-  height: 24px;
+  width: 21px;
+  height: 21px;
   svg {
     width: 100%;
     height: 100%;
@@ -415,6 +415,29 @@ const SpeedSlider = styled.input`
   }
 `;
 
+const SeekAmountSlider = styled.input`
+  flex-grow: 1;
+  height: 3px;
+  -webkit-appearance: none;
+  background: linear-gradient(
+    to right,
+    orange 0%,
+    orange ${(props) => ((props.value - 5) / 20) * 100 || 0}%,
+    #ccc ${(props) => ((props.value - 5) / 20) * 100 || 0}%,
+    #ccc 100%
+  );
+  border-radius: 2px;
+  outline: none;
+  &::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #333;
+    cursor: pointer;
+  }
+`;
+
 const LoopButton = styled.button`
   background: orange;
   border: 1px solid #333;
@@ -441,8 +464,8 @@ const ActionButton = styled.button`
   background: #f0f0f0;
   border: 1px solid #ddd;
   border-radius: 5px;
-  width: 58px;
-  padding: 5px 15px;
+  width: 67px;
+  padding: 5px 16px;
   font-size: 19px;
   cursor: pointer;
   display: flex;
@@ -499,10 +522,10 @@ const LyricsModalContent = styled.div`
 
 const PlaylistModalContent = styled.div`
   background: #e8e8e8;
-  padding: 20px;
+  padding: 10px;
   border-radius: 15px;
   width: 95%;
-  max-width: 1300px;
+  max-width: 1800px;
   max-height: 90vh;
   overflow-y: auto;
   position: relative;
@@ -586,6 +609,7 @@ const MusicCard = ({
   const [prevVolume, setPrevVolume] = useState(1);
   const [playbackRate, setPlaybackRate] = useState(1);
   const [bufferedTime, setBufferedTime] = useState(0);
+  const [seekAmount, setSeekAmount] = useState(10);
 
   const isCurrentTrack = activeTrackId === id;
 
@@ -668,12 +692,12 @@ const MusicCard = ({
     if (x < rect.width / 2) {
       audioRef.current.currentTime = Math.max(
         0,
-        audioRef.current.currentTime - 10,
+        audioRef.current.currentTime - seekAmount,
       );
     } else {
       audioRef.current.currentTime = Math.min(
         duration,
-        audioRef.current.currentTime + 10,
+        audioRef.current.currentTime + seekAmount,
       );
     }
   };
@@ -719,15 +743,15 @@ const MusicCard = ({
     }
   };
 
-  const rewind10 = () => {
+  const rewind = () => {
     if (audioRef.current) {
-      audioRef.current.currentTime = Math.max(0, audioRef.current.currentTime - 10);
+      audioRef.current.currentTime = Math.max(0, audioRef.current.currentTime - seekAmount);
     }
   };
 
-  const forward10 = () => {
+  const forward = () => {
     if (audioRef.current) {
-      audioRef.current.currentTime = Math.min(duration, audioRef.current.currentTime + 10);
+      audioRef.current.currentTime = Math.min(duration, audioRef.current.currentTime + seekAmount);
     }
   };
 
@@ -773,7 +797,7 @@ const MusicCard = ({
                 </svg>
               )}
             </PlayButton>
-            <SeekButton onClick={rewind10} title="Назад 10с">-10s</SeekButton>
+            <SeekButton onClick={rewind} title={`Назад ${seekAmount}с`}>-{seekAmount}s</SeekButton>
             <SeekBar
               type="range"
               min="0"
@@ -781,9 +805,9 @@ const MusicCard = ({
               value={currentTime}
               onChange={(e) => (audioRef.current.currentTime = e.target.value)}
             />
-            <SeekButton onClick={forward10} title="Вперед 10с">+10s</SeekButton>
+            <SeekButton onClick={forward} title={`Вперед ${seekAmount}с`}>+{seekAmount}s</SeekButton>
             <TimeDisplay>
-              {formatTime(currentTime)} / {formatTime(duration)}
+              {formatTime(currentTime)}/{formatTime(duration)}
               {bufferedTime > currentTime && (
                 <span
                   style={{ color: "#aaa", marginLeft: 4 }}
@@ -830,6 +854,21 @@ const MusicCard = ({
               onChange={(e) => setPlaybackRate(parseFloat(e.target.value))}
             />
             <span className="value">{playbackRate.toFixed(1)}x</span>
+          </SliderRow>
+
+          <SliderRow>
+            <span className="icon" title="Промотування">
+              ⏭️
+            </span>
+            <SeekAmountSlider
+              type="range"
+              min="5"
+              max="25"
+              step="1"
+              value={seekAmount}
+              onChange={(e) => setSeekAmount(parseInt(e.target.value, 10))}
+            />
+            <span className="value">{seekAmount}с</span>
           </SliderRow>
 
           <LoopButton

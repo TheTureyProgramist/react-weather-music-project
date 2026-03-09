@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import turkeys from "../../photos/vip-images/ultra-vip-turkeys.webp";
 import dragons from "../../photos/vip-images/vip-dragons.jpg";
@@ -13,6 +13,7 @@ import christmas from "../../photos/vip-images/christmas.jpg";
 import horror from "../../photos/vip-images/horror.jpg";
 import flame from "../../photos/vip-images/flame.jpg";
 import dizel from "../../photos/vip-images/dizel.webp";
+
 const FanArtDiv = styled.div`
   margin-top: 35px;
   display: flex;
@@ -25,49 +26,122 @@ const FanArtDiv = styled.div`
     margin-top: 80px;
   }
 `;
+
 const FanArtTitle = styled.div`
-  font-size: 14px;
+  font-size: 10px;
   text-align: center;
   font-family: var(--font-family);
   font-weight: 600;
   color: ${(props) => (props.$isDarkMode ? "white" : "black")};
   margin-bottom: 35px;
   @media (min-width: 768px) {
-    font-size: 20px;
+    font-size: 15px;
     margin-bottom: 50px;
   }
   @media (min-width: 1200px) {
-    font-size: 30px;
+    font-size: 20px;
     margin-bottom: 80px;
   }
   @media (min-width: 1920px) {
-    font-size: 45px;
+    font-size: 25px;
     margin-bottom: 100px;
   }
 `;
 
-const FilterContainer = styled.div`
+const PlaylistContainer = styled.div`
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 10px;
-  margin-bottom: 30px;
+  gap: 20px;
+  margin-bottom: 50px;
+  width: 100%;
 `;
 
-const FilterButton = styled.button`
-  padding: 8px 16px;
-  border-radius: 20px;
-  border: 2px solid #ffb36c;
-  background: ${(props) => (props.$active ? "#ffb36c" : "transparent")};
-  color: ${(props) =>
-    props.$active ? "black" : props.$isDarkMode ? "white" : "black"};
-  font-weight: 600;
+const PlaylistItem = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: transform 0.3s ease;
   &:hover {
-    background: #ffa04d;
-    color: black;
+    transform: scale(1.05);
   }
+`;
+
+const PlaylistImageWrapper = styled.div`
+  position: relative;
+  width: 312px;
+  height: 208px;
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  @media (min-width: 768px) {
+    
+  }
+`;
+
+const PlaylistImage = styled.img`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: ${(props) => (props.$isActive ? 1 : 0)};
+  transition: opacity 1s ease-in-out;
+`;
+
+const PlaylistText = styled.div`
+  margin-top: 10px;
+  font-size: 16px;
+  font-weight: 600;
+  color: ${(props) => (props.$isDarkMode ? "white" : "black")};
+  text-transform: capitalize;
+`;
+
+const ModalOverlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+`;
+
+const ModalContent = styled.div`
+  background: ${(props) => (props.$isDarkMode ? "#1e1e1e" : "#f9f9f9")};
+  padding: 30px;
+  border-radius: 20px;
+  width: 90%;
+  max-width: 1200px;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+`;
+
+const CloseButton = styled.button`
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  background: transparent;
+  border: none;
+  font-size: 30px;
+  color: ${(props) => (props.$isDarkMode ? "white" : "black")};
+  cursor: pointer;
+  &:hover {
+    color: #ffb36c;
+  }
+`;
+
+const ModalTitle = styled.h2`
+  color: ${(props) => (props.$isDarkMode ? "white" : "black")};
+  text-align: center;
+  margin-bottom: 20px;
+  text-transform: capitalize;
 `;
 
 const FanBlock = styled.div`
@@ -129,44 +203,12 @@ const ActionButton = styled.button`
   background: #ffb36c;
   border: none;
   border-radius: 8px;
-  padding: 8px 12px;
+  padding: 8px 60px;
   cursor: pointer;
   font-size: 16px;
   transition: background 0.2s;
   &:hover {
     background: #ffa04d;
-  }
-`;
-
-const LoadMoreButton = styled.button`
-  margin-top: 30px;
-  background: #ffb36c;
-  color: black;
-  font-weight: 600;
-  cursor: pointer;
-  border: none;
-  border-radius: 8px;
-  padding: 12px 14px;
-  font-size: 14px;
-  font-family: var(--font-family);
-  transition:
-    background 0.2s,
-    transform 0.2s;
-
-  &:hover {
-    background: #ffa04d;
-    transform: translateY(-2px);
-  }
-
-  &:active {
-    transform: translateY(0);
-  }
-
-  @media (min-width: 1920px) {
-    padding: 25px 60px;
-    font-size: 28px;
-    border-radius: 15px;
-    margin-top: 60px;
   }
 `;
 
@@ -184,16 +226,15 @@ const FanArt = ({ isDarkMode, user, onOpenRegister }) => {
     { src: christmas, category: "ікони" },
     { src: horror, category: "хоррор" },
     { src: flame, category: "природа" },
-    { src: dizel, category: "ікони" },
+    { src: dizel, category: "мультиплікація" },
     { src: turkeys, category: "тварини" },
     { src: nicerone, category: "мультиплікація" },
   ];
 
-  const [visibleCount, setVisibleCount] = useState(10);
-  const [activeCategory, setActiveCategory] = useState("all");
+  const [playlistTick, setPlaylistTick] = useState(0);
+  const [selectedPlaylist, setSelectedPlaylist] = useState(null);
 
-  const categories = [
-    "all",
+  const playlists = [
     "ікони",
     "хоррор",
     "мультиплікація",
@@ -202,19 +243,12 @@ const FanArt = ({ isDarkMode, user, onOpenRegister }) => {
     "природа",
   ];
 
-  const filteredImages =
-    activeCategory === "all"
-      ? allImagesData
-      : allImagesData.filter((img) => img.category === activeCategory);
-
-  const handleCategoryChange = (category) => {
-    setActiveCategory(category);
-    setVisibleCount(10); // Скидаємо кількість видимих при зміні категорії
-  };
-
-  const showMoreImages = () => {
-    setVisibleCount((prevCount) => prevCount + 10);
-  };
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setPlaylistTick((prev) => prev + 1);
+    }, 2000);
+    return () => clearInterval(interval);
+  }, []);
 
   const handleDownload = (imgSrc) => {
     if (!user) {
@@ -239,55 +273,91 @@ const FanArt = ({ isDarkMode, user, onOpenRegister }) => {
     printWindow.document.close();
   };
 
+  const openPlaylistModal = (category) => {
+    setSelectedPlaylist(category);
+  };
+
+  const closePlaylistModal = () => {
+    setSelectedPlaylist(null);
+  };
+
   return (
     <FanArtDiv>
-      <FanArtTitle $isDarkMode={isDarkMode}>
-        Фан-арти
-      </FanArtTitle>
+      <FanArtTitle $isDarkMode={isDarkMode}>Плейлисти фан-артів(натисніть на список, отриматийте базу картин і скачуйте, друкуйте їх)</FanArtTitle>
+      <PlaylistContainer>
+        {playlists.map((category) => {
+          const catImages = allImagesData.filter(
+            (img) => img.category === category
+          );
+          if (catImages.length === 0) return null; 
+          
+          return (
+            <PlaylistItem
+              key={category}
+              onClick={() => openPlaylistModal(category)}
+            >
+              <PlaylistImageWrapper>
+                {catImages.map((img, index) => {
+                  const isActive = index === playlistTick % catImages.length;
+                  return (
+                    <PlaylistImage
+                      key={index}
+                      src={img.src}
+                      alt={category}
+                      $isActive={isActive}
+                    />
+                  );
+                })}
+              </PlaylistImageWrapper>
+              <PlaylistText $isDarkMode={isDarkMode}>{category}</PlaylistText>
+            </PlaylistItem>
+          );
+        })}
+      </PlaylistContainer>
 
-      <FilterContainer>
-        {categories.map((category) => (
-          <FilterButton
-            key={category}
-            $active={activeCategory === category}
+      {selectedPlaylist && (
+        <ModalOverlay onClick={closePlaylistModal}>
+          <ModalContent
             $isDarkMode={isDarkMode}
-            onClick={() => handleCategoryChange(category)}
+            onClick={(e) => e.stopPropagation()}
           >
-            {category === "all"
-              ? "Всі"
-              : category.charAt(0).toUpperCase() + category.slice(1)}
-          </FilterButton>
-        ))}
-      </FilterContainer>
-
-      <FanBlock>
-        {filteredImages.slice(0, visibleCount).map((imgData, index) => (
-          <FanArtCard key={index}>
-            <BenefitImage src={imgData.src} alt={`Fan art - ${imgData.category}`} />
-            <ActionButtonsContainer>
-              <ActionButton
-                onClick={() => handleDownload(imgData.src)}
-                title="Скачати"
-              >
-                ⇩
-              </ActionButton>
-              <ActionButton
-                onClick={() => handlePrint(imgData.src)}
-                title="Роздрукувати"
-              >
-                ⎙
-              </ActionButton>
-            </ActionButtonsContainer>
-          </FanArtCard>
-        ))}
-      </FanBlock>
-      {visibleCount < filteredImages.length && (
-        <LoadMoreButton onClick={showMoreImages}>Показати ще</LoadMoreButton>
+            <CloseButton $isDarkMode={isDarkMode} onClick={closePlaylistModal}>
+              &times;
+            </CloseButton>
+            <ModalTitle $isDarkMode={isDarkMode}>
+              Плейлист: {selectedPlaylist}
+            </ModalTitle>
+            <FanBlock>
+              {allImagesData
+                .filter((img) => img.category === selectedPlaylist)
+                .map((imgData, index) => (
+                  <FanArtCard key={index}>
+                    <BenefitImage
+                      src={imgData.src}
+                      alt={`Fan art - ${imgData.category}`}
+                    />
+                    <ActionButtonsContainer>
+                      <ActionButton
+                        onClick={() => handleDownload(imgData.src)}
+                        title="Скачати"
+                      >
+                        ⇩
+                      </ActionButton>
+                      <ActionButton
+                        onClick={() => handlePrint(imgData.src)}
+                        title="Роздрукувати"
+                      >
+                        ⎙
+                      </ActionButton>
+                    </ActionButtonsContainer>
+                  </FanArtCard>
+                ))}
+            </FanBlock>
+          </ModalContent>
+        </ModalOverlay>
       )}
     </FanArtDiv>
   );
 };
 
 export default FanArt;
-   
-   
