@@ -1,7 +1,8 @@
 {
   "files": {
     "main.css": "/react-weather-music-project/static/css/main.b14654ef.css",
-    "main.js": "/react-weather-music-project/static/js/main.163c949d.js",
+    "main.js": "/react-weather-music-project/static/js/main.44a875dc.js",
+    "static/media/unity.mp3": "/react-weather-music-project/static/media/unity.03a5211e31db9290e954.mp3",
     "static/media/theoty-of-everything-ll.mp3": "/react-weather-music-project/static/media/theoty-of-everything-ll.b04c0e12940feebb76e2.mp3",
     "static/media/deadlocked.mp3": "/react-weather-music-project/static/media/deadlocked.944d6f90fb2fcafe5fab.mp3",
     "static/media/electrodynamix.mp3": "/react-weather-music-project/static/media/electrodynamix.1982409975590dc5d153.mp3",
@@ -15,6 +16,7 @@
     "static/media/horror.mp3": "/react-weather-music-project/static/media/horror.89a58099b35140ad889a.mp3",
     "static/media/malatkotv-chaptertwo.mp3": "/react-weather-music-project/static/media/malatkotv-chaptertwo.45d817a8abe23135e539.mp3",
     "static/media/zootopia.mp3": "/react-weather-music-project/static/media/zootopia.1beb80c39c98fcb000a5.mp3",
+    "static/media/calling.mp3": "/react-weather-music-project/static/media/calling.99c6e85614d60f7b9434.mp3",
     "static/media/soloveyko.mp3": "/react-weather-music-project/static/media/soloveyko.ec2a80a44af8d03c0de2.mp3",
     "static/media/dragon.mp3": "/react-weather-music-project/static/media/dragon.01a7f1b7fb4b0accd9e1.mp3",
     "static/media/mia-and-me.mp3": "/react-weather-music-project/static/media/mia-and-me.95e16bbac6159e72dca1.mp3",
@@ -72,12 +74,14 @@
     "static/media/brain.jpeg": "/react-weather-music-project/static/media/brain.6d53211f54eb23d59904.jpeg",
     "static/media/dizel.webp": "/react-weather-music-project/static/media/dizel.d87306d4c97c71a30def.webp",
     "static/media/matrix2.jpg": "/react-weather-music-project/static/media/matrix2.39a3ba553a5aaa4fefb7.jpg",
+    "static/media/unity.jpg": "/react-weather-music-project/static/media/unity.5817d90d75cdf51ba518.jpg",
     "static/media/impossible2.webp": "/react-weather-music-project/static/media/impossible2.58dc1ac3eec60403383a.webp",
     "static/media/matrix.webp": "/react-weather-music-project/static/media/matrix.8ed079a55b547a47165c.webp",
     "static/media/strangecloud.webp": "/react-weather-music-project/static/media/strangecloud.f782996898ac58d20639.webp",
     "static/media/laby.jpeg": "/react-weather-music-project/static/media/laby.a30b07863e2b8933de53.jpeg",
     "static/media/wall.webp": "/react-weather-music-project/static/media/wall.9c47f310bc30aac9cf38.webp",
     "static/media/masons.webp": "/react-weather-music-project/static/media/masons.3ec01f5e6594ba4c710e.webp",
+    "static/media/monody.jpg": "/react-weather-music-project/static/media/monody.5c48a0da223d61ee5a7a.jpg",
     "static/media/virus.webp": "/react-weather-music-project/static/media/virus.262bab7b481aa8875552.webp",
     "static/media/grafiti.webp": "/react-weather-music-project/static/media/grafiti.9f7bca5f73e5f0c3c3b1.webp",
     "static/media/threed-printer.webp": "/react-weather-music-project/static/media/threed-printer.0764360d8fee066a2808.webp",
@@ -96,10 +100,10 @@
     "static/media/user.webp": "/react-weather-music-project/static/media/user.dcd7396d3070abf3abbe.webp",
     "static/media/document.webp": "/react-weather-music-project/static/media/document.5b6c056b22794272794d.webp",
     "main.b14654ef.css.map": "/react-weather-music-project/static/css/main.b14654ef.css.map",
-    "main.163c949d.js.map": "/react-weather-music-project/static/js/main.163c949d.js.map"
+    "main.44a875dc.js.map": "/react-weather-music-project/static/js/main.44a875dc.js.map"
   },
   "entrypoints": [
     "static/css/main.b14654ef.css",
-    "static/js/main.163c949d.js"
+    "static/js/main.44a875dc.js"
   ]
 }
