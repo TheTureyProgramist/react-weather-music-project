@@ -8,6 +8,7 @@ import PuzzleFour from "./PuzzleCollection/PuzzleFour";
 import PuzzleSix from "./PuzzleCollection/PuzzleSix";
 import PuzzleFive from "./PuzzleCollection/PuzzleFive";
 import PuzzleSeven from "./PuzzleCollection/PuzzleSeven";
+import PuzzleEight from "./PuzzleCollection/PuzzleEight";
 import pluta from "../../photos/vip-modal/brain.jpeg";
 import cod from "../../photos/vip-modal/cod.jpeg";
 import laby from "../../photos/vip-modal/laby.jpeg";
@@ -67,6 +68,7 @@ const Puzzles = () => {
     { id: 5, title: "Квантові цикли", img: puz, type: "rotate" },
     { id: 6, title: "Оптична лінза", img: disk, type: "lens" },
     { id: 7, title: "Лабіринт ІІ", img: labytwo, type: "line" },
+    { id: 8, title: "Сапер", img: labytwo, type: "hex" },
   ];
 
   const renderGame = () => {
@@ -97,6 +99,8 @@ const Puzzles = () => {
         );
       case "line":
         return <PuzzleSeven onExit={() => setActiveGame(null)} />;
+        case "hex":
+         return <PuzzleEight onExit={() => setActiveGame(null)} />;
       default:
         return null;
     }

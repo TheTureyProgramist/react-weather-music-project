@@ -461,16 +461,16 @@ const ShopModal = ({ onClose }) => {
       name: "Механічний",
       count: 1250,
       img: time,
-      buttonText: "29.99грн",
+      buttonText: "34.99грн",
       badge: "2 рази/добу",
     },
     {
       name: "Бундючий",
       count: 1500,
       img: turkey,
-      oldPrice: "70.00грн",
+      oldPrice: "50.00грн",
       buttonText: "39.99грн",
-      badge: "≈-25% Популярний, ∞ в лімітах",
+      badge: "-15% Популярний, ∞ в лімітах",
     },
     {
       name: "Драконячий",
@@ -478,8 +478,8 @@ const ShopModal = ({ onClose }) => {
       img: dinofroz,
       special: true,
       oldPrice: "90.00грн",
-      buttonText: "49.99грн",
-      badge: "≈-30%! Найвигідніший, Раз/добу",
+      buttonText: "44.99грн",
+      badge: "-50%! Найвигідніший, Раз/добу",
     },
     {
       name: "Підписка",
@@ -642,7 +642,7 @@ const ShopModal = ({ onClose }) => {
           }}
         >
           * Для власників <RainbowSpan>Стихія+</RainbowSpan> ціна знижена на
-          ≈20%, а <RainbowSpan>Стихія+ Ultra</RainbowSpan> на ≈50%. Знижка діє і
+          5грн, а <RainbowSpan>Стихія+ Ultra</RainbowSpan> на 15грн. Знижка діє і
           для обмежених подій. Початок нової доби о 0:00 за Київським часом.
           Ліміт конвертів 2500, ті що перевищують ліміт, будуть
           анульовані(збільште ліміт з підписками).
