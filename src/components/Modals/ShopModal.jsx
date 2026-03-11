@@ -216,10 +216,13 @@ const PackCard = styled.div`
   animation: ${(props) => (props.$isSpecial ? pulse : "none")} 2s infinite;
   transition: 0.3s;
   z-index: 1;
- &::before {
+  &::before {
     content: "";
     position: absolute;
-    top: 0; left: 0; right: 0; bottom: 0;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
     background-image: url(${(props) => props.$bgImage});
     background-size: cover;
     background-position: center;
@@ -233,13 +236,16 @@ const PackCard = styled.div`
     css`
       &::before {
         opacity: ${(p) => (p.$activeImg === "turkeys" ? 0.4 : 0)};
-        background-image: url(${turkeys}); 
+        background-image: url(${turkeys});
         transition: opacity 1.5s ease-in-out;
       }
       &::after {
         content: "";
         position: absolute;
-        top: 0; left: 0; right: 0; bottom: 0;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
         background-image: url(${ultra});
         background-size: cover;
         background-position: center;
@@ -516,13 +522,13 @@ const ShopModal = ({ onClose }) => {
           <AnimatedContent key="packs">
             <PackGrid>
               {packs.map((pack) => (
-               <PackCard
-  key={pack.name}
-  $isSpecial={pack.special}
-  $bgImage={pack.img}
-  $isSub={pack.isSub}
-  $activeImg={activeSubImg}
->
+                <PackCard
+                  key={pack.name}
+                  $isSpecial={pack.special}
+                  $bgImage={pack.img}
+                  $isSub={pack.isSub}
+                  $activeImg={activeSubImg}
+                >
                   {pack.badge && <Badge>{pack.badge}</Badge>}
                   <PackInfo>
                     <PackContent>
@@ -571,7 +577,7 @@ const ShopModal = ({ onClose }) => {
                       <span className="price">20-40 🧧</span>
                     </InfoItem>
                     <InfoItem>
-                      <span>Зміни в налаштуваннях.</span>
+                      <span>Зміни в налаштуваннях. 1 безкоштовна/тиждень.</span>
                       <span className="price">4 🧧</span>
                     </InfoItem>
                     <InfoItem>
@@ -610,9 +616,8 @@ const ShopModal = ({ onClose }) => {
                     </InfoItem>
                     <InfoItem>
                       <span>
-                        Стартовий набір, усі зібрані аватари, стилі імені та всі
-                        пройдені головоломки. Поліпшіть доступність в
-                        ціні/аватарів,
+                        Стартовий набір, усі зібрані аватари(колекція їх
+                        обводок), стилі імені. Поліпшіть з{" "}
                         <RainbowSpan>Підписками</RainbowSpan>.
                       </span>
                       <span className="price">+40 🧧</span>
@@ -622,7 +627,7 @@ const ShopModal = ({ onClose }) => {
                         Оплата <RainbowSpan>Підписками</RainbowSpan>{" "}
                         передоплатою(разово) та місячним тарифом.
                       </span>
-                      <span className="price">+50, 100 🧧</span>
+                      <span className="price">+600, 800 🧧</span>
                     </InfoItem>
                   </InfoList>
                 </div>
@@ -642,8 +647,8 @@ const ShopModal = ({ onClose }) => {
           }}
         >
           * Для власників <RainbowSpan>Стихія+</RainbowSpan> ціна знижена на
-          5грн, а <RainbowSpan>Стихія+ Ultra</RainbowSpan> на 15грн. Знижка діє і
-          для обмежених подій. Початок нової доби о 0:00 за Київським часом.
+          5грн, а <RainbowSpan>Стихія+ Ultra</RainbowSpan> на 15грн. Знижка діє
+          і для обмежених подій. Початок нової доби о 0:00 за Київським часом.
           Ліміт конвертів 2500, ті що перевищують ліміт, будуть
           анульовані(збільште ліміт з підписками).
         </div>

@@ -183,7 +183,7 @@ const CardWrapper = styled.div`
   flex-direction: column;
   align-items: center;
   width: 308px;
-  height: 420px;
+  height: 456px;
   background: #fff;
   border-radius: 15px;
   padding-bottom: 15px;
@@ -247,7 +247,7 @@ const MusicText = styled.div`
   margin-top: 10px;
   padding: 0 10px;
   line-height: 1.4;
-  height: 68px;
+  height: 108px;
   overflow: hidden;
   box-sizing: border-box;
 `;
@@ -442,13 +442,42 @@ const LoopButton = styled.button`
   background: orange;
   border: 1px solid #333;
   border-radius: 10px;
-  color: ${(props) => (props.$isLooping ? "white" : "#333")};
-  background-color: ${(props) => (props.$isLooping ? "#333" : "transparent")};
+  color: ${(props) => (props.$active ? "white" : "#333")};
+  background-color: ${(props) => (props.$active ? "#333" : "transparent")};
   font-size: 10px;
   padding: 4px 8px;
   cursor: pointer;
-  align-self: center;
   margin-bottom: 5px;
+`;
+
+const OfflineButton = styled.button`
+  background: transparent;
+  border: 1px solid #333;
+  border-radius: 10px;
+  color: #333;
+  font-size: 10px;
+  padding: 4px 8px;
+  cursor: pointer;
+  margin-bottom: 5px;
+  margin-left: 5px;
+  transition: all 0.2s;
+
+  ${(props) =>
+    props.$cached &&
+    `
+    background-color: #4caf50;
+    color: white;
+    border-color: #4caf50;
+  `}
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  &:hover:not(:disabled) {
+    transform: scale(1.05);
+  }
 `;
 
 const ActionButtonsContainer = styled.div`
@@ -588,6 +617,38 @@ const LyricsContainer = styled.div`
   overflow-y: auto;
 `;
 
+const LyricsLine = styled.p`
+  margin: 5px 0;
+  transition: color 0.3s, font-weight 0.3s;
+  color: ${props => props.$active ? 'orange' : '#333'};
+  font-weight: ${props => props.$active ? 'bold' : 'normal'};
+`;
+
+const InputGroup = styled.div`
+  margin-bottom: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  label { font-weight: bold; font-size: 12px; color: black; }
+  input { padding: 8px; border-radius: 5px; border: 1px solid #ccc; color: black;}
+`;
+
+const LyricsViewer = ({ lyrics, currentTime }) => {
+  const activeLineIndex = useMemo(() => {
+    if (!Array.isArray(lyrics)) return -1;
+    for (let i = lyrics.length - 1; i >= 0; i--) {
+      if (currentTime >= lyrics[i].time) return i;
+    }
+    return -1;
+  }, [lyrics, currentTime]);
+
+  if (!Array.isArray(lyrics)) {
+    return <>{lyrics || "Текст відсутній."}</>;
+  }
+
+return <div>{lyrics.map((line, index) => <LyricsLine key={index} $active={index === activeLineIndex}>{line.text}</LyricsLine>)}</div>;
+};
+
 const MusicCard = ({
   cardData,
   onOpenModal,
@@ -601,6 +662,7 @@ const MusicCard = ({
 }) => {
   const { id, image, audio, text } = cardData;
   const audioRef = useRef(null);
+  const videoRef = useRef(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
@@ -610,6 +672,10 @@ const MusicCard = ({
   const [playbackRate, setPlaybackRate] = useState(1);
   const [bufferedTime, setBufferedTime] = useState(0);
   const [seekAmount, setSeekAmount] = useState(10);
+  const [isCached, setIsCached] = useState(false);
+  const [isCaching, setIsCaching] = useState(false);
+  const [audioSrc, setAudioSrc] = useState(audio);
+  const objectUrlRef = useRef(null);
 
   const isCurrentTrack = activeTrackId === id;
 
@@ -627,13 +693,85 @@ const MusicCard = ({
             });
         }
       }
+      if (videoRef.current) videoRef.current.play().catch(e => console.log(e));
     } else {
       if (audioRef.current) {
         audioRef.current.pause();
         setIsPlaying(false);
       }
+      if (videoRef.current) videoRef.current.pause();
     }
   }, [isCurrentTrack, onPlay]);
+
+  useEffect(() => {
+    const checkCache = async () => {
+      if (!window.caches || !audio) return;
+      try {
+        const cache = await caches.open("audio-cache");
+        const response = await cache.match(audio);
+        if (response) {
+          const blob = await response.blob();
+          objectUrlRef.current = URL.createObjectURL(blob);
+          setAudioSrc(objectUrlRef.current);
+          setIsCached(true);
+        }
+      } catch (e) {
+        console.error("Cache check failed", e);
+      }
+    };
+    checkCache();
+
+    return () => {
+      if (objectUrlRef.current) {
+        URL.revokeObjectURL(objectUrlRef.current);
+      }
+    };
+  }, [audio]);
+
+  const handleCacheAudio = async () => {
+    if (!window.caches || !audio) {
+      alert("Кешування не підтримується у вашому браузері або для цього треку.");
+      return;
+    }
+    if (!user) {
+      onOpenRegister();
+      return;
+    }
+
+    const cache = await caches.open("audio-cache");
+
+    if (isCached) {
+      const confirmed = window.confirm(
+        "Видалити пісню з кешу? Вона не буде доступна офлайн.",
+      );
+      if (confirmed) {
+        await cache.delete(audio);
+        setIsCached(false);
+        setAudioSrc(audio);
+        if (objectUrlRef.current) {
+          URL.revokeObjectURL(objectUrlRef.current);
+          objectUrlRef.current = null;
+        }
+      }
+    } else {
+      setIsCaching(true);
+      try {
+        await cache.add(audio);
+        const response = await cache.match(audio);
+        const blob = await response.blob();
+        if (objectUrlRef.current) {
+          URL.revokeObjectURL(objectUrlRef.current);
+        }
+        objectUrlRef.current = URL.createObjectURL(blob);
+        setAudioSrc(objectUrlRef.current);
+        setIsCached(true);
+      } catch (error) {
+        console.error("Помилка кешування аудіо:", error);
+        alert("Не вдалося закешувати пісню.");
+      }
+      setIsCaching(false);
+    }
+  };
 
   useEffect(() => {
     if (audioRef.current) {
@@ -644,6 +782,9 @@ const MusicCard = ({
   useEffect(() => {
     if (audioRef.current) {
       audioRef.current.playbackRate = playbackRate;
+    }
+    if (videoRef.current) {
+      videoRef.current.playbackRate = playbackRate;
     }
   }, [playbackRate]);
 
@@ -662,7 +803,7 @@ const MusicCard = ({
       audioEl.removeEventListener("loadedmetadata", updateBuffered);
     };
   }, []);
-  const formatTime = (time) => {
+ const formatTime = (time) => {
   if (isNaN(time)) return "0:00";
   const minutes = Math.floor(time / 60);
   const seconds = Math.floor(time % 60);
@@ -689,17 +830,14 @@ const MusicCard = ({
     const rect = e.target.getBoundingClientRect();
     const x = e.clientX - rect.left;
 
+    let newTime;
     if (x < rect.width / 2) {
-      audioRef.current.currentTime = Math.max(
-        0,
-        audioRef.current.currentTime - seekAmount,
-      );
+      newTime = Math.max(0, audioRef.current.currentTime - seekAmount);
     } else {
-      audioRef.current.currentTime = Math.min(
-        duration,
-        audioRef.current.currentTime + seekAmount,
-      );
+      newTime = Math.min(duration, audioRef.current.currentTime + seekAmount);
     }
+    audioRef.current.currentTime = newTime;
+    if(videoRef.current) videoRef.current.currentTime = newTime;
   };
 
   const handleDownloadAudio = () => {
@@ -732,8 +870,8 @@ const MusicCard = ({
     printWindow.document.write(
   `<html><head><title>Print Image</title></head><body style="text-align:center;"><img src="${image}" style="max-width:100%;" onload="window.print();window.close()" /></body></html>`
 );
-    printWindow.document.close();
   };
+
   const toggleMute = () => {
     if (volume > 0) {
       setPrevVolume(volume);
@@ -745,13 +883,17 @@ const MusicCard = ({
 
   const rewind = () => {
     if (audioRef.current) {
-      audioRef.current.currentTime = Math.max(0, audioRef.current.currentTime - seekAmount);
+      const newTime = Math.max(0, audioRef.current.currentTime - seekAmount);
+      audioRef.current.currentTime = newTime;
+      if (videoRef.current) videoRef.current.currentTime = newTime;
     }
   };
 
   const forward = () => {
     if (audioRef.current) {
-      audioRef.current.currentTime = Math.min(duration, audioRef.current.currentTime + seekAmount);
+      const newTime = Math.min(duration, audioRef.current.currentTime + seekAmount);
+      audioRef.current.currentTime = newTime;
+      if (videoRef.current) videoRef.current.currentTime = newTime;
     }
   };
 
@@ -767,11 +909,32 @@ const MusicCard = ({
         >
           {isFavorite ? "❤️" : "🤍"}
         </HeartButton>
+        {cardData.video && (
+          <video
+            ref={videoRef}
+            src={cardData.video}
+            muted
+            loop
+            playsInline
+            style={{
+              width: "100%",
+              height: "100%",
+              objectFit: "cover",
+              borderRadius: "15px 15px 0 0",
+              position: "absolute",
+              top: 0,
+              left: 0,
+              opacity: isPlaying ? 1 : 0,
+              zIndex: isPlaying ? 5 : 0,
+              pointerEvents: "none",
+            }}
+          />
+        )}
         <MusicImage src={image} alt="Music" onClick={handleImageClick} />
         {audio && (
           <audio
             ref={audioRef}
-            src={audio}
+            src={audioSrc}
             onEnded={() => {
               setIsPlaying(false);
               onTrackEnd(id);
@@ -797,15 +960,19 @@ const MusicCard = ({
                 </svg>
               )}
             </PlayButton>
-            <SeekButton onClick={rewind} title={`Назад ${seekAmount}с`}>-{seekAmount}s</SeekButton>
+            <SeekButton onClick={rewind} title={`Назад с`}>-{seekAmount}s</SeekButton>
             <SeekBar
               type="range"
               min="0"
               max={duration || 0}
               value={currentTime}
-              onChange={(e) => (audioRef.current.currentTime = e.target.value)}
+              onChange={(e) => {
+                const val = e.target.value;
+                audioRef.current.currentTime = val;
+                if(videoRef.current) videoRef.current.currentTime = val;
+              }}
             />
-            <SeekButton onClick={forward} title={`Вперед ${seekAmount}с`}>+{seekAmount}s</SeekButton>
+            <SeekButton onClick={forward} title={`Вперед с`}>+{seekAmount}s</SeekButton>
             <TimeDisplay>
               {formatTime(currentTime)}/{formatTime(duration)}
               {bufferedTime > currentTime && (
@@ -871,12 +1038,24 @@ const MusicCard = ({
             <span className="value">{seekAmount}с</span>
           </SliderRow>
 
-          <LoopButton
-            $isLooping={isLooping}
-            onClick={() => setIsLooping(!isLooping)}
-          >
-            {isLooping ? "Автоповтор увімкнено" : "Автоповтор вимкнено"}
-          </LoopButton>
+          <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+            <LoopButton
+              $active={isLooping}
+              onClick={() => setIsLooping(!isLooping)}
+            >
+              {isLooping ? "Автоповтор увімкнено" : "Автоповтор вимкнено"}
+            </LoopButton>
+            {audio && (
+              <OfflineButton
+                onClick={handleCacheAudio}
+                disabled={isCaching}
+                $cached={isCached}
+                title={isCached ? "Видалити з кешу" : "Зберегти для офлайн"}
+              >
+                {isCaching ? "..." : isCached ? "✓ Офлайн" : "↓ Доступ без Wi-Fi"}
+              </OfflineButton>
+            )}
+          </div>
         </ControlsContainerPlayer>
       )}
 
@@ -894,7 +1073,7 @@ const MusicCard = ({
         <ActionButton title="Роздрукувати фан-арт" onClick={handlePrint}>
           <svg viewBox="0 0 24 24"><path d="M19 8h-1V3H6v5H5c-1.66 0-3 1.34-3 3v6h3v4h14v-4h3v-6c0-1.66-1.34-3-3-3zM8 5h8v3H8V5zm8 12v2H8v-4h8v2zm2-2v-2H6v2H4v-4c0-.55.45-1 1-1h14c.55 0 1 .45 1 1v4h-2z"/><circle cx="18" cy="11.5" r="1"/></svg>
         </ActionButton>
-        <ActionButton title="Текст пісні" onClick={() => onOpenModal(cardData)}>
+        <ActionButton title="Текст пісні" onClick={() => onOpenModal({ ...cardData, audioRef })}>
           <svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
         </ActionButton>
       </ActionButtonsContainer>
@@ -908,7 +1087,7 @@ const musicCards = [
     image: require("../../photos/vip-images/christmas.jpg"),
     audio: require("../../mp3/kolada.mp3"),
     text: "'Україна колядує'. Озвучка І. Федишин.",
-    lyrics: "Текст відсутній.",
+    lyrics: "Текст в розробці.",
     category: "хіти",
     duration: 180,
   },
@@ -928,7 +1107,7 @@ const musicCards = [
     audio: require("../../mp3/turkeys.mp3"),
     text: "Індики. Насолоджуйтеся звуками індиків. Авторське спостереження.",
     category: "природа",
-    lyrics: "Лише звуки природи.",
+    lyrics: "Лише звуки індиків.",
     duration: 60,
   },
   {
@@ -936,9 +1115,23 @@ const musicCards = [
     image: require("../../photos/fan-art/monody.jpg"),
     category: "хіти",
     audio: require("../../mp3/thefatrat-monody.mp3"),
-    text: "Monody -  TheFatRat. Цей казковий нічний ліс наповнений сакурами.",
-    lyrics:
-      "Текст трохи  змінено для рими: Літо в пагорбах. Ті туманні дні у мене в спогадах. Ми все ще бігали. Весь світ був біля наших ніг. Бачачи зміни сезону. Наші дороги були вкриті пригодами. Гори на шляху. Від моря не могли втримати нас. Ось ми стоїмо з розпростертими обіймами. Це наш дім. Завжди сильні у світі, який ми створили. Я все ще чую тебе у вітрі. Бачу твої тіні на деревах. Тримаючись, спогади ніколи не змінюються.",
+    text: "Monody -  TheFatRat.",
+    lyrics: [
+      { time: 23, text: "Літо в пагорбах." },
+      { time: 26, text: "Ті туманні дні у мене в спогадах." },
+      { time: 30, text: "Ми все ще бігали." },
+      { time: 32, text: "Весь світ був біля наших ніг." },
+      { time: 38, text: "Бачачи зміни сезону." },
+      { time: 40, text: "Наші дороги були вкриті пригодами." },
+      { time: 45, text: "Гори на шляху." },
+      { time: 47, text: "Від моря не могли втримати нас." },
+      { time: 52, text: "Ось ми стоїмо з розпростертими обіймами." },
+      { time: 58, text: "Це наш дім." },
+      { time: 60, text: "Завжди сильні у світі, який ми створили." },
+      { time: 66, text: "Я все ще чую тебе у вітрі." },
+      { time: 69, text: "Бачу твої тіні на деревах." },
+      { time: 72, text: "Тримаючись, спогади ніколи не змінюються." },
+    ],
     duration: 240,
   },
   {
@@ -965,7 +1158,7 @@ const musicCards = [
     audio: require("../../mp3/horse.mp3"),
     category: "природа",
     text: "Кінь друг людини. Телеканал мега(автор звуку). Природа.",
-    lyrics: "Тут немає тексту.",
+    lyrics: "Звуки коня.",
     duration: 45,
   },
   {
@@ -974,7 +1167,7 @@ const musicCards = [
     audio: require("../../mp3/dragon.mp3"),
     category: "ігри",
     text: "Dragonora - MyLittleUniverse(Estoty). І знову дракони, музика доісторичного світу. Картина взята з мультфільму Динофроз. Звучить при комбінації.",
-    lyrics: "Тут немає тексту.",
+    lyrics: "Атмосферна доісторична музика.",
     duration: 180,
   },
   {
@@ -1001,7 +1194,7 @@ const musicCards = [
     audio: require("../../mp3/mechanik-kindom.mp3"),
     category: "ігри",
     text: "Factorium - My little universe(Estoty). Спокійна і прекрасна музика в механічному стилі.",
-    lyrics: "Текст відсутній.",
+    lyrics: "Текст відсутній, для любителів стімпанку.",
     duration: 160,
   },
   {
@@ -1010,7 +1203,7 @@ const musicCards = [
     audio: require("../../mp3/zootopia.mp3"),
     category: "мультфільми",
     text: "Зоотрополіс(Disney)-рекомендую. Shakira-Try Everything.",
-    lyrics: "......",
+    lyrics: "Текст в розробці",
     duration: 200,
   },
   {
@@ -1019,7 +1212,7 @@ const musicCards = [
     audio: require("../../mp3/zootopiatwo.mp3"),
     category: "мультфільми",
     text: "Продовження історої Зоотрополісу(Disney). Чекатиму, через 5років продовження. Skakira, Ed Sheeran - Zoo.",
-    lyrics: "...............",
+    lyrics: "Текст в розробці.",
     duration: 200,
   },
   {
@@ -1028,7 +1221,7 @@ const musicCards = [
     audio: require("../../mp3/mia-and-me.mp3"),
     category: "мультфільми",
     text: "Мія та я. Не пожалкуєте.",
-    lyrics: "Мія та я. Не пожалкуєте",
+    lyrics: "Текст в розробці.",
     duration: 180,
   },
   {
@@ -1037,7 +1230,7 @@ const musicCards = [
     audio: require("../../mp3/malatkotv-chapterone.mp3"),
     category: "мультфільми",
     text: "Динофроз, показували, з кількома, ще мульфільмами: Якарі, Анна з зелених дахів, Хайді, Острів іпаток, Пригоди в качиному порту, Марко, Лис Микита.",
-    lyrics: "..........",
+    lyrics: "Не скоро.",
     duration: 180,
   },
     {
@@ -1046,7 +1239,7 @@ const musicCards = [
     audio: require("../../mp3/malatkotv-chaptertwo.mp3"),
     category: "мультфільми",
     text: "Друга частина. Пісні розміщені в 3 частинах. Четверта під питанням.",
-    lyrics: "...................",
+    lyrics: "Не скоро.",
     duration: 180,
   },
     {
@@ -1055,7 +1248,7 @@ const musicCards = [
     audio: require("../../mp3/malatkotv-chapterthree.mp3"),
     category: "мультфільми",
     text: "Третя частина",
-    lyrics: ".............",
+    lyrics: "Не скоро.",
     duration: 180,
   },
   {
@@ -1073,7 +1266,7 @@ const musicCards = [
     audio: require("../../mp3/clubstep.mp3"),
     text: "Clubstep - DJ-Nate(GeometryDash).",
     category: "ігри",
-    lyrics: "Текст відсутній.",
+    lyrics: "Текст присутній, але його не можливо розібрати + змісту його немає.",
     duration: 160,
   },
   {
@@ -1082,7 +1275,7 @@ const musicCards = [
     audio: require("../../mp3/fingerdash.mp3"),
     text: "Fingerdash-MDK(GeometryDash) Гаряча мелодія I-ша в режимі анімованості. Ласково просимо в хаос!",
     category: "ігри",
-    lyrics: "Текст відсутній.",
+    lyrics: "Текст присутній, але змісту його немає.",
     duration: 140,
   },
   {
@@ -1109,7 +1302,7 @@ const musicCards = [
     audio: require("../../mp3/theory-of-everyting.mp3"),
     text: "DJ-Nate - Theory of everything(GeometryDash). Ця пісня варта уваги!",
     category: "ігри",
-    lyrics: "Текст відсутній.",
+    lyrics: "Текст присутній, але він для атмосфери: 'Say Down' періодично з відлунням.",
     duration: 140,
   },
     {
@@ -1117,7 +1310,7 @@ const musicCards = [
     image: require("../../photos/fan-art/unity.jpg"),
     audio: require("../../mp3/unity.mp3"),
     text: "Unity-TheFatRat. Класний комп'ютерний хіт, не розумію чого його не поставили у фільм Матриця?",
-    lyrics: "Текст відсутній.",
+    lyrics: "Текст присутній, але змісту його немає.",
     category: "хіти",
     duration: 180,
   },
@@ -1126,7 +1319,7 @@ const musicCards = [
     image: require("../../photos/vip-images/vip-forest.webp"),
     audio: require("../../mp3/calling.mp3"),
     text: "TheCalling-TheFatRat. ",
-    lyrics: "Текст відсутній.",
+    lyrics: "Скоро.",
     category: "хіти",
     duration: 180,
   },
@@ -1155,7 +1348,114 @@ const PLAYLISTS = {
   },
 };
 
-const PlaylistModal = ({ playlistKey, onClose, user, onOpenRegister }) => {
+const CreatePlaylistModal = ({ onClose, onSave, initialData }) => {
+  const [name, setName] = useState(initialData?.name || "");
+  const [cover, setCover] = useState(initialData?.cover || "");
+  const [tracks, setTracks] = useState(initialData?.tracks || []);
+  const [error, setError] = useState("");
+
+  const handleFile = (e, callback) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => callback(ev.target.result);
+    reader.readAsDataURL(file);
+  };
+
+  const handleAudio = (e, index) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const audio = new Audio(URL.createObjectURL(file));
+    audio.onloadedmetadata = () => {
+      if (audio.duration > 120) {
+        alert("Тривалість пісні не може перевищувати 2 хвилин!");
+        e.target.value = "";
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        const newTracks = [...tracks];
+        newTracks[index].audio = ev.target.result;
+        newTracks[index].duration = audio.duration;
+        setTracks(newTracks);
+      };
+      reader.readAsDataURL(file);
+    };
+  };
+
+  const updateTrack = (index, field, value) => {
+    const newTracks = [...tracks];
+    newTracks[index][field] = value;
+    setTracks(newTracks);
+  };
+
+  const addTrack = () => {
+    if (tracks.length >= 2) return;
+    setTracks([...tracks, { id: Date.now(), text: "", audio: "", video: "", image: "", duration: 0 }]);
+  };
+
+  const removeTrack = (index) => {
+    const newTracks = tracks.filter((_, i) => i !== index);
+    setTracks(newTracks);
+  };
+
+  const handleSave = () => {
+    if (name.length > 12) return setError("Назва плейлисту максимум 12 символів");
+    if (!name) return setError("Введіть назву плейлисту");
+    if (tracks.length === 0) return setError("Додайте хоча б одну пісню");
+    if (tracks.some(t => !t.audio || !t.text)) return setError("Заповніть дані пісень");
+    onSave({ name, cover, tracks });
+  };
+
+  return (
+    <ModalOverlay onClick={onClose}>
+      <LyricsModalContent onClick={e => e.stopPropagation()} style={{ maxWidth: '500px' }}>
+        <h3 style={{color: 'black', textAlign: 'center'}}>Створити плейлист</h3>
+        <InputGroup>
+            <label>Назва (макс 12)</label>
+            <input value={name} onChange={e => setName(e.target.value)} maxLength={12} />
+        </InputGroup>
+        <InputGroup>
+            <label>Обкладинка плейлисту</label>
+            <input type="file" accept="image/*" onChange={e => handleFile(e, setCover)} />
+        </InputGroup>
+        {cover && <img src={cover} alt="Cover" style={{width: 100, height: 100, objectFit: 'cover'}} />}
+        
+        <h4 style={{color: 'black', margin: '10px 0'}}>Пісні ({tracks.length}/2)</h4>
+        {tracks.map((track, i) => (
+            <div key={track.id} style={{background: '#f0f0f0', padding: 10, borderRadius: 5, marginBottom: 10}}>
+                <InputGroup>
+                    <label>Назва</label>
+                    <input value={track.text} onChange={e => updateTrack(i, 'text', e.target.value)} />
+                </InputGroup>
+                <InputGroup>
+                    <label>Аудіо (макс 2хв)</label>
+                    <input type="file" accept="audio/*" onChange={e => handleAudio(e, i)} />
+                </InputGroup>
+                <InputGroup>
+                    <label>Відео (для програвання)</label>
+                    <input type="file" accept="video/*" onChange={e => handleFile(e, (res) => updateTrack(i, 'video', res))} />
+                </InputGroup>
+                <InputGroup>
+                    <label>Зображення пісні</label>
+                    <input type="file" accept="image/*" onChange={e => handleFile(e, (res) => updateTrack(i, 'image', res))} />
+                </InputGroup>
+                <button onClick={() => removeTrack(i)} style={{background: 'red', color: 'white', border: 'none', borderRadius: 5, padding: 5}}>Видалити</button>
+            </div>
+        ))}
+        {tracks.length < 2 && <button onClick={addTrack} style={{background: 'orange', color: 'white', border: 'none', borderRadius: 5, padding: '5px 10px', marginBottom: 10}}>+ Додати пісню</button>}
+        
+        {error && <p style={{color: 'red'}}>{error}</p>}
+        <div style={{display: 'flex', gap: 10, justifyContent: 'center'}}>
+            <button onClick={handleSave} style={{background: 'green', color: 'white', border: 'none', borderRadius: 5, padding: '10px 20px'}}>Зберегти</button>
+            <button onClick={onClose} style={{background: 'grey', color: 'white', border: 'none', borderRadius: 5, padding: '10px 20px'}}>Скасувати</button>
+        </div>
+      </LyricsModalContent>
+    </ModalOverlay>
+  );
+};
+
+const PlaylistModal = ({ playlistKey, onClose, user, onOpenRegister, customTracks }) => {
   const [visibleCount, setVisibleCount] = useState(8);
   const [lyricsModalData, setLyricsModalData] = useState(null);
   const [activeTrackId, setActiveTrackId] = useState(null);
@@ -1165,6 +1465,7 @@ const PlaylistModal = ({ playlistKey, onClose, user, onOpenRegister }) => {
   const [sortOption, setSortOption] = useState("favorites");
   const [isShuffle, setIsShuffle] = useState(false);
   const [favorites, setFavorites] = useState(() => {
+    if (!user) return [];
     const saved = localStorage.getItem("music_favorites");
     return saved ? JSON.parse(saved) : [];
   });
@@ -1174,6 +1475,10 @@ const PlaylistModal = ({ playlistKey, onClose, user, onOpenRegister }) => {
   }, [favorites]);
 
   const handleToggleFavorite = (id) => {
+    if (!user) {
+      onOpenRegister();
+      return;
+    }
     setFavorites((prev) => {
       if (prev.includes(id)) {
         return prev.filter((favId) => favId !== id);
@@ -1195,12 +1500,33 @@ const PlaylistModal = ({ playlistKey, onClose, user, onOpenRegister }) => {
     }, 500);
   };
 
+  const [lyricsCurrentTime, setLyricsCurrentTime] = useState(0);
+
+  useEffect(() => {
+    if (lyricsModalData && lyricsModalData.audioRef && lyricsModalData.audioRef.current) {
+      const audioEl = lyricsModalData.audioRef.current;
+      const handleTimeUpdate = () => {
+        setLyricsCurrentTime(audioEl.currentTime);
+      };
+      audioEl.addEventListener('timeupdate', handleTimeUpdate);
+      handleTimeUpdate(); // Set initial time
+      return () => {
+        if (audioEl) audioEl.removeEventListener('timeupdate', handleTimeUpdate);
+      };
+    }
+  }, [lyricsModalData]);
+
   const processedCards = useMemo(() => {
-    let filtered = musicCards.filter(
-      (card) =>
-        card.category === playlistKey &&
-        card.text.toLowerCase().includes(searchQuery.toLowerCase()),
-    );
+    let filtered;
+    if (playlistKey === 'custom' && customTracks) {
+        filtered = customTracks.filter(card => card.text.toLowerCase().includes(searchQuery.toLowerCase()));
+    } else {
+        filtered = musicCards.filter(
+          (card) =>
+            card.category === playlistKey &&
+            card.text.toLowerCase().includes(searchQuery.toLowerCase()),
+        );
+    }
 
     if (sortOption === "favorites") {
       return [...filtered].sort((a, b) => {
@@ -1220,7 +1546,7 @@ const PlaylistModal = ({ playlistKey, onClose, user, onOpenRegister }) => {
       return [...filtered].sort((a, b) => (b.duration || 0) - (a.duration || 0));
     }
     return filtered;
-  }, [playlistKey, searchQuery, favorites, sortOption]);
+  }, [playlistKey, searchQuery, favorites, sortOption, customTracks]);
 
   const handleTrackEnd = (id) => {
     if (isShuffle) {
@@ -1257,6 +1583,8 @@ const PlaylistModal = ({ playlistKey, onClose, user, onOpenRegister }) => {
     setTimeout(onClose, 500);
   };
 
+  const playlistTitle = playlistKey === 'custom' ? 'Мій Плейлист' : PLAYLISTS[playlistKey].title;
+
   return (
     <ModalOverlay $isClosing={isClosing} onClick={handleClose}>
       <PlaylistModalContent
@@ -1264,7 +1592,7 @@ const PlaylistModal = ({ playlistKey, onClose, user, onOpenRegister }) => {
       >
         <PlaylistCloseButton onClick={handleClose}>&times;</PlaylistCloseButton>
         <h2 style={{ textAlign: "center", color: "#333" }}>
-          {PLAYLISTS[playlistKey].title}
+          {playlistTitle}
         </h2>
         <ControlsContainer>
           <SearchInput
@@ -1352,7 +1680,9 @@ const PlaylistModal = ({ playlistKey, onClose, user, onOpenRegister }) => {
               >
                 Текст пісні:
               </h4>
-              <LyricsContainer>{lyricsModalData.lyrics}</LyricsContainer>
+              <LyricsContainer>
+                <LyricsViewer lyrics={lyricsModalData.lyrics} currentTime={lyricsCurrentTime} />
+              </LyricsContainer>
             </LyricsModalContent>
           </ModalOverlay>
         )}
@@ -1361,13 +1691,16 @@ const PlaylistModal = ({ playlistKey, onClose, user, onOpenRegister }) => {
   );
 };
 
-const PlaylistCover = ({ playlistKey, defaultImage }) => {
+const PlaylistCover = ({ playlistKey, defaultImage, customImage }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const images = useMemo(() => {
+    if (playlistKey === 'custom') {
+        return [customImage || defaultImage];
+    }
     const cards = musicCards.filter((c) => c.category === playlistKey);
     return cards.length > 0 ? cards.map((c) => c.image) : [defaultImage];
-  }, [playlistKey, defaultImage]);
+  }, [playlistKey, defaultImage, customImage]);
 
   useEffect(() => {
     if (images.length <= 1) return;
@@ -1400,10 +1733,30 @@ const PlaylistCover = ({ playlistKey, defaultImage }) => {
 
 const MusicPhoto = ({ user, onOpenRegister }) => {
   const [currentPlaylist, setCurrentPlaylist] = useState(null);
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [customPlaylist, setCustomPlaylist] = useState(() => {
+    const saved = localStorage.getItem("custom_playlist");
+    return saved ? JSON.parse(saved) : null;
+  });
 
   const handleClosePlaylist = () => {
     setCurrentPlaylist(null);
   };
+
+  const saveCustomPlaylist = (data) => {
+      try {
+        setCustomPlaylist(data);
+        localStorage.setItem("custom_playlist", JSON.stringify(data));
+        setShowCreateModal(false);
+      } catch (e) {
+          alert("Помилка збереження! Можливо, файли занадто великі.");
+      }
+  };
+
+  const openCustomPlaylist = () => {
+      setCurrentPlaylist('custom');
+  };
+
   return (
     <MusicPhotoDiv>
       <MusicPhotoText>Оберіть плейлист</MusicPhotoText>
@@ -1417,7 +1770,27 @@ const MusicPhoto = ({ user, onOpenRegister }) => {
             <PlaylistTitle>{PLAYLISTS[key].title}</PlaylistTitle>
           </PlaylistCard>
         ))}
+        {customPlaylist ? (
+            <PlaylistCard onClick={openCustomPlaylist}>
+                <PlaylistCover playlistKey="custom" customImage={customPlaylist.cover} defaultImage={require("../../photos/vip-images/mechannic.jpg")} />
+                <PlaylistTitle>{customPlaylist.name}</PlaylistTitle>
+                <button onClick={(e) => { e.stopPropagation(); setShowCreateModal(true); }} style={{background: 'orange', border: 'none', padding: 5, borderRadius: 5, cursor: 'pointer', marginBottom: 5}}>Редагувати</button>
+            </PlaylistCard>
+        ) : (
+            <PlaylistCard onClick={() => setShowCreateModal(true)} style={{display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f0f0f0'}}>
+                <div style={{fontSize: 50, color: '#ccc'}}>+</div>
+                <div style={{color: '#aaa'}}>Створити плейлист</div>
+            </PlaylistCard>
+        )}
       </PlaylistGrid>
+
+      {showCreateModal && (
+          <CreatePlaylistModal 
+            onClose={() => setShowCreateModal(false)} 
+            onSave={saveCustomPlaylist}
+            initialData={customPlaylist}
+          />
+      )}
 
       {currentPlaylist && (
         <PlaylistModal
@@ -1425,6 +1798,7 @@ const MusicPhoto = ({ user, onOpenRegister }) => {
           onClose={handleClosePlaylist}
           user={user}
           onOpenRegister={onOpenRegister}
+          customTracks={currentPlaylist === 'custom' ? customPlaylist?.tracks : null}
         />
       )}
     </MusicPhotoDiv>
