@@ -1,8 +1,7 @@
-import React, { useState, useEffect, useCallback, useRef } from "react";
+import React, { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import styled, { keyframes } from "styled-components";
 import { motion, AnimatePresence } from "framer-motion";
-import defaultImg from "../../../photos/hero-header/start-image.jpg";
-import dinofroz from "../../../mp3/dinofroz.mp3";
+
 // --- Анімації ---
 const fadeIn = keyframes`from { opacity: 0; } to { opacity: 1; }`;
 
@@ -40,13 +39,49 @@ const GameWrapper = styled.div`
   overflow: hidden;
 `;
 
+const SliderContainer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 5px;
+  margin-bottom: 5px;
+`;
+
+const SliderImage = styled.img`
+  width: 150px;
+  height: 90px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 2px solid #ffb36c;
+`;
+
+const SliderButton = styled.button`
+  width: 40px;
+  height: 40px;
+  background: transparent;
+  border: 2px solid #ffb36c;
+  color: #ffb36c;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  transition: all 0.2s;
+  border-radius: 50%;
+  &:hover {
+    background: rgba(255, 179, 108, 0.1);
+    transform: scale(1.05);
+  }
+`;
+
 const ResponsiveContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
   width: 95vw;
   height: 55vh;
-  max-height: 450px;
+  max-height: 400px;
 `;
 
 const ViewportScaleWrapper = styled.div`
@@ -140,6 +175,25 @@ const Controls = styled.div`
   display: flex;
   gap: 8px;
   align-items: center;
+`;
+
+const VolumeControl = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(0, 0, 0, 0.2);
+  padding: 5px 10px;
+  border-radius: 4px;
+  border: 1px solid rgba(255, 179, 108, 0.3);
+  input {
+    width: 80px;
+    accent-color: #ffb36c;
+    cursor: pointer;
+  }
+  span {
+    font-size: 16px;
+    min-width: 20px;
+  }
 `;
 
 const GameButton = styled.button`
@@ -253,8 +307,44 @@ const DifficultyBtn = styled.button`
 `;
 
 // --- Компонент ---
-const PuzzleSix = ({ imageUrl, onExit }) => {
-  const finalImage = imageUrl || defaultImg;
+const PuzzleSix = ({ onExit }) => {
+  // База даних музики та картинок
+  const puzzleImages = useMemo(
+    () => [
+      { image: require("../../../photos/vip-images/vip-dinofroz.webp"), audio: require("../../../mp3/dinofroz.mp3") },
+      { image: require("../../../photos/fan-art/monody.jpg"), audio: require("../../../mp3/thefatrat-monody.mp3") },
+      { image: require("../../../photos/vip-images/asium.jpg"), audio: require("../../../mp3/harmonic-japan.mp3") },
+      { image: require("../../../photos/vip-images/mechannic.jpg"), audio: require("../../../mp3/mechanik-kindom.mp3") },
+      { image: require("../../../photos/vip-images/christmas.jpg"), audio: require("../../../mp3/kolada.mp3") },
+      { image: require("../../../photos/vip-images/ultra-vip-turkeys.webp"), audio: require("../../../mp3/turkeys.mp3") },
+      { image: require("../../../photos/fan-art/monody.jpg"), audio: require("../../../mp3/thefatrat-monody.mp3") },
+      { image: require("../../../photos/vip-images/vip-desert.webp"), audio: require("../../../mp3/wind.mp3") },
+      { image: require("../../../photos/vip-images/horror.jpg"), audio: require("../../../mp3/horror.mp3") },
+      { image: require("../../../photos/vip-images/horse.jpg"), audio: require("../../../mp3/horse.mp3") },
+      { image: require("../../../photos/vip-images/vip-dragons.jpg"), audio: require("../../../mp3/dragon.mp3") },
+      { image: require("../../../photos/vip-images/vip-soloveyko.jpg"), audio: require("../../../mp3/soloveyko.mp3") },
+      { image: require("../../../photos/vip-images/asium.jpg"), audio: require("../../../mp3/harmonic-japan.mp3") },
+      { image: require("../../../photos/vip-images/mechannic.jpg"), audio: require("../../../mp3/mechanik-kindom.mp3") },
+      { image: require("../../../photos/vip-images/mechannic.jpg"), audio: require("../../../mp3/zootopia.mp3") },
+      { image: require("../../../photos/vip-images/mechannic.jpg"), audio: require("../../../mp3/zootopiatwo.mp3") },
+      { image: require("../../../photos/vip-images/mechannic.jpg"), audio: require("../../../mp3/mia-and-me.mp3") },
+      { image: require("../../../photos/vip-images/mechannic.jpg"), audio: require("../../../mp3/malatkotv-chapterone.mp3") },
+      { image: require("../../../photos/vip-images/mechannic.jpg"), audio: require("../../../mp3/malatkotv-chaptertwo.mp3") },
+      { image: require("../../../photos/vip-images/mechannic.jpg"), audio: require("../../../mp3/malatkotv-chapterthree.mp3") },
+      { image: require("../../../photos/vip-images/mechannic.jpg"), audio: require("../../../mp3/electrodynamix.mp3") },
+      { image: require("../../../photos/fan-art/clubstep.jpg"), audio: require("../../../mp3/clubstep.mp3") },
+      { image: require("../../../photos/vip-images/mechannic.jpg"), audio: require("../../../mp3/fingerdash.mp3") },
+      { image: require("../../../photos/fan-art/theorytwo.jpg"), audio: require("../../../mp3/theoty-of-everything-ll.mp3") },
+      { image: require("../../../photos/fan-art/deadlocked.jpg"), audio: require("../../../mp3/deadlocked.mp3") },
+      { image: require("../../../photos/fan-art/theory.jpg"), audio: require("../../../mp3/theory-of-everyting.mp3") },
+      { image: require("../../../photos/fan-art/unity.jpg"), audio: require("../../../mp3/unity.mp3") },
+      { image: require("../../../photos/vip-images/vip-forest.webp"), audio: require("../../../mp3/calling.mp3") },
+    ],
+    []
+  );
+
+  const [currentMediaIndex, setCurrentMediaIndex] = useState(0);
+  const finalImage = puzzleImages[currentMediaIndex].image;
 
   // Налаштування гри
   const [config, setConfig] = useState({
@@ -279,10 +369,47 @@ const PuzzleSix = ({ imageUrl, onExit }) => {
   const containerRef = useRef(null);
   const requestRef = useRef();
 
-  const [volume, setVolume] = useState(1);
-  const [isMuted, setIsMuted] = useState(false);
-  const audioRef = useRef(new Audio(dinofroz));
-  const longPressTimer = useRef(null);
+  // Аудіо стейти
+  const [volume, setVolume] = useState(0.5);
+  const audioRef = useRef(null);
+
+  // Ініціалізація аудіо
+  useEffect(() => {
+    audioRef.current = new Audio();
+    audioRef.current.loop = true;
+    const audioEl = audioRef.current;
+    return () => {
+      audioEl.pause();
+    };
+  }, []);
+
+  // Зміна музики при зміні картинки
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.src = puzzleImages[currentMediaIndex].audio;
+      audioRef.current
+        .play()
+        .catch((e) => console.error("Audio play failed", e));
+    }
+  }, [currentMediaIndex, puzzleImages]);
+
+  // Контроль гучності
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.volume = volume;
+    }
+  }, [volume]);
+
+  // Функції перемикання слайдера
+  const handlePrev = () => {
+    setCurrentMediaIndex(
+      (prev) => (prev - 1 + puzzleImages.length) % puzzleImages.length
+    );
+  };
+
+  const handleNext = () => {
+    setCurrentMediaIndex((prev) => (prev + 1) % puzzleImages.length);
+  };
 
   // Адаптивність для телефонів (ландшафтний і портретний режим)
   useEffect(() => {
@@ -298,31 +425,6 @@ const PuzzleSix = ({ imageUrl, onExit }) => {
     handleResize();
     return () => window.removeEventListener("resize", handleResize);
   }, []);
-
-  // Аудіо
-  useEffect(() => {
-    const audio = audioRef.current;
-    audio.loop = true;
-    audio.volume = isMuted ? 0 : volume;
-    audio.play().catch(() => {});
-    return () => audio.pause();
-  }, [volume, isMuted]);
-
-  const handleMusicDown = () => {
-    longPressTimer.current = setTimeout(() => {
-      setIsMuted(!isMuted);
-      longPressTimer.current = null;
-    }, 1000);
-  };
-
-  const handleMusicUp = () => {
-    if (longPressTimer.current) {
-      clearTimeout(longPressTimer.current);
-      if (volume === 1) setVolume(0.5);
-      else if (volume === 0.5) setVolume(0.1);
-      else setVolume(1);
-    }
-  };
 
   const initGame = useCallback(() => {
     const newLenses = [];
@@ -353,7 +455,7 @@ const PuzzleSix = ({ imageUrl, onExit }) => {
 
         for (let other of newLenses) {
           const dist = Math.sqrt(
-            Math.pow(lens.x - other.x, 2) + Math.pow(lens.y - other.y, 2),
+            Math.pow(lens.x - other.x, 2) + Math.pow(lens.y - other.y, 2)
           );
           if (dist < minDistance) {
             collision = true;
@@ -395,7 +497,7 @@ const PuzzleSix = ({ imageUrl, onExit }) => {
             speed: currentSpeed,
             rotation: (lens.rotation + currentSpeed) % 360,
           };
-        }),
+        })
       );
       requestRef.current = requestAnimationFrame(updateRotation);
     }
@@ -431,7 +533,7 @@ const PuzzleSix = ({ imageUrl, onExit }) => {
 
       if (isCorrect) {
         const next = prev.map((l) =>
-          l.id === id ? { ...l, rotation: 0, locked: true } : l,
+          l.id === id ? { ...l, rotation: 0, locked: true } : l
         );
         if (next.every((l) => l.locked)) setIsWon(true);
         return next;
@@ -450,7 +552,7 @@ const PuzzleSix = ({ imageUrl, onExit }) => {
 
         setTimeout(() => {
           setLenses((cur) =>
-            cur.map((l) => (l.id === id ? { ...l, disabled: false } : l)),
+            cur.map((l) => (l.id === id ? { ...l, disabled: false } : l))
           );
         }, 1000);
 
@@ -508,7 +610,7 @@ const PuzzleSix = ({ imageUrl, onExit }) => {
 
   return (
     <GameWrapper>
-      <div style={{ height: "35px" }}>
+      <div style={{ height: "30px", marginTop: "10px" }}>
         <h2
           style={{
             color: isWon ? "#4caf50" : "#ffb36c",
@@ -521,6 +623,13 @@ const PuzzleSix = ({ imageUrl, onExit }) => {
           {isWon ? "ОПТИЧНА СИНХРОНІЗАЦІЯ ЗАВЕРШЕНА" : "ОПТИЧНА СИНХРОНІЗАЦІЯ"}
         </h2>
       </div>
+
+      {/* --- Додано блок вибору картинок та музики --- */}
+      <SliderContainer>
+        <SliderButton onClick={handlePrev}>{"<"}</SliderButton>
+        <SliderImage src={finalImage} alt="Тема пазлу" />
+        <SliderButton onClick={handleNext}>{">"}</SliderButton>
+      </SliderContainer>
 
       <ResponsiveContainer ref={containerRef}>
         <ViewportScaleWrapper $scale={scale}>
@@ -596,16 +705,30 @@ const PuzzleSix = ({ imageUrl, onExit }) => {
         </StatsBlock>
 
         <Controls>
-          <GameButton onMouseDown={handleMusicDown} onMouseUp={handleMusicUp}>
-            {isMuted ? "🔇" : volume === 0.1 ? "🔈" : "🎵"}
-          </GameButton>
+          {/* --- Додано повзунок гучності замість кнопки --- */}
+          <VolumeControl title="Гучність музики">
+            <span>{volume === 0 ? "🔇" : "🎵"}</span>
+            <input
+              type="range"
+              min="0"
+              max="1"
+              step="0.01"
+              value={volume}
+              onChange={(e) => setVolume(parseFloat(e.target.value))}
+            />
+          </VolumeControl>
+
           <GearContainer onClick={() => setShowSettings(true)}>
             <span className="g g1">⚙</span>
             <span className="g g2">⚙</span>
             <span className="g g3">⚙</span>
           </GearContainer>
-          <GameButton onClick={initGame}>⏭</GameButton>
-          <GameButton onClick={onExit}>✖</GameButton>
+          <GameButton onClick={initGame} title="Перезапустити">
+            ⏭
+          </GameButton>
+          <GameButton onClick={onExit} title="Вийти">
+            ✖
+          </GameButton>
         </Controls>
       </BottomPanel>
 

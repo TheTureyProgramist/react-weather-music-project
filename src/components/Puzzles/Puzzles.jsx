@@ -1,7 +1,8 @@
 import React, { useState } from "react";
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
+import { motion, AnimatePresence } from "framer-motion";
+// Імпорти пазлів залишаються тими самими...
 import PuzzleOne from "./PuzzleCollection/PuzzleOne";
-import puzzl from "../../photos/vip-modal/puzzle.jpeg";
 import PuzzleTwo from "./PuzzleCollection/PuzzleTwo";
 import PuzzleThree from "./PuzzleCollection/PuzzleThree";
 import PuzzleFour from "./PuzzleCollection/PuzzleFour";
@@ -9,12 +10,23 @@ import PuzzleSix from "./PuzzleCollection/PuzzleSix";
 import PuzzleFive from "./PuzzleCollection/PuzzleFive";
 import PuzzleSeven from "./PuzzleCollection/PuzzleSeven";
 import PuzzleEight from "./PuzzleCollection/PuzzleEight";
+
+// Імпорти картинок...
+import puzzl from "../../photos/vip-modal/puzzle.jpeg";
 import pluta from "../../photos/vip-modal/brain.jpeg";
 import cod from "../../photos/vip-modal/cod.jpeg";
 import laby from "../../photos/vip-modal/laby.jpeg";
 import labytwo from "../../photos/vip-modal/labytwo.jpeg";
 import puz from "../../photos/vip-modal/puz.jpeg";
 import disk from "../../photos/vip-modal/disk.jpeg";
+
+// Анімація блимання тексту
+const blink = keyframes`
+  0% { opacity: 0.4; text-shadow: 0 0 5px #ffb36c; }
+  50% { opacity: 1; text-shadow: 0 0 20px #ffb36c, 0 0 30px #ffb36c; }
+  100% { opacity: 0.4; text-shadow: 0 0 5px #ffb36c; }
+`;
+
 const MainTitle = styled.h2`
   text-align: center;
   font-size: 32px;
@@ -23,45 +35,95 @@ const MainTitle = styled.h2`
   font-family: "Montserrat", sans-serif;
 `;
 
-const PuzzlesGrid = styled.div`
+const PuzzlesGrid = styled(motion.div)`
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
   gap: 30px;
 `;
 
-const PuzzleCard = styled.div`
+const PuzzleCard = styled(motion.div)`
   cursor: pointer;
-  transition: transform 0.3s;
   text-align: center;
-  &:hover {
-    transform: translateY(-10px);
-  }
+  position: relative; // Для позиціонування тексту на картинці
 `;
 
-const PreviewImage = styled.img`
+const ImageWrapper = styled.div`
+  position: relative;
   width: 320px;
   height: 200px;
+  overflow: hidden;
   border-radius: 12px;
   border: 3px solid #ffb36c;
 `;
+
+const PreviewImage = styled.img`
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s;
+  ${PuzzleCard}:hover & {
+    transform: scale(1.1);
+  }
+`;
+const SearchInput = styled.input`
+  display: block;
+  margin: 0 auto 30px;
+  width: 100%;
+  max-width: 400px;
+  padding: 12px 20px;
+  border-radius: 25px;
+  border: 2px solid #ffb36c;
+  background: rgba(255, 255, 255, 0.05);
+  color: white;
+  font-size: 16px;
+  outline: none;
+  transition: all 0.3s;
+  &::placeholder { color: rgba(255, 255, 255, 0.6); }
+  &:focus {
+    box-shadow: 0 0 15px rgba(255, 179, 108, 0.3);
+    border-color: #ffb36c;
+  }
+`;
+
+const LoadMoreBtn = styled.button`
+  display: block;
+  margin: 40px auto;
+  padding: 12px 30px;
+  background: transparent;
+  border: 2px solid #ffb36c;
+  color: #ffb36c;
+  font-size: 18px;
+  font-family: "Montserrat", sans-serif;
+  font-weight: bold;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: all 0.3s;
+  &:hover {
+    background: #ffb36c;
+    color: black;
+  }
+`;
+
 const FullscreenOverlay = styled.div`
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
+  top: 0; left: 0;
+  width: 100vw; height: 100vh;
   background: rgba(0, 0, 0, 0.95);
   z-index: 2000;
   display: flex;
   align-items: center;
   justify-content: center;
 `;
+
 const Puzzles = () => {
   const [activeGame, setActiveGame] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  // Керування кількістю (починаємо з 6)
+  const [visibleCount, setVisibleCount] = useState(6);
 
   const puzzleData = [
-    { id: 1, title: "Галерея 1", img: puzzl, type: "puzzle" },
+    { id: 1, title: "Пазл І", img: puzzl, type: "puzzle" },
     { id: 2, title: "Пам'ять", img: pluta, type: "memory" },
     { id: 3, title: "Код", img: cod, type: "code" },
     { id: 4, title: "Лабіринт", img: laby, type: "move" },
@@ -69,54 +131,83 @@ const Puzzles = () => {
     { id: 6, title: "Оптична лінза", img: disk, type: "lens" },
     { id: 7, title: "Лабіринт ІІ", img: labytwo, type: "line" },
     { id: 8, title: "Сапер", img: labytwo, type: "hex" },
+    // Тут можна додати id 9, 10... щоб перевірити кнопку
   ];
+
+  const filteredPuzzles = puzzleData.filter((p) =>
+    p.title.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  // Обрізаємо масив до поточної кількості
+  const displayedPuzzles = filteredPuzzles.slice(0, visibleCount);
+
+  // Умова показу кнопки: якщо ще є не показані елементи
+  const showLoadMore = filteredPuzzles.length > visibleCount;
+
+  const handleLoadMore = () => {
+    setVisibleCount(prev => prev + 6);
+  };
 
   const renderGame = () => {
     if (!activeGame) return null;
-
     switch (activeGame.type) {
-      case "puzzle":
-        return (
-          <PuzzleOne
-            imageUrl={activeGame.img}
-            onExit={() => setActiveGame(null)}
-          />
-        );
-      case "memory":
-        return <PuzzleTwo onExit={() => setActiveGame(null)} />;
-      case "code":
-        return <PuzzleThree onExit={() => setActiveGame(null)} />;
-      case "move":
-        return <PuzzleFour onExit={() => setActiveGame(null)} />;
-      case "rotate":
-        return <PuzzleFive onExit={() => setActiveGame(null)} />;
-      case "lens":
-        return (
-          <PuzzleSix
-            imageUrl={activeGame.img}
-            onExit={() => setActiveGame(null)}
-          />
-        );
-      case "line":
-        return <PuzzleSeven onExit={() => setActiveGame(null)} />;
-        case "hex":
-         return <PuzzleEight onExit={() => setActiveGame(null)} />;
-      default:
-        return null;
+      case "puzzle": return <PuzzleOne onExit={() => setActiveGame(null)} />;
+      case "memory": return <PuzzleTwo onExit={() => setActiveGame(null)} />;
+      case "code": return <PuzzleThree onExit={() => setActiveGame(null)} />;
+      case "move": return <PuzzleFour onExit={() => setActiveGame(null)} />;
+      case "rotate": return <PuzzleFive onExit={() => setActiveGame(null)} />;
+      case "lens": return <PuzzleSix onExit={() => setActiveGame(null)} />;
+      case "line": return <PuzzleSeven onExit={() => setActiveGame(null)} />;
+      case "hex": return <PuzzleEight onExit={() => setActiveGame(null)} />;
+      default: return null;
     }
   };
+
   return (
-    <div style={{ padding: "40px 20px" }}>
+    <div style={{ padding: "40px 20px", minHeight: "100vh", background: "#111" }}>
       <MainTitle>ОБЕРІТЬ ГОЛОВОЛОМКУ</MainTitle>
-      <PuzzlesGrid>
-        {puzzleData.map((p) => (
-          <PuzzleCard key={p.id} onClick={() => setActiveGame(p)}>
-            <PreviewImage src={p.img} alt={p.title} />
-          </PuzzleCard>
-        ))}
+      
+      <SearchInput
+        type="text"
+        placeholder="Пошук головоломки..."
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+      />
+
+      <PuzzlesGrid layout>
+        <AnimatePresence>
+          {displayedPuzzles.map((p) => (
+            <PuzzleCard
+              key={p.id}
+              onClick={() => setActiveGame(p)}
+              layout
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              whileHover={{ scale: 1.02 }}
+            >
+              <ImageWrapper>
+                <PreviewImage src={p.img} alt={p.title} />
+              </ImageWrapper>
+              <h3 style={{ color: "#ffb36c", marginTop: "10px" }}>{p.title}</h3>
+            </PuzzleCard>
+          ))}
+        </AnimatePresence>
       </PuzzlesGrid>
-      {activeGame && <FullscreenOverlay>{renderGame()}</FullscreenOverlay>}
+
+      {showLoadMore && (
+        <LoadMoreBtn onClick={handleLoadMore}>
+          ЗАВАНТАЖИТИ ЩЕ
+        </LoadMoreBtn>
+      )}
+
+      {activeGame && (
+        <FullscreenOverlay>
+          {renderGame()}
+        </FullscreenOverlay>
+      )}
     </div>
   );
 };
+
 export default Puzzles;

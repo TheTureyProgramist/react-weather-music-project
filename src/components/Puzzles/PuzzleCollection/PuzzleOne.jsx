@@ -1,8 +1,12 @@
-import React, { useState, useEffect, useCallback, useRef } from "react";
+import React, {
+  useState,
+  useEffect,
+  useCallback,
+  useRef,
+  useMemo,
+} from "react";
 import styled, { keyframes } from "styled-components";
 import { motion, AnimatePresence } from "framer-motion";
-import imaged from "../../../photos/hero-header/start-image.jpg";
-import asium from "../../../mp3/harmonic-japan.mp3";
 import lamp from "../../../photos/hero-header/lamp.jpeg";
 const fadeIn = keyframes`
   from { opacity: 0; }
@@ -37,6 +41,42 @@ const VolumeControl = styled.div`
     min-width: 20px;
   }
 `;
+
+const SliderContainer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 10px;
+`;
+
+const SliderImage = styled.img`
+  width: 150px;
+  height: 90px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 2px solid #ffb36c;
+`;
+
+const SliderButton = styled.button`
+  width: 40px;
+  height: 40px;
+  background: transparent;
+  border: 2px solid #ffb36c;
+  color: #ffb36c;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  transition: all 0.2s;
+  border-radius: 50%;
+  &:hover {
+    background: rgba(255, 179, 108, 0.1);
+    transform: scale(1.05);
+  }
+`;
+
 const GameWrapper = styled.div`
   display: flex;
   flex-direction: column;
@@ -225,8 +265,126 @@ const HintImage = styled.img`
   background-size: cover;
   background-position: center;
 `;
-const PuzzleOne = ({ imageUrl, onExit }) => {
-  const finalImage = imaged;
+const PuzzleOne = ({ onExit }) => {
+  const puzzleImages = useMemo(
+    () => [
+      {
+        image: require("../../../photos/vip-images/vip-dinofroz.webp"),
+        audio: require("../../../mp3/dinofroz.mp3"),
+      },
+      {
+        image: require("../../../photos/fan-art/monody.jpg"),
+        audio: require("../../../mp3/thefatrat-monody.mp3"),
+      },
+      {
+        image: require("../../../photos/vip-images/asium.jpg"),
+        audio: require("../../../mp3/harmonic-japan.mp3"),
+      },
+      {
+        image: require("../../../photos/vip-images/mechannic.jpg"),
+        audio: require("../../../mp3/mechanik-kindom.mp3"),
+      },
+      {
+        image: require("../../../photos/vip-images/christmas.jpg"),
+        audio: require("../../../mp3/kolada.mp3"),
+      },
+      {
+        image: require("../../../photos/vip-images/ultra-vip-turkeys.webp"),
+        audio: require("../../../mp3/turkeys.mp3"),
+      },
+      {
+        image: require("../../../photos/fan-art/monody.jpg"),
+        audio: require("../../../mp3/thefatrat-monody.mp3"),
+      },
+      {
+        image: require("../../../photos/vip-images/vip-desert.webp"),
+        audio: require("../../../mp3/wind.mp3"),
+      },
+      {
+        image: require("../../../photos/vip-images/horror.jpg"),
+        audio: require("../../../mp3/horror.mp3"),
+      },
+      {
+        image: require("../../../photos/vip-images/horse.jpg"),
+        audio: require("../../../mp3/horse.mp3"),
+      },
+      {
+        image: require("../../../photos/vip-images/vip-dragons.jpg"),
+        audio: require("../../../mp3/dragon.mp3"),
+      },
+      {
+        image: require("../../../photos/vip-images/vip-soloveyko.jpg"),
+        audio: require("../../../mp3/soloveyko.mp3"),
+      },
+      {
+        image: require("../../../photos/vip-images/asium.jpg"),
+        audio: require("../../../mp3/harmonic-japan.mp3"),
+      },
+      {
+        image: require("../../../photos/vip-images/mechannic.jpg"),
+        audio: require("../../../mp3/mechanik-kindom.mp3"),
+      },
+      {
+        image: require("../../../photos/vip-images/mechannic.jpg"),
+        audio: require("../../../mp3/zootopia.mp3"),
+      },
+      {
+        image: require("../../../photos/vip-images/mechannic.jpg"),
+        audio: require("../../../mp3/zootopiatwo.mp3"),
+      },
+      {
+        image: require("../../../photos/vip-images/mechannic.jpg"),
+        audio: require("../../../mp3/mia-and-me.mp3"),
+      },
+      {
+        image: require("../../../photos/vip-images/mechannic.jpg"),
+        audio: require("../../../mp3/malatkotv-chapterone.mp3"),
+      },
+      {
+        image: require("../../../photos/vip-images/mechannic.jpg"),
+        audio: require("../../../mp3/malatkotv-chaptertwo.mp3"),
+      },
+      {
+        image: require("../../../photos/vip-images/mechannic.jpg"),
+        audio: require("../../../mp3/malatkotv-chapterthree.mp3"),
+      },
+      {
+        image: require("../../../photos/vip-images/mechannic.jpg"),
+        audio: require("../../../mp3/electrodynamix.mp3"),
+      },
+      {
+        image: require("../../../photos/fan-art/clubstep.jpg"),
+        audio: require("../../../mp3/clubstep.mp3"),
+      },
+      {
+        image: require("../../../photos/vip-images/mechannic.jpg"),
+        audio: require("../../../mp3/fingerdash.mp3"),
+      },
+      {
+        image: require("../../../photos/fan-art/theorytwo.jpg"),
+        audio: require("../../../mp3/theoty-of-everything-ll.mp3"),
+      },
+      {
+        image: require("../../../photos/fan-art/deadlocked.jpg"),
+        audio: require("../../../mp3/deadlocked.mp3"),
+      },
+      {
+        image: require("../../../photos/fan-art/theory.jpg"),
+        audio: require("../../../mp3/theory-of-everyting.mp3"),
+      },
+      {
+        image: require("../../../photos/fan-art/unity.jpg"),
+        audio: require("../../../mp3/unity.mp3"),
+      },
+      {
+        image: require("../../../photos/vip-images/vip-forest.webp"),
+        audio: require("../../../mp3/calling.mp3"),
+      },
+    ],
+    [],
+  );
+  const [currentMediaIndex, setCurrentMediaIndex] = useState(0);
+  const finalImage = puzzleImages[currentMediaIndex].image;
 
   const [config, setConfig] = useState({
     cols: 6,
@@ -246,28 +404,28 @@ const PuzzleOne = ({ imageUrl, onExit }) => {
 
   const audioRef = useRef(null);
 
-  // Ініціалізація аудіо
+  // On mount and unmount
   useEffect(() => {
-    audioRef.current = new Audio(asium);
+    audioRef.current = new Audio();
     audioRef.current.loop = true;
-    
-    const playAudio = () => {
-        audioRef.current.play().catch(() => {
-            console.log("Очікування взаємодії користувача для відтворення музики");
-        });
-    };
 
-    playAudio();
-
+    const audioEl = audioRef.current;
     return () => {
-      if (audioRef.current) {
-        audioRef.current.pause();
-        audioRef.current = null;
-      }
+      audioEl.pause();
     };
   }, []);
 
-  // Синхронізація гучності
+  // On media change
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.src = puzzleImages[currentMediaIndex].audio;
+      audioRef.current
+        .play()
+        .catch((e) => console.error("Audio play failed", e));
+    }
+  }, [currentMediaIndex, puzzleImages]);
+
+  // On volume change
   useEffect(() => {
     if (audioRef.current) {
       audioRef.current.volume = volume;
@@ -302,20 +460,23 @@ const PuzzleOne = ({ imageUrl, onExit }) => {
     }
   }, [timeLeft, isWon, initGame]);
 
-  const checkAutoRestart = useCallback((currentTiles, currentMoves) => {
-    const incorrectCount = currentTiles.reduce(
-      (acc, tile, idx) => (tile.id !== idx ? acc + 1 : acc),
-      0
-    );
-    const movesLeft = config.maxMoves - currentMoves;
+  const checkAutoRestart = useCallback(
+    (currentTiles, currentMoves) => {
+      const incorrectCount = currentTiles.reduce(
+        (acc, tile, idx) => (tile.id !== idx ? acc + 1 : acc),
+        0,
+      );
+      const movesLeft = config.maxMoves - currentMoves;
 
-    if (incorrectCount > movesLeft && !isWon) {
-      alert("Недостатньо ходів для завершення! Перезапуск...");
-      initGame();
-      return true;
-    }
-    return false;
-  }, [config.maxMoves, isWon, initGame]);
+      if (incorrectCount > movesLeft && !isWon) {
+        alert("Недостатньо ходів для завершення! Перезапуск...");
+        initGame();
+        return true;
+      }
+      return false;
+    },
+    [config.maxMoves, isWon, initGame],
+  );
 
   const handleTileClick = (index) => {
     if (isWon) return;
@@ -328,7 +489,10 @@ const PuzzleOne = ({ imageUrl, onExit }) => {
         return;
       }
       const newTiles = [...tiles];
-      [newTiles[selectedIdx], newTiles[index]] = [newTiles[index], newTiles[selectedIdx]];
+      [newTiles[selectedIdx], newTiles[index]] = [
+        newTiles[index],
+        newTiles[selectedIdx],
+      ];
 
       const newMoves = moves + 1;
       setTiles(newTiles);
@@ -354,7 +518,9 @@ const PuzzleOne = ({ imageUrl, onExit }) => {
 
     if (incorrectIndices.length > 0) {
       const targetIdx = incorrectIndices[0];
-      const currentIdxOfCorrectTile = tiles.findIndex((t) => t.id === targetIdx);
+      const currentIdxOfCorrectTile = tiles.findIndex(
+        (t) => t.id === targetIdx,
+      );
 
       const newTiles = [...tiles];
       [newTiles[targetIdx], newTiles[currentIdxOfCorrectTile]] = [
@@ -378,15 +544,38 @@ const PuzzleOne = ({ imageUrl, onExit }) => {
     } else {
       const presets = {
         easy: { cols: 5, rows: 3, maxMoves: 200, maxTime: 240, label: "Легка" },
-        normal: { cols: 6, rows: 4, maxMoves: 150, maxTime: 180, label: "Нормальна" },
-        hard: { cols: 8, rows: 5, maxMoves: 100, maxTime: 120, label: "Екстремальна" }
+        normal: {
+          cols: 6,
+          rows: 4,
+          maxMoves: 150,
+          maxTime: 180,
+          label: "Нормальна",
+        },
+        hard: {
+          cols: 8,
+          rows: 5,
+          maxMoves: 100,
+          maxTime: 120,
+          label: "Екстремальна",
+        },
       };
       setConfig(presets[type]);
     }
     setShowSettings(false);
   };
 
-  const formatTime = (s) => `${Math.floor(s / 60)}:${(s % 60).toString().padStart(2, "0")}`;
+  const handlePrev = () => {
+    setCurrentMediaIndex(
+      (prev) => (prev - 1 + puzzleImages.length) % puzzleImages.length,
+    );
+  };
+
+  const handleNext = () => {
+    setCurrentMediaIndex((prev) => (prev + 1) % puzzleImages.length);
+  };
+
+  const formatTime = (s) =>
+    `${Math.floor(s / 60)}:${(s % 60).toString().padStart(2, "0")}`;
 
   return (
     <GameWrapper>
@@ -415,45 +604,71 @@ const PuzzleOne = ({ imageUrl, onExit }) => {
         })}
       </Board>
 
+      <SliderContainer>
+        <SliderButton onClick={handlePrev}>{"<"}</SliderButton>
+        <SliderImage src={finalImage} alt="Тема пазлу" />
+        <SliderButton onClick={handleNext}>{">"}</SliderButton>
+      </SliderContainer>
+
       <div style={{ height: "30px" }}>
         {isWon && <h2 style={{ color: "#4caf50", margin: 0 }}>Перемога! 🏆</h2>}
       </div>
 
       <BottomPanel>
-        <div style={{ display: "flex", flexDirection: "column", fontSize: "13px", lineHeight: "1.4" }}>
-          <span><strong>Рівень:</strong> {config.label} ({config.cols}x{config.rows})</span>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            fontSize: "13px",
+            lineHeight: "1.4",
+          }}
+        >
           <span>
-            <strong>Час:</strong> <span style={{ color: timeLeft < 30 ? "#ff5252" : "#ffb36c" }}>{formatTime(timeLeft)}</span>
-            {" "}| <strong>Ходи:</strong> {moves}/{config.maxMoves}
+            <strong>Рівень:</strong> {config.label} ({config.cols}x{config.rows}
+            )
+          </span>
+          <span>
+            <strong>Час:</strong>{" "}
+            <span style={{ color: timeLeft < 30 ? "#ff5252" : "#ffb36c" }}>
+              {formatTime(timeLeft)}
+            </span>{" "}
+            | <strong>Ходи:</strong> {moves}/{config.maxMoves}
           </span>
         </div>
 
         <Controls>
           <VolumeControl title="Гучність музики">
             <span>{volume === 0 ? "🔇" : "🎵"}</span>
-            <input 
-              type="range" 
-              min="0" 
-              max="1" 
-              step="0.01" 
-              value={volume} 
-              onChange={(e) => setVolume(parseFloat(e.target.value))} 
+            <input
+              type="range"
+              min="0"
+              max="1"
+              step="0.01"
+              value={volume}
+              onChange={(e) => setVolume(parseFloat(e.target.value))}
             />
           </VolumeControl>
 
           <HintImage src={lamp} onClick={handleHint} title="Підказка" />
-          
-          <GearContainer onClick={() => setShowSettings(true)} title="Налаштування">
+
+          <GearContainer
+            onClick={() => setShowSettings(true)}
+            title="Налаштування"
+          >
             <span className="g g1">⚙</span>
             <span className="g g2">⚙</span>
             <span className="g g3">⚙</span>
           </GearContainer>
 
-          <GameButton onClick={initGame} title="Перезапустити">⏭</GameButton>
-          <GameButton onClick={onExit} title="Вийти">✖</GameButton>
+          <GameButton onClick={initGame} title="Перезапустити">
+            ⏭
+          </GameButton>
+          <GameButton onClick={onExit} title="Вийти">
+            ✖
+          </GameButton>
         </Controls>
       </BottomPanel>
-<AnimatePresence>
+      <AnimatePresence>
         {showSettings && (
           <ModalOverlay
             initial={{ opacity: 0 }}
@@ -462,11 +677,15 @@ const PuzzleOne = ({ imageUrl, onExit }) => {
             onClick={() => setShowSettings(false)}
           >
             <Modal onClick={(e) => e.stopPropagation()}>
-              <h3 style={{ margin: "0", color: "#ffb36c", textAlign: "center" }}>
+              <h3
+                style={{ margin: "0", color: "#ffb36c", textAlign: "center" }}
+              >
                 Налаштування
               </h3>
 
-              <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+              <div
+                style={{ display: "flex", flexDirection: "column", gap: "8px" }}
+              >
                 <DifficultyBtn onClick={() => setDifficulty("easy")}>
                   Легка (5x3, 240с, 200ходів, 4хв)
                 </DifficultyBtn>
@@ -478,56 +697,86 @@ const PuzzleOne = ({ imageUrl, onExit }) => {
                 </DifficultyBtn>
               </div>
 
-              <hr style={{ borderColor: "#ffb36c", width: "100%", margin: "5px 0" }} />
-              
-              <span style={{ fontSize: "14px", textAlign: "center", color: "#ffb36c" }}>
+              <hr
+                style={{
+                  borderColor: "#ffb36c",
+                  width: "100%",
+                  margin: "5px 0",
+                }}
+              />
+
+              <span
+                style={{
+                  fontSize: "14px",
+                  textAlign: "center",
+                  color: "#ffb36c",
+                }}
+              >
                 Власні параметри:
               </span>
 
               <CustomRow>
                 <span>Стовпці: {config.cols}</span>
-                <input 
-                  type="range" min="5" max="8" 
-                  value={config.cols} 
-                  onChange={(e) => setConfig({ ...config, cols: parseInt(e.target.value) })} 
+                <input
+                  type="range"
+                  min="5"
+                  max="8"
+                  value={config.cols}
+                  onChange={(e) =>
+                    setConfig({ ...config, cols: parseInt(e.target.value) })
+                  }
                 />
               </CustomRow>
 
               <CustomRow>
                 <span>Ряди: {config.rows}</span>
-                <input 
-                  type="range" min="3" max="5" 
-                  value={config.rows} 
-                  onChange={(e) => setConfig({ ...config, rows: parseInt(e.target.value) })} 
+                <input
+                  type="range"
+                  min="3"
+                  max="5"
+                  value={config.rows}
+                  onChange={(e) =>
+                    setConfig({ ...config, rows: parseInt(e.target.value) })
+                  }
                 />
               </CustomRow>
               <CustomRow>
                 <span>Макс. ходів: {config.maxMoves}</span>
-                <input 
-                  type="range" min="50" max="300" step="10"
-                  value={config.maxMoves} 
-                  onChange={(e) => setConfig({ ...config, maxMoves: parseInt(e.target.value) })} 
+                <input
+                  type="range"
+                  min="50"
+                  max="300"
+                  step="10"
+                  value={config.maxMoves}
+                  onChange={(e) =>
+                    setConfig({ ...config, maxMoves: parseInt(e.target.value) })
+                  }
                 />
               </CustomRow>
 
               <CustomRow>
                 <span>Час: {formatTime(config.maxTime)}</span>
-                <input 
-                  type="range" min="60" max="600" step="10"
-                  value={config.maxTime} 
-                  onChange={(e) => setConfig({ ...config, maxTime: parseInt(e.target.value) })} 
+                <input
+                  type="range"
+                  min="60"
+                  max="600"
+                  step="10"
+                  value={config.maxTime}
+                  onChange={(e) =>
+                    setConfig({ ...config, maxTime: parseInt(e.target.value) })
+                  }
                 />
               </CustomRow>
 
-              <DifficultyBtn 
-                onClick={() => setDifficulty("custom", config)} 
+              <DifficultyBtn
+                onClick={() => setDifficulty("custom", config)}
                 style={{ background: "#4e342e", marginTop: "10px" }}
               >
                 Застосувати власні
               </DifficultyBtn>
-              
-              <DifficultyBtn 
-                onClick={() => setShowSettings(false)} 
+
+              <DifficultyBtn
+                onClick={() => setShowSettings(false)}
                 style={{ background: "#1b110f" }}
               >
                 Закрити

@@ -3,13 +3,6 @@ import styled, { keyframes, css } from "styled-components";
 import logo from "../../photos/hero-header/logo.png";
 import bell from "../../mp3/bell.mp3";
 import UserSearchModal from "../Modals/UserSearchModal.jsx";
-
-const pulse = keyframes`
-  0% { transform: scale(1); opacity: 1; }
-  50% { transform: scale(1.3); opacity: 0.8; }
-  100% { transform: scale(1); opacity: 1; }
-`;
-
 const flow = keyframes`
   0% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
