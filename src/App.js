@@ -1,8 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import styled from "styled-components";
+import { Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import Loader from "./components/Loader/Loader.jsx";
-import SectionOrder from "./components/SectionOrder/SectionOrder.jsx";
 import WeatherCardComponent from "./components/Weather/Weather.jsx";
 import {
   Chart as ChartJS,
@@ -15,7 +14,8 @@ import {
   Legend,
   Filler,
 } from "chart.js";
-// import { Line } from "react-chartjs-2";
+import { Line } from "react-chartjs-2";
+import Menu, { DEFAULT_SITE_SECTIONS } from "./components/Header/Menu.jsx";
 import axios from "axios";
 import "./App.css";
 import Header from "./components/Header/Header.jsx";
@@ -33,8 +33,6 @@ import News from "./components/News/News.jsx";
 import AchivmentsModal from "./components/Modals/AchivmentsModal.jsx";
 import Puzzles from "./components/Puzzles/Puzzles.jsx";
 import ClimateMap from "./components/ClimateMap/ClimateMap.jsx";
-// Імпорт аватарів
-// import loadimage from "./photos/hero-header/start-image.jpg";
 import turkeys from "./photos/vip-images/ultra-vip-turkeys.webp";
 import dragons from "./photos/vip-images/vip-dragons.jpg";
 import horrordog from "./photos/vip-images/horror.jpg";
@@ -146,53 +144,76 @@ const SettingsContainer = styled.div`
     }
   }
 `;
-const DEFAULT_SITE_SECTIONS = [
-    { key: "weather", label: "Погода" },
-    { key: "map", label: "Кліматична мапа" },
-    { key: "puzzles", label: "Пазли" },
-    { key: "aihelp", label: "AI-допомога" },
-    { key: "news", label: "Новини" },
-    { key: "music", label: "Музика" },
-    { key: "fanart", label: "FanArt" },
-  ];
+const SECTION_ORDER_STORAGE_KEY = "siteSectionsOrder";
 const App = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isFadingOut, setIsFadingOut] = useState(false);
   const [randomPhrase] = useState(
-    () => LOADING_PHRASES[Math.floor(Math.random() * LOADING_PHRASES.length)],
+    () => LOADING_PHRASES[Math.floor(Math.random() * LOADING_PHRASES.length)]
   );
   const [now, setNow] = useState(new Date());
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    const saved = localStorage.getItem("isDarkMode");
+    return saved !== null ? JSON.parse(saved) : false;
+  });
+  const [user, setUser] = useState(() => {
+    const saved = localStorage.getItem("active_user");
+    return saved ? JSON.parse(saved) : null;
+  });
+  const [currentAvatar, setCurrentAvatar] = useState(() => {
+    const saved = localStorage.getItem("currentAvatar");
+    return saved || userDefault;
+  });
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   const [isVipModalOpen, setIsVipModalOpen] = useState(false);
   const [isShopOpen, setIsShopOpen] = useState(false);
   const [isAchivmentsOpen, setIsAchivmentsOpen] = useState(false);
-  const [isLocationEnabled, setIsLocationEnabled] = useState(true);
-
-  const [isDarkMode, setIsDarkMode] = useState(() => {
-    const saved = localStorage.getItem("isDarkMode");
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isRoutingMode, setIsRoutingMode] = useState(() => {
+    const saved = localStorage.getItem("isRoutingMode");
     return saved !== null ? JSON.parse(saved) : false;
   });
-
-  const [user, setUser] = useState(() => {
-    const saved = localStorage.getItem("active_user");
-    return saved ? JSON.parse(saved) : null;
-  });
-
-  const [currentAvatar, setCurrentAvatar] = useState(() => {
-    const saved = localStorage.getItem("currentAvatar");
-    return saved || userDefault;
-  });
+  const [isLocationEnabled, setIsLocationEnabled] = useState(true);
   const [weatherCards, setWeatherCards] = useState(() => {
     const savedCards = localStorage.getItem("weather_cards");
     return savedCards ? JSON.parse(savedCards) : [];
   });
+  const [hideDeleteModalUntil, setHideDeleteModalUntil] = useState(() => {
+    const val = localStorage.getItem("hideDeleteModalUntil");
+    return val ? parseInt(val) : 0;
+  });
 
+  const [siteSections, setSiteSections] = useState(() => {
+    const savedOrder = localStorage.getItem(SECTION_ORDER_STORAGE_KEY);
+    return savedOrder ? JSON.parse(savedOrder) : [...DEFAULT_SITE_SECTIONS];
+  });
   useEffect(() => {
+    setIsMenuOpen(false);
     localStorage.setItem("weather_cards", JSON.stringify(weatherCards));
   }, [weatherCards]);
 
+  useEffect(() => {
+    localStorage.setItem("isRoutingMode", JSON.stringify(isRoutingMode));
+    localStorage.setItem(SECTION_ORDER_STORAGE_KEY, JSON.stringify(siteSections));
+  }, [siteSections]);
+
+  useEffect(() => {
+    localStorage.setItem("isDarkMode", JSON.stringify(isDarkMode));
+  }, [isDarkMode]);
+
+  useEffect(() => {
+    if (user) {
+      localStorage.setItem("active_user", JSON.stringify(user));
+      if (user.avatar) {
+        setCurrentAvatar(user.avatar);
+        localStorage.setItem("currentAvatar", user.avatar);
+      }
+    } else {
+      localStorage.removeItem("active_user");
+    }
+  }, [user]);
   const fetchWeather = useCallback(
     async (cityData, isMain, lat = null, lon = null) => {
       try {
@@ -200,16 +221,13 @@ const App = () => {
         let targetLon = lon;
         let displayName = typeof cityData === "string" ? cityData : (cityData?.fullName || "Ваша локація");
 
-        // Якщо передано об'єкт з Hero (з координатами)
         if (cityData && typeof cityData === "object" && cityData.lat) {
           targetLat = cityData.lat;
           targetLon = cityData.lon;
           displayName = cityData.fullName;
-        } 
-        // Якщо передано просто назву (старий метод або автозапуск)
-        else if (typeof cityData === "string") {
+        } else if (typeof cityData === "string") {
           const geo = await axios.get(
-            `https://geocoding-api.open-meteo.com/v1/search?name=${cityData}&count=1&language=uk`,
+            `https://geocoding-api.open-meteo.com/v1/search?name=${cityData}&count=1&language=uk`
           );
           if (geo.data.results && geo.data.results[0]) {
             targetLat = geo.data.results[0].latitude;
@@ -221,7 +239,6 @@ const App = () => {
           }
         }
 
-        // Сам запит до погоди (залишається як був)
         const url = `https://api.open-meteo.com/v1/forecast?latitude=${targetLat}&longitude=${targetLon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m,surface_pressure&hourly=temperature_2m,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min,uv_index_max&timezone=auto&forecast_days=16`;
         const res = await axios.get(url);
         const d = res.data;
@@ -264,7 +281,6 @@ const App = () => {
             const filtered = prev.filter((c) => !c.isMain);
             return [newCardData, ...filtered];
           } else {
-            // Запобігаємо дублікатам
             const exists = prev.find(c => c.lat === targetLat && c.lon === targetLon);
             if (exists) return prev;
             if (prev.length >= 4) return prev;
@@ -273,10 +289,10 @@ const App = () => {
         });
       } catch (error) {
         console.error("Помилка завантаження погоди", error);
-      }},
-    [getWeatherIcon] 
+      }
+    },
+    [getWeatherIcon]
   );
-
   const getInitialLocation = useCallback(() => {
     if (!isLocationEnabled) {
       fetchWeather("Київ", true, 50.45, 30.52);
@@ -290,10 +306,10 @@ const App = () => {
             null,
             true,
             position.coords.latitude,
-            position.coords.longitude,
+            position.coords.longitude
           );
         },
-        () => fetchWeather("Київ", true, 50.45, 30.52),
+        () => fetchWeather("Київ", true, 50.45, 30.52)
       );
     } else {
       fetchWeather("Київ", true, 50.45, 30.52);
@@ -309,8 +325,9 @@ const App = () => {
       if (!card.isMain && (!card.hourly || card.hourly.length === 0)) {
         fetchWeather(card.locationName, false);
       }
-    });    
+    });
   }, [weatherCards, fetchWeather]);
+
   const handleAddCityFromHero = (cityObj) => {
     if (!user) {
       alert("Створювати картки погоди можуть лише зареєстровані користувачі!");
@@ -319,88 +336,45 @@ const App = () => {
     fetchWeather(cityObj, false);
   };
 
-  const [hideDeleteModalUntil, setHideDeleteModalUntil] = useState(() => {
-    const val = localStorage.getItem("hideDeleteModalUntil");
-    return val ? parseInt(val) : 0;
-  });
-
   const handleDeleteCard = (id) => {
-    const now = Date.now();
-    if (hideDeleteModalUntil > now) {
+    const nowTimestamp = Date.now();
+    if (hideDeleteModalUntil > nowTimestamp) {
       setWeatherCards((prev) => prev.filter((card) => card.id !== id));
       return;
     }
-    let hours = 1;
+
     const ask = window.confirm(
-      "Ви дійсно хочете видалити картку погоди?\n\nВи можете приховати це підтвердження на певний час.\n\nНатисніть ОК для видалення, або Скасувати для відміни.",
+      "Ви дійсно хочете видалити картку погоди?\n\nВи можете приховати це підтвердження на певний час."
     );
+    
     if (ask) {
-      let input = window.prompt(
-        "Скільки годин не показувати це підтвердження? (1-72)",
-        "1",
-      );
+      let input = window.prompt("Скільки годин не показувати це підтвердження? (1-72)", "1");
       if (input !== null) {
         const num = Math.max(1, Math.min(72, parseInt(input)));
-        hours = isNaN(num) ? 1 : num;
-        localStorage.setItem(
-          "hideDeleteModalUntil",
-          (now + hours * 3600 * 1000).toString(),
-        );
-        setHideDeleteModalUntil(now + hours * 3600 * 1000);
+        const hours = isNaN(num) ? 1 : num;
+        const until = nowTimestamp + hours * 3600 * 1000;
+        localStorage.setItem("hideDeleteModalUntil", until.toString());
+        setHideDeleteModalUntil(until);
       }
       setWeatherCards((prev) => prev.filter((card) => card.id !== id));
     }
   };
 
   const handleRefreshCard = (card) => {
-    if (card.isMain) {
-      getInitialLocation();
-    } else {
-      fetchWeather(card.locationName, false);
-    }
+    card.isMain ? getInitialLocation() : fetchWeather(card.locationName, false);
   };
 
   useEffect(() => {
     const fadeTimer = setTimeout(() => setIsFadingOut(true), 3500);
     const removeTimer = setTimeout(() => setIsLoading(false), 5300);
+    const clockTimer = setInterval(() => setNow(new Date()), 1000);
+
     return () => {
       clearTimeout(fadeTimer);
       clearTimeout(removeTimer);
+      clearInterval(clockTimer);
     };
   }, []);
-
-  useEffect(() => {
-    const timer = setInterval(() => setNow(new Date()), 1000);
-    return () => clearInterval(timer);
-  }, []);
-
-  useEffect(() => {
-    localStorage.setItem("isDarkMode", JSON.stringify(isDarkMode));
-  }, [isDarkMode]);
-
-  useEffect(() => {
-    if (user) {
-      localStorage.setItem("active_user", JSON.stringify(user));
-      if (user.avatar) {
-        setCurrentAvatar(user.avatar);
-        localStorage.setItem("currentAvatar", user.avatar);
-      }
-    } else {
-      localStorage.removeItem("active_user");
-    }
-  }, [user]);
-
-  const handleRegister = (userData) => {
-    setUser(userData);
-    setIsModalOpen(false);
-  };
-  const handleLogin = (savedUser) => {
-    setUser(savedUser);
-    setIsLoginOpen(false);
-  };
-  const handleUpdateUser = (userData) => {
-    setUser(userData);
-  };
   const handleLogout = () => {
     setUser(null);
     setCurrentAvatar(userDefault);
@@ -408,19 +382,21 @@ const App = () => {
     setIsSettingsModalOpen(false);
   };
 
-  const toggleTheme = () => setIsDarkMode(!isDarkMode);
-  const capitalize = (s) => s.charAt(0).toUpperCase() + s.slice(1);
-  const month = new Intl.DateTimeFormat("uk", { month: "2-digit" }).format(now);
-  const [sectionsOrder, setSectionsOrder] = useState(() => {
-    const savedOrder = localStorage.getItem("siteSectionsOrder");
-    return savedOrder ? JSON.parse(savedOrder) : [...DEFAULT_SITE_SECTIONS];
-  });
-  const [siteSections, setSiteSections] = useState([...DEFAULT_SITE_SECTIONS]);
+  const toggleTheme = useCallback(() => {
+    setIsDarkMode((prevMode) => !prevMode);
+  }, []);
+  
+  const heroDateString = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}:${String(now.getSeconds()).padStart(2, "0")} ${
+    new Intl.DateTimeFormat("uk", { weekday: "long" }).format(now).charAt(0).toUpperCase() + 
+    new Intl.DateTimeFormat("uk", { weekday: "long" }).format(now).slice(1)
+  }, ${now.getDate()}.${new Intl.DateTimeFormat("uk", { month: "2-digit" }).format(now)}.${now.getFullYear()}`;
 
-  const weekday = capitalize(
-    new Intl.DateTimeFormat("uk", { weekday: "long" }).format(now),
-  );
-  const heroDateString = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}:${String(now.getSeconds()).padStart(2, "0")} ${weekday}, ${now.getDate()}.${month}.${now.getFullYear()}`;
+  const handleOpenMenu = useCallback(() => setIsMenuOpen(true), []);
+  const handleCloseMenu = useCallback(() => setIsMenuOpen(false), []);
+
+  const navigate = useNavigate();
+  const location = useLocation();
+
   const moveSiteSection = (idx, dir) => {
     setSiteSections((prev) => {
       const arr = [...prev];
@@ -430,7 +406,108 @@ const App = () => {
       return arr;
     });
   };
-  const resetSiteSections = () => setSiteSections([...DEFAULT_SITE_SECTIONS]);
+
+  const renderSectionContent = (section) => {
+    if (section.key === "weather") {
+      return (
+        <div id="weather" key="weather">
+          <WeatherCardsContainer>
+            {weatherCards.map((card) => {
+              const isExtremeTemp = card.current.tempNum > 30 || card.current.tempNum < -10;
+              const isExtremeWind = card.current.windNum > 10;
+              const isExtremeUV = card.current.uv_index > 7;
+
+              const chartData = {
+                labels: card.hourly?.map((h) => h.time) || [],
+                datasets: [{
+                  label: "Температура (°C)",
+                  data: card.hourly?.map((h) => h.tempNum) || [],
+                  fill: true,
+                  backgroundColor: "rgba(255, 179, 108, 0.2)",
+                  borderColor: "rgba(255, 179, 108, 1)",
+                  tension: 0.4,
+                }],
+              };
+
+              return (
+                <WeatherCardComponent
+                  key={card.id}
+                  card={card}
+                  isDarkMode={isDarkMode}
+                  isLocationEnabled={isLocationEnabled}
+                  isExtremeTemp={isExtremeTemp}
+                  isExtremeWind={isExtremeWind}
+                  isExtremeUV={isExtremeUV}
+                  chartData={chartData}
+                  handleRefreshCard={handleRefreshCard}
+                  handleDeleteCard={handleDeleteCard}
+                  setIsLocationEnabled={setIsLocationEnabled}
+                />
+              );
+            })}
+          </WeatherCardsContainer>
+        </div>
+      );
+    }
+    return (
+      <div id={section.key} key={section.key}>
+         {section.key === "map" && <ClimateMap />}
+         {section.key === "puzzles" && <Puzzles />}
+         {section.key === "aihelp" && <Aihelp isDarkMode={isDarkMode} />}
+         {section.key === "news" && <News />}
+         {section.key === "music" && (
+           <MusicPhoto user={user} onOpenRegister={() => setIsModalOpen(true)} />
+         )}
+         {section.key === "fanart" && (
+           <FanArt isDarkMode={isDarkMode} user={user} onOpenRegister={() => setIsModalOpen(true)} />
+         )}
+      </div>
+    );
+  };
+
+  const HeroAndWeather = (
+    <>
+      <div id="hero">
+        <Hero heroDateString={heroDateString} onAddCity={handleAddCityFromHero} />
+      </div>
+      {renderSectionContent(siteSections.find(s => s.key === "weather"))}
+    </>
+  );
+
+  const LandingPage = (
+    <>
+      <div id="hero">
+        <Hero heroDateString={heroDateString} onAddCity={handleAddCityFromHero} />
+      </div>
+      <div className="container">
+        <SettingsContainer>
+          <h4 style={{ fontWeight: 700, fontSize: 16, marginBottom: 10 }}>
+            Налаштування підтвердження видалення картки
+          </h4>
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <label htmlFor="hideDeleteModalHours">Час приховування (1-72 год):</label>
+            <input
+              id="hideDeleteModalHours"
+              type="number"
+              min={1} max={72}
+              value={hideDeleteModalUntil > Date.now() ? Math.ceil((hideDeleteModalUntil - Date.now()) / 3600000) : 1}
+              onChange={(e) => {
+                let val = Math.max(1, Math.min(72, parseInt(e.target.value) || 1));
+                const newUntil = Date.now() + val * 3600 * 1000;
+                localStorage.setItem("hideDeleteModalUntil", newUntil.toString());
+                setHideDeleteModalUntil(newUntil);
+              }}
+              style={{ width: 60, padding: "2px 8px" }}
+            />
+            <button onClick={() => { localStorage.removeItem("hideDeleteModalUntil"); setHideDeleteModalUntil(0); }}>
+              Показувати завжди
+            </button>
+          </div>
+        </SettingsContainer>
+        {siteSections.map((section) => section.key !== "hero" && renderSectionContent(section))}
+      </div>
+    </>
+  );
 
   return (
     <>
@@ -449,203 +526,91 @@ const App = () => {
               user={user}
               isDarkMode={isDarkMode}
               toggleTheme={toggleTheme}
+              onOpenMenu={handleOpenMenu}
               currentAvatar={currentAvatar}
               onLogout={handleLogout}
+              siteSections={siteSections}
+              moveSiteSection={moveSiteSection}
+              resetSiteSections={() => setSiteSections([...DEFAULT_SITE_SECTIONS])}
+              isRoutingMode={isRoutingMode}
+              setIsRoutingMode={setIsRoutingMode}
+              currentPath={location.pathname.substring(1)}
             />
           </div>
+          <Routes>
+            <Route path="/" element={
+              <>
+                <div id="hero">
+                  <Hero heroDateString={heroDateString} onAddCity={handleAddCityFromHero} />
+                </div>
+                <div className="container">
+                  <SettingsContainer>
+                    <h4 style={{ fontWeight: 700, fontSize: 16, marginBottom: 10 }}>
+                      Налаштування підтвердження видалення картки
+                    </h4>
+                    <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                      <label htmlFor="hideDeleteModalHours">Час приховування (1-72 год):</label>
+                      <input
+                        id="hideDeleteModalHours"
+                        type="number"
+                        min={1} max={72}
+                        value={hideDeleteModalUntil > Date.now() ? Math.ceil((hideDeleteModalUntil - Date.now()) / 3600000) : 1}
+                        onChange={(e) => {
+                          let val = Math.max(1, Math.min(72, parseInt(e.target.value) || 1));
+                          const newUntil = Date.now() + val * 3600 * 1000;
+                          localStorage.setItem("hideDeleteModalUntil", newUntil.toString());
+                          setHideDeleteModalUntil(newUntil);
+                        }}
+                        style={{ width: 60, padding: "2px 8px" }}
+                      />
+                      <button onClick={() => { localStorage.removeItem("hideDeleteModalUntil"); setHideDeleteModalUntil(0); }}>
+                        Показувати завжди
+                      </button>
+                    </div>
+                  </SettingsContainer>
+                  {siteSections.map((section) => section.key !== "hero" && renderSectionContent(section))}
+                </div>
+              </>
+            } />
+            {siteSections.map((section) => (
+              <Route 
+                key={section.key} 
+                path={`/${section.path}`} 
+                element={
+                  <div className="container" style={{ paddingTop: "40px", minHeight: "80vh" }}>
+                    {section.key === "hero" ? (
+                      <Hero heroDateString={heroDateString} onAddCity={handleAddCityFromHero} />
+                    ) : (
+                      renderSectionContent(section)
+                    )}
+                  </div>
+                } 
+              />
+            ))}
+          </Routes>
+          {isModalOpen && <Modal onClose={() => setIsModalOpen(false)} onRegister={(data) => { setUser(data); setIsModalOpen(false); }} availableAvatars={AVAILABLE_AVATARS} />}
+          {isLoginOpen && <LoginModal onClose={() => setIsLoginOpen(false)} onLogin={(data) => { setUser(data); setIsLoginOpen(false); }} />}
+          {isSettingsModalOpen && user && <UserSettingsModal onClose={() => setIsSettingsModalOpen(false)} user={user} availableAvatars={AVAILABLE_AVATARS} onUpdate={setUser} />}
+          {isVipModalOpen && <VipModal onClose={() => setIsVipModalOpen(false)} />}
+          {isShopOpen && <ShopModal onClose={() => setIsShopOpen(false)} hasVip={!!user} />}
+          {isAchivmentsOpen && <AchivmentsModal onClose={() => setIsAchivmentsOpen(false)} isDarkMode={isDarkMode} />}
 
-          <Hero
-            heroDateString={heroDateString}
-            onAddCity={handleAddCityFromHero}
+          <Menu
+            isOpen={isMenuOpen}
+            onClose={handleCloseMenu}
+            isDarkMode={isDarkMode}
+            siteSections={siteSections}
+            moveSiteSection={moveSiteSection}
+            resetSiteSections={() => setSiteSections([...DEFAULT_SITE_SECTIONS])}
+            onToggleTheme={toggleTheme}
+            onOpenShop={() => { setIsShopOpen(true); handleCloseMenu(); }}
+            onOpenAchievements={() => { setIsAchivmentsOpen(true); handleCloseMenu(); }}
+            onOpenSettings={() => { setIsSettingsModalOpen(true); handleCloseMenu(); }}
+            onLogout={handleLogout}
+            isRoutingMode={isRoutingMode}
+            setIsRoutingMode={setIsRoutingMode}
+            currentPath={location.pathname.substring(1)}
           />
-
-          <div className="container">
-            <SettingsContainer>
-              <h4 style={{ fontWeight: 700, fontSize: 16, marginBottom: 10 }}>
-                Налаштування підтвердження видалення картки погоди
-              </h4>
-              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                <label
-                  htmlFor="hideDeleteModalHours"
-                  style={{ fontWeight: 500 }}
-                >
-                  Час приховування (1-72 год):
-                </label>
-                <input
-                  id="hideDeleteModalHours"
-                  type="number"
-                  min={1}
-                  max={72}
-                  value={
-                    hideDeleteModalUntil > Date.now()
-                      ? Math.ceil((hideDeleteModalUntil - Date.now()) / 3600000)
-                      : 1
-                  }
-                  onChange={(e) => {
-                    let val = Math.max(
-                      1,
-                      Math.min(72, parseInt(e.target.value)),
-                    );
-                    const newUntil = Date.now() + val * 3600 * 1000;
-                    localStorage.setItem(
-                      "hideDeleteModalUntil",
-                      newUntil.toString(),
-                    );
-                    setHideDeleteModalUntil(newUntil);
-                  }}
-                  style={{
-                    width: 60,
-                    fontSize: 16,
-                    borderRadius: 6,
-                    border: "1px solid #aaa",
-                    padding: "2px 8px",
-                  }}
-                />
-                <button
-                  style={{
-                    marginLeft: 10,
-                    padding: "4px 12px",
-                    borderRadius: 8,
-                    border: "1px solid #aaa",
-                    background: "#ffe0b2",
-                    fontWeight: 600,
-                    cursor: "pointer",
-                  }}
-                  onClick={() => {
-                    localStorage.removeItem("hideDeleteModalUntil");
-                    setHideDeleteModalUntil(0);
-                  }}
-                >
-                  Показувати завжди
-                </button>
-                {hideDeleteModalUntil > Date.now() && (
-                  <span
-                    style={{
-                      color: "#ff7b00",
-                      fontWeight: 500,
-                      marginLeft: 10,
-                    }}
-                  >
-                    Активно ще{" "}
-                    {Math.ceil((hideDeleteModalUntil - Date.now()) / 3600000)}{" "}
-                    год.
-                  </span>
-                )}
-              </div>
-            </SettingsContainer>
-            <SectionOrder siteSections={siteSections} moveSiteSection={moveSiteSection} resetSiteSections={resetSiteSections} />
-            {siteSections.map((section) => {
-              if (section.key === "weather") {
-                return (
-                  <WeatherCardsContainer key="weather">
-                    {weatherCards.map((card) => {
-                      const isExtremeTemp = card.current.tempNum > 30 || card.current.tempNum < -10;
-                      const isExtremeWind = card.current.windNum > 10;
-                      const isExtremeUV = card.current.uv_index > 7;
-                      const chartData = {
-                        labels: card.hourly?.map((h) => h.time) || [],
-                        datasets: [
-                          {
-                            label: "Температура (°C)",
-                            data: card.hourly?.map((h) => h.tempNum) || [],
-                            fill: true,
-                            backgroundColor: "rgba(255, 179, 108, 0.2)",
-                            borderColor: "rgba(255, 179, 108, 1)",
-                            tension: 0.4,
-                            pointBackgroundColor: "rgba(255, 179, 108, 1)",
-                            pointBorderColor: "#fff",
-                          },
-                        ],
-                      };
-                      const chartOptions = {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                          legend: { display: false },
-                        },
-                        scales: {
-                          x: { display: true, grid: { display: false } },
-                          y: { display: true, grid: { display: false } },
-                        },
-                      };
-                      return (
-                        <WeatherCardComponent
-                          key={card.id}
-                          card={card}
-                          isDarkMode={isDarkMode}
-                          isLocationEnabled={isLocationEnabled}
-                          isExtremeTemp={isExtremeTemp}
-                          isExtremeWind={isExtremeWind}
-                          isExtremeUV={isExtremeUV}
-                          chartOptions={chartOptions}
-                          chartData={chartData}
-                          handleRefreshCard={handleRefreshCard}
-                          handleDeleteCard={handleDeleteCard}
-                          setIsLocationEnabled={setIsLocationEnabled}
-                        />
-                      );
-                    })}
-                  </WeatherCardsContainer>
-                );
-              }
-              if (section.key === "map") return <ClimateMap key="map" />;
-              if (section.key === "puzzles") return <Puzzles key="puzzles" />;
-              if (section.key === "aihelp")
-                return <Aihelp key="aihelp" isDarkMode={isDarkMode} />;
-              if (section.key === "news") return <News key="news" />;
-              if (section.key === "music")
-                return (
-                  <MusicPhoto
-                    key="music"
-                    user={user}
-                    onOpenRegister={() => setIsModalOpen(true)}
-                  />
-                );
-              if (section.key === "fanart")
-                return (
-                  <FanArt
-                    key="fanart"
-                    isDarkMode={isDarkMode}
-                    user={user}
-                    onOpenRegister={() => setIsModalOpen(true)}
-                  />
-                );
-              return null;
-            })}
-          </div>
-          {isModalOpen && (
-            <Modal
-              onClose={() => setIsModalOpen(false)}
-              onRegister={handleRegister}
-              availableAvatars={AVAILABLE_AVATARS}
-            />
-          )}
-          {isLoginOpen && (
-            <LoginModal
-              onClose={() => setIsLoginOpen(false)}
-              onLogin={handleLogin}
-            />
-          )}
-          {isSettingsModalOpen && user && (
-            <UserSettingsModal
-              onClose={() => setIsSettingsModalOpen(false)}
-              user={user}
-              availableAvatars={AVAILABLE_AVATARS}
-              onUpdate={handleUpdateUser}
-            />
-          )}
-          {isVipModalOpen && (
-            <VipModal onClose={() => setIsVipModalOpen(false)} />
-          )}
-          {isShopOpen && (
-            <ShopModal onClose={() => setIsShopOpen(false)} hasVip={!!user} />
-          )}
-          {isAchivmentsOpen && (
-            <AchivmentsModal
-              onClose={() => setIsAchivmentsOpen(false)}
-              isDarkMode={isDarkMode}
-            />
-          )}
         </div>
       </ThemeWrapper>
     </>

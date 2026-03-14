@@ -280,6 +280,9 @@ const Header = ({
   siteSections,
   moveSiteSection,
   resetSiteSections,
+  isRoutingMode,
+  setIsRoutingMode,
+  currentPath,
 }) => {
   const [showUltra, setShowUltra] = useState(false);
   const [isUserSearchOpen, setIsUserSearchOpen] = useState(false);
@@ -388,6 +391,14 @@ const Header = ({
         siteSections={siteSections}
         moveSiteSection={moveSiteSection}
         resetSiteSections={resetSiteSections}
+        onToggleTheme={handleThemeToggle}
+        onOpenShop={onOpenShop}
+        onOpenAchievements={onOpenAchievements}
+        onOpenSettings={onOpenSettings}
+        onLogout={onLogout}
+        isRoutingMode={isRoutingMode}
+        setIsRoutingMode={setIsRoutingMode}
+        currentPath={currentPath}
       />
       <UserSearchModal
         isOpen={isUserSearchOpen}
