@@ -11,7 +11,7 @@ const LoaderWrapper = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 994;
+  z-index: 1994;
   padding: 20px;
   box-sizing: border-box;
   opacity: ${(props) => (props.$isFadingOut ? 0 : 1)};

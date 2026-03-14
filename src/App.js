@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import styled from "styled-components";
 import Loader from "./components/Loader/Loader.jsx";
 import SectionOrder from "./components/SectionOrder/SectionOrder.jsx";
@@ -145,8 +146,15 @@ const SettingsContainer = styled.div`
     }
   }
 `;
-
-
+const DEFAULT_SITE_SECTIONS = [
+    { key: "weather", label: "Погода" },
+    { key: "map", label: "Кліматична мапа" },
+    { key: "puzzles", label: "Пазли" },
+    { key: "aihelp", label: "AI-допомога" },
+    { key: "news", label: "Новини" },
+    { key: "music", label: "Музика" },
+    { key: "fanart", label: "FanArt" },
+  ];
 const App = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isFadingOut, setIsFadingOut] = useState(false);
@@ -265,8 +273,7 @@ const App = () => {
         });
       } catch (error) {
         console.error("Помилка завантаження погоди", error);
-      }
-    },
+      }},
     [getWeatherIcon] 
   );
 
@@ -302,7 +309,7 @@ const App = () => {
       if (!card.isMain && (!card.hourly || card.hourly.length === 0)) {
         fetchWeather(card.locationName, false);
       }
-    });
+    });    
   }, [weatherCards, fetchWeather]);
   const handleAddCityFromHero = (cityObj) => {
     if (!user) {
@@ -404,20 +411,16 @@ const App = () => {
   const toggleTheme = () => setIsDarkMode(!isDarkMode);
   const capitalize = (s) => s.charAt(0).toUpperCase() + s.slice(1);
   const month = new Intl.DateTimeFormat("uk", { month: "2-digit" }).format(now);
+  const [sectionsOrder, setSectionsOrder] = useState(() => {
+    const savedOrder = localStorage.getItem("siteSectionsOrder");
+    return savedOrder ? JSON.parse(savedOrder) : [...DEFAULT_SITE_SECTIONS];
+  });
+  const [siteSections, setSiteSections] = useState([...DEFAULT_SITE_SECTIONS]);
+
   const weekday = capitalize(
     new Intl.DateTimeFormat("uk", { weekday: "long" }).format(now),
   );
   const heroDateString = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}:${String(now.getSeconds()).padStart(2, "0")} ${weekday}, ${now.getDate()}.${month}.${now.getFullYear()}`;
-  const DEFAULT_SITE_SECTIONS = [
-    { key: "weather", label: "Погода" },
-    { key: "map", label: "Кліматична мапа" },
-    { key: "puzzles", label: "Пазли" },
-    { key: "aihelp", label: "AI-допомога" },
-    { key: "news", label: "Новини" },
-    { key: "music", label: "Музика" },
-    { key: "fanart", label: "FanArt" },
-  ];
-  const [siteSections, setSiteSections] = useState([...DEFAULT_SITE_SECTIONS]);
   const moveSiteSection = (idx, dir) => {
     setSiteSections((prev) => {
       const arr = [...prev];

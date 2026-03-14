@@ -453,6 +453,10 @@ const Modal = ({ onClose, onRegister, availableAvatars = [] }) => {
     );
     if (age < 13) return setError("Реєстрація дозволена лише з 13 років!");
 
+    setShowKatScene(true);
+  };
+
+  const completeRegistration = () => {
     onRegister({
       account: formData.account,
       firstName: formData.firstName,
@@ -462,13 +466,12 @@ const Modal = ({ onClose, onRegister, availableAvatars = [] }) => {
       borderColor: formData.borderColor,
       birthDate: `${birthDate.year}-${birthDate.month.padStart(2, "0")}-${birthDate.day.padStart(2, "0")}`,
     });
-    setShowKatScene(true);
   };
 
   return (
     <>
       {showKatScene ? (
-        <KatSceneModal onClose={onClose} />
+        <KatSceneModal onClose={completeRegistration} />
       ) : (
         <ModalOverlay $isClosing={isClosing} onClick={handleClose}>
           <ModalContent $isClosing={isClosing} onClick={(e) => e.stopPropagation()}>

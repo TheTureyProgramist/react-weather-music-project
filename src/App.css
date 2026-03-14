@@ -108,6 +108,7 @@ q {
   margin: 0 auto;
   padding: 0 0px;
   box-sizing: border-box;
+  overflow-x: hidden;
 }
 
 @media (min-width: 321px) and (max-width: 480px) {
