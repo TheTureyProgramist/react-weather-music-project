@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
+import { motion, AnimatePresence } from "framer-motion";
 import turkeys from "../../photos/vip-images/ultra-vip-turkeys.webp";
 import dragons from "../../photos/vip-images/vip-dragons.jpg";
 import horse from "../../photos/vip-images/horse.jpg";
@@ -158,7 +159,7 @@ const FanBlock = styled.div`
   }
 `;
 
-const FanArtCard = styled.div`
+const FanArtCard = styled(motion.div)`
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -212,7 +213,75 @@ const ActionButton = styled.button`
   }
 `;
 
+const SearchStatusText = styled.p`
+  color: ${props => (props.$isDarkMode ? "#ccc" : "#555")};
+  margin-top: 10px;
+`;
+
+const SearchContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 30px;
+  width: 100%;
+`;
+
+const SearchInput = styled.input`
+  padding: 12px 20px;
+  border-radius: 25px;
+  border: 1px solid ${(props) => (props.$isDarkMode ? "#444" : "#ccc")};
+  background: ${(props) => (props.$isDarkMode ? "#333" : "#fff")};
+  color: ${(props) => (props.$isDarkMode ? "white" : "black")};
+  width: 100%;
+  max-width: 400px;
+  font-size: 16px;
+  outline: none;
+  &:focus {
+    border-color: #ffb36c;
+  }
+`;
+
+const SearchButton = styled(ActionButton)`
+  padding: 10px 40px;
+  width: auto;
+`;
+
+const SearchResultsGrid = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 20px;
+`;
+
+const SearchResultItem = styled.div`
+  position: relative;
+  cursor: pointer;
+  border-radius: 10px;
+  overflow: hidden;
+  &:hover img {
+    transform: scale(1.1);
+  }
+`;
+
 const FanArt = ({ isDarkMode, user, onOpenRegister }) => {
+  const [customImages, setCustomImages] = useState(() => {
+    try {
+      const saved = localStorage.getItem('fanart_custom_images');
+      return saved ? JSON.parse(saved) : [];
+    } catch (error) {
+      console.error("Failed to parse custom images from localStorage", error);
+      return [];
+    }
+  });
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
+  const [searchStatus, setSearchStatus] = useState('idle');
+  const [searchPage, setSearchPage] = useState(1);
+  const [isCooldown, setIsCooldown] = useState(false);
+  const [cooldownTime, setCooldownTime] = useState(0);
+
   const allImagesData = [
     { src: turkeys, category: "тварини" },
     { src: nicerone, category: "мультиплікація" },
@@ -231,10 +300,18 @@ const FanArt = ({ isDarkMode, user, onOpenRegister }) => {
     { src: nicerone, category: "мультиплікація" },
   ];
 
+  // Combine static and custom images
+  const combinedImages = [...allImagesData, ...customImages];
+
+  useEffect(() => {
+    localStorage.setItem('fanart_custom_images', JSON.stringify(customImages));
+  }, [customImages]);
+
   const [playlistTick, setPlaylistTick] = useState(0);
   const [selectedPlaylist, setSelectedPlaylist] = useState(null);
 
   const playlists = [
+    "ваші картинки",
     "ікони",
     "хоррор",
     "мультиплікація",
@@ -273,6 +350,121 @@ const FanArt = ({ isDarkMode, user, onOpenRegister }) => {
     printWindow.document.close();
   };
 
+  useEffect(() => {
+    const cooldownEndTime = localStorage.getItem('fanart_cooldown_end');
+    if (cooldownEndTime) {
+      const remainingTime = cooldownEndTime - Date.now();
+      if (remainingTime > 0) {
+        setIsCooldown(true);
+        setCooldownTime(Math.ceil(remainingTime / 1000));
+      } else {
+        localStorage.removeItem('fanart_cooldown_end');
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!isCooldown) return;
+
+    let timer;
+    if (cooldownTime > 0) {
+      timer = setTimeout(() => {
+        setCooldownTime(prev => prev - 1);
+      }, 1000);
+    } else {
+      setIsCooldown(false);
+      localStorage.removeItem('fanart_cooldown_end');
+    }
+
+    return () => clearTimeout(timer);
+  }, [isCooldown, cooldownTime]);
+
+  const startCooldown = () => {
+    const endTime = Date.now() + 40 * 1000;
+    localStorage.setItem('fanart_cooldown_end', endTime);
+    setIsCooldown(true);
+    setCooldownTime(40);
+  };
+
+  const handleSearch = async () => {
+    if (!searchQuery.trim()) return;
+    setSearchStatus('loading');
+    setSearchResults([]);
+    try {
+      const API_KEY = "50977795-feb18de71b048a02e0c824e54";
+      const response = await fetch(
+        `https://pixabay.com/api/?key=${API_KEY}&q=${encodeURIComponent(
+          searchQuery
+        )}&image_type=photo&per_page=12&lang=ru&page=1`
+      );
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      if (data.hits && data.hits.length > 0) {
+        setSearchResults(data.hits);
+        setSearchPage(1);
+        setSearchStatus('idle');
+      } else {
+        setSearchStatus('no-results');
+      }
+    } catch (error) {
+      console.error("Error searching Pixabay:", error);
+      setSearchStatus('error');
+    } finally {
+      startCooldown();
+    }
+  };
+
+  const handleLoadMore = async () => {
+    if (!searchQuery.trim() || isCooldown) return;
+
+    setSearchStatus('loading');
+    const nextPage = searchPage + 1;
+
+    try {
+      const API_KEY = "50977795-feb18de71b048a02e0c824e54";
+      const response = await fetch(
+        `https://pixabay.com/api/?key=${API_KEY}&q=${encodeURIComponent(
+          searchQuery
+        )}&image_type=photo&per_page=12&lang=ru&page=${nextPage}`
+      );
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+      const data = await response.json();
+      if (data.hits && data.hits.length > 0) {
+        setSearchResults(prev => [...prev, ...data.hits]);
+        setSearchPage(nextPage);
+        setSearchStatus('idle');
+      } else {
+        alert("Більше зображень не знайдено.");
+        setSearchStatus('idle');
+      }
+    } catch (error) {
+      console.error("Error loading more from Pixabay:", error);
+      setSearchStatus('error');
+    } finally {
+      startCooldown();
+    }
+  };
+
+  const handleAddCustomImage = (hit) => {
+    if (customImages.length >= 3) {
+      alert("Можна додати не більше 3 картинок.");
+      return;
+    }
+    if (customImages.some(img => img.id === hit.id)) {
+      alert("Це зображення вже додано.");
+      return;
+    }
+    const newImage = {
+      id: hit.id,
+      src: hit.webformatURL,
+      largeSrc: hit.largeImageURL,
+      category: "ваші картинки",
+    };
+    setCustomImages([...customImages, newImage]);
+  };
+
   const openPlaylistModal = (category) => {
     setSelectedPlaylist(category);
   };
@@ -281,15 +473,20 @@ const FanArt = ({ isDarkMode, user, onOpenRegister }) => {
     setSelectedPlaylist(null);
   };
 
+  const handleRemoveCustomImage = (idToRemove) => {
+    setCustomImages(prev => prev.filter(img => img.id !== idToRemove));
+  };
+
   return (
     <FanArtDiv>
       <FanArtTitle $isDarkMode={isDarkMode}>Плейлисти фан-артів(натисніть на список, отриматийте базу картин і скачуйте, друкуйте їх)</FanArtTitle>
       <PlaylistContainer>
         {playlists.map((category) => {
-          const catImages = allImagesData.filter(
+          const catImages = combinedImages.filter(
             (img) => img.category === category
           );
-          if (catImages.length === 0) return null; 
+          if (catImages.length === 0 && category !== "ваші картинки") return null; 
+          const displayImages = catImages.length > 0 ? catImages : [{ src: monody, category: "ваші картинки" }];
           
           return (
             <PlaylistItem
@@ -297,8 +494,8 @@ const FanArt = ({ isDarkMode, user, onOpenRegister }) => {
               onClick={() => openPlaylistModal(category)}
             >
               <PlaylistImageWrapper>
-                {catImages.map((img, index) => {
-                  const isActive = index === playlistTick % catImages.length;
+                {displayImages.map((img, index) => {
+                  const isActive = index === playlistTick % displayImages.length;
                   return (
                     <PlaylistImage
                       key={index}
@@ -327,31 +524,98 @@ const FanArt = ({ isDarkMode, user, onOpenRegister }) => {
             <ModalTitle $isDarkMode={isDarkMode}>
               Плейлист: {selectedPlaylist}
             </ModalTitle>
+
+            {selectedPlaylist === "ваші картинки" && (
+              <SearchContainer>
+                 <p style={{color: isDarkMode ? "#ccc" : "#555", marginBottom: "10px"}}>
+                   Знайдіть та додайте до 3-х власних зображень (Pixabay API)
+                 </p>
+                <SearchInput 
+                  $isDarkMode={isDarkMode}
+                  type="text" 
+                  placeholder="Пошук зображень. Англійською вводьте." 
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                />
+                <SearchButton type="button" onClick={handleSearch} disabled={isCooldown}>
+                  {isCooldown ? `Зачекайте ${cooldownTime}с` : 'Знайти'}
+                </SearchButton>
+                
+                {searchStatus === 'loading' && <SearchStatusText $isDarkMode={isDarkMode}>Завантаження...</SearchStatusText>}
+                {searchStatus === 'no-results' && <SearchStatusText $isDarkMode={isDarkMode}>Зображень за вашим запитом не знайдено.</SearchStatusText>}
+                {searchStatus === 'error' && <SearchStatusText $isDarkMode={isDarkMode}>Помилка пошуку. Спробуйте пізніше.</SearchStatusText>}
+
+                {searchResults.length > 0 && (
+                  <SearchButton type="button" onClick={handleLoadMore} disabled={isCooldown} style={{marginTop: '10px'}}>
+                    {isCooldown ? `Зачекайте ${cooldownTime}с` : 'Завантажити ще'}
+                  </SearchButton>
+                )}
+
+                {searchResults.length > 0 && (
+                   <SearchResultsGrid>
+                     {searchResults.map((hit) => (
+                       <SearchResultItem key={hit.id} onClick={() => handleAddCustomImage(hit)}>
+                          <BenefitImage 
+                            src={hit.previewURL} 
+                            alt={hit.tags} 
+                            style={{width: '100px', height: '100px'}}
+                          />
+                          <div style={{
+                            position: 'absolute', bottom: 0, left: 0, right: 0, 
+                            background: 'rgba(0,0,0,0.6)', color: '#fff', 
+                            fontSize: '10px', textAlign: 'center', padding: '2px'
+                          }}>+ Додати</div>
+                       </SearchResultItem>
+                     ))}
+                   </SearchResultsGrid>
+                )}
+              </SearchContainer>
+            )}
+
             <FanBlock>
-              {allImagesData
-                .filter((img) => img.category === selectedPlaylist)
-                .map((imgData, index) => (
-                  <FanArtCard key={index}>
-                    <BenefitImage
-                      src={imgData.src}
-                      alt={`Fan art - ${imgData.category}`}
-                    />
-                    <ActionButtonsContainer>
-                      <ActionButton
-                        onClick={() => handleDownload(imgData.src)}
-                        title="Скачати"
-                      >
-                        ⇩
-                      </ActionButton>
-                      <ActionButton
-                        onClick={() => handlePrint(imgData.src)}
-                        title="Роздрукувати"
-                      >
-                        ⎙
-                      </ActionButton>
-                    </ActionButtonsContainer>
-                  </FanArtCard>
-                ))}
+              <AnimatePresence>
+                {combinedImages
+                  .filter((img) => img.category === selectedPlaylist)
+                  .map((imgData) => (
+                    <FanArtCard
+                      key={imgData.id || imgData.src}
+                      layout
+                      initial={{ opacity: 0, y: 20, scale: 0.9 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.5, y: 50 }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      <BenefitImage
+                        src={imgData.src}
+                        alt={`Fan art - ${imgData.category}`}
+                      />
+                      <ActionButtonsContainer>
+                        <ActionButton
+                          onClick={() => handleDownload(imgData.src)}
+                          title="Скачати"
+                        >
+                          ⇩
+                        </ActionButton>
+                        <ActionButton
+                          onClick={() => handlePrint(imgData.src)}
+                          title="Роздрукувати"
+                        >
+                          ⎙
+                        </ActionButton>
+                        {selectedPlaylist === "ваші картинки" && (
+                          <ActionButton
+                            onClick={() => handleRemoveCustomImage(imgData.id)}
+                            title="Видалити"
+                            style={{ background: '#ff6961' }}
+                          >
+                            🗑️
+                          </ActionButton>
+                        )}
+                      </ActionButtonsContainer>
+                    </FanArtCard>
+                  ))}
+              </AnimatePresence>
             </FanBlock>
           </ModalContent>
         </ModalOverlay>
