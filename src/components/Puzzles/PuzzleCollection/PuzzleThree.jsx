@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from "react";
 import styled, { keyframes } from "styled-components";
 import mechanic from "../../../mp3/mechanik-kindom.mp3";
 import lamp from "../../../photos/hero-header/lamp.jpeg";
-
+import decor from "../../../photos/fan-art/modaldecor.jpg";
 // --- Animations ---
 const fadeIn = keyframes`from { opacity: 0; } to { opacity: 1; }`;
 
@@ -25,7 +25,9 @@ const MainConsole = styled.div`
   padding: 30px;
   border: 4px solid #ffb36c;
   border-radius: 15px;
-  box-shadow: 0 0 30px rgba(0,0,0,0.8), inset 0 0 20px #000;
+  box-shadow:
+    0 0 30px rgba(0, 0, 0, 0.8),
+    inset 0 0 20px #000;
   display: flex;
   flex-direction: column;
   gap: 25px;
@@ -147,8 +149,9 @@ const SmallControl = styled.div`
   gap: 4px;
   font-size: 10px;
   font-weight: bold;
-  
-  select, input[type="range"] {
+
+  select,
+  input[type="range"] {
     background: #111;
     color: #ffb36c;
     border: 1px solid #ffb36c;
@@ -164,7 +167,9 @@ const CheckboxLabel = styled.label`
   color: #ffb36c;
   font-size: 10px;
   cursor: pointer;
-  input { accent-color: #ffb36c; }
+  input {
+    accent-color: #ffb36c;
+  }
 `;
 
 const PuzzleThree = ({ onExit }) => {
@@ -180,9 +185,16 @@ const PuzzleThree = ({ onExit }) => {
 
   const generateCode = useCallback(() => {
     let length, maxDigit;
-    if (mode === "easy") { length = 2; maxDigit = 9; }
-    else if (mode === "normal") { length = 3; maxDigit = 5; }
-    else { length = 3; maxDigit = 9; }
+    if (mode === "easy") {
+      length = 2;
+      maxDigit = 9;
+    } else if (mode === "normal") {
+      length = 3;
+      maxDigit = 5;
+    } else {
+      length = 3;
+      maxDigit = 9;
+    }
 
     const code = [];
     while (code.length < length) {
@@ -199,7 +211,9 @@ const PuzzleThree = ({ onExit }) => {
     setIsWon(false);
   }, [generateCode]);
 
-  useEffect(() => { initGame(); }, [initGame]);
+  useEffect(() => {
+    initGame();
+  }, [initGame]);
 
   useEffect(() => {
     const audio = audioRef.current;
@@ -221,8 +235,10 @@ const PuzzleThree = ({ onExit }) => {
 
   const handleHint = () => {
     if (isWon) return;
-    const mismatchIdx = currentCode.findIndex((digit, i) => digit !== targetCode[i]);
-    
+    const mismatchIdx = currentCode.findIndex(
+      (digit, i) => digit !== targetCode[i],
+    );
+
     if (mismatchIdx !== -1) {
       const current = currentCode[mismatchIdx];
       const target = targetCode[mismatchIdx];
@@ -231,7 +247,7 @@ const PuzzleThree = ({ onExit }) => {
 
       const distUp = (target - current + range) % range;
       const distDown = (current - target + range) % range;
-      
+
       const delta = distUp <= distDown ? 1 : -1;
       changeDigit(mismatchIdx, delta);
     }
@@ -245,8 +261,21 @@ const PuzzleThree = ({ onExit }) => {
   };
 
   return (
-    <GameWrapper>
-      <h2 style={{ letterSpacing: "6px", margin: "0 0 10px 0", textShadow: "2px 2px #000" }}>
+    <GameWrapper
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      style={{
+        backgroundImage: `linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url(${decor})`,
+      }}
+    >
+      <h2
+        style={{
+          letterSpacing: "6px",
+          margin: "0 0 10px 0",
+          textShadow: "2px 2px #000",
+        }}
+      >
         SAFE MECHANISM
       </h2>
 
@@ -269,17 +298,24 @@ const PuzzleThree = ({ onExit }) => {
             <HintButton onClick={handleHint} title="Підказка">
               <img src={lamp} alt="Hint" />
             </HintButton>
-            <ActionButton onClick={initGame} title="Скинути">⏭</ActionButton>
-            <ActionButton onClick={onExit} title="Вихід">✖</ActionButton>
+            <ActionButton onClick={initGame} title="Скинути">
+              ⏭
+            </ActionButton>
+            <ActionButton onClick={onExit} title="Вихід">
+              ✖
+            </ActionButton>
           </SideControls>
         </div>
 
         {/* Статус */}
         <div style={{ height: "20px", textAlign: "center" }}>
-          {isWon ? 
-            <span style={{ color: "#4caf50", fontWeight: "bold" }}>🔓 ACCESS GRANTED</span> : 
+          {isWon ? (
+            <span style={{ color: "#4caf50", fontWeight: "bold" }}>
+              🔓 ACCESS GRANTED
+            </span>
+          ) : (
             <span style={{ opacity: 0.5, fontSize: "12px" }}>LOCKED</span>
-          }
+          )}
         </div>
 
         {/* Налаштування всередині консолі */}
@@ -295,19 +331,33 @@ const PuzzleThree = ({ onExit }) => {
 
           <SmallControl>
             <span>ЗВУК: {Math.round(volume * 100)}%</span>
-            <input 
-              type="range" min="0" max="1" step="0.1" 
-              value={volume} onChange={(e) => setVolume(parseFloat(e.target.value))} 
+            <input
+              type="range"
+              min="0"
+              max="1"
+              step="0.1"
+              value={volume}
+              onChange={(e) => setVolume(parseFloat(e.target.value))}
             />
           </SmallControl>
 
           <div style={{ display: "flex", flexDirection: "column", gap: "5px" }}>
             <CheckboxLabel>
-              <input type="checkbox" style={{color: "#ffb36c"} }checked={showGreenHint} onChange={() => setShowGreenHint(!showGreenHint)} />
+              <input
+                type="checkbox"
+                style={{ color: "#ffb36c" }}
+                checked={showGreenHint}
+                onChange={() => setShowGreenHint(!showGreenHint)}
+              />
               Зелена (Match)
             </CheckboxLabel>
             <CheckboxLabel>
-              <input type="checkbox"  style={{color: "#ffb36c"}} checked={showYellowHint} onChange={() => setShowYellowHint(!showYellowHint)} />
+              <input
+                type="checkbox"
+                style={{ color: "#ffb36c" }}
+                checked={showYellowHint}
+                onChange={() => setShowYellowHint(!showYellowHint)}
+              />
               Жовта (Exist)
             </CheckboxLabel>
           </div>

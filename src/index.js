@@ -21,6 +21,8 @@ import App from "./App.js";
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
+    {/* HashRouter не потребує basename на GitHub Pages, 
+        він автоматично працює від кореня хешу */}
     <HashRouter> 
       <App />
     </HashRouter>

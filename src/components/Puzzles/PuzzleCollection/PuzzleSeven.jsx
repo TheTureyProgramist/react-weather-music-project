@@ -1,8 +1,14 @@
-import React, { useState, useEffect, useCallback, useMemo, useRef } from "react";
+import React, {
+  useState,
+  useEffect,
+  useCallback,
+  useMemo,
+  useRef,
+} from "react";
 import styled, { keyframes, css } from "styled-components";
 import { motion, AnimatePresence } from "framer-motion";
 import music from "../../../mp3/theoty-of-everything-ll.mp3";
-
+import decor from "../../../photos/fan-art/modaldecor.jpg";
 const LEVEL_CONFIG = {
   GRID_SIZE: 10,
   PLAYER_START: { x: 1, y: 1 },
@@ -277,8 +283,7 @@ const SawIcon = styled.div`
   justify-content: center;
   background: ${(props) =>
     props.$safe ? "#4caf50" : props.$hunting ? "#ff5722" : "#f44336"};
-  box-shadow: ${(props) =>
-    props.$hunting ? "0 0 12px #ff5722" : "none"};
+  box-shadow: ${(props) => (props.$hunting ? "0 0 12px #ff5722" : "none")};
   border: none;
   &::after {
     content: "⚙️";
@@ -818,13 +823,25 @@ const PuzzleSeven = ({ onExit }) => {
     } else {
       const presets = {
         easy: {
-          label: "Легка", time: 300, lives: 10, portalCooldown: 5, sawsCount: 3,
+          label: "Легка",
+          time: 300,
+          lives: 10,
+          portalCooldown: 5,
+          sawsCount: 3,
         },
         normal: {
-          label: "Середня", time: 120, lives: 7, portalCooldown: 16, sawsCount: 5,
+          label: "Середня",
+          time: 120,
+          lives: 7,
+          portalCooldown: 16,
+          sawsCount: 5,
         },
         hard: {
-          label: "Важка", time: 90, lives: 5, portalCooldown: 25, sawsCount: 5,
+          label: "Важка",
+          time: 90,
+          lives: 5,
+          portalCooldown: 25,
+          sawsCount: 5,
         },
       };
       newConfig = presets[type];
@@ -842,7 +859,16 @@ const PuzzleSeven = ({ onExit }) => {
   }, [config]);
 
   return (
-    <GameWrapper $isHit={state.isHit}>
+    <GameWrapper
+      $isHit={state.isHit}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      onClick={() => setShowSettings(false)}
+      style={{
+        backgroundImage: `linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url(${decor})`,
+      }}
+    >
       <h4 style={{ margin: 0, color: state.isWinner ? "#00e676" : "#ffb36c" }}>
         {state.isWinner
           ? "Ви вижили!"
@@ -1003,9 +1029,7 @@ const PuzzleSeven = ({ onExit }) => {
           <span style={{ color: state.lives < 3 ? "#ff0000" : "inherit" }}>
             ❤️ {state.lives}/{config.lives}
           </span>
-          <span>
-            ⏳ {formatTime(state.timeLeft)}
-          </span>
+          <span>⏳ {formatTime(state.timeLeft)}</span>
           <span style={{ color: "#3f51b5" }}>
             🌀 {state.portalCooldown > 0 ? state.portalCooldown : "READY"}
           </span>
@@ -1030,7 +1054,10 @@ const PuzzleSeven = ({ onExit }) => {
           >
             ?
           </GameButton>
-          <GearContainer onClick={() => setShowSettings(true)} title="Налаштування">
+          <GearContainer
+            onClick={() => setShowSettings(true)}
+            title="Налаштування"
+          >
             <span className="g g1">⚙</span>
             <span className="g g2">⚙</span>
             <span className="g g3">⚙</span>
@@ -1054,8 +1081,8 @@ const PuzzleSeven = ({ onExit }) => {
             <br />• <b>Блокування 🧱:</b> Ви та пили не можете пройти по
             діагоналі крізь кут стіни.
             <br />• <b>Життя:</b> Ви починаєте з 7 ❤️.
-            <br />• <b>Евакуація 📍:</b> 8 точок. Бонус безпеки 16с діє на
-            всі пили.
+            <br />• <b>Евакуація 📍:</b> 8 точок. Бонус безпеки 16с діє на всі
+            пили.
             <br />• <b>Захист 🛡️:</b> Пили телепортуються при контакті з
             безпечною зоною.
             <br />• <b>Пастка 💀:</b> Активує режим HUNT (всі пили біжать до
@@ -1078,11 +1105,15 @@ const PuzzleSeven = ({ onExit }) => {
             onClick={() => setShowSettings(false)}
           >
             <Modal onClick={(e) => e.stopPropagation()}>
-              <h3 style={{ margin: "0", color: "#ffb36c", textAlign: "center" }}>
+              <h3
+                style={{ margin: "0", color: "#ffb36c", textAlign: "center" }}
+              >
                 Налаштування
               </h3>
 
-              <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+              <div
+                style={{ display: "flex", flexDirection: "column", gap: "8px" }}
+              >
                 <DifficultyBtn onClick={() => setDifficulty("easy")}>
                   Легка (5хв, 10❤️, 3 пили, портал 5)
                 </DifficultyBtn>
@@ -1094,34 +1125,99 @@ const PuzzleSeven = ({ onExit }) => {
                 </DifficultyBtn>
               </div>
 
-              <hr style={{ borderColor: "#ffb36c", width: "100%", margin: "5px 0" }} />
+              <hr
+                style={{
+                  borderColor: "#ffb36c",
+                  width: "100%",
+                  margin: "5px 0",
+                }}
+              />
 
-              <span style={{ fontSize: "14px", textAlign: "center", color: "#ffb36c" }}>
+              <span
+                style={{
+                  fontSize: "14px",
+                  textAlign: "center",
+                  color: "#ffb36c",
+                }}
+              >
                 Власні параметри:
               </span>
 
               <CustomRow>
                 <span>Час: {formatTime(tempConfig.time)}</span>
-                <input type="range" min="60" max="300" step="10" value={tempConfig.time} onChange={(e) => setTempConfig({ ...tempConfig, time: parseInt(e.target.value) })} />
+                <input
+                  type="range"
+                  min="60"
+                  max="300"
+                  step="10"
+                  value={tempConfig.time}
+                  onChange={(e) =>
+                    setTempConfig({
+                      ...tempConfig,
+                      time: parseInt(e.target.value),
+                    })
+                  }
+                />
               </CustomRow>
               <CustomRow>
                 <span>Пили: {tempConfig.sawsCount}</span>
-                <input type="range" min="1" max="5" value={tempConfig.sawsCount} onChange={(e) => setTempConfig({ ...tempConfig, sawsCount: parseInt(e.target.value) })} />
+                <input
+                  type="range"
+                  min="1"
+                  max="5"
+                  value={tempConfig.sawsCount}
+                  onChange={(e) =>
+                    setTempConfig({
+                      ...tempConfig,
+                      sawsCount: parseInt(e.target.value),
+                    })
+                  }
+                />
               </CustomRow>
               <CustomRow>
                 <span>Життя: {tempConfig.lives}</span>
-                <input type="range" min="1" max="10" value={tempConfig.lives} onChange={(e) => setTempConfig({ ...tempConfig, lives: parseInt(e.target.value) })} />
+                <input
+                  type="range"
+                  min="1"
+                  max="10"
+                  value={tempConfig.lives}
+                  onChange={(e) =>
+                    setTempConfig({
+                      ...tempConfig,
+                      lives: parseInt(e.target.value),
+                    })
+                  }
+                />
               </CustomRow>
               <CustomRow>
-                <span>Перезарядка порталу: {tempConfig.portalCooldown} ходів</span>
-                <input type="range" min="1" max="30" value={tempConfig.portalCooldown} onChange={(e) => setTempConfig({ ...tempConfig, portalCooldown: parseInt(e.target.value) })} />
+                <span>
+                  Перезарядка порталу: {tempConfig.portalCooldown} ходів
+                </span>
+                <input
+                  type="range"
+                  min="1"
+                  max="30"
+                  value={tempConfig.portalCooldown}
+                  onChange={(e) =>
+                    setTempConfig({
+                      ...tempConfig,
+                      portalCooldown: parseInt(e.target.value),
+                    })
+                  }
+                />
               </CustomRow>
 
-              <DifficultyBtn onClick={() => setDifficulty("custom", tempConfig)} style={{ background: "#4e342e", marginTop: "10px" }}>
+              <DifficultyBtn
+                onClick={() => setDifficulty("custom", tempConfig)}
+                style={{ background: "#4e342e", marginTop: "10px" }}
+              >
                 Застосувати власні
               </DifficultyBtn>
 
-              <DifficultyBtn onClick={() => setShowSettings(false)} style={{ background: "#1b110f" }}>
+              <DifficultyBtn
+                onClick={() => setShowSettings(false)}
+                style={{ background: "#1b110f" }}
+              >
                 Закрити
               </DifficultyBtn>
             </Modal>

@@ -8,6 +8,7 @@ import React, {
 import styled, { keyframes } from "styled-components";
 import { motion, AnimatePresence } from "framer-motion";
 import lamp from "../../../photos/hero-header/lamp.jpeg";
+import decor from "../../../photos/fan-art/modaldecor.jpg";
 const fadeIn = keyframes`
   from { opacity: 0; }
   to { opacity: 1; }
@@ -82,6 +83,11 @@ const GameWrapper = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  // background-image:
+  //   linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url(${decor});
+  // background-size: cover;
+  // background-position: center;
+  // background-repeat: no-repeat;
   gap: 15px;
   animation: ${fadeIn} 0.5s ease-in-out;
   height: 100vh;
@@ -201,20 +207,19 @@ const GearContainer = styled(GameButton)`
     animation: ${rotate} 3s linear infinite;
   }
 `;
-
 const ModalOverlay = styled(motion.div)`
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.85);
+  background-color: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(5px);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 100;
 `;
-
 const Modal = styled.div`
   background: #2e1a16;
   border: 3px solid #ffb36c;
@@ -578,7 +583,15 @@ const PuzzleOne = ({ onExit }) => {
     `${Math.floor(s / 60)}:${(s % 60).toString().padStart(2, "0")}`;
 
   return (
-    <GameWrapper>
+    <GameWrapper
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      onClick={() => setShowSettings(false)}
+      style={{
+        backgroundImage: `linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url(${decor})`,
+      }}
+    >
       <Board $cols={config.cols} $rows={config.rows}>
         {tiles.map((tile, index) => {
           const row = Math.floor(tile.id / config.cols);

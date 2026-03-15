@@ -3,7 +3,7 @@ import styled, { keyframes } from "styled-components";
 import { motion, AnimatePresence } from "framer-motion";
 import asium from "../../../mp3/harmonic-japan.mp3";
 import lamp from "../../../photos/hero-header/lamp.jpeg";
-
+import decor from "../../../photos/fan-art/modaldecor.jpg";
 // --- Animations ---
 const fadeIn = keyframes`from { opacity: 0; } to { opacity: 1; }`;
 const rotate = keyframes`from { transform: rotate(0deg); } to { transform: rotate(360deg); }`;
@@ -348,11 +348,18 @@ const PuzzleTwo = ({ onExit }) => {
   };
 
   const showHint = () => {
-    if (isShowing || isWon || isError || isHinting || userSequence.length >= sequence.length) return;
-    
+    if (
+      isShowing ||
+      isWon ||
+      isError ||
+      isHinting ||
+      userSequence.length >= sequence.length
+    )
+      return;
+
     setIsHinting(true);
     const nextCorrectIndex = sequence[userSequence.length];
-    
+
     setActiveCube(nextCorrectIndex);
     setTimeout(() => {
       setActiveCube(null);
@@ -398,7 +405,16 @@ const PuzzleTwo = ({ onExit }) => {
   };
 
   return (
-    <GameWrapper className={isError ? "error-flash" : ""}>
+    <GameWrapper
+      className={isError ? "error-flash" : ""}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      onClick={() => setShowSettings(false)}
+      style={{
+        backgroundImage: `linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url(${decor})`,
+      }}
+    >
       <div style={{ height: "40px", zIndex: 60 }}>
         {isWon ? (
           <h2 style={{ color: "#4caf50", margin: 0 }}>Перемога! 🎉</h2>
@@ -412,8 +428,8 @@ const PuzzleTwo = ({ onExit }) => {
               ? "Буде перезапущено..."
               : isShowing
                 ? "Уважно стежте..."
-                : isHinting 
-                  ? "Підказка..." 
+                : isHinting
+                  ? "Підказка..."
                   : "Ваш хід!"}
           </h3>
         )}
@@ -434,13 +450,14 @@ const PuzzleTwo = ({ onExit }) => {
       <BottomPanel>
         <StatsBlock>
           <span style={{ fontSize: "15px" }}>
-            <strong>Рівень:</strong> {config.label}. <strong>Прогрес:</strong> {userSequence.length} / {sequence.length}
+            <strong>Рівень:</strong> {config.label}. <strong>Прогрес:</strong>{" "}
+            {userSequence.length} / {sequence.length}
           </span>
         </StatsBlock>
         <Controls>
-          <HintButton 
-            src={lamp} 
-            onClick={showHint} 
+          <HintButton
+            src={lamp}
+            onClick={showHint}
             disabled={isShowing || isError || isWon || isHinting}
           />
           <GameButton onClick={toggleVolume}>

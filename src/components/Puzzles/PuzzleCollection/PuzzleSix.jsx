@@ -1,8 +1,13 @@
-import React, { useState, useEffect, useCallback, useRef, useMemo } from "react";
+import React, {
+  useState,
+  useEffect,
+  useCallback,
+  useRef,
+  useMemo,
+} from "react";
 import styled, { keyframes } from "styled-components";
 import { motion, AnimatePresence } from "framer-motion";
-
-// --- Анімації ---
+import decor from "../../../photos/fan-art/modaldecor.jpg";
 const fadeIn = keyframes`from { opacity: 0; } to { opacity: 1; }`;
 
 const shake = keyframes`
@@ -311,36 +316,120 @@ const PuzzleSix = ({ onExit }) => {
   // База даних музики та картинок
   const puzzleImages = useMemo(
     () => [
-      { image: require("../../../photos/vip-images/vip-dinofroz.webp"), audio: require("../../../mp3/dinofroz.mp3") },
-      { image: require("../../../photos/fan-art/monody.jpg"), audio: require("../../../mp3/thefatrat-monody.mp3") },
-      { image: require("../../../photos/vip-images/asium.jpg"), audio: require("../../../mp3/harmonic-japan.mp3") },
-      { image: require("../../../photos/vip-images/mechannic.jpg"), audio: require("../../../mp3/mechanik-kindom.mp3") },
-      { image: require("../../../photos/vip-images/christmas.jpg"), audio: require("../../../mp3/kolada.mp3") },
-      { image: require("../../../photos/vip-images/ultra-vip-turkeys.webp"), audio: require("../../../mp3/turkeys.mp3") },
-      { image: require("../../../photos/fan-art/monody.jpg"), audio: require("../../../mp3/thefatrat-monody.mp3") },
-      { image: require("../../../photos/vip-images/vip-desert.webp"), audio: require("../../../mp3/wind.mp3") },
-      { image: require("../../../photos/vip-images/horror.jpg"), audio: require("../../../mp3/horror.mp3") },
-      { image: require("../../../photos/vip-images/horse.jpg"), audio: require("../../../mp3/horse.mp3") },
-      { image: require("../../../photos/vip-images/vip-dragons.jpg"), audio: require("../../../mp3/dragon.mp3") },
-      { image: require("../../../photos/vip-images/vip-soloveyko.jpg"), audio: require("../../../mp3/soloveyko.mp3") },
-      { image: require("../../../photos/vip-images/asium.jpg"), audio: require("../../../mp3/harmonic-japan.mp3") },
-      { image: require("../../../photos/vip-images/mechannic.jpg"), audio: require("../../../mp3/mechanik-kindom.mp3") },
-      { image: require("../../../photos/vip-images/mechannic.jpg"), audio: require("../../../mp3/zootopia.mp3") },
-      { image: require("../../../photos/vip-images/mechannic.jpg"), audio: require("../../../mp3/zootopiatwo.mp3") },
-      { image: require("../../../photos/vip-images/mechannic.jpg"), audio: require("../../../mp3/mia-and-me.mp3") },
-      { image: require("../../../photos/vip-images/mechannic.jpg"), audio: require("../../../mp3/malatkotv-chapterone.mp3") },
-      { image: require("../../../photos/vip-images/mechannic.jpg"), audio: require("../../../mp3/malatkotv-chaptertwo.mp3") },
-      { image: require("../../../photos/vip-images/mechannic.jpg"), audio: require("../../../mp3/malatkotv-chapterthree.mp3") },
-      { image: require("../../../photos/vip-images/mechannic.jpg"), audio: require("../../../mp3/electrodynamix.mp3") },
-      { image: require("../../../photos/fan-art/clubstep.jpg"), audio: require("../../../mp3/clubstep.mp3") },
-      { image: require("../../../photos/vip-images/mechannic.jpg"), audio: require("../../../mp3/fingerdash.mp3") },
-      { image: require("../../../photos/fan-art/theorytwo.jpg"), audio: require("../../../mp3/theoty-of-everything-ll.mp3") },
-      { image: require("../../../photos/fan-art/deadlocked.jpg"), audio: require("../../../mp3/deadlocked.mp3") },
-      { image: require("../../../photos/fan-art/theory.jpg"), audio: require("../../../mp3/theory-of-everyting.mp3") },
-      { image: require("../../../photos/fan-art/unity.jpg"), audio: require("../../../mp3/unity.mp3") },
-      { image: require("../../../photos/vip-images/vip-forest.webp"), audio: require("../../../mp3/calling.mp3") },
+      {
+        image: require("../../../photos/vip-images/vip-dinofroz.webp"),
+        audio: require("../../../mp3/dinofroz.mp3"),
+      },
+      {
+        image: require("../../../photos/fan-art/monody.jpg"),
+        audio: require("../../../mp3/thefatrat-monody.mp3"),
+      },
+      {
+        image: require("../../../photos/vip-images/asium.jpg"),
+        audio: require("../../../mp3/harmonic-japan.mp3"),
+      },
+      {
+        image: require("../../../photos/vip-images/mechannic.jpg"),
+        audio: require("../../../mp3/mechanik-kindom.mp3"),
+      },
+      {
+        image: require("../../../photos/vip-images/christmas.jpg"),
+        audio: require("../../../mp3/kolada.mp3"),
+      },
+      {
+        image: require("../../../photos/vip-images/ultra-vip-turkeys.webp"),
+        audio: require("../../../mp3/turkeys.mp3"),
+      },
+      {
+        image: require("../../../photos/fan-art/monody.jpg"),
+        audio: require("../../../mp3/thefatrat-monody.mp3"),
+      },
+      {
+        image: require("../../../photos/vip-images/vip-desert.webp"),
+        audio: require("../../../mp3/wind.mp3"),
+      },
+      {
+        image: require("../../../photos/vip-images/horror.jpg"),
+        audio: require("../../../mp3/horror.mp3"),
+      },
+      {
+        image: require("../../../photos/vip-images/horse.jpg"),
+        audio: require("../../../mp3/horse.mp3"),
+      },
+      {
+        image: require("../../../photos/vip-images/vip-dragons.jpg"),
+        audio: require("../../../mp3/dragon.mp3"),
+      },
+      {
+        image: require("../../../photos/vip-images/vip-soloveyko.jpg"),
+        audio: require("../../../mp3/soloveyko.mp3"),
+      },
+      {
+        image: require("../../../photos/vip-images/asium.jpg"),
+        audio: require("../../../mp3/harmonic-japan.mp3"),
+      },
+      {
+        image: require("../../../photos/vip-images/mechannic.jpg"),
+        audio: require("../../../mp3/mechanik-kindom.mp3"),
+      },
+      {
+        image: require("../../../photos/vip-images/mechannic.jpg"),
+        audio: require("../../../mp3/zootopia.mp3"),
+      },
+      {
+        image: require("../../../photos/vip-images/mechannic.jpg"),
+        audio: require("../../../mp3/zootopiatwo.mp3"),
+      },
+      {
+        image: require("../../../photos/vip-images/mechannic.jpg"),
+        audio: require("../../../mp3/mia-and-me.mp3"),
+      },
+      {
+        image: require("../../../photos/vip-images/mechannic.jpg"),
+        audio: require("../../../mp3/malatkotv-chapterone.mp3"),
+      },
+      {
+        image: require("../../../photos/vip-images/mechannic.jpg"),
+        audio: require("../../../mp3/malatkotv-chaptertwo.mp3"),
+      },
+      {
+        image: require("../../../photos/vip-images/mechannic.jpg"),
+        audio: require("../../../mp3/malatkotv-chapterthree.mp3"),
+      },
+      {
+        image: require("../../../photos/vip-images/mechannic.jpg"),
+        audio: require("../../../mp3/electrodynamix.mp3"),
+      },
+      {
+        image: require("../../../photos/fan-art/clubstep.jpg"),
+        audio: require("../../../mp3/clubstep.mp3"),
+      },
+      {
+        image: require("../../../photos/vip-images/mechannic.jpg"),
+        audio: require("../../../mp3/fingerdash.mp3"),
+      },
+      {
+        image: require("../../../photos/fan-art/theorytwo.jpg"),
+        audio: require("../../../mp3/theoty-of-everything-ll.mp3"),
+      },
+      {
+        image: require("../../../photos/fan-art/deadlocked.jpg"),
+        audio: require("../../../mp3/deadlocked.mp3"),
+      },
+      {
+        image: require("../../../photos/fan-art/theory.jpg"),
+        audio: require("../../../mp3/theory-of-everyting.mp3"),
+      },
+      {
+        image: require("../../../photos/fan-art/unity.jpg"),
+        audio: require("../../../mp3/unity.mp3"),
+      },
+      {
+        image: require("../../../photos/vip-images/vip-forest.webp"),
+        audio: require("../../../mp3/calling.mp3"),
+      },
     ],
-    []
+    [],
   );
 
   const [currentMediaIndex, setCurrentMediaIndex] = useState(0);
@@ -403,7 +492,7 @@ const PuzzleSix = ({ onExit }) => {
   // Функції перемикання слайдера
   const handlePrev = () => {
     setCurrentMediaIndex(
-      (prev) => (prev - 1 + puzzleImages.length) % puzzleImages.length
+      (prev) => (prev - 1 + puzzleImages.length) % puzzleImages.length,
     );
   };
 
@@ -455,7 +544,7 @@ const PuzzleSix = ({ onExit }) => {
 
         for (let other of newLenses) {
           const dist = Math.sqrt(
-            Math.pow(lens.x - other.x, 2) + Math.pow(lens.y - other.y, 2)
+            Math.pow(lens.x - other.x, 2) + Math.pow(lens.y - other.y, 2),
           );
           if (dist < minDistance) {
             collision = true;
@@ -483,8 +572,6 @@ const PuzzleSix = ({ onExit }) => {
           if (lens.locked || lens.disabled) return lens;
 
           let currentSpeed = lens.baseSpeed;
-
-          // Екстремальна важкість: диски пришвидшуються в моментах наближення до синхронізації
           if (config.variableBoost) {
             const absRot = Math.abs(lens.rotation % 360);
             if (absRot < 45 || absRot > 315) {
@@ -497,7 +584,7 @@ const PuzzleSix = ({ onExit }) => {
             speed: currentSpeed,
             rotation: (lens.rotation + currentSpeed) % 360,
           };
-        })
+        }),
       );
       requestRef.current = requestAnimationFrame(updateRotation);
     }
@@ -533,7 +620,7 @@ const PuzzleSix = ({ onExit }) => {
 
       if (isCorrect) {
         const next = prev.map((l) =>
-          l.id === id ? { ...l, rotation: 0, locked: true } : l
+          l.id === id ? { ...l, rotation: 0, locked: true } : l,
         );
         if (next.every((l) => l.locked)) setIsWon(true);
         return next;
@@ -552,7 +639,7 @@ const PuzzleSix = ({ onExit }) => {
 
         setTimeout(() => {
           setLenses((cur) =>
-            cur.map((l) => (l.id === id ? { ...l, disabled: false } : l))
+            cur.map((l) => (l.id === id ? { ...l, disabled: false } : l)),
           );
         }, 1000);
 
@@ -609,7 +696,15 @@ const PuzzleSix = ({ onExit }) => {
   };
 
   return (
-    <GameWrapper>
+    <GameWrapper
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      onClick={() => setShowSettings(false)}
+      style={{
+        backgroundImage: `linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url(${decor})`,
+      }}
+    >
       <div style={{ height: "30px", marginTop: "10px" }}>
         <h2
           style={{
@@ -623,8 +718,6 @@ const PuzzleSix = ({ onExit }) => {
           {isWon ? "ОПТИЧНА СИНХРОНІЗАЦІЯ ЗАВЕРШЕНА" : "ОПТИЧНА СИНХРОНІЗАЦІЯ"}
         </h2>
       </div>
-
-      {/* --- Додано блок вибору картинок та музики --- */}
       <SliderContainer>
         <SliderButton onClick={handlePrev}>{"<"}</SliderButton>
         <SliderImage src={finalImage} alt="Тема пазлу" />

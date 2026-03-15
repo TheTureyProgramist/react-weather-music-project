@@ -3,7 +3,7 @@ import styled, { keyframes } from "styled-components";
 import { motion, AnimatePresence } from "framer-motion";
 import asium from "../../../mp3/dragon.mp3";
 // import lamp from "../../../photos/hero-header/lamp.jpeg";
-
+import decor from "../../../photos/fan-art/modaldecor.jpg";
 // --- Animations ---
 const fadeIn = keyframes`from { opacity: 0; } to { opacity: 1; }`;
 const rotate = keyframes`from { transform: rotate(0deg); } to { transform: rotate(360deg); }`;
@@ -69,10 +69,11 @@ const Hex = styled.div`
   align-items: center;
   justify-content: center;
   font-size: 20px;
-  box-shadow: ${(props) => (props.$visited && !props.$obstacle ? "0 0 10px #ffb36c" : "none")};
+  box-shadow: ${(props) =>
+    props.$visited && !props.$obstacle ? "0 0 10px #ffb36c" : "none"};
   z-index: ${(props) => (props.$visited ? 2 : 1)};
   opacity: ${(props) => (props.$visited ? 1 : 0.85)};
-  
+
   /* Positioning based on center of hex */
   left: ${(props) => props.$x}px;
   top: ${(props) => props.$y}px;
@@ -107,20 +108,24 @@ const MoveArrow = styled.button`
   font-size: 16px;
   cursor: pointer;
   z-index: 20;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.5);
-  transition: transform 0.1s, background 0.2s;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+  transition:
+    transform 0.1s,
+    background 0.2s;
 
   left: ${(props) => props.$x}px;
   top: ${(props) => props.$y}px;
-  
+
   /* Translate outward in the direction of the angle */
-  transform: translate(-50%, -50%) rotate(${(props) => props.$angle}deg) translateX(36px);
+  transform: translate(-50%, -50%) rotate(${(props) => props.$angle}deg)
+    translateX(36px);
 
   &:hover {
     background: #fff;
-    transform: translate(-50%, -50%) rotate(${(props) => props.$angle}deg) translateX(40px) scale(1.1);
+    transform: translate(-50%, -50%) rotate(${(props) => props.$angle}deg)
+      translateX(40px) scale(1.1);
   }
-  
+
   /* Inner icon counter-rotation is not needed if we want the arrow to point outward naturally */
   .icon {
     display: inline-block;
@@ -175,13 +180,32 @@ const GameButton = styled.button`
 const GearContainer = styled(GameButton)`
   position: relative;
   overflow: hidden;
-  .g { position: absolute; font-size: 16px; transition: 0.3s; }
-  .g1 { top: 4px; left: 14px; }
-  .g2 { bottom: 6px; left: 6px; }
-  .g3 { bottom: 6px; right: 6px; }
-  &:hover:not(:disabled) .g1 { animation: ${rotate} 3s linear infinite; }
-  &:hover:not(:disabled) .g2 { animation: ${rotateRev} 3s linear infinite; }
-  &:hover:not(:disabled) .g3 { animation: ${rotate} 3s linear infinite; }
+  .g {
+    position: absolute;
+    font-size: 16px;
+    transition: 0.3s;
+  }
+  .g1 {
+    top: 4px;
+    left: 14px;
+  }
+  .g2 {
+    bottom: 6px;
+    left: 6px;
+  }
+  .g3 {
+    bottom: 6px;
+    right: 6px;
+  }
+  &:hover:not(:disabled) .g1 {
+    animation: ${rotate} 3s linear infinite;
+  }
+  &:hover:not(:disabled) .g2 {
+    animation: ${rotateRev} 3s linear infinite;
+  }
+  &:hover:not(:disabled) .g3 {
+    animation: ${rotate} 3s linear infinite;
+  }
 `;
 
 const ModalOverlay = styled(motion.div)`
@@ -240,14 +264,14 @@ const getHexCoords = (q, r) => {
 // --- Component ---
 const PuzzleEight = ({ onExit }) => {
   const [config, setConfig] = useState({ obstacles: 6, label: "Середня" });
-  
+
   const [cells, setCells] = useState([]);
   const [pos, setPos] = useState({ q: 0, r: 0 });
   const [lives, setLives] = useState(3);
   const [shield, setShield] = useState(false);
   const [isWon, setIsWon] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
-  
+
   const [flashState, setFlashState] = useState(null); // 'error' or 'heal'
 
   const [volume, setVolume] = useState(1);
@@ -265,7 +289,10 @@ const PuzzleEight = ({ onExit }) => {
           const { x, y } = getHexCoords(q, r);
           const isCenter = q === 0 && r === 0;
           newCells.push({
-            q, r, x, y,
+            q,
+            r,
+            x,
+            y,
             isVisited: isCenter,
             isObstacle: false,
             bonus: null,
@@ -294,7 +321,9 @@ const PuzzleEight = ({ onExit }) => {
 
     // Place 1 Watchtower
     const towerCoord = validCoords.pop();
-    const towerCell = newCells.find((c) => c.q === towerCoord.q && c.r === towerCoord.r);
+    const towerCell = newCells.find(
+      (c) => c.q === towerCoord.q && c.r === towerCoord.r,
+    );
     if (towerCell) towerCell.bonus = "tower";
 
     setCells(newCells);
@@ -328,7 +357,7 @@ const PuzzleEight = ({ onExit }) => {
     const nq = pos.q + dq;
     const nr = pos.r + dr;
     const targetIdx = cells.findIndex((c) => c.q === nq && c.r === nr);
-    
+
     if (targetIdx === -1) return; // invalid move out of bounds
 
     const targetCell = cells[targetIdx];
@@ -355,7 +384,7 @@ const PuzzleEight = ({ onExit }) => {
         // Watchtower: Fill all adjacent neighbors safely
         DIRS.forEach((dir) => {
           const adjIdx = nextCells.findIndex(
-            (c) => c.q === nq + dir.q && c.r === nr + dir.r
+            (c) => c.q === nq + dir.q && c.r === nr + dir.r,
           );
           if (adjIdx !== -1) {
             nextCells[adjIdx] = { ...nextCells[adjIdx], isVisited: true };
@@ -401,18 +430,34 @@ const PuzzleEight = ({ onExit }) => {
   };
 
   // Get Safe Cells Progress
-  const safeVisitedCount = cells.filter((c) => !c.isObstacle && c.isVisited).length;
+  const safeVisitedCount = cells.filter(
+    (c) => !c.isObstacle && c.isVisited,
+  ).length;
   const totalSafeCount = cells.filter((c) => !c.isObstacle).length;
 
-  const currentCell = cells.find((c) => c.q === pos.q && c.r === pos.r) || { x: CENTER_X, y: CENTER_Y };
+  const currentCell = cells.find((c) => c.q === pos.q && c.r === pos.r) || {
+    x: CENTER_X,
+    y: CENTER_Y,
+  };
 
   return (
-    <GameWrapper className={flashState ? `${flashState}-flash` : ""}>
+    <GameWrapper
+      className={flashState ? `${flashState}-flash` : ""}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      onClick={() => setShowSettings(false)}
+      style={{
+        backgroundImage: `linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url(${decor})`,
+      }}
+    >
       <div style={{ height: "40px", zIndex: 60 }}>
         {isWon ? (
           <h2 style={{ color: "#4caf50", margin: 0 }}>Перемога! 🎉</h2>
         ) : (
-          <h3 style={{ color: "#ffb36c", margin: 0 }}>Знайдіть безпечний шлях</h3>
+          <h3 style={{ color: "#ffb36c", margin: 0 }}>
+            Знайдіть безпечний шлях
+          </h3>
         )}
       </div>
 
@@ -435,7 +480,9 @@ const PuzzleEight = ({ onExit }) => {
         {/* Стрілки управління навколо поточної позиції */}
         {!isWon &&
           DIRS.map((dir, i) => {
-            const target = cells.find((c) => c.q === pos.q + dir.q && c.r === pos.r + dir.r);
+            const target = cells.find(
+              (c) => c.q === pos.q + dir.q && c.r === pos.r + dir.r,
+            );
             if (!target) return null; // Розумні стрілки зникають на краю
 
             const dx = target.x - currentCell.x;
@@ -466,25 +513,28 @@ const PuzzleEight = ({ onExit }) => {
             {shield && " 🛡️"}
           </span>
           <span style={{ fontSize: "13px", marginTop: "4px" }}>
-            <strong>Рівень:</strong> {config.label}. <strong>Прогрес:</strong> {safeVisitedCount} / {totalSafeCount || 37}
+            <strong>Рівень:</strong> {config.label}. <strong>Прогрес:</strong>{" "}
+            {safeVisitedCount} / {totalSafeCount || 37}
           </span>
         </StatsBlock>
-        
+
         <Controls>
           <GameButton onClick={toggleVolume}>
-            {isMuted ? "🔇" : volume === 0.1 ? "🔈" : volume === 0.5 ? "🔉" : "🎵"}
+            {isMuted
+              ? "🔇"
+              : volume === 0.1
+                ? "🔈"
+                : volume === 0.5
+                  ? "🔉"
+                  : "🎵"}
           </GameButton>
           <GearContainer onClick={() => setShowSettings(true)}>
             <span className="g g1">⚙</span>
             <span className="g g2">⚙</span>
             <span className="g g3">⚙</span>
           </GearContainer>
-          <GameButton onClick={() => initGame(config)}>
-            🔄
-          </GameButton>
-          <GameButton onClick={onExit}>
-            ✖
-          </GameButton>
+          <GameButton onClick={() => initGame(config)}>🔄</GameButton>
+          <GameButton onClick={onExit}>✖</GameButton>
         </Controls>
       </BottomPanel>
 
@@ -497,8 +547,17 @@ const PuzzleEight = ({ onExit }) => {
             onClick={() => setShowSettings(false)}
           >
             <Modal onClick={(e) => e.stopPropagation()}>
-              <h3 style={{ color: "#ffb36c", textAlign: "center", margin: 0 }}>Налаштування</h3>
-              <div style={{ display: "flex", flexDirection: "column", gap: "6px", marginTop: "10px" }}>
+              <h3 style={{ color: "#ffb36c", textAlign: "center", margin: 0 }}>
+                Налаштування
+              </h3>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "6px",
+                  marginTop: "10px",
+                }}
+              >
                 <DifficultyBtn onClick={() => applyDifficulty("easy")}>
                   Легка: 4 перешкоди
                 </DifficultyBtn>
@@ -509,8 +568,17 @@ const PuzzleEight = ({ onExit }) => {
                   Екстремальна: 12 перешкод
                 </DifficultyBtn>
               </div>
-              <hr style={{ borderColor: "#ffb36c", width: "100%", margin: "10px 0" }} />
-              <DifficultyBtn onClick={() => setShowSettings(false)} style={{ background: "#1b110f" }}>
+              <hr
+                style={{
+                  borderColor: "#ffb36c",
+                  width: "100%",
+                  margin: "10px 0",
+                }}
+              />
+              <DifficultyBtn
+                onClick={() => setShowSettings(false)}
+                style={{ background: "#1b110f" }}
+              >
                 Закрити
               </DifficultyBtn>
             </Modal>

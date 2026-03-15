@@ -8,7 +8,7 @@ import React, {
 import styled, { keyframes, css } from "styled-components";
 import { motion, AnimatePresence } from "framer-motion";
 import asium from "../../../mp3/theory-of-everyting.mp3";
-
+import decor from "../../../photos/fan-art/modaldecor.jpg";
 // --- Анімації ---
 const fadeIn = keyframes`from { opacity: 0; } to { opacity: 1; }`;
 const bonusAnim = keyframes`0% { transform: scale(1); opacity: 1; } 100% { transform: scale(2); opacity: 0; }`;
@@ -759,7 +759,14 @@ const PuzzleFour = ({ onExit }) => {
   }, [config]);
 
   return (
-    <GameWrapper $isHit={isHit}>
+    <GameWrapper $isHit={isHit}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          onClick={() => setShowSettings(false)}
+          style={{
+            backgroundImage: `linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url(${decor})`,
+          }}>
       <h4 style={{ margin: 0, color: "#ffb36c" }}>
         {isEvacuating ? "ФАЗА РАДАРУ (x2 DAMAGE)" : "ЗБІР МОДУЛІВ"}
       </h4>

@@ -1,7 +1,6 @@
 import React, { useState } from "react";
-import styled, { keyframes } from "styled-components";
+import styled from "styled-components";
 import { motion, AnimatePresence } from "framer-motion";
-// Імпорти пазлів залишаються тими самими...
 import PuzzleOne from "./PuzzleCollection/PuzzleOne";
 import PuzzleTwo from "./PuzzleCollection/PuzzleTwo";
 import PuzzleThree from "./PuzzleCollection/PuzzleThree";
@@ -19,14 +18,6 @@ import laby from "../../photos/vip-modal/laby.jpeg";
 import labytwo from "../../photos/vip-modal/labytwo.jpeg";
 import puz from "../../photos/vip-modal/puz.jpeg";
 import disk from "../../photos/vip-modal/disk.jpeg";
-
-// Анімація блимання тексту
-const blink = keyframes`
-  0% { opacity: 0.4; text-shadow: 0 0 5px #ffb36c; }
-  50% { opacity: 1; text-shadow: 0 0 20px #ffb36c, 0 0 30px #ffb36c; }
-  100% { opacity: 0.4; text-shadow: 0 0 5px #ffb36c; }
-`;
-
 const MainTitle = styled.h2`
   text-align: center;
   font-size: 32px;
@@ -45,7 +36,7 @@ const PuzzlesGrid = styled(motion.div)`
 const PuzzleCard = styled(motion.div)`
   cursor: pointer;
   text-align: center;
-  position: relative; // Для позиціонування тексту на картинці
+  position: relative;
 `;
 
 const ImageWrapper = styled.div`
@@ -119,9 +110,7 @@ const FullscreenOverlay = styled.div`
 const Puzzles = () => {
   const [activeGame, setActiveGame] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
-  // Керування кількістю (починаємо з 6)
   const [visibleCount, setVisibleCount] = useState(6);
-
   const puzzleData = [
     { id: 1, title: "Пазл І", img: puzzl, type: "puzzle" },
     { id: 2, title: "Пам'ять", img: pluta, type: "memory" },
@@ -131,19 +120,13 @@ const Puzzles = () => {
     { id: 6, title: "Оптична лінза", img: disk, type: "lens" },
     { id: 7, title: "Лабіринт ІІ", img: labytwo, type: "line" },
     { id: 8, title: "Сапер", img: labytwo, type: "hex" },
-    // Тут можна додати id 9, 10... щоб перевірити кнопку
   ];
 
   const filteredPuzzles = puzzleData.filter((p) =>
     p.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
-
-  // Обрізаємо масив до поточної кількості
   const displayedPuzzles = filteredPuzzles.slice(0, visibleCount);
-
-  // Умова показу кнопки: якщо ще є не показані елементи
   const showLoadMore = filteredPuzzles.length > visibleCount;
-
   const handleLoadMore = () => {
     setVisibleCount(prev => prev + 6);
   };

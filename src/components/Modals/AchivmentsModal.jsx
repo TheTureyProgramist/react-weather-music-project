@@ -147,9 +147,10 @@ const ScrollContainer = styled.div`
 `;
 
 const CategorySection = styled.div`
-  display: flex;
+  display: ${(props) => (props.$isActive ? "flex" : "none")};
   flex-direction: column;
   gap: 12px;
+  animation: ${fadeIn} 0.5s ease-in-out;
   @media (min-width: 1920px) {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -301,8 +302,36 @@ const MainTitle = styled.h2`
   }
 `;
 
+const NavContainer = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 20px;
+  @media (min-width: 1920px) {
+    display: none;
+  }
+`;
+
+const NavButton = styled.button`
+  background: ${(props) => (props.$active ? "#a2ff6c" : "rgba(162, 255, 108, 0.1)")};
+  color: ${(props) => (props.$active ? "#093500" : "#a2ff6c")};
+  border: 1px solid #a2ff6c;
+  border-radius: 8px;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 12px;
+  transition: all 0.3s;
+  &:hover {
+    background: #a2ff6c;
+    color: #093500;
+  }
+`;
+
 const AchivmentsModal = ({ onClose }) => {
   const [isClosing, setIsClosing] = useState(false);
+  const [activeTab, setActiveTab] = useState(0);
 
   const handleClose = () => {
     setIsClosing(true);
@@ -645,9 +674,20 @@ const AchivmentsModal = ({ onClose }) => {
       <ModalContent isClosing={isClosing} onClick={(e) => e.stopPropagation()}>
         <CloseButton onClick={handleClose}>&times;</CloseButton>
         <MainTitle>Досягнення</MainTitle>
+        <NavContainer>
+          {categories.map((cat, idx) => (
+            <NavButton
+              key={idx}
+              $active={activeTab === idx}
+              onClick={() => setActiveTab(idx)}
+            >
+              {cat.title.split(" ")[0]}
+            </NavButton>
+          ))}
+        </NavContainer>
         <ScrollContainer>
           {categories.map((cat, idx) => (
-            <CategorySection key={idx}>
+            <CategorySection key={idx} $isActive={activeTab === idx}>
               <CategoryTitle $delay={`${0.2 + idx * 0.4}s`}>
                 {cat.title}
               </CategoryTitle>

@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import styled, { keyframes } from "styled-components";
 import { motion, AnimatePresence } from "framer-motion";
-
 const fadeIn = keyframes`from { opacity: 0; } to { opacity: 1; }`;
 
 const GameWrapper = styled.div`
@@ -199,7 +198,7 @@ const PuzzleTriangleFinal = ({ onExit }) => {
   };
 
   return (
-    <GameWrapper>
+    <GameWrapper >
       <h2 style={{ letterSpacing: "4px", margin: "0" }}>
         Синхронізатор
       </h2>
