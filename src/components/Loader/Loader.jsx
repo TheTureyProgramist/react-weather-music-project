@@ -1,3 +1,4 @@
+import React, { useEffect } from "react"; // Додано useEffect
 import styled from "styled-components";
 import loadimage from "../../photos/hero-header/start-image.jpg";
 
@@ -77,7 +78,7 @@ const LoaderOverlay = styled.div`
     left: 0;
     padding: 40px 20px 20px 20px;
     background: linear-gradient(
-      to end,
+      to top,
       rgba(0, 0, 0, 0.85) 0%,
       transparent 100%
     );
@@ -136,7 +137,19 @@ const LoaderText = styled.p`
 `;
 
 export default function Loader({ isLoading, isFadingOut, randomPhrase }) {
+  useEffect(() => {
+    if (isLoading) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "auto";
+    }
+    return () => {
+      document.body.style.overflow = "auto";
+    };
+  }, [isLoading]);
+
   if (!isLoading) return null;
+
   return (
     <LoaderWrapper $isFadingOut={isFadingOut}>
       <LoaderContent>
@@ -176,6 +189,7 @@ export default function Loader({ isLoading, isFadingOut, randomPhrase }) {
           </LoaderText>
         </LoaderOverlay>
       </LoaderContent>
+
       <style>{`
         @media (max-width: 600px) {
           .desktop-loader-bar { display: none !important; }

@@ -560,12 +560,8 @@ const ShopModal = ({ onClose }) => {
                     <InfoItem>
                       <span>
                         Створення, видалення погодної картки(окремо за кожний
-                        процес).
+                        процес). Зміни в налаштуваннях. 1 безкоштовна/тиждень. Доступ до JPS/доба.
                       </span>
-                      <span className="price">1 🧧</span>
-                    </InfoItem>
-                    <InfoItem>
-                      <span>Доступ до JPS/доба.</span>
                       <span className="price">2 🧧</span>
                     </InfoItem>
                     <InfoItem>
@@ -577,16 +573,12 @@ const ShopModal = ({ onClose }) => {
                       <span className="price">20-40 🧧</span>
                     </InfoItem>
                     <InfoItem>
-                      <span>Зміни в налаштуваннях. 1 безкоштовна/тиждень.</span>
-                      <span className="price">4 🧧</span>
-                    </InfoItem>
-                    <InfoItem>
                       <span>
                         Запит до ШІ (спроби за 🧧, далі 🧧 + гроші). Прискорення
-                        перезарядки кнопок(регулюється к-сть) 1 🧧 = -12с.
+                        перезарядки кнопок(регулюється к-сть) 1 🧧 = -10с.
                         Поліпшіть з <RainbowSpan>Підписками</RainbowSpan>.
                       </span>
-                      <span className="price">5 🧧</span>
+                      <span className="price">8 🧧</span>
                     </InfoItem>
                   </InfoList>
                 </div>
@@ -603,13 +595,6 @@ const ShopModal = ({ onClose }) => {
                     </InfoItem>
                     <InfoItem>
                       <span>
-                        Джекпот з шансом 20%(можливий на початку добу).
-                        Покращіть <RainbowSpan>Підписками</RainbowSpan>.
-                      </span>
-                      <span className="price">+20 🧧</span>
-                    </InfoItem>
-                    <InfoItem>
-                      <span>
                         🏆 Поліпшіть з <RainbowSpan>Підписками</RainbowSpan>.
                       </span>
                       <span className="price">20-40 🧧</span>
@@ -617,8 +602,9 @@ const ShopModal = ({ onClose }) => {
                     <InfoItem>
                       <span>
                         Стартовий набір, усі зібрані аватари(колекція їх
-                        обводок), стилі імені. Поліпшіть з{" "}
-                        <RainbowSpan>Підписками</RainbowSpan>.
+                        обводок), стилі імені. Поліпшіть з <RainbowSpan>Підписками</RainbowSpan>.
+                          Джекпот з шансом 20%(можливий на початку доби).
+                          Покращіть <RainbowSpan>Підписками</RainbowSpan>.
                       </span>
                       <span className="price">+40 🧧</span>
                     </InfoItem>
@@ -647,7 +633,7 @@ const ShopModal = ({ onClose }) => {
           }}
         >
           * Для власників <RainbowSpan>Стихія+</RainbowSpan> ціна знижена на
-          5грн, а <RainbowSpan>Стихія+ Ultra</RainbowSpan> на 15грн. Знижка діє
+          5грн, а <RainbowSpan>Стихія+ Ultra</RainbowSpan> на 10грн. Знижка діє
           і для обмежених подій. Початок нової доби о 0:00 за Київським часом.
           Ліміт конвертів 2500, ті що перевищують ліміт, будуть
           анульовані(збільште ліміт з підписками).
