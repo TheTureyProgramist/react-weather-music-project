@@ -397,6 +397,12 @@ const App = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
+  useEffect(() => {
+    if (!isRoutingMode && location.pathname !== '/') {
+      navigate('/');
+    }
+  }, [isRoutingMode, navigate, location.pathname]);
+
   const moveSiteSection = (idx, dir) => {
     setSiteSections((prev) => {
       const arr = [...prev];
@@ -538,52 +544,23 @@ const App = () => {
             />
           </div>
           <Routes>
-            <Route path="/" element={
-              <>
-                <div id="hero">
-                  <Hero heroDateString={heroDateString} onAddCity={handleAddCityFromHero} />
-                </div>
-                <div className="container">
-                  <SettingsContainer>
-                    <h4 style={{ fontWeight: 700, fontSize: 16, marginBottom: 10 }}>
-                      Налаштування підтвердження видалення картки
-                    </h4>
-                    <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                      <label htmlFor="hideDeleteModalHours">Час приховування (1-72 год):</label>
-                      <input
-                        id="hideDeleteModalHours"
-                        type="number"
-                        min={1} max={72}
-                        value={hideDeleteModalUntil > Date.now() ? Math.ceil((hideDeleteModalUntil - Date.now()) / 3600000) : 1}
-                        onChange={(e) => {
-                          let val = Math.max(1, Math.min(72, parseInt(e.target.value) || 1));
-                          const newUntil = Date.now() + val * 3600 * 1000;
-                          localStorage.setItem("hideDeleteModalUntil", newUntil.toString());
-                          setHideDeleteModalUntil(newUntil);
-                        }}
-                        style={{ width: 60, padding: "2px 8px" }}
-                      />
-                      <button onClick={() => { localStorage.removeItem("hideDeleteModalUntil"); setHideDeleteModalUntil(0); }}>
-                        Показувати завжди
-                      </button>
-                    </div>
-                  </SettingsContainer>
-                  {siteSections.map((section) => section.key !== "hero" && renderSectionContent(section))}
-                </div>
-              </>
-            } />
+            <Route path="/" element={LandingPage} />
             {siteSections.map((section) => (
               <Route 
                 key={section.key} 
                 path={`/${section.path}`} 
                 element={
-                  <div className="container" style={{ paddingTop: "40px", minHeight: "80vh" }}>
-                    {section.key === "hero" ? (
-                      <Hero heroDateString={heroDateString} onAddCity={handleAddCityFromHero} />
-                    ) : (
-                      renderSectionContent(section)
-                    )}
-                  </div>
+                  section.key === 'weather'
+                    ? HeroAndWeather
+                    : (
+                      <div className="container" style={{ paddingTop: "40px", minHeight: "80vh" }}>
+                        {section.key === "hero" ? (
+                          <Hero heroDateString={heroDateString} onAddCity={handleAddCityFromHero} />
+                        ) : (
+                          renderSectionContent(section)
+                        )}
+                      </div>
+                    )
                 } 
               />
             ))}
