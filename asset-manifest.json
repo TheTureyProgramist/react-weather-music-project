@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/react-weather-music-project/static/css/main.cc4963bd.css",
-    "main.js": "/react-weather-music-project/static/js/main.afb74f86.js",
+    "main.js": "/react-weather-music-project/static/js/main.665152b0.js",
     "static/media/unity.mp3": "/react-weather-music-project/static/media/unity.03a5211e31db9290e954.mp3",
     "static/media/theoty-of-everything-ll.mp3": "/react-weather-music-project/static/media/theoty-of-everything-ll.b04c0e12940feebb76e2.mp3",
     "static/media/deadlocked.mp3": "/react-weather-music-project/static/media/deadlocked.944d6f90fb2fcafe5fab.mp3",
@@ -52,6 +52,7 @@
     "static/media/disk.jpeg": "/react-weather-music-project/static/media/disk.ec1b2177c35aa6f2661e.jpeg",
     "static/media/realultra.jpg": "/react-weather-music-project/static/media/realultra.19e4a66a9572a75d907b.jpg",
     "static/media/vip-dinofroz.webp": "/react-weather-music-project/static/media/vip-dinofroz.9fc027dd2e3835eca9f4.webp",
+    "static/media/modaldecor.jpg": "/react-weather-music-project/static/media/modaldecor.46bc8eeda7ae7c93e8a3.jpg",
     "static/media/bell.mp3": "/react-weather-music-project/static/media/bell.ed06c3494b5caeed06d5.mp3",
     "static/media/vip-soloveyko.jpg": "/react-weather-music-project/static/media/vip-soloveyko.b49f7b8308f3480b3ecd.jpg",
     "static/media/horse.jpg": "/react-weather-music-project/static/media/horse.6805fe112e16de281cdf.jpg",
@@ -100,10 +101,10 @@
     "static/media/user.webp": "/react-weather-music-project/static/media/user.dcd7396d3070abf3abbe.webp",
     "static/media/document.webp": "/react-weather-music-project/static/media/document.5b6c056b22794272794d.webp",
     "main.cc4963bd.css.map": "/react-weather-music-project/static/css/main.cc4963bd.css.map",
-    "main.afb74f86.js.map": "/react-weather-music-project/static/js/main.afb74f86.js.map"
+    "main.665152b0.js.map": "/react-weather-music-project/static/js/main.665152b0.js.map"
   },
   "entrypoints": [
     "static/css/main.cc4963bd.css",
-    "static/js/main.afb74f86.js"
+    "static/js/main.665152b0.js"
   ]
 }
