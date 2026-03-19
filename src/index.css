@@ -17,4 +17,34 @@ git commit -m "security: remove env from git history" */
             /* https://www.youtube.com/watch?v=YolxBEvu_gI&list=PLhepvwA3BFhaI2Tq-mKAY1ODsA0KSeSyX&index=35 Динофроз-пісня*/
             
             
-            
+            /* <!-- Meteofor Weather Widget: Start -->
+<script src="https://meteofor.com.ua/pq/widget/69bc41c151f7104aa947380e/" defer></script>
+<style>
+.wthr-69bc41c151f7104aa947380e {all: initial;display: block;box-sizing: border-box;font-family: Helvetica, Arial, system-ui, sans-serif;font-size: 14px;line-height: 1.4;color: #000;background-color: #fff;}
+.wthr-69bc41c151f7104aa947380e *,.wthr-69bc41c151f7104aa947380e *::before,.wthr-69bc41c151f7104aa947380e *::after {box-sizing: inherit;line-height: inherit;}
+.wthr-69bc41c151f7104aa947380e-theme-dark {background-color: #000;color: #fff;}
+@media (prefers-color-scheme: dark) {.wthr-69bc41c151f7104aa947380e-theme-auto {background-color: #000;color: #fff;}}
+.wthr-69bc41c151f7104aa947380e a,.wthr-69bc41c151f7104aa947380e a:hover,.wthr-69bc41c151f7104aa947380e a:active,.wthr-69bc41c151f7104aa947380e a:visited {color: inherit;text-decoration: none;cursor: pointer;}
+.wthr-69bc41c151f7104aa947380e img {display: block;max-width: none;height: auto;border: 0;}
+.wthr-69bc41c151f7104aa947380e svg {--ib-svg-color: currentColor;}
+.wthr-69bc41c151f7104aa947380e-h {padding: 10px;}
+.wthr-69bc41c151f7104aa947380e-f {display: flex;align-items: center;flex-wrap: wrap;padding: 0 10px 10px 10px;gap: 3px;}
+.wthr-69bc41c151f7104aa947380e-fl {display: inline-flex;align-items: center;gap: 5px;font-size: 12px;line-height: 1;}
+</style>
+<div class="wthr-69bc41c151f7104aa947380e wthr-69bc41c151f7104aa947380e-theme-light" style="width: 300px; border-radius: 10px; display: flex; flex-direction: column; justify-content: space-between; min-height: 177px;">
+    <div class="wthr-69bc41c151f7104aa947380e-h">
+        <div style="margin-bottom:5px">&nbsp;</div>
+        <a href="https://meteofor.com.ua/weather-konotop-4934/" title="Погода у Конотопі" style="font-size: 14px; font-weight: 700;" target="_blank" rel="noopener">
+            Конотоп
+        </a>
+    </div>
+    <div class="wthr-69bc41c151f7104aa947380e-f">
+        <a class="wthr-69bc41c151f7104aa947380e-fl" style="color: #ff2b00;" href="https://meteofor.com.ua/weather-konotop-4934/month/" title="Погода у Конотопі на місяць" target="_blank" rel="noopener">
+            Погода на місяць<svg width="6" height="10" viewBox="0 0 6 10" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5.67 4.998q0 .123-.047.234a.6.6 0 0 1-.146.2l-4.354 4.26a.54.54 0 0 1-.404.17.58.58 0 0 1-.51-.288.56.56 0 0 1-.076-.293q0-.234.176-.41l3.96-3.873L.31 1.125a.56.56 0 0 1-.176-.41q0-.17.076-.299a.576.576 0 0 1 .51-.281.54.54 0 0 1 .404.17l4.354 4.26q.1.093.146.205.047.105.047.228" fill="#ff2b00"></path></svg>
+        </a>
+        <a href="https://meteofor.com.ua/" title="Погода" target="_blank" rel="noopener">
+            <img width="57" height="13" src="data:image/svg+xml;base64,PHN2ZyBjbGFzcz0iaWItbG9nbyIgd2lkdGg9IjU3IiBoZWlnaHQ9IjEzIiB2aWV3Qm94PSIwIDAgNTcgMTMiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHN0eWxlPjpyb290ey0taWItc3ZnLWNvbG9yOiMwMDA7fTwvc3R5bGU+PHBhdGggZD0iTTE3LjA3MiAxMi4zMzIgMTEuMTUuODc0IDcuNjcyIDUuNjggNC4xMTEuODc0IDIuNDM4IDMuNzkyIDcuNjczIDEwLjFsMy4wOS00LjE2MyA1LjkyMyA2LjY1Mi4zODYtLjI1OFoiIGZpbGw9IiNGRjJDMDIiLz48cGF0aCBkPSJNMi4yMTcgMTAuMTAxYzEuMDMgMCAxLjg4OS0uODU4IDEuODg5LTEuODg4IDAtMS4wNzMtLjg1OS0xLjkzMi0xLjg4OS0xLjkzMmExLjkyMyAxLjkyMyAwIDAgMC0xLjkzIDEuOTMyYzAgMS4wMy44NTggMS44ODggMS45MyAxLjg4OFoiIGZpbGw9IiNGQTAiLz48cGF0aCBkPSJNNDguODggMy40NWMtMS43NiAwLTMuMTc3IDEuMTU5LTMuMTc3IDMuMTc2IDAgMi4wMTcgMS40MTYgMy4xNzYgMy4xNzYgMy4xNzYgMS43NiAwIDMuMjE5LTEuMTU5IDMuMjE5LTMuMTc2IDAtMi4wMTctMS40Ni0zLjE3Ni0zLjIxOS0zLjE3NlptMCA0Ljk3OGMtLjk0NSAwLTEuNzE4LS41NTgtMS43MTgtMS44MDIgMC0xLjI0NS43NzMtMS44NDYgMS43MTctMS44NDYuOTQ0IDAgMS43MTcuNjAxIDEuNzE3IDEuODQ2IDAgMS4yNDQtLjc3MyAxLjgwMi0xLjcxNyAxLjgwMlptNi42MDYtNC45MzRoLS41MDljLTEuNCAwLTIuMTY0LjgzMi0yLjE2NCAyLjEzMlY5Ljc1aDEuNDA1VjUuNjdjMC0uNDQ3LjMzNC0uODA2Ljc1OS0uODA2aC42OGwtLjE3LTEuMzdaTTQ1LjExMyAxLjg3N2guMzg3bC0uMTcyLTEuNDdoLS4yMTVjLTEuOTc2IDAtMi45MjIgMS41MTMtMi45MjIgMy4zM3YuMDQzbC0xLjE2LjA4N3YxLjE2OGgxLjE2VjkuNzVoMS40NjFWNS4wMzVINDUuNVYzLjQ3OGwtMS44NDguMTczYzAtLjk1Mi4zNDQtMS43NzQgMS40NjEtMS43NzRaTTMwLjcxIDMuNDVjLTEuODAzIDAtMy4wOSAxLjE1OS0zLjA5IDMuMTc2IDAgMi4wMTcgMS4zMyAzLjE3NiAzLjA5IDMuMTc2IDEuMjQ0IDAgMi4yMzEtLjU1OCAyLjkxOC0xLjYzMWwtLjk0NC0uNjQ0Yy0uNTE1LjYwMS0xLjA3My45MDEtMS45NzUuOTAxLS43NTMgMC0xLjM4Ni0uMzktMS41NzQtMS4yNDRIMzMuOGMuMDQyLS4xMjkuMDQyLS4zODYuMDQyLS41NTggMC0yLjAxNy0xLjMzLTMuMTc2LTMuMTMzLTMuMTc2Wm0wIDEuMzNjLjczIDAgMS4zMi4zNjggMS41MTcgMS4xOTRsLTMuMTI0LjI2Yy4xMzUtMS4wMS44MDItMS40NTQgMS42MDYtMS40NTRabS01LjU4OC0yLjc0OWgtMS4zNzNsLS4wODYgMS42NzMtMS4xMTYuMDg1djEuMTU4aDEuMTE2djIuNTNjMCAxLjI0NC44NTggMi4yNzMgMi4yNzQgMi4yNzMuMyAwIC43My0uMDQzLjk4Ny0uMTI5bC0uMTcxLTEuNDE1Yy0uMjE1LjA0My0uNDMuMDg2LS44MTYuMDg2LS40MyAwLS44MTUtLjM0My0uODE1LS43NzJWNC45NDdoMS44ODhWMy40MDNsLTEuODg4LjE3MlYyLjAzMVptMTIuNDkgMS40MTljLTEuNzYgMC0zLjE3NiAxLjE1OS0zLjE3NiAzLjE3NiAwIDIuMDE3IDEuNDE2IDMuMTc2IDMuMTc2IDMuMTc2IDEuNzYgMCAzLjIxOS0xLjE1OSAzLjIxOS0zLjE3NiAwLTIuMDE3LTEuNDYtMy4xNzYtMy4yMi0zLjE3NlptMCA0Ljk3OGMtLjk0NSAwLTEuNzE3LS41NTgtMS43MTctMS44MDIgMC0xLjI0NS43NzMtMS44NDYgMS43MTctMS44NDYuOTQ0IDAgMS43MTYuNjAxIDEuNzE2IDEuODQ2IDAgMS4yNDQtLjc3MiAxLjgwMi0xLjcxNiAxLjgwMlpNMTguOTM0IDMuNDVjLTEuODAzIDAtMy4wOSAxLjE1OS0zLjA5IDMuMTc2IDAgMi4wMTcgMS4zMyAzLjE3NiAzLjA5IDMuMTc2IDEuMjQ0IDAgMi4yMzItLjU1OCAyLjkxOC0xLjYzMWwtLjk0NC0uNjQ0Yy0uNTE1LjYwMS0xLjA3My45MDEtMS45NzQuOTAxLS43NTQgMC0xLjM4Ny0uMzktMS41NzQtMS4yNDRoNC42NjRjLjA0My0uMTI5LjA0My0uMzg2LjA0My0uNTU4IDAtMi4wMTctMS4zMy0zLjE3Ni0zLjEzMy0zLjE3NlptMCAxLjMzYy43MyAwIDEuMzIuMzY4IDEuNTE3IDEuMTk0bC0zLjEyMy4yNmMuMTM1LTEuMDEuODAyLTEuNDU0IDEuNjA2LTEuNDU0WiIgZmlsbD0idmFyKC0taWItc3ZnLWNvbG9yKSIvPjwvc3ZnPg==" alt="Meteofor"/>
+        </a>
+    </div>
+</div>
+<!-- Meteofor Weather Widget: End --> */

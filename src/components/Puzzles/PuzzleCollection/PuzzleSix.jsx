@@ -317,7 +317,7 @@ const PuzzleSix = ({ onExit }) => {
   const puzzleImages = useMemo(
     () => [
       {
-        image: require("../../../photos/vip-images/vip-dinofroz.webp"),
+        image: require("../../../photos/vip-images/dinofroz/vip-dinofroz.webp"),
         audio: require("../../../mp3/dinofroz.mp3"),
       },
       {
@@ -325,7 +325,7 @@ const PuzzleSix = ({ onExit }) => {
         audio: require("../../../mp3/thefatrat-monody.mp3"),
       },
       {
-        image: require("../../../photos/vip-images/asium.jpg"),
+        image: require("../../../photos/vip-images/asium/asium.jpg"),
         audio: require("../../../mp3/harmonic-japan.mp3"),
       },
       {
@@ -337,7 +337,7 @@ const PuzzleSix = ({ onExit }) => {
         audio: require("../../../mp3/kolada.mp3"),
       },
       {
-        image: require("../../../photos/vip-images/ultra-vip-turkeys.webp"),
+        image: require("../../../photos/vip-images/turkeys/ultra-vip-turkeys.webp"),
         audio: require("../../../mp3/turkeys.mp3"),
       },
       {
@@ -349,15 +349,15 @@ const PuzzleSix = ({ onExit }) => {
         audio: require("../../../mp3/wind.mp3"),
       },
       {
-        image: require("../../../photos/vip-images/horror.jpg"),
+        image: require("../../../photos/vip-images/horror/horror.jpg"),
         audio: require("../../../mp3/horror.mp3"),
       },
       {
-        image: require("../../../photos/vip-images/horse.jpg"),
+        image: require("../../../photos/vip-images/horse/horse.jpg"),
         audio: require("../../../mp3/horse.mp3"),
       },
       {
-        image: require("../../../photos/vip-images/vip-dragons.jpg"),
+        image: require("../../../photos/vip-images/dinofroz/vip-dragons.jpg"),
         audio: require("../../../mp3/dragon.mp3"),
       },
       {
@@ -365,7 +365,7 @@ const PuzzleSix = ({ onExit }) => {
         audio: require("../../../mp3/soloveyko.mp3"),
       },
       {
-        image: require("../../../photos/vip-images/asium.jpg"),
+        image: require("../../../photos/vip-images/asium/asium.jpg"),
         audio: require("../../../mp3/harmonic-japan.mp3"),
       },
       {
@@ -381,7 +381,7 @@ const PuzzleSix = ({ onExit }) => {
         audio: require("../../../mp3/zootopiatwo.mp3"),
       },
       {
-        image: require("../../../photos/vip-images/mechannic.jpg"),
+        image: require("../../../photos/vip-images/mia/miaandme.webp"),
         audio: require("../../../mp3/mia-and-me.mp3"),
       },
       {
@@ -413,7 +413,7 @@ const PuzzleSix = ({ onExit }) => {
         audio: require("../../../mp3/theoty-of-everything-ll.mp3"),
       },
       {
-        image: require("../../../photos/fan-art/deadlocked.jpg"),
+        image: require("../../../photos/vip-images/swamp/deadlocked.jpg"),
         audio: require("../../../mp3/deadlocked.mp3"),
       },
       {
@@ -425,7 +425,7 @@ const PuzzleSix = ({ onExit }) => {
         audio: require("../../../mp3/unity.mp3"),
       },
       {
-        image: require("../../../photos/vip-images/vip-forest.webp"),
+        image: require("../../../photos/vip-images/asium/vip-forest.webp"),
         audio: require("../../../mp3/calling.mp3"),
       },
     ],

@@ -1161,7 +1161,7 @@ const musicCards = [
   },
   {
     id: 2,
-    image: require("../../photos/vip-images/vip-dinofroz.webp"),
+    image: require("../../photos/vip-images/dinofroz/vip-dinofroz.webp"),
     audio: require("../../mp3/dinofroz.mp3"),
     category: "мультфільми",
     text: "Динофроз - Mondo TV. Легендарний мультфільм на малятко ТВ(нажаль закритий). Зображено Імператора дрaконів Ніцерона.",
@@ -1171,7 +1171,7 @@ const musicCards = [
   },
   {
     id: 3,
-    image: require("../../photos/vip-images/ultra-vip-turkeys.webp"),
+    image: require("../../photos/vip-images/turkeys/ultra-vip-turkeys.webp"),
     audio: require("../../mp3/turkeys.mp3"),
     text: "Індики. Насолоджуйтеся звуками індиків. Авторське спостереження.",
     category: "природа",
@@ -1213,7 +1213,7 @@ const musicCards = [
   },
   {
     id: 6,
-    image: require("../../photos/vip-images/horror.jpg"),
+    image: require("../../photos/vip-images/horror/horror.jpg"),
     audio: require("../../mp3/horror.mp3"),
     category: "хоррор",
     text: "Ви дивилися моторошне кіно... Хоррор.",
@@ -1223,7 +1223,7 @@ const musicCards = [
   },
   {
     id: 7,
-    image: require("../../photos/vip-images/horse.jpg"),
+    image: require("../../photos/vip-images/horse/horse.jpg"),
     audio: require("../../mp3/horse.mp3"),
     category: "природа",
     text: "Кінь друг людини. Телеканал мега(автор звуку). Природа.",
@@ -1232,7 +1232,7 @@ const musicCards = [
   },
   {
     id: 8,
-    image: require("../../photos/vip-images/vip-dragons.jpg"),
+    image: require("../../photos/vip-images/dinofroz/vip-dragons.jpg"),
     audio: require("../../mp3/dragon.mp3"),
     category: "ігри",
     text: "Dragonora - MyLittleUniverse(Estoty). І знову дракони, музика доісторичного світу. Картина взята з мультфільму Динофроз. Звучить при комбінації.",
@@ -1250,7 +1250,7 @@ const musicCards = [
   },
   {
     id: 10,
-    image: require("../../photos/vip-images/asium.jpg"),
+    image: require("../../photos/vip-images/asium/asium.jpg"),
     audio: require("../../mp3/harmonic-japan.mp3"),
     category: "ігри",
     text: "Asium - My little universe(Estoty). Спокійна і прекрасна музика в японському стилі.",
@@ -1286,7 +1286,7 @@ const musicCards = [
   },
   {
     id: 14,
-    image: require("../../photos/vip-images/mechannic.jpg"),
+    image: require("../../photos/vip-images/mia/miaandme.webp"),
     audio: require("../../mp3/mia-and-me.mp3"),
     category: "мультфільми",
     text: "Мія та я. Не пожалкуєте.",
@@ -1359,7 +1359,7 @@ const musicCards = [
   },
   {
     id: 22,
-    image: require("../../photos/fan-art/deadlocked.jpg"),
+    image: require("../../photos/vip-images/swamp/deadlocked.jpg"),
     audio: require("../../mp3/deadlocked.mp3"),
     text: "Deadlocked - F77(GeometryDash). Моторошна, але епічна пісня. Друг фанат цього рівня :).",
     category: "ігри",
@@ -1387,7 +1387,7 @@ const musicCards = [
   },
   {
     id: 25,
-    image: require("../../photos/vip-images/vip-forest.webp"),
+    image: require("../../photos/vip-images/asium/vip-forest.webp"),
     audio: require("../../mp3/calling.mp3"),
     text: "TheCalling-TheFatRat. ",
     lyrics: "Скоро.",
@@ -1399,19 +1399,19 @@ const musicCards = [
 const PLAYLISTS = {
   хіти: {
     title: "Хіти",
-    image: require("../../photos/vip-images/vip-forest.webp"),
+    image: require("../../photos/vip-images/asium/vip-forest.webp"),
   },
   мультфільми: {
     title: "Мультфільми",
-    image: require("../../photos/vip-images/vip-dinofroz.webp"),
+    image: require("../../photos/vip-images/dinofroz/vip-dinofroz.webp"),
   },
   природа: {
     title: "Природа",
-    image: require("../../photos/vip-images/ultra-vip-turkeys.webp"),
+    image: require("../../photos/vip-images/turkeys/ultra-vip-turkeys.webp"),
   },
   хоррор: {
     title: "Хоррор",
-    image: require("../../photos/vip-images/horror.jpg"),
+    image: require("../../photos/vip-images/horror/horror.jpg"),
   },
   ігри: {
     title: "Ігри",

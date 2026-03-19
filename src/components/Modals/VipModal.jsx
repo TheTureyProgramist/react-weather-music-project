@@ -2,10 +2,10 @@ import React, { useState, useRef, useEffect } from "react";
 import styled, { keyframes, css } from "styled-components";
 // Імпорти фото
 import turkeys from "../../photos/vip-images/collectors-edition.jpg";
-import dinofroz from "../../photos/vip-images/vip-dinofroz.webp";
+import dinofroz from "../../photos/vip-images/dinofroz/vip-dinofroz.webp";
 import dinofrozVideo from "../../mp3/dinofroz.mp4";
 // import monody from "../../photos/vip-images/vip-forest.webp";
-import dragons from "../../photos/vip-images/vip-dragons.jpg";
+import dragons from "../../photos/vip-images/dinofroz/vip-dragons.jpg";
 import vip from "../../photos/hero-header/vip.jpg";
 import music from "../../photos/vip-modal/music.jpg";
 import ultra from "../../photos/vip-modal/realultra.jpg";
@@ -14,8 +14,8 @@ import stars from "../../photos/vip-images/stars.jpg";
 import lebid from "../../photos/vip-images/vip-lebid.jpg";
 import buton from "../../photos/vip-modal/buton.jpg";
 import texts from "../../photos/vip-modal/texts.jpg";
-import horrordog from "../../photos/vip-images/horror.jpg";
-import asium from "../../photos/vip-images/asium.jpg";
+import horrordog from "../../photos/vip-images/horror/horror.jpg";
+import asium from "../../photos/vip-images/asium/asium.jpg";
 import rainbow from "../../photos/fan-art/rainbow.webp";
 import letters from "../../photos/fan-art/letters.webp";
 import documentImg from "../../photos/fan-art/document.webp";
@@ -635,15 +635,15 @@ const VolumeControlContainer = styled.div`
 
 const ULTRA_CARDS_LIST = [
   {
-    image: require("../../photos/vip-images/ultra-vip-turkeys.webp"),
+    image: require("../../photos/vip-images/turkeys/ultra-vip-turkeys.webp"),
     audio: require("../../mp3/turkeys.mp3"),
   },
   {
-    image: require("../../photos/vip-images/vip-dinofroz.webp"),
+    image: require("../../photos/vip-images/dinofroz/vip-dinofroz.webp"),
     audio: require("../../mp3/dinofroz.mp3"),
   },
   {
-    image: require("../../photos/vip-images/horse.jpg"),
+    image: require("../../photos/vip-images/horse/horse.jpg"),
     audio: require("../../mp3/horse.mp3"),
   },
   {
@@ -655,7 +655,7 @@ const ULTRA_CARDS_LIST = [
     audio: require("../../mp3/thefatrat-monody.mp3"),
   },
   {
-    image: require("../../photos/vip-images/asium.jpg"),
+    image: require("../../photos/vip-images/asium/asium.jpg"),
     audio: require("../../mp3/harmonic-japan.mp3"),
   },
   {
@@ -868,14 +868,12 @@ const UltraPlayer = ({ volume, setVolume }) => {
           }}
         />
       </VolumeControlContainer>
-
-      {/* Black screen is just the background of the container when nothing else shows */}
       <StyledImage src={ultra} $show={step.type === "thematic"} />
       <TimeIndicator>{timeLeft}</TimeIndicator>
       <StyledVideo
         ref={videoRef}
         src={dinofrozVideo}
-        $show={step.type === "video"} // Playing but hidden during 'black' step
+        $show={step.type === "video"} 
         onEnded={handleVideoEnded}
         onTimeUpdate={handleTimeUpdate}
         playsInline

@@ -1,17 +1,17 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { motion, AnimatePresence } from "framer-motion";
-import turkeys from "../../photos/vip-images/ultra-vip-turkeys.webp";
-import dragons from "../../photos/vip-images/vip-dragons.jpg";
-import horse from "../../photos/vip-images/horse.jpg";
+import turkeys from "../../photos/vip-images/turkeys/ultra-vip-turkeys.webp";
+import dragons from "../../photos/vip-images/dinofroz/vip-dragons.jpg";
+import horse from "../../photos/vip-images/horse/horse.jpg";
 import lebid from "../../photos/vip-images/vip-lebid.jpg";
 import rooster from "../../photos/vip-images/vip-rooster.jpg";
-import nicerone from "../../photos/vip-images/vip-dinofroz.webp";
+import nicerone from "../../photos/vip-images/dinofroz/vip-dinofroz.webp";
 import soloveyko from "../../photos/vip-images/vip-soloveyko.jpg";
-import monody from "../../photos/vip-images/vip-forest.webp";
+import monody from "../../photos/vip-images/asium/vip-forest.webp";
 import volcano from "../../photos/vip-images/fire.jpg";
 import christmas from "../../photos/vip-images/christmas.jpg";
-import horror from "../../photos/vip-images/horror.jpg";
+import horror from "../../photos/vip-images/horror/horror.jpg";
 import flame from "../../photos/vip-images/flame.jpg";
 import dizel from "../../photos/vip-images/dizel.webp";
 

@@ -14,7 +14,7 @@ import {
   Legend,
   Filler,
 } from "chart.js";
-import { Line } from "react-chartjs-2";
+// import { Line } from "react-chartjs-2";
 import Menu, { DEFAULT_SITE_SECTIONS } from "./components/Header/Menu.jsx";
 import axios from "axios";
 import "./App.css";
@@ -33,15 +33,15 @@ import News from "./components/News/News.jsx";
 import AchivmentsModal from "./components/Modals/AchivmentsModal.jsx";
 import Puzzles from "./components/Puzzles/Puzzles.jsx";
 import ClimateMap from "./components/ClimateMap/ClimateMap.jsx";
-import turkeys from "./photos/vip-images/ultra-vip-turkeys.webp";
-import dragons from "./photos/vip-images/vip-dragons.jpg";
-import horrordog from "./photos/vip-images/horror.jpg";
-import horse from "./photos/vip-images/horse.jpg";
+import turkeys from "./photos/vip-images/turkeys/ultra-vip-turkeys.webp";
+import dragons from "./photos/vip-images/dinofroz/vip-dragons.jpg";
+import horrordog from "./photos/vip-images/horror/horror.jpg";
+import horse from "./photos/vip-images/horse/horse.jpg";
 import lebid from "./photos/vip-images/vip-lebid.jpg";
 import rooster from "./photos/vip-images/vip-rooster.jpg";
-import nicerone from "./photos/vip-images/vip-dinofroz.webp";
+import nicerone from "./photos/vip-images/dinofroz/vip-dinofroz.webp";
 import soloveyko from "./photos/vip-images/vip-soloveyko.jpg";
-import monody from "./photos/vip-images/vip-forest.webp";
+import monody from "./photos/vip-images/asium/vip-forest.webp";
 import dizel from "./photos/vip-images/dizel.webp";
 import flame from "./photos/vip-images/flame.jpg";
 import finances from "./photos/fan-art/finance.jpg";
@@ -197,7 +197,7 @@ const App = () => {
   useEffect(() => {
     localStorage.setItem("isRoutingMode", JSON.stringify(isRoutingMode));
     localStorage.setItem(SECTION_ORDER_STORAGE_KEY, JSON.stringify(siteSections));
-  }, [siteSections]);
+  }, [siteSections, isRoutingMode]);
 
   useEffect(() => {
     localStorage.setItem("isDarkMode", JSON.stringify(isDarkMode));
@@ -291,7 +291,7 @@ const App = () => {
         console.error("Помилка завантаження погоди", error);
       }
     },
-    [getWeatherIcon]
+    []
   );
   const getInitialLocation = useCallback(() => {
     if (!isLocationEnabled) {

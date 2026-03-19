@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import styled, { keyframes } from "styled-components";
+import styled from "styled-components";
 import dinofrozVideo from "../../mp3/dinofroz.mp4";
 import ultra from "../../photos/hero-header/start-image.jpg";
 const Overlay = styled.div`
@@ -138,15 +138,15 @@ const CheckboxContainer = styled.label`
 
 const ULTRA_CARDS_LIST = [
   {
-    image: require("../../photos/vip-images/ultra-vip-turkeys.webp"),
+    image: require("../../photos/vip-images/turkeys/ultra-vip-turkeys.webp"),
     audio: require("../../mp3/turkeys.mp3"),
   },
   {
-    image: require("../../photos/vip-images/vip-dinofroz.webp"),
+    image: require("../../photos/vip-images/dinofroz/vip-dinofroz.webp"),
     audio: require("../../mp3/dinofroz.mp3"),
   },
   {
-    image: require("../../photos/vip-images/horse.jpg"),
+    image: require("../../photos/vip-images/horse/horse.jpg"),
     audio: require("../../mp3/horse.mp3"),
   },
   {
@@ -158,7 +158,7 @@ const ULTRA_CARDS_LIST = [
     audio: require("../../mp3/thefatrat-monody.mp3"),
   },
   {
-    image: require("../../photos/vip-images/asium.jpg"),
+    image: require("../../photos/vip-images/asium/asium.jpg"),
     audio: require("../../mp3/harmonic-japan.mp3"),
   },
   {

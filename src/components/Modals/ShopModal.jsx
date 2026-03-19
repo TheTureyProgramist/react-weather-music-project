@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import styled, { keyframes, css } from "styled-components";
 import time from "../../photos/vip-images/mechannic.jpg";
-import dinofroz from "../../photos/vip-images/vip-dinofroz.webp";
+import dinofroz from "../../photos/vip-images/dinofroz/vip-dinofroz.webp";
 import turkeys from "../../photos/vip-images/collectors-edition.jpg";
 import ultra from "../../photos/vip-modal/realultra.jpg";
-import turkey from "../../photos/vip-images/ultra-vip-turkeys.webp";
+import turkey from "../../photos/vip-images/turkeys/ultra-vip-turkeys.webp";
 import VipModal from "./VipModal";
 const slideIn = keyframes`
   0% { transform: translateY(100%) scale(0.5); opacity: 0; }
