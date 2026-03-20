@@ -381,10 +381,6 @@ const PuzzleOne = ({ onExit }) => {
         image: require("../../../photos/fan-art/unity.jpg"),
         audio: require("../../../mp3/unity.mp3"),
       },
-      {
-        image: require("../../../photos/vip-images/asium/vip-forest.webp"),
-        audio: require("../../../mp3/calling.mp3"),
-      },
     ],
     [],
   );

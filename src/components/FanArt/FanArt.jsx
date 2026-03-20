@@ -14,7 +14,6 @@ import christmas from "../../photos/vip-images/christmas.jpg";
 import horror from "../../photos/vip-images/horror/horror.jpg";
 import flame from "../../photos/vip-images/flame.jpg";
 import dizel from "../../photos/vip-images/dizel.webp";
-
 const FanArtDiv = styled.div`
   margin-top: 35px;
   display: flex;

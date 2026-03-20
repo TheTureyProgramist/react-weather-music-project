@@ -1,6 +1,64 @@
 import styled, { keyframes } from "styled-components";
-import { useState, useRef, useEffect, useMemo } from "react";
+import { useState, useRef, useEffect, useMemo, useCallback } from "react";
+import dinofrozVideo from "../../mp3/dinofroz.mp4";
+import soloveyko from "../../photos/vip-images/vip-soloveyko.jpg";
+import desert from "../../photos/vip-images/vip-desert.webp";
+import harmony from "../../photos/vip-images/asium/asium.jpg";
+import horse from "../../photos/vip-images/horse/horse.jpg";
+import theorytwo from "../../photos/fan-art/theorytwo.jpg";
 
+import unity from "../../photos/fan-art/unity.jpg";
+import mecha from "../../photos/vip-images/mechannic.jpg"; 
+import monody from "../../photos/fan-art/monody.jpg";
+import christmas from "../../photos/vip-images/christmas.jpg";
+import clubstep from "../../photos/fan-art/clubstep.jpg";
+import turkeys from "../../photos/vip-images/turkeys/ultra-vip-turkeys.webp";
+//Horses
+import horsethree from "../../photos/vip-images/horse/horsethree.jpg";
+import horsetwo from "../../photos/vip-images/horse/horsetwo.jpg";
+import chess from "../../photos/vip-images/horse/chess.jpg";
+//Turkeys
+import turkeytwo from "../../photos/vip-images/turkeys/turkeytwo.jpg";
+import turkeythree from "../../photos/vip-images/turkeys/turkeysthree.jpg";
+import turkeyfour from "../../photos/vip-images/turkeys/turkeysfour.jpg";
+import turkeyfive from "../../photos/vip-images/turkeys/turkeysfive.jpg";
+import turkeysix from "../../photos/vip-images/turkeys/turkeyssix.jpg";
+import turkeysone from "../../photos/vip-images/turkeys/turkeysone.jpg";
+import turkeyseven from "../../photos/vip-images/turkeys/turkeysseven.jpg";
+//Asium
+import asiumnine from "../../photos/vip-images/asium/vip-forest.webp";
+import asiumone from "../../photos/vip-images/asium/asiumone.jpg";
+import asiumtwo from "../../photos/vip-images/asium/asiuntwo.jpg";
+import asiumthree from "../../photos/vip-images/asium/asiumthree.jpg";
+import asiumfour from "../../photos/vip-images/asium/asiumfour.jpg";
+import asiumfive from "../../photos/vip-images/asium/asiumfive.jpg";
+import asiumsix from "../../photos/vip-images/asium/asiumsix.jpg";
+import asiumseven from "../../photos/vip-images/asium/asiumseven.jpg";
+//Swamp
+import swamptwo from "../../photos/vip-images/swamp/swamptwo.jpg";
+import swampthree from "../../photos/vip-images/swamp/swampthree.jpg";
+import swampfour from "../../photos/vip-images/swamp/swampfour.jpg";
+import swampfive from "../../photos/vip-images/swamp/swampfive.jpg";
+import swampsix from "../../photos/vip-images/swamp/swampsix.jpg";
+import swampseven from "../../photos/vip-images/swamp/seampseven.jpg";
+import swampeight from "../../photos/vip-images/swamp/swampeight.jpg";
+import swampnine from "../../photos/vip-images/swamp/swampnine.jpg";
+import theory from "../../photos/fan-art/theory.jpg";
+import deadlocked from "../../photos/vip-images/swamp/deadlocked.jpg";
+//Horror
+import horrortwo from "../../photos/vip-images/horror/horrortwo.jpg";
+import horrorthree from "../../photos/vip-images/horror/horrorthree.jpg";
+import horrorfour from "../../photos/vip-images/horror/horrorfour.jpg";
+import horrorfive from "../../photos/vip-images/horror/horrorfive.jpg";
+import horror from "../../photos/vip-images/horror/horror.jpg"
+import horrorsix from "../../photos/vip-images/horror/horrorsix.jpg";
+import horrorseven from "../../photos/vip-images/horror/horrorseven.jpg";
+import horroreight from "../../photos/vip-images/horror/horroreight.jpg";
+//Динофроз
+import dinofrozone from "../../photos/vip-images/dinofroz/vip-dinofroz.webp";
+import dinofroztwo from "../../photos/vip-images/dinofroz/vip-dragons.jpg";
+//Mia and me 
+import mia from "../../photos/vip-images/mia/miaandme.webp";
 const slideIn = keyframes`
   0% { 
     transform: translateY(100%) scale(0.5);
@@ -212,6 +270,16 @@ const MusicImage = styled.img`
   &:hover {
     transform: scale(1.02);
   }
+  &::after {
+    content: '▶';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 40px;
+    color: rgba(255, 255, 255, 0.8);
+    opacity: 0.7;
+  }
 `;
 
 const HeartButton = styled.button`
@@ -229,7 +297,7 @@ const HeartButton = styled.button`
   cursor: pointer;
   z-index: 10;
   font-size: 20px;
-  color: ${(props) => (props.$isFavorite ? "red" : "#ccc")};
+  color: ${(props) => (props.$rating === 2 ? "gold" : props.$rating === 1 ? "red" : "#ccc")};
   transition: all 0.2s;
   &:hover {
     transform: scale(1.1);
@@ -572,6 +640,7 @@ const PlaylistModalContent = styled.div`
   }
 `;
 
+
 const LyricsCloseButton = styled.button`
   position: absolute;
   top: 8px;
@@ -584,6 +653,135 @@ const LyricsCloseButton = styled.button`
   &:hover {
     color: #ffb36c;
   }
+`;
+
+const FullScreenOverlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: black;
+  z-index: 2000;
+  display: flex;
+  flex-direction: column;
+  animation: ${slideIn} 0.3s ease-out;
+`;
+
+const FSHeader = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  padding: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 2010;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.7), transparent);
+`;
+
+const FSCloseButton = styled.button`
+  background: rgba(255,255,255,0.2);
+  border: none;
+  color: white;
+  font-size: 24px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+  &:hover { background: rgba(255,255,255,0.4); }
+`;
+
+const FSContent = styled.div`
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+`;
+
+const FSVideo = styled.video`
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+`;
+
+const FSImage = styled.img`
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  animation: ${fadeOut} 1s ease-in-out reverse; 
+`;
+
+const FSControls = styled.div`
+  background: rgba(20, 20, 20, 0.9);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 2010;
+`;
+
+const FSSliderContainer = styled.div`
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding: 10px;
+  background: #111;
+  height: 100px;
+  &::-webkit-scrollbar { height: 4px; }
+  &::-webkit-scrollbar-thumb { background: orange; }
+`;
+
+const FSSliderImage = styled.img`
+  height: 80px;
+  width: 120px;
+  object-fit: cover;
+  border-radius: 6px;
+  opacity: ${props => props.$active ? 1 : 0.5};
+  border: ${props => props.$active ? '2px solid orange' : 'none'};
+  cursor: pointer;
+  transition: all 0.3s;
+  &:hover { opacity: 1; }
+`;
+
+const FSTitle = styled.h2`
+  color: white;
+  margin: 0;
+  font-size: 18px;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+`;
+
+const GearModal = styled.div`
+  position: absolute;
+  bottom: 80px;
+  right: 20px;
+  background: rgba(30,30,30,0.95);
+  padding: 15px;
+  border-radius: 12px;
+  color: white;
+  width: 250px;
+  z-index: 2020;
+  border: 1px solid #444;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+`;
+
+const DownloadModal = styled.div`
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  z-index: 2030;
+  width: 300px;
+  box-shadow: 0 0 20px rgba(0,0,0,0.5);
+  text-align: center;
 `;
 
 const PlaylistCloseButton = styled.button`
@@ -667,6 +865,338 @@ const LyricsViewer = ({ lyrics, currentTime }) => {
   );
 };
 
+const FullScreenPlayer = ({ track, onClose, onNext, onPrev, rating, onRate }) => {
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [duration, setDuration] = useState(0);
+  const [volume, setVolume] = useState(1);
+  const [speed, setSpeed] = useState(1);
+  const [seekAmount, setSeekAmount] = useState(10);
+  const [showSettings, setShowSettings] = useState(false);
+  const [showDownload, setShowDownload] = useState(false);
+  const [loop, setLoop] = useState(false);
+  const [currentImgIdx, setCurrentImgIdx] = useState(0);
+  const [downloadRange, setDownloadRange] = useState({ start: 0, end: 0 });
+
+  const mediaRef = useRef(null);
+  const isDinofroz =
+    track.category === "мультфільми" ||
+    track.text.toLowerCase().includes("динофроз");
+
+  const sliderImages = useMemo(() => {
+    if (track.images && track.images.length > 0) return track.images;
+    return [track.image, track.image, track.image];
+  }, [track]);
+
+  const togglePlay = useCallback(() => {
+    if (!mediaRef.current) return;
+    if (mediaRef.current.paused) {
+      mediaRef.current.play();
+      setIsPlaying(true);
+    } else {
+      mediaRef.current.pause();
+      setIsPlaying(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    const media = mediaRef.current;
+    if (!media) return;
+
+    const updateTime = () => setProgress(media.currentTime);
+    const updateDur = () => {
+      setDuration(media.duration);
+      setDownloadRange((prev) => ({ ...prev, end: Math.floor(media.duration) }));
+    };
+    const handleEnded = () => {
+      if (!loop) setIsPlaying(false);
+    };
+
+    media.addEventListener("timeupdate", updateTime);
+    media.addEventListener("loadedmetadata", updateDur);
+    media.addEventListener("ended", handleEnded);
+
+    return () => {
+      media.removeEventListener("timeupdate", updateTime);
+      media.removeEventListener("loadedmetadata", updateDur);
+      media.removeEventListener("ended", handleEnded);
+    };
+  }, [track, loop]);
+
+  useEffect(() => {
+    if (mediaRef.current) {
+      mediaRef.current.volume = volume;
+      mediaRef.current.playbackRate = speed;
+    }
+  }, [volume, speed]);
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.code === "Escape") onClose();
+      if (!mediaRef.current) return;
+      if (e.code === "Space") {
+        e.preventDefault();
+        togglePlay();
+      } else if (e.code === "ArrowRight") {
+        mediaRef.current.currentTime = Math.min(
+          mediaRef.current.duration,
+          mediaRef.current.currentTime + 5,
+        );
+      } else if (e.code === "ArrowLeft") {
+        mediaRef.current.currentTime = Math.max(
+          0,
+          mediaRef.current.currentTime - 5,
+        );
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [onClose, togglePlay]);
+
+  useEffect(() => {
+    if (isDinofroz || !isPlaying) return;
+    const interval = setInterval(() => {
+      setCurrentImgIdx((prev) => (prev + 1) % sliderImages.length);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [isDinofroz, isPlaying, sliderImages]);
+
+  const handleScreenshot = () => {
+    const canvas = document.createElement("canvas");
+    if (isDinofroz && mediaRef.current) {
+      canvas.width = mediaRef.current.videoWidth;
+      canvas.height = mediaRef.current.videoHeight;
+      canvas.getContext("2d").drawImage(mediaRef.current, 0, 0);
+      const a = document.createElement("a");
+      a.href = canvas.toDataURL("image/jpeg");
+      a.download = `screenshot-${Date.now()}.jpg`;
+      a.click();
+      return;
+    }
+
+    const a = document.createElement("a");
+    a.href = sliderImages[currentImgIdx];
+    a.download = `screenshot-${Date.now()}.jpg`;
+    a.click();
+  };
+
+  const handlePrint = () => {
+    const imgSrc = isDinofroz ? track.image : sliderImages[currentImgIdx];
+    const printWindow = window.open("", "_blank");
+    printWindow.document.write(
+      `<html><head><title>Print</title></head><body style="text-align:center;"><img src="${imgSrc}" style="max-width:100%;" onload="window.print();window.close()" /></body></html>`,
+    );
+  };
+
+  const formatTime = (t) => {
+    const m = Math.floor(t / 60);
+    const s = Math.floor(t % 60);
+    return `${m}:${s < 10 ? "0" : ""}${s}`;
+  };
+
+  return (
+    <FullScreenOverlay>
+      <FSHeader>
+        <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+          <FSCloseButton onClick={onClose}>&times;</FSCloseButton>
+          <FSTitle>{track.text}</FSTitle>
+        </div>
+        <div style={{ display: "flex", gap: "15px" }}>
+          <ActionButton onClick={() => onRate(track.id)} title={`Оцінка: ${rating} балів`}>
+            {rating === 2 ? "❤️ ❤️" : rating === 1 ? "❤️" : "🤍"}
+          </ActionButton>
+          <ActionButton onClick={handleScreenshot} title="Скріншот">📸</ActionButton>
+          <ActionButton onClick={() => setShowDownload(true)} title="Завантажити">⇩</ActionButton>
+          <ActionButton onClick={() => setShowSettings(!showSettings)} title="Налаштування">⚙️</ActionButton>
+        </div>
+      </FSHeader>
+
+      <FSContent>
+        {isDinofroz ? (
+          <FSVideo
+            ref={mediaRef}
+            src={track.video || dinofrozVideo}
+            onClick={togglePlay}
+            playsInline
+          />
+        ) : (
+          <>
+            <FSImage src={sliderImages[currentImgIdx]} alt="Slide" />
+            <audio ref={mediaRef} src={track.audio} loop={loop} />
+          </>
+        )}
+
+        {!isPlaying && (
+          <div
+            style={{
+              position: "absolute",
+              fontSize: "80px",
+              color: "rgba(255,255,255,0.7)",
+              cursor: "pointer",
+            }}
+            onClick={togglePlay}
+          >
+            ▶
+          </div>
+        )}
+      </FSContent>
+
+      {!isDinofroz && (
+        <FSSliderContainer>
+          {sliderImages.map((img, i) => (
+            <FSSliderImage
+              key={i}
+              src={img}
+              $active={i === currentImgIdx}
+              onClick={() => setCurrentImgIdx(i)}
+            />
+          ))}
+        </FSSliderContainer>
+      )}
+
+      <FSControls>
+        <div style={{ display: "flex", alignItems: "center", gap: "10px", color: "white", fontSize: "12px" }}>
+          <span>{formatTime(progress)}</span>
+          <SeekBar
+            type="range"
+            min="0"
+            max={duration || 0}
+            value={progress}
+            onChange={(e) => (mediaRef.current.currentTime = e.target.value)}
+          />
+          <span>{formatTime(duration)}</span>
+        </div>
+
+        <div style={{ display: "flex", justifyContent: "center", gap: "20px", alignItems: "center" }}>
+          <ActionButton onClick={onPrev}>⏮</ActionButton>
+          <ActionButton onClick={() => (mediaRef.current.currentTime -= seekAmount)}>-{seekAmount}s</ActionButton>
+          <PlayButton onClick={togglePlay} style={{ transform: "scale(1.5)", background: "white", borderRadius: "50%" }}>
+            {isPlaying ? "⏸" : "▶"}
+          </PlayButton>
+          <ActionButton onClick={() => (mediaRef.current.currentTime += seekAmount)}>+{seekAmount}s</ActionButton>
+          <ActionButton onClick={onNext}>⏭</ActionButton>
+          <LoopButton $active={loop} onClick={() => setLoop(!loop)}>🔁</LoopButton>
+          <ActionButton onClick={handlePrint} title="Друк">⎙</ActionButton>
+        </div>
+      </FSControls>
+
+      {showSettings && (
+        <GearModal>
+          <h4>Налаштування</h4>
+          <SliderRow>
+            <span style={{ color: "white" }}>Гучність</span>
+            <VolumeSlider
+              type="range"
+              min="0"
+              max="1"
+              step="0.05"
+              value={volume}
+              onChange={(e) => setVolume(parseFloat(e.target.value))}
+            />
+          </SliderRow>
+          <SliderRow>
+            <span style={{ color: "white" }}>Швидкість ({speed}x)</span>
+            <SpeedSlider
+              type="range"
+              min="0.2"
+              max="2.0"
+              step="0.1"
+              value={speed}
+              onChange={(e) => setSpeed(parseFloat(e.target.value))}
+            />
+          </SliderRow>
+          <SliderRow>
+            <span style={{ color: "white" }}>Промотка ({seekAmount}с)</span>
+            <SeekAmountSlider
+              type="range"
+              min="5"
+              max="30"
+              step="5"
+              value={seekAmount}
+              onChange={(e) => setSeekAmount(parseInt(e.target.value, 10))}
+            />
+          </SliderRow>
+        </GearModal>
+      )}
+
+      {showDownload && (
+        <DownloadModal>
+          <h3>Завантаження</h3>
+          <div style={{ display: "flex", flexDirection: "column", gap: "10px", marginBottom: "15px" }}>
+            <button
+              onClick={() => {
+                const a = document.createElement("a");
+                a.href = isDinofroz ? track.video || dinofrozVideo : track.audio;
+                a.download = `full_track.${isDinofroz ? "mp4" : "mp3"}`;
+                a.click();
+              }}
+              style={{ padding: "10px", background: "orange", border: "none", borderRadius: "5px", cursor: "pointer" }}
+            >
+              Скачати повністю
+            </button>
+            <hr style={{ width: "100%" }} />
+            <label>Вибрати проміжок (сек):</label>
+            <div style={{ display: "flex", gap: "5px", justifyContent: "center" }}>
+              <input
+                type="number"
+                value={downloadRange.start}
+                onChange={(e) =>
+                  setDownloadRange({
+                    ...downloadRange,
+                    start: parseInt(e.target.value, 10) || 0,
+                  })
+                }
+                style={{ width: "60px", padding: "5px" }}
+              />
+              <span>-</span>
+              <input
+                type="number"
+                value={downloadRange.end}
+                onChange={(e) =>
+                  setDownloadRange({
+                    ...downloadRange,
+                    end: parseInt(e.target.value, 10) || 0,
+                  })
+                }
+                style={{ width: "60px", padding: "5px" }}
+              />
+            </div>
+            <button
+              onClick={() => {
+                alert(`Завантаження відрізку ${downloadRange.start}с - ${downloadRange.end}с розпочато! (Емуляція)`);
+                setShowDownload(false);
+              }}
+              style={{ padding: "8px", background: "#444", color: "white", border: "none", borderRadius: "5px", cursor: "pointer" }}
+            >
+              Скачати відрізок
+            </button>
+            {!isDinofroz && (
+              <button
+                onClick={() => {
+                  const a = document.createElement("a");
+                  a.href = sliderImages[currentImgIdx];
+                  a.download = "image.jpg";
+                  a.click();
+                }}
+                style={{ marginTop: "5px", padding: "8px", background: "green", color: "white", border: "none", borderRadius: "5px", cursor: "pointer" }}
+              >
+                Скачати поточне фото
+              </button>
+            )}
+          </div>
+          <button
+            onClick={() => setShowDownload(false)}
+            style={{ background: "transparent", border: "1px solid #333", padding: "5px 15px", borderRadius: "5px" }}
+          >
+            Закрити
+          </button>
+        </DownloadModal>
+      )}
+    </FullScreenOverlay>
+  );
+};
+
 const MusicCard = ({
   cardData,
   onOpenModal,
@@ -675,7 +1205,8 @@ const MusicCard = ({
   onTrackEnd,
   user,
   onOpenRegister,
-  isFavorite,
+  rating,
+  onOpenPlayer,
   onToggleFavorite,
   onDelete,
 }) => {
@@ -723,22 +1254,23 @@ const MusicCard = ({
     }
   }, [isCurrentTrack, onPlay]);
 
-  useEffect(() => {
-    const checkCache = async () => {
-      if (!window.caches || !audio) return;
-      try {
-        const cache = await caches.open("audio-cache");
-        const response = await cache.match(audio);
-        if (response) {
-          const blob = await response.blob();
-          objectUrlRef.current = URL.createObjectURL(blob);
-          setAudioSrc(objectUrlRef.current);
-          setIsCached(true);
-        }
-      } catch (e) {
-        console.error("Cache check failed", e);
+  const checkCache = useCallback(async () => {
+    if (!window.caches || !audio) return;
+    try {
+      const cache = await caches.open("audio-cache");
+      const response = await cache.match(audio);
+      if (response) {
+        const blob = await response.blob();
+        objectUrlRef.current = URL.createObjectURL(blob);
+        setAudioSrc(objectUrlRef.current);
+        setIsCached(true);
       }
-    };
+    } catch (e) {
+      console.error("Cache check failed", e);
+    }
+  }, [audio]);
+
+  useEffect(() => {
     checkCache();
 
     return () => {
@@ -746,7 +1278,7 @@ const MusicCard = ({
         URL.revokeObjectURL(objectUrlRef.current);
       }
     };
-  }, [audio]);
+  }, [checkCache]);
 
   const handleCacheAudio = async () => {
     if (!window.caches || !audio) {
@@ -776,7 +1308,6 @@ const MusicCard = ({
         }
       }
     } else {
-      setIsCaching(true);
       try {
         await cache.add(audio);
         const response = await cache.match(audio);
@@ -786,6 +1317,8 @@ const MusicCard = ({
         }
         objectUrlRef.current = URL.createObjectURL(blob);
         setAudioSrc(objectUrlRef.current);
+        // Force re-render to update offline status
+        await checkCache(); 
         setIsCached(true);
       } catch (error) {
         console.error("Помилка кешування аудіо:", error);
@@ -833,33 +1366,14 @@ const MusicCard = ({
   };
   const togglePlayPause = () => {
     if (audioRef.current) {
-      if (isCurrentTrack) {
-        onPlay(null);
-      } else {
-        onPlay(id);
-      }
+       // Open Modal instead of inline play
+       onOpenPlayer(id);
     }
   };
 
   const handleImageClick = (e) => {
-    if (!audioRef.current) {
-      return;
-    }
-    if (!isPlaying) {
-      onPlay(id);
-      return;
-    }
-    const rect = e.target.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-
-    let newTime;
-    if (x < rect.width / 2) {
-      newTime = Math.max(0, audioRef.current.currentTime - seekAmount);
-    } else {
-      newTime = Math.min(duration, audioRef.current.currentTime + seekAmount);
-    }
-    audioRef.current.currentTime = newTime;
-    if (videoRef.current) videoRef.current.currentTime = newTime;
+    // Open Modal instead of inline play
+    onOpenPlayer(id);
   };
 
   const handleDownloadAudio = () => {
@@ -923,18 +1437,19 @@ const MusicCard = ({
   };
 
   return (
-    <CardWrapper $isFavorite={isFavorite}>
+    <CardWrapper $isFavorite={rating > 0}>
       <MusicImageContainer>
         <HeartButton
-          $isFavorite={isFavorite}
+          $rating={rating}
           onClick={() => onToggleFavorite(id)}
           title={
-            isFavorite ? "Прибрати з улюблених" : "Додати в улюблені (ліміт 3)"
+            rating === 2 ? "2 бали (макс)" : rating === 1 ? "1 бал" : "Оцінити"
           }
         >
-          {isFavorite ? "❤️" : "🤍"}
+          {rating === 2 ? "❤️" : rating === 1 ? "❤️" : "🤍"}
         </HeartButton>
-        {cardData.video && (
+        {/* Removed inline video for cleaner UI - moved to FullScreenPlayer */}
+        {/* {cardData.video && (
           <video
             ref={videoRef}
             src={cardData.video}
@@ -954,7 +1469,7 @@ const MusicCard = ({
               pointerEvents: "none",
             }}
           />
-        )}
+        )} */}
         <MusicImage src={image} alt="Music" onClick={handleImageClick} />
         {audio && (
           <audio
@@ -1008,9 +1523,7 @@ const MusicCard = ({
                 <span
                   style={{ color: "#aaa", marginLeft: 4 }}
                   title="Завантажено"
-                >
-                  ({formatTime(bufferedTime)})
-                </span>
+                ></span>
               )}
             </TimeDisplay>
           </PlayerRow>
@@ -1158,6 +1671,7 @@ const musicCards = [
     lyrics: "Текст в розробці.",
     category: "хіти",
     duration: 180,
+    images: [christmas],
   },
   {
     id: 2,
@@ -1168,6 +1682,7 @@ const musicCards = [
     lyrics:
       "Варіант 1. Варіант 2. Dinofroze...dinofroze. Четверо друзів знайшли дивну гру. В доісторичну пішли давнину. Там динозаврами стали вони. В цьому карти їм допомогли. У давнині небезпечні дракони. Та з ними впорались наші герої. До бою готові всюди і завжди. І утілюють мірії свої в боротьбі. Dinofroze... Дружні, завзяті, зброя в руках. Dinofroze... Вони Ніцерону не по зубах. Dinofroze... Дружні, завзяті, зброя в руках. Вони Ніцерону не по зубах. Друзі б'ються завзято. Дракони тікають. Четверо друзів майбутнє спасають. До бою завжди готові вони. Ховайтеся, вороги! Dinofroze...",
     duration: 120,
+    images: [dinofrozone, dinofroztwo],
   },
   {
     id: 3,
@@ -1177,6 +1692,7 @@ const musicCards = [
     category: "природа",
     lyrics: "Лише звуки індиків.",
     duration: 60,
+    images: [turkeysone, turkeytwo, turkeythree, turkeyfour, turkeyfive, turkeysix, turkeyseven, turkeys],
   },
   {
     id: 4,
@@ -1201,6 +1717,7 @@ const musicCards = [
       { time: 72, text: "Тримаючись, спогади ніколи не змінюються." },
     ],
     duration: 240,
+    images: [monody],
   },
   {
     id: 5,
@@ -1210,6 +1727,7 @@ const musicCards = [
     text: "Звук дощу. Пустеля розділенна вічно грозовою і сонячною зоною. Невідомий автор.",
     lyrics: "Звуки дощу, допомагають заснути",
     duration: 300,
+    images: [desert],
   },
   {
     id: 6,
@@ -1220,6 +1738,7 @@ const musicCards = [
     lyrics:
       "Жах ночі. Атмосферні звуки. Хто може страшніше зробити чекаю :) З мене актор ніякий, для такого :).",
     duration: 150,
+    images: [horror, horrortwo, horrorthree, horrorfour, horrorfive, horrorsix, horrorseven, horroreight],
   },
   {
     id: 7,
@@ -1229,6 +1748,7 @@ const musicCards = [
     text: "Кінь друг людини. Телеканал мега(автор звуку). Природа.",
     lyrics: "Звуки коня.",
     duration: 45,
+    images: [horsethree, horsetwo, horse, chess],
   },
   {
     id: 8,
@@ -1238,6 +1758,7 @@ const musicCards = [
     text: "Dragonora - MyLittleUniverse(Estoty). І знову дракони, музика доісторичного світу. Картина взята з мультфільму Динофроз. Звучить при комбінації.",
     lyrics: "Атмосферна доісторична музика.",
     duration: 180,
+    images: [dinofrozone, dinofroztwo],
   },
   {
     id: 9,
@@ -1247,6 +1768,7 @@ const musicCards = [
     text: "Соловейко. Голосування хто кращий по звукам соловеко чи індик. Зроблено за ідеї сім'ї.",
     lyrics: "Спів соловейка.",
     duration: 90,
+    images: [soloveyko],
   },
   {
     id: 10,
@@ -1256,6 +1778,7 @@ const musicCards = [
     text: "Asium - My little universe(Estoty). Спокійна і прекрасна музика в японському стилі.",
     lyrics: "Текст відсутній.",
     duration: 160,
+    images: [asiumone, asiumtwo, asiumthree, asiumfour, asiumfive, asiumsix, asiumseven, harmony, asiumnine, ],
   },
   {
     id: 11,
@@ -1265,6 +1788,7 @@ const musicCards = [
     text: "Factorium - My little universe(Estoty). Спокійна і прекрасна музика в механічному стилі.",
     lyrics: "Текст відсутній, для любителів стімпанку.",
     duration: 160,
+    images: [mecha],
   },
   {
     id: 12,
@@ -1274,6 +1798,7 @@ const musicCards = [
     text: "Зоотрополіс(Disney)-рекомендую. Shakira-Try Everything.",
     lyrics: "Текст в розробці",
     duration: 200,
+    images: [mecha],
   },
   {
     id: 13,
@@ -1283,6 +1808,7 @@ const musicCards = [
     text: "Продовження історої Зоотрополісу(Disney). Чекатиму, через 5років продовження. Skakira, Ed Sheeran - Zoo.",
     lyrics: "Текст в розробці.",
     duration: 200,
+    images: [swampeight, swampnine, swamptwo],
   },
   {
     id: 14,
@@ -1292,6 +1818,7 @@ const musicCards = [
     text: "Мія та я. Не пожалкуєте.",
     lyrics: "Текст в розробці.",
     duration: 180,
+    images: [mia],
   },
   {
     id: 15,
@@ -1301,6 +1828,7 @@ const musicCards = [
     text: "Динофроз, показували, з кількома, ще мульфільмами: Якарі, Анна з зелених дахів, Хайді, Острів іпаток, Пригоди в качиному порту, Марко, Лис Микита.",
     lyrics: "Не скоро.",
     duration: 180,
+    images: [dinofrozone, dinofroztwo],
   },
   {
     id: 16,
@@ -1310,6 +1838,7 @@ const musicCards = [
     text: "Друга частина. Пісні розміщені в 3 частинах. Четверта під питанням.",
     lyrics: "Не скоро.",
     duration: 180,
+    images: [dinofroztwo, dinofrozone],
   },
   {
     id: 17,
@@ -1319,6 +1848,7 @@ const musicCards = [
     text: "Третя частина",
     lyrics: "Не скоро.",
     duration: 180,
+    images: [dinofrozone, dinofroztwo],
   },
   {
     id: 18,
@@ -1328,6 +1858,7 @@ const musicCards = [
     category: "ігри",
     lyrics: "Текст відсутній.",
     duration: 160,
+    images: [turkeys, turkeytwo],
   },
   {
     id: 19,
@@ -1338,6 +1869,7 @@ const musicCards = [
     lyrics:
       "Текст присутній, але його не можливо розібрати + змісту його немає.",
     duration: 160,
+    images: [clubstep],
   },
   {
     id: 20,
@@ -1347,6 +1879,7 @@ const musicCards = [
     category: "ігри",
     lyrics: "Текст присутній, але змісту його немає.",
     duration: 140,
+    images: [horrortwo, horrorthree],
   },
   {
     id: 21,
@@ -1356,6 +1889,7 @@ const musicCards = [
     category: "ігри",
     lyrics: "Текст відсутній.",
     duration: 140,
+    images: [theorytwo],
   },
   {
     id: 22,
@@ -1365,6 +1899,7 @@ const musicCards = [
     category: "ігри",
     lyrics: "Текст відсутній.",
     duration: 140,
+    images: [deadlocked, swamptwo, swampthree, swampfour, swampfive, swampsix, swampseven, swampeight],
   },
   {
     id: 23,
@@ -1375,6 +1910,7 @@ const musicCards = [
     lyrics:
       "Текст присутній, але він для атмосфери: 'Say Down' періодично з відлунням.",
     duration: 140,
+    images: [theory],
   },
   {
     id: 24,
@@ -1384,15 +1920,7 @@ const musicCards = [
     lyrics: "Текст присутній, але змісту його немає.",
     category: "хіти",
     duration: 180,
-  },
-  {
-    id: 25,
-    image: require("../../photos/vip-images/asium/vip-forest.webp"),
-    audio: require("../../mp3/calling.mp3"),
-    text: "TheCalling-TheFatRat. ",
-    lyrics: "Скоро.",
-    category: "хіти",
-    duration: 180,
+    images: [unity],
   },
 ];
 
@@ -1418,6 +1946,8 @@ const PLAYLISTS = {
     image: require("../../photos/vip-images/mechannic.jpg"),
   },
 };
+
+
 
 const CreatePlaylistModal = ({ onClose, onSave, initialData }) => {
   const [name, setName] = useState(initialData?.name || "");
@@ -1988,6 +2518,8 @@ const PlaylistModal = ({
   const [searchQuery, setSearchQuery] = useState("");
   const [sortOption, setSortOption] = useState("favorites");
   const [isShuffle, setIsShuffle] = useState(false);
+  const [fullScreenTrack, setFullScreenTrack] = useState(null);
+
   const [favorites, setFavorites] = useState(() => {
     if (!user) return [];
     const saved = localStorage.getItem("music_favorites");
@@ -1998,20 +2530,44 @@ const PlaylistModal = ({
     localStorage.setItem("music_favorites", JSON.stringify(favorites));
   }, [favorites]);
 
+  // favorites is now an object for rating 1 or 2: { id: 1, id2: 2 } or simple array. 
+  // Refactoring to support 1 or 2 points.
+  // If we want to keep backward compatibility with array, we check if it is array.
+  // Let's migrate to object on load if needed, or just handle logic.
+  const getRating = useCallback((id) => {
+      if (Array.isArray(favorites)) return favorites.includes(id) ? 1 : 0; // Legacy
+      return favorites[id] || 0;
+  }, [favorites]);
+
   const handleToggleFavorite = (id) => {
     if (!user) {
       onOpenRegister();
       return;
     }
     setFavorites((prev) => {
-      if (prev.includes(id)) {
-        return prev.filter((favId) => favId !== id);
+      let currentRating = getRating(id); // 0, 1, or 2
+      let nextRating = (currentRating + 1) % 3; // 0->1->2->0
+      
+      // Check limit for non-zero ratings
+      // const count = Array.isArray(prev) ? prev.length : Object.values(prev).filter(v => v > 0).length;
+      // if (nextRating > 0 && count >= 3 && currentRating === 0) {
+      //    alert("Ліміт 3 улюблених!"); 
+      //    return prev; 
+      // }
+      
+      if (Array.isArray(prev)) {
+          // Convert to object
+          const newObj = {};
+          prev.forEach(p => newObj[p] = 1);
+          newObj[id] = nextRating;
+          if (nextRating === 0) delete newObj[id];
+          return newObj;
       }
-      if (prev.length >= 3) {
-        alert("Можна додати не більше 3-х улюблених пісень!");
-        return prev;
-      }
-      return [...prev, id];
+      
+      const newObj = { ...prev };
+      if (nextRating === 0) delete newObj[id];
+      else newObj[id] = nextRating;
+      return newObj;
     });
   };
 
@@ -2061,11 +2617,9 @@ const PlaylistModal = ({
 
     if (sortOption === "favorites") {
       return [...filtered].sort((a, b) => {
-        const aFav = favorites.includes(a.id);
-        const bFav = favorites.includes(b.id);
-        if (aFav && !bFav) return -1;
-        if (!aFav && bFav) return 1;
-        return 0;
+        const aR = getRating(a.id);
+        const bR = getRating(b.id);
+        return bR - aR;
       });
     } else if (sortOption === "name_asc") {
       return [...filtered].sort((a, b) => a.text.localeCompare(b.text));
@@ -2081,7 +2635,7 @@ const PlaylistModal = ({
       );
     }
     return filtered;
-  }, [playlistKey, searchQuery, favorites, sortOption, customTracks]);
+  }, [playlistKey, searchQuery, sortOption, customTracks, getRating]);
 
   const handleTrackEnd = (id) => {
     if (isShuffle) {
@@ -2090,16 +2644,33 @@ const PlaylistModal = ({
         const randomIndex = Math.floor(Math.random() * remaining.length);
         setActiveTrackId(remaining[randomIndex].id);
       } else {
-        setActiveTrackId(null);
+         // Loop logic handled in player, if not looping, stop.
+         setActiveTrackId(null);
       }
       return;
     }
     const currentIndex = processedCards.findIndex((c) => c.id === id);
     if (currentIndex !== -1 && currentIndex < processedCards.length - 1) {
       setActiveTrackId(processedCards[currentIndex + 1].id);
+      // Also update fullscreen track if open
+      if (fullScreenTrack) setFullScreenTrack(processedCards[currentIndex + 1]);
     } else {
       setActiveTrackId(null);
+      if (fullScreenTrack) setFullScreenTrack(null);
     }
+  };
+
+  const playNext = () => {
+      if (!fullScreenTrack) return;
+      handleTrackEnd(fullScreenTrack.id);
+  };
+  const playPrev = () => {
+      if (!fullScreenTrack) return;
+      const idx = processedCards.findIndex(c => c.id === fullScreenTrack.id);
+      if (idx > 0) {
+          setActiveTrackId(processedCards[idx - 1].id);
+          setFullScreenTrack(processedCards[idx - 1]);
+      }
   };
 
   const handlePlayAll = () => {
@@ -2107,8 +2678,10 @@ const PlaylistModal = ({
       if (isShuffle) {
         const randomIndex = Math.floor(Math.random() * processedCards.length);
         setActiveTrackId(processedCards[randomIndex].id);
+        setFullScreenTrack(processedCards[randomIndex]);
       } else {
         setActiveTrackId(processedCards[0].id);
+        setFullScreenTrack(processedCards[0]);
       }
     }
   };
@@ -2183,12 +2756,13 @@ const PlaylistModal = ({
               key={card.id}
               cardData={card}
               user={user}
-              isFavorite={favorites.includes(card.id)}
+              rating={getRating(card.id)}
               onToggleFavorite={handleToggleFavorite}
               onOpenModal={setLyricsModalData}
               onOpenRegister={onOpenRegister}
               activeTrackId={activeTrackId}
               onPlay={setActiveTrackId}
+              onOpenPlayer={(id) => setFullScreenTrack(processedCards.find(c => c.id === id))}
               onTrackEnd={handleTrackEnd}
               onDelete={onDeleteTrack ? () => onDeleteTrack(card.id) : null}
             />
@@ -2250,6 +2824,17 @@ const PlaylistModal = ({
           </ModalOverlay>
         )}
       </PlaylistModalContent>
+      
+      {fullScreenTrack && (
+        <FullScreenPlayer 
+            track={fullScreenTrack} 
+            onClose={() => setFullScreenTrack(null)}
+            onNext={playNext}
+            onPrev={playPrev}
+            rating={getRating(fullScreenTrack.id)}
+            onRate={handleToggleFavorite}
+        />
+      )}
     </ModalOverlay>
   );
 };
