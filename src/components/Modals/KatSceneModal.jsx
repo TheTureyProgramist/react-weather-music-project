@@ -32,9 +32,24 @@ const UltraPlayerContainer = styled.div`
   position: relative;
   overflow: hidden;
   background: black;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 
   &:hover button {
     opacity: 1;
+  }
+
+  /* Примусовий ландшафтний режим для телефонів у вертикальному положенні */
+  @media screen and (orientation: portrait) {
+    width: 100vh;
+    height: 100vw;
+    transform: rotate(90deg);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform-origin: center;
+    translate: -50% -50%;
   }
 `;
 
@@ -187,6 +202,36 @@ const CheckboxContainer = styled.label`
   user-select: none;
 `;
 
+const LoadingContainer = styled.div`
+  position: absolute;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.7);
+  padding: 20px;
+  border-radius: 10px;
+  backdrop-filter: blur(5px);
+`;
+
+const ProgressBar = styled.div`
+  width: 200px;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 3px;
+  margin-top: 10px;
+  overflow: hidden;
+`;
+
+const ProgressBarFill = styled.div`
+  height: 100%;
+  background: #94fffa;
+  width: ${(props) => props.$progress}%;
+  transition: width 0.3s ease;
+  box-shadow: 0 0 10px #94fffa;
+`;
+
 const ULTRA_CARDS_LIST = [
   {
     image: ultraTurkeys,
@@ -275,6 +320,8 @@ const KatSceneModal = ({ onClose }) => {
   const [volume, setVolume] = useState(0.5);
   const [isLooping, setIsLooping] = useState(false);
   const [isCaching, setIsCaching] = useState(false);
+  const [loadingProgress, setLoadingProgress] = useState(0);
+  const [isAssetsLoaded, setIsAssetsLoaded] = useState(false);
   
   const videoRef = useRef(null);
   const audioRef = useRef(null);
@@ -345,6 +392,56 @@ const KatSceneModal = ({ onClose }) => {
   }, []);
 
   useEffect(() => {
+    // Логіка початкового завантаження (Preloading)
+    const preloadAssets = async () => {
+      const urlsToLoad = new Set();
+      
+      // Додаємо основні ресурси
+      urlsToLoad.add(ultra);
+      urlsToLoad.add(dinofrozVideo);
+
+      // Додаємо ресурси карток
+      ULTRA_CARDS_LIST.forEach((item) => {
+        if (item.image) urlsToLoad.add(item.image);
+        if (item.audio) urlsToLoad.add(item.audio);
+      });
+
+      const urlsArray = Array.from(urlsToLoad);
+      let loadedCount = 0;
+
+      const updateProgress = () => {
+        loadedCount++;
+        const progress = Math.round((loadedCount / urlsArray.length) * 100);
+        setLoadingProgress(progress);
+      };
+
+      const promises = urlsArray.map((url) => 
+        fetch(url)
+          .then((response) => {
+            updateProgress();
+            return response.blob(); 
+          })
+          .catch((err) => {
+            console.error(`Failed to load ${url}`, err);
+            updateProgress(); // Рахуємо як завершене навіть при помилці, щоб не зависло
+          })
+      );
+
+      await Promise.all(promises);
+      
+      // Невелика затримка для плавності UI
+      setTimeout(() => {
+        setIsAssetsLoaded(true);
+      }, 500);
+    };
+
+    preloadAssets();
+  }, []);
+
+  useEffect(() => {
+    // Таймер не стартує, поки ресурси не завантажені
+    if (!isAssetsLoaded) return;
+
     let nextStepTimer;
     let textOutTimer;
     let textInTimer;
@@ -418,6 +515,7 @@ const KatSceneModal = ({ onClose }) => {
     step.imgIdx,
     step.start,
     step.end,
+    isAssetsLoaded // Додаємо в залежності
   ]);
 
   useEffect(() => {
@@ -480,6 +578,15 @@ const KatSceneModal = ({ onClose }) => {
           />
           Автоповтор
         </CheckboxContainer>
+
+        {!isAssetsLoaded && (
+          <LoadingContainer>
+            <div style={{ color: "#94fffa", fontSize: "14px", marginBottom: "5px" }}>Завантаження сцени... {loadingProgress}%</div>
+            <ProgressBar>
+              <ProgressBarFill $progress={loadingProgress} />
+            </ProgressBar>
+          </LoadingContainer>
+        )}
 
         <StyledImage src={ultra} $show={step.type === "thematic"} style={{ zIndex: 5 }} />
         

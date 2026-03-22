@@ -608,6 +608,17 @@ const FullScreenOverlay = styled.div`
   display: ${(props) => (props.$closing ? 'none' : 'flex')};
   flex-direction: column;
   animation: ${(props) => (props.$closing ? slideOut : slideIn)} 0.3s ease-out forwards;
+
+  @media screen and (orientation: portrait) {
+    width: 100vh;
+    height: 100vw;
+    transform: rotate(90deg);
+    top: 50%;
+    left: 50%;
+    transform-origin: center;
+    translate: -50% -50%;
+    animation: none;
+  }
 `;
 
 const FSHeader = styled.div`
@@ -939,6 +950,39 @@ const SeekTooltip = styled.div`
   }
 `;
 
+const LoadingContainer = styled.div`
+  position: absolute;
+  z-index: 2050;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.7);
+  padding: 20px;
+  border-radius: 10px;
+  backdrop-filter: blur(5px);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+`;
+
+const ProgressBar = styled.div`
+  width: 200px;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 3px;
+  margin-top: 10px;
+  overflow: hidden;
+`;
+
+const ProgressBarFill = styled.div`
+  height: 100%;
+  background: #94fffa;
+  width: ${(props) => props.$progress}%;
+  transition: width 0.3s ease;
+  box-shadow: 0 0 10px #94fffa;
+`;
+
 const LyricsViewer = ({ lyrics, currentTime }) => {
   const activeLineIndex = useMemo(() => {
     if (!Array.isArray(lyrics)) return -1;
@@ -984,6 +1028,8 @@ const FullScreenPlayer = ({ track, onClose, onNext, onPrev, rating, onRate, isSh
   const [isClosing, setIsClosing] = useState(false);
   const [playMode, setPlayMode] = useState(isShuffle ? 1 : 0); // 0: Order, 1: Random, 2: Loop
   const [hoverTime, setHoverTime] = useState(null);
+  const [loadingProgress, setLoadingProgress] = useState(0);
+  const [isAssetsLoaded, setIsAssetsLoaded] = useState(false);
 
   const mediaRef = useRef(null);
   const previewVideoRef = useRef(null);
@@ -1018,6 +1064,57 @@ const FullScreenPlayer = ({ track, onClose, onNext, onPrev, rating, onRate, isSh
       setIsPlaying(false);
     }
   }, []);
+
+  useEffect(() => {
+    setIsAssetsLoaded(false);
+    setLoadingProgress(0);
+    setIsPlaying(false);
+
+    const preloadAssets = async () => {
+      const urlsToLoad = new Set();
+      
+      if (isDinofroz) {
+         if (track.video) urlsToLoad.add(track.video);
+         if (track.image) urlsToLoad.add(track.image);
+      } else {
+         if (track.audio) urlsToLoad.add(track.audio);
+         sliderImages.forEach(img => urlsToLoad.add(img));
+      }
+
+      const urlsArray = Array.from(urlsToLoad);
+      if (urlsArray.length === 0) {
+          setIsAssetsLoaded(true);
+          return;
+      }
+
+      let loadedCount = 0;
+      const updateProgress = () => {
+        loadedCount++;
+        const progress = Math.round((loadedCount / urlsArray.length) * 100);
+        setLoadingProgress(progress);
+      };
+
+      const promises = urlsArray.map((url) => 
+        fetch(url)
+          .then((response) => {
+            updateProgress();
+            return response.blob(); 
+          })
+          .catch((err) => {
+            console.error(`Failed to load ${url}`, err);
+            updateProgress();
+          })
+      );
+
+      await Promise.all(promises);
+      
+      setTimeout(() => {
+        setIsAssetsLoaded(true);
+      }, 500);
+    };
+
+    preloadAssets();
+  }, [track, isDinofroz, sliderImages]);
 
   useEffect(() => {
     const media = mediaRef.current;
@@ -1327,6 +1424,15 @@ const FullScreenPlayer = ({ track, onClose, onNext, onPrev, rating, onRate, isSh
           <ActionButton onClick={() => setShowSettings(!showSettings)} title="Налаштування">⚙️</ActionButton>
         </div>
       </FSHeader>
+
+      {!isAssetsLoaded && (
+        <LoadingContainer>
+          <div style={{ color: "#94fffa", fontSize: "14px", marginBottom: "5px" }}>Завантаження... {loadingProgress}%</div>
+          <ProgressBar>
+            <ProgressBarFill $progress={loadingProgress} />
+          </ProgressBar>
+        </LoadingContainer>
+      )}
 
       <FSContent 
         ref={containerRef}
