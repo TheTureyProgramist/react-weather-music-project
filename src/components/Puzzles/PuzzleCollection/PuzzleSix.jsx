@@ -377,24 +377,8 @@ const PuzzleSix = ({ onExit }) => {
         audio: require("../../../mp3/zootopia.mp3"),
       },
       {
-        image: require("../../../photos/vip-images/mechannic.jpg"),
-        audio: require("../../../mp3/zootopiatwo.mp3"),
-      },
-      {
         image: require("../../../photos/vip-images/mia/miaandme.webp"),
         audio: require("../../../mp3/mia-and-me.mp3"),
-      },
-      {
-        image: require("../../../photos/vip-images/mechannic.jpg"),
-        audio: require("../../../mp3/malatkotv-chapterone.mp3"),
-      },
-      {
-        image: require("../../../photos/vip-images/mechannic.jpg"),
-        audio: require("../../../mp3/malatkotv-chaptertwo.mp3"),
-      },
-      {
-        image: require("../../../photos/vip-images/mechannic.jpg"),
-        audio: require("../../../mp3/malatkotv-chapterthree.mp3"),
       },
       {
         image: require("../../../photos/vip-images/mechannic.jpg"),

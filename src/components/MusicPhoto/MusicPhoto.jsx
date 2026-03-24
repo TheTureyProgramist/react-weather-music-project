@@ -1982,7 +1982,7 @@ const musicCards = [
     images: [desert],
   },
   {
-    id: 7,
+    id: 6,
     image: require("../../photos/vip-images/horse/horse.jpg"),
     audio: require("../../mp3/horse.mp3"),
     category: "природа",
@@ -1992,7 +1992,7 @@ const musicCards = [
     images: [horsethree, horsetwo, horse, chess],
   },
   {
-    id: 8,
+    id: 7,
     image: require("../../photos/vip-images/dinofroz/vip-dragons.jpg"),
     audio: require("../../mp3/dragon.mp3"),
     category: "ігри",
@@ -2002,7 +2002,7 @@ const musicCards = [
     images: [dinofrozone, dinofroztwo],
   },
   {
-    id: 9,
+    id: 8,
     image: require("../../photos/vip-images/vip-soloveyko.jpg"),
     audio: require("../../mp3/soloveyko.mp3"),
     category: "природа",
@@ -2012,7 +2012,7 @@ const musicCards = [
     images: [soloveyko],
   },
   {
-    id: 10,
+    id: 9,
     image: require("../../photos/vip-images/asium/asium.jpg"),
     audio: require("../../mp3/harmonic-japan.mp3"),
     category: "ігри",
@@ -2022,7 +2022,7 @@ const musicCards = [
     images: [asiumone, asiumtwo, asiumthree, asiumfour, asiumfive, asiumsix, asiumseven, harmony, asiumnine, ],
   },
   {
-    id: 11,
+    id: 10,
     image: require("../../photos/vip-images/mechannic.jpg"),
     audio: require("../../mp3/mechanik-kindom.mp3"),
     category: "ігри",
@@ -2032,7 +2032,7 @@ const musicCards = [
     images: [mecha],
   },
   {
-    id: 12,
+    id: 11,
     image: require("../../photos/vip-images/mechannic.jpg"),
     audio: require("../../mp3/zootopia.mp3"),
     category: "мультфільми",
@@ -2042,17 +2042,7 @@ const musicCards = [
     images: [mecha],
   },
   {
-    id: 13,
-    image: require("../../photos/vip-images/mechannic.jpg"),
-    audio: require("../../mp3/zootopiatwo.mp3"),
-    category: "мультфільми",
-    text: "Продовження історої Зоотрополісу(Disney). Чекатиму, через 5років продовження. Skakira, Ed Sheeran - Zoo.",
-    lyrics: "Текст в розробці.",
-    duration: 200,
-    images: [swampeight, swampnine, swamptwo],
-  },
-  {
-    id: 14,
+    id: 12,
     image: require("../../photos/vip-images/mia/miaandme.webp"),
     audio: require("../../mp3/mia-and-me.mp3"),
     category: "мультфільми",
@@ -2062,37 +2052,7 @@ const musicCards = [
     images: [mia],
   },
   {
-    id: 15,
-    image: require("../../photos/vip-images/mechannic.jpg"),
-    audio: require("../../mp3/malatkotv-chapterone.mp3"),
-    category: "мультфільми",
-    text: "Динофроз, показували, з кількома, ще мульфільмами: Якарі, Анна з зелених дахів, Хайді, Острів іпаток, Пригоди в качиному порту, Марко, Лис Микита.",
-    lyrics: "Не скоро.",
-    duration: 180,
-    images: [dinofrozone, dinofroztwo],
-  },
-  {
-    id: 16,
-    image: require("../../photos/vip-images/mechannic.jpg"),
-    audio: require("../../mp3/malatkotv-chaptertwo.mp3"),
-    category: "мультфільми",
-    text: "Друга частина. Пісні розміщені в 3 частинах. Четверта під питанням.",
-    lyrics: "Не скоро.",
-    duration: 180,
-    images: [dinofroztwo, dinofrozone],
-  },
-  {
-    id: 17,
-    image: require("../../photos/vip-images/mechannic.jpg"),
-    audio: require("../../mp3/malatkotv-chapterthree.mp3"),
-    category: "мультфільми",
-    text: "Третя частина",
-    lyrics: "Не скоро.",
-    duration: 180,
-    images: [dinofrozone, dinofroztwo],
-  },
-  {
-    id: 18,
+    id: 13,
     image: require("../../photos/vip-images/mechannic.jpg"),
     audio: require("../../mp3/electrodynamix.mp3"),
     text: "Electrodynamix - DJ-Nate (GeometryDash).",
@@ -2102,7 +2062,7 @@ const musicCards = [
     images: [turkeys, turkeytwo],
   },
   {
-    id: 19,
+    id: 14,
     image: require("../../photos/fan-art/clubstep.jpg"),
     audio: require("../../mp3/clubstep.mp3"),
     text: "Clubstep - DJ-Nate(GeometryDash).",
@@ -2115,7 +2075,7 @@ const musicCards = [
     images: [clubstep],
   },
   {
-    id: 20,
+    id: 15,
     image: require("../../photos/vip-images/mechannic.jpg"),
     audio: require("../../mp3/fingerdash.mp3"),
     text: "Fingerdash-MDK(GeometryDash) Гаряча мелодія I-ша в режимі анімованості. Ласково просимо в хаос!",
@@ -2128,7 +2088,7 @@ const musicCards = [
     images: [horrortwo, horrorthree],
   },
   {
-    id: 21,
+    id: 16,
     image: require("../../photos/fan-art/theorytwo.jpg"),
     audio: require("../../mp3/theoty-of-everything-ll.mp3"),
     text: "Theory of everything II - DJ-Nate(GeometryDash). Ця пісня варта уваги!",
@@ -2140,17 +2100,17 @@ const musicCards = [
     images: [theorytwo],
   },
   {
-    id: 22,
+    id: 17,
     image: require("../../photos/vip-images/swamp/deadlocked.jpg"),
     audio: require("../../mp3/deadlocked.mp3"),
     text: "Deadlocked - F77(GeometryDash). Моторошна, але епічна пісня. Друг фанат цього рівня :).",
     category: "ігри",
     lyrics: "Текст відсутній.",
     duration: 140,
-    images: [deadlocked, swamptwo, swampthree, swampfour, swampfive, swampsix, swampseven, swampeight, horror, horrortwo, horrorthree, horrorfour, horrorfive, horrorsix, horrorseven, horroreight],
+    images: [deadlocked, swamptwo, swampthree, swampfour, swampfive, swampsix, swampseven, swampeight, swampnine, horror, horrortwo, horrorthree, horrorfour, horrorfive, horrorsix, horrorseven, horroreight],
   },
   {
-    id: 23,
+    id: 18,
     image: require("../../photos/fan-art/theory.jpg"),
     audio: require("../../mp3/theory-of-everyting.mp3"),
     text: "DJ-Nate - Theory of everything(GeometryDash). Ця пісня варта уваги!",
@@ -2166,7 +2126,7 @@ const musicCards = [
     images: [theory],
   },
   {
-    id: 24,
+    id: 19,
     image: require("../../photos/fan-art/unity.jpg"),
     audio: require("../../mp3/unity.mp3"),
     text: "Unity-TheFatRat. Класний комп'ютерний хіт, не розумію чого його не поставили у фільм Матриця?",
@@ -2199,9 +2159,6 @@ const PLAYLISTS = {
     image: require("../../photos/vip-images/mechannic.jpg"),
   },
 };
-
-
-
 const CreatePlaylistModal = ({ onClose, onSave, initialData }) => {
   const [name, setName] = useState(initialData?.name || "");
   const [cover, setCover] = useState(initialData?.cover || "");
