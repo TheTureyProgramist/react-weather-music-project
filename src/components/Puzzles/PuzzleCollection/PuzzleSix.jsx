@@ -7,7 +7,7 @@ import React, {
 } from "react";
 import styled, { keyframes } from "styled-components";
 import { motion, AnimatePresence } from "framer-motion";
-import decor from "../../../photos/fan-art/modaldecor.jpg";
+import decor from "../../../photos/fan-art/modaldecor.webp";
 const fadeIn = keyframes`from { opacity: 0; } to { opacity: 1; }`;
 
 const shake = keyframes`

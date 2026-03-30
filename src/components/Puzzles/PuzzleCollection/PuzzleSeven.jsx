@@ -8,7 +8,7 @@ import React, {
 import styled, { keyframes, css } from "styled-components";
 import { motion, AnimatePresence } from "framer-motion";
 import music from "../../../mp3/theoty-of-everything-ll.mp3";
-import decor from "../../../photos/fan-art/modaldecor.jpg";
+import decor from "../../../photos/fan-art/modaldecor.webp";
 const LEVEL_CONFIG = {
   GRID_SIZE: 10,
   PLAYER_START: { x: 1, y: 1 },

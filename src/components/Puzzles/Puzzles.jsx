@@ -11,13 +11,13 @@ import PuzzleSeven from "./PuzzleCollection/PuzzleSeven";
 import PuzzleEight from "./PuzzleCollection/PuzzleEight";
 
 // Імпорти картинок...
-import puzzl from "../../photos/vip-modal/puzzle.jpeg";
-import pluta from "../../photos/vip-modal/brain.jpeg";
-import cod from "../../photos/vip-modal/cod.jpeg";
-import laby from "../../photos/vip-modal/laby.jpeg";
-import labytwo from "../../photos/vip-modal/labytwo.jpeg";
-import puz from "../../photos/vip-modal/puz.jpeg";
-import disk from "../../photos/vip-modal/disk.jpeg";
+import puzzl from "../../photos/vip-modal/puzzle.webp";
+import pluta from "../../photos/vip-modal/brain.webp";
+import cod from "../../photos/vip-modal/cod.webp";
+import laby from "../../photos/vip-modal/laby.webp";
+import labytwo from "../../photos/vip-modal/labytwo.webp";
+import puz from "../../photos/vip-modal/puz.webp";
+import disk from "../../photos/vip-modal/disk.webp";
 const MainTitle = styled.h2`
   text-align: center;
   font-size: 32px;

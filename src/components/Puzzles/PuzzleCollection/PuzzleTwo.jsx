@@ -2,8 +2,8 @@ import React, { useState, useEffect, useCallback, useRef } from "react";
 import styled, { keyframes } from "styled-components";
 import { motion, AnimatePresence } from "framer-motion";
 import asium from "../../../mp3/harmonic-japan.mp3";
-import lamp from "../../../photos/hero-header/lamp.jpeg";
-import decor from "../../../photos/fan-art/modaldecor.jpg";
+import lamp from "../../../photos/hero-header/lamp.webp";
+import decor from "../../../photos/fan-art/modaldecor.webp";
 // --- Animations ---
 const fadeIn = keyframes`from { opacity: 0; } to { opacity: 1; }`;
 const rotate = keyframes`from { transform: rotate(0deg); } to { transform: rotate(360deg); }`;

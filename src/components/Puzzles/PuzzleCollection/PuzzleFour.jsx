@@ -8,7 +8,7 @@ import React, {
 import styled, { keyframes, css } from "styled-components";
 import { motion, AnimatePresence } from "framer-motion";
 import asium from "../../../mp3/theory-of-everyting.mp3";
-import decor from "../../../photos/fan-art/modaldecor.jpg";
+import decor from "../../../photos/fan-art/modaldecor.webp";
 // --- Анімації ---
 const fadeIn = keyframes`from { opacity: 0; } to { opacity: 1; }`;
 const bonusAnim = keyframes`0% { transform: scale(1); opacity: 1; } 100% { transform: scale(2); opacity: 0; }`;

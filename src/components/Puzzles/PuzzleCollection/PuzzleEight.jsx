@@ -3,7 +3,7 @@ import styled, { keyframes } from "styled-components";
 import { motion, AnimatePresence } from "framer-motion";
 import asium from "../../../mp3/dragon.mp3";
 // import lamp from "../../../photos/hero-header/lamp.jpeg";
-import decor from "../../../photos/fan-art/modaldecor.jpg";
+import decor from "../../../photos/fan-art/modaldecor.webp";
 // --- Animations ---
 const fadeIn = keyframes`from { opacity: 0; } to { opacity: 1; }`;
 const rotate = keyframes`from { transform: rotate(0deg); } to { transform: rotate(360deg); }`;

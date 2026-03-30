@@ -7,65 +7,65 @@ import React, {
 } from "react";
 import styled, { keyframes } from "styled-components";
 import { motion, AnimatePresence } from "framer-motion";
-import decor from "../../../photos/fan-art/modaldecor.jpg";
+import decor from "../../../photos/fan-art/modaldecor.webp";
 //desert
 import desert from "../../../photos/vip-images/desert/vip-desert.webp";
-// import soloveyko from "../../../photos/vip-images/vip-soloveyko.jpg";
+// import soloveyko from "../../../photos/vip-images/vip-soloveyko.webp";
 // import desert from "../../../photos/vip-images/vip-desert.webp";
-// import harmony from "../../../photos/vip-images/asium/asium.jpg";
- import horse from "../../../photos/vip-images/horse/horse.jpg";
-// import theorytwo from "../../../photos/fan-art/theorytwo.jpg";
+// import harmony from "../../../photos/vip-images/asium/asium.webp";
+ import horse from "../../../photos/vip-images/horse/horse.webp";
+// import theorytwo from "../../../photos/fan-art/theorytwo.webp";
 
- import unity from "../../../photos/fan-art/unity.jpg";
-import mecha from "../../../photos/vip-images/mechannic.jpg";
-import monody from "../../../photos/fan-art/monody.jpg";
-import christmas from "../../../photos/vip-images/christmas.jpg";
-//import clubstep from "../../../photos/fan-art/clubstep.jpg";
+ import unity from "../../../photos/fan-art/unity.webp";
+import mecha from "../../../photos/vip-images/mechannic.webp";
+import monody from "../../../photos/fan-art/monody.webp";
+import christmas from "../../../photos/vip-images/christmas.webp";
+//import clubstep from "../../../photos/fan-art/clubstep.webp";
 import turkeys from "../../../photos/vip-images/turkeys/ultra-vip-turkeys.webp";
 // //Horses
- import horsethree from "../../../photos/vip-images/horse/horsethree.jpg";
- import horsetwo from "../../../photos/vip-images/horse/horsetwo.jpg";
- import chess from "../../../photos/vip-images/horse/chess.jpg";
+ import horsethree from "../../../photos/vip-images/horse/horsethree.webp";
+ import horsetwo from "../../../photos/vip-images/horse/horsetwo.webp";
+ import chess from "../../../photos/vip-images/horse/chess.webp";
 //Turkeys
-import turkeytwo from "../../../photos/vip-images/turkeys/turkeytwo.jpg";
-import turkeythree from "../../../photos/vip-images/turkeys/turkeysthree.jpg";
-import turkeyfour from "../../../photos/vip-images/turkeys/turkeysfour.jpg";
-import turkeyfive from "../../../photos/vip-images/turkeys/turkeysfive.jpg";
-import turkeysix from "../../../photos/vip-images/turkeys/turkeyssix.jpg";
-import turkeysone from "../../../photos/vip-images/turkeys/turkeysone.jpg";
-import turkeyseven from "../../../photos/vip-images/turkeys/turkeysseven.jpg";
+import turkeytwo from "../../../photos/vip-images/turkeys/turkeytwo.webp";
+import turkeythree from "../../../photos/vip-images/turkeys/turkeysthree.webp";
+import turkeyfour from "../../../photos/vip-images/turkeys/turkeysfour.webp";
+import turkeyfive from "../../../photos/vip-images/turkeys/turkeysfive.webp";
+import turkeysix from "../../../photos/vip-images/turkeys/turkeyssix.webp";
+import turkeysone from "../../../photos/vip-images/turkeys/turkeysone.webp";
+import turkeyseven from "../../../photos/vip-images/turkeys/turkeysseven.webp";
 //Asium
 import asiumnine from "../../../photos/vip-images/asium/vip-forest.webp";
-import asiumone from "../../../photos/vip-images/asium/asiumone.jpg";
-import asiumtwo from "../../../photos/vip-images/asium/asiuntwo.jpg";
-import asiumthree from "../../../photos/vip-images/asium/asiumthree.jpg";
-import asiumfour from "../../../photos/vip-images/asium/asiumfour.jpg";
-import asiumfive from "../../../photos/vip-images/asium/asiumfive.jpg";
-import asiumsix from "../../../photos/vip-images/asium/asiumsix.jpg";
-import asiumseven from "../../../photos/vip-images/asium/asiumseven.jpg";
+import asiumone from "../../../photos/vip-images/asium/asiumone.webp";
+import asiumtwo from "../../../photos/vip-images/asium/asiuntwo.webp";
+import asiumthree from "../../../photos/vip-images/asium/asiumthree.webp";
+import asiumfour from "../../../photos/vip-images/asium/asiumfour.webp";
+import asiumfive from "../../../photos/vip-images/asium/asiumfive.webp";
+import asiumsix from "../../../photos/vip-images/asium/asiumsix.webp";
+import asiumseven from "../../../photos/vip-images/asium/asiumseven.webp";
 //Swamp
-import swamptwo from "../../../photos/vip-images/swamp/swamptwo.jpg";
-import swampthree from "../../../photos/vip-images/swamp/swampthree.jpg";
-import swampfour from "../../../photos/vip-images/swamp/swampfour.jpg";
-import swampfive from "../../../photos/vip-images/swamp/swampfive.jpg";
-import swampsix from "../../../photos/vip-images/swamp/swampsix.jpg";
-import swampseven from "../../../photos/vip-images/swamp/seampseven.jpg";
-import swampeight from "../../../photos/vip-images/swamp/swampeight.jpg";
-import swampnine from "../../../photos/vip-images/swamp/swampnine.jpg";
-import theory from "../../../photos/fan-art/theory.jpg";
-import deadlocked from "../../../photos/vip-images/swamp/deadlocked.jpg";
+import swamptwo from "../../../photos/vip-images/swamp/swamptwo.webp";
+import swampthree from "../../../photos/vip-images/swamp/swampthree.webp";
+import swampfour from "../../../photos/vip-images/swamp/swampfour.webp";
+import swampfive from "../../../photos/vip-images/swamp/swampfive.webp";
+import swampsix from "../../../photos/vip-images/swamp/swampsix.webp";
+import swampseven from "../../../photos/vip-images/swamp/seampseven.webp";
+import swampeight from "../../../photos/vip-images/swamp/swampeight.webp";
+import swampnine from "../../../photos/vip-images/swamp/swampnine.webp";
+import theory from "../../../photos/fan-art/theory.webp";
+import deadlocked from "../../../photos/vip-images/swamp/deadlocked.webp";
 //Horror
-import horrortwo from "../../../photos/vip-images/horror/horrortwo.jpg";
-import horrorthree from "../../../photos/vip-images/horror/horrorthree.jpg";
-import horrorfour from "../../../photos/vip-images/horror/horrorfour.jpg";
-import horrorfive from "../../../photos/vip-images/horror/horrorfive.jpg";
-import horror from "../../../photos/vip-images/horror/horror.jpg";
-import horrorsix from "../../../photos/vip-images/horror/horrorsix.jpg";
-import horrorseven from "../../../photos/vip-images/horror/horrorseven.jpg";
-import horroreight from "../../../photos/vip-images/horror/horroreight.jpg";
+import horrortwo from "../../../photos/vip-images/horror/horrortwo.webp";
+import horrorthree from "../../../photos/vip-images/horror/horrorthree.webp";
+import horrorfour from "../../../photos/vip-images/horror/horrorfour.webp";
+import horrorfive from "../../../photos/vip-images/horror/horrorfive.webp";
+import horror from "../../../photos/vip-images/horror/horror.webp";
+import horrorsix from "../../../photos/vip-images/horror/horrorsix.webp";
+import horrorseven from "../../../photos/vip-images/horror/horrorseven.webp";
+import horroreight from "../../../photos/vip-images/horror/horroreight.webp";
 //Динофроз
 import dinofrozone from "../../../photos/vip-images/dinofroz/vip-dinofroz.webp";
-import dinofroztwo from "../../../photos/vip-images/dinofroz/vip-dragons.jpg";
+import dinofroztwo from "../../../photos/vip-images/dinofroz/vip-dragons.webp";
 //Mia and me
 import mia from "../../../photos/vip-images/mia/miaandme.webp";
 const fadeIn = keyframes`

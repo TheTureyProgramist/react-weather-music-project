@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import styled, { keyframes } from "styled-components";
 import mechanic from "../../../mp3/mechanik-kindom.mp3";
-import lamp from "../../../photos/hero-header/lamp.jpeg";
-import decor from "../../../photos/fan-art/modaldecor.jpg";
+import lamp from "../../../photos/hero-header/lamp.webp";
+import decor from "../../../photos/fan-art/modaldecor.webp";
 // --- Animations ---
 const fadeIn = keyframes`from { opacity: 0; } to { opacity: 1; }`;
 
