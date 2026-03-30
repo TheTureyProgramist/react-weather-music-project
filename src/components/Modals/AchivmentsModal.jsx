@@ -23,7 +23,7 @@ import impossible from "../../photos/fan-art/impossible.jpg";
 import impossible2 from "../../photos/fan-art/impossible2.webp";
 import matrix2 from "../../photos/fan-art/matrix2.jpg";
 import virus from "../../photos/fan-art/virus.webp";
-import kolada from "../../photos/fan-art/kolada.webp";
+// import kolada from "../../photos/fan-art/kolada.webp";
 // import document from "../../photos/fan-art/document.webp";
 import anchor from "../../photos/fan-art/anchor.webp";
 import parol from "../../photos/fan-art/parol.jpg";
@@ -158,7 +158,7 @@ const CategorySection = styled.div`
     align-items: start;
   }
 `;
-
+//
 const CategoryTitle = styled.div`
   font-size: 14px;
   letter-spacing: 1.5px;
@@ -186,8 +186,16 @@ const AchivmentItem = styled.div`
   border-radius: 14px;
   padding: 10px;
   gap: 15px;
-  border: ${(props) =>
-    props.isSpecial ? "2px solid #ff0000" : "1px solid #a2ff6c"};
+  border: ${(props) => {
+    if (props.$isHighlight) return "2px solid yellow";
+    if (props.$isCompleted) return "1px solid grey";
+    return props.isSpecial ? "2px solid #ff0000" : "1px solid #a2ff6c";
+  }};
+  background: ${(props) => {
+    if (props.$isHighlight) return "rgba(255, 255, 0, 0.15)";
+    if (props.$isCompleted) return "rgba(128, 128, 128, 0.1)";
+    return "rgba(162, 255, 108, 0.05)";
+  }};
   transition: all 0.2s ease-in-out;
   opacity: 0;
   animation: ${appearAndShrink} 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94)
@@ -195,9 +203,11 @@ const AchivmentItem = styled.div`
   ${({ $index }) => css`
     animation-delay: ${0.3 + $index * 0.05}s;
   `}
+  cursor: ${(props) => (props.$isTurkey ? "pointer" : "default")};
+  filter: ${(props) => (props.$isCompleted ? "grayscale(1)" : "none")};
 
   &:hover {
-    background: rgba(162, 255, 108, 0.15);
+    background: ${(props) => (props.$isHighlight ? "rgba(255, 255, 0, 0.25)" : "rgba(162, 255, 108, 0.15)")};
     transform: translateX(5px) scale(1.01);
     box-shadow: 0 0 15px rgba(46, 184, 19, 0.2);
   }
@@ -332,66 +342,69 @@ const NavButton = styled.button`
 const AchivmentsModal = ({ onClose }) => {
   const [isClosing, setIsClosing] = useState(false);
   const [activeTab, setActiveTab] = useState(0);
+  const [turkeyStatus, setTurkeyStatus] = useState(
+    localStorage.getItem("turkeyStudioStatus") || "idle"
+  );
 
   const handleClose = () => {
     setIsClosing(true);
     setTimeout(() => onClose(), 300);
   };
 
-  const categories = [
+  const categoriesRaw = [
     {
       title: "🎮 Ігрові Майстри",
       items: [
         {
-          name: "Спринтер",
+          name: "Джуманджу",
           goal: "Ціль: пройти за 40с головоломку. І отримайте зелений колір імені.",
           reward: "40 🧧",
           img: horse,
         },
         {
-          name: "Душевний спокій",
-          goal: "Ціль: при розгадці ребусів не натискайте 4хв.",
+          name: "Икидні",
+          goal: "Ціль: при розгадці оптичних синхронізацій не натискайте 4хв.",
           reward: "40 🧧",
           img: asium,
         },
         {
-          name: "Ледве встиг!",
+          name: "Крик",
           goal: "Ціль: закінчіть головоломку в останні 3,7с.",
           reward: "37 🧧",
           img: time,
         },
         {
-          name: "Давай!",
-          goal: "Ціль: Почніть головоломку, залиште останній хід і не робіть його протягом 2 хвилин 6 cекунд мінімум, а потім закінчіть.",
+          name: "Tomb of the mask",
+          goal: "Ціль: Почніть лабіринт 1, залиште останній хід і не робіть його протягом 26 cекунд мінімум, а потім закінчіть.",
           reward: "21 🧧",
           img: chess,
         },
         {
-          name: "Ерудит",
+          name: "Речдок",
           goal: "Ціль: пройдіть головоломку за 22 ходів.",
           reward: "22 🧧",
           img: puzzle1,
         },
         {
-          name: "Помилка-це навчання",
-          goal: "Ціль: пройдіть головоломку на 23 спробі, між перезапусками 23с!",
+          name: "Октонавт",
+          goal: "Ціль: пройдіть головоломку на 23 спробі, між перезапусками 23с(+-2,3с)!",
           reward: "23 🧧",
           img: puzzle2,
         },
         {
-          name: "Любитель ризиків",
+          name: "Поціновувач 5bn games",
           goal: "Ціль: пройдіть з І спроби головоломку (раз на добу).",
           reward: "30 🧧",
           img: puzzle3,
         },
         {
-          name: "Це незвично!",
+          name: "Хата на тата",
           goal: "Ціль: пройдіть за 30хв одну й ту саму головоломку 3 рази поспіль.",
           reward: "20 🧧",
           img: puzzle4,
         },
         {
-          name: "Назад в минуле!",
+          name: "Назад в майбутне!",
           goal: "Ціль: пройдіть одну й ту саму головоломку 2 рази поспіль секунда в секунду(похибка 4с)!",
           reward: "40 🧧",
           img: puzzle5,
@@ -402,20 +415,20 @@ const AchivmentsModal = ({ onClose }) => {
       title: "👥 Соціальні та Активність",
       items: [
         {
-          name: "Порекомендую!",
-          goal: "Ціль: увести в поле реєстрації або налаштувань, акаунт знайомого... Отримайте червоний колір імені.",
+          name: "Дюна",
+          goal: "Ціль: Послухайте звуки дощу, у пустельному стилі. Отримайте червоний колір імені.",
           reward: "35 🧧",
           isSpecial: true,
           img: telegram,
         },
+        // {
+        //   name: "Щедрик!",
+        //   goal: "Ціль: відайте 36 🧧 другу.",
+        //   reward: "36 🧧",
+        //   img: kolada,
+        // },
         {
-          name: "Щедрик!",
-          goal: "Ціль: відайте 36 🧧 другу.",
-          reward: "36 🧧",
-          img: kolada,
-        },
-        {
-          name: "З двох краще!",
+          name: "Легенда .парк.",
           goal: "Зайдіть в акаунт з 2 пристороЇв. Отримайте голубий колір текту імені.",
           reward: "20 🧧",
           img: hills,
@@ -427,13 +440,13 @@ const AchivmentsModal = ({ onClose }) => {
           img: christmas,
         },
         {
-          name: "А я думав, що ти не повернешся.",
+          name: "Грендландія.",
           goal: "Ціль: заходьте 3 днів поспіль, а потім не заходьте 3 дні.",
           reward: "30 🧧",
           img: returns,
         },
         {
-          name: "Спонсор",
+          name: "TheTurkeyStudio",
           goal: "Ціль: підпишіться на мій фейсбук канал.",
           reward: "40 🧧",
           img: money,
@@ -445,13 +458,19 @@ const AchivmentsModal = ({ onClose }) => {
           img: christmas,
         },
         {
-          name: "Любитель графіті!",
+          name: "Атака вірусів",
           goal: "Ціль: зберіть усі кольори імені(що отримуються з часом, конвертами, досягненнями).",
           reward: "40 🧧",
           img: grafity,
         },
         {
-          name: "Колекціонер",
+          name: "Війна світів і фантазій",
+          goal: "Ціль: зберіть усі аватари(що отримуються з часом або конвертами).",
+          reward: "40 🧧",
+          img: marks,
+        },
+        {
+          name: "П'ятий елемент",
           goal: "Ціль: зберіть усі аватари(що отримуються з часом або конвертами).",
           reward: "40 🧧",
           img: marks,
@@ -462,13 +481,13 @@ const AchivmentsModal = ({ onClose }) => {
       title: "🛠 Технічні та Налаштування",
       items: [
         {
-          name: "Хапай якір!",
+          name: "Пірат Карибського моря!",
           goal: "Ціль: вийдіть з акаунту і поверніться через логін. І отримайте червону обводку імені.",
           reward: "20 🧧",
           img: anchor,
         },
         {
-          name: "Фінансисти!",
+          name: "Кіра і таємниця бублика!",
           goal: "Ціль: 2 дні підряд витрачайте лише по 20🧧. І отримайте зелену обводку імені.",
           reward: "20 🧧",
           img: finances,
@@ -587,16 +606,10 @@ const AchivmentsModal = ({ onClose }) => {
           img: rooster,
         },
         {
-          name: "Зоряно!",
+          name: "Слід",
           goal: "Виберіть 3 пісні в обране, за 38с.",
           reward: "38 🧧",
           img: stars,
-        },
-        {
-          name: "Дракомбінація",
-          goal: "Скомбінуйте 2 саундтреки про драконів.",
-          reward: "20 🧧",
-          img: dragons,
         },
       ],
     },
@@ -604,7 +617,7 @@ const AchivmentsModal = ({ onClose }) => {
       title: "🕵️ Секретні та Особливі",
       items: [
         {
-          name: "Він точно шпигун!",
+          name: "Знайди злочинця!",
           goal: "Зайдіть на сайт, коли в Києві температура нижче -24°C або вище +24°C.",
           reward: "24 🧧",
           img: impossible2,
@@ -616,25 +629,25 @@ const AchivmentsModal = ({ onClose }) => {
           img: horrordog,
         },
         {
-          name: "Ви не з масонської організації?",
+          name: "Ілюзія обману",
           goal: "Натисність дізнатися більше у погодній картці.",
           reward: "33 🧧",
           img: masons,
         },
         {
-          name: "Це цікаво!",
+          name: "Історія одного злочину",
           goal: "Ціль: знайдіть зайве на сайті, воно маленьке...",
           reward: "29 🧧",
           img: virus,
         },
         {
-          name: "Помножений на нуль!",
+          name: "Дизель шоу!",
           goal: "Витратьте 310🧧 за 31хв.",
           reward: "31 🧧",
           img: letters,
         },
         {
-          name: "Він знає те чого не знаю я?",
+          name: "Чужий",
           goal: "Зосередьте мишку у футері на лого на 3хв 12с!",
           reward: "32 🧧",
           img: matrix2,
@@ -669,6 +682,31 @@ const AchivmentsModal = ({ onClose }) => {
     },
   ];
 
+  const categories = React.useMemo(() => {
+    return categoriesRaw.map(cat => {
+      if (cat.title.includes("Соціальні")) {
+        let items = [...cat.items];
+        const turkeyIdx = items.findIndex(i => i.name === "TheTurkeyStudio");
+        if (turkeyIdx !== -1) {
+          const item = items.splice(turkeyIdx, 1)[0];
+          if (turkeyStatus === "completed") {
+            items.push(item);
+          } else {
+            items.unshift(item);
+          }
+        }
+        return { ...cat, items };
+      }
+      return cat;
+    });
+  }, [turkeyStatus]);
+
+  const handleTurkeyClick = () => {
+    window.open("https://www.facebook.com/groups/33984901414490236/?notif_id=1770630384341499&notif_t=group_milestone&ref=notif", "_blank");
+    localStorage.setItem("turkeyStudioStatus", "completed");
+    setTurkeyStatus("completed");
+  };
+
   return (
     <ModalOverlay isClosing={isClosing} onClick={handleClose}>
       <ModalContent isClosing={isClosing} onClick={(e) => e.stopPropagation()}>
@@ -696,6 +734,10 @@ const AchivmentsModal = ({ onClose }) => {
                   key={i}
                   isSpecial={item.isSpecial}
                   $index={idx * 10 + i}
+                  $isTurkey={item.name === "TheTurkeyStudio"}
+                  $isHighlight={item.name === "TheTurkeyStudio" && turkeyStatus !== "completed"}
+                  $isCompleted={item.name === "TheTurkeyStudio" && turkeyStatus === "completed"}
+                  onClick={item.name === "TheTurkeyStudio" ? handleTurkeyClick : undefined}
                 >
                   <AchivmentImagePlace src={item.img} alt={item.name} />
                   <div style={{ flexGrow: 1 }}>

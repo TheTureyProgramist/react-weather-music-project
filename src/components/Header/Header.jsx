@@ -3,12 +3,100 @@ import styled, { keyframes, css } from "styled-components";
 import logo from "../../photos/hero-header/logo.png";
 import BurgerMenu from "./Menu.jsx";
 import bell from "../../mp3/bell.mp3";
+import money from "../../photos/fan-art/money.webp";
 import UserSearchModal from "../Modals/UserSearchModal.jsx";
 
 const flow = keyframes`
   0% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
   100% { background-position: 0% 50%; }
+`;
+
+const vibrate = keyframes`
+  0% { transform: translateX(-50%) translate(0,0); }
+  10% { transform: translateX(-50%) translate(-2px, -2px) rotate(-1deg); }
+  20% { transform: translateX(-50%) translate(2px, -2px) rotate(1deg); }
+  30% { transform: translateX(-50%) translate(-2px, 2px) rotate(-1deg); }
+  40% { transform: translateX(-50%) translate(2px, 2px) rotate(1deg); }
+  50% { transform: translateX(-50%) translate(-2px, -2px); }
+  100% { transform: translateX(-50%) translate(0,0); }
+`;
+
+const fadeShowHide = keyframes`
+  0% { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+  15% { opacity: 1; transform: translateX(-50%) translateY(0); }
+  85% { opacity: 1; transform: translateX(-50%) translateY(0); }
+  100% { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+`;
+
+const NotificationCard = styled.div`
+  position: absolute;
+  top: 60px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(128, 128, 128, 0.1);
+  border: 1px solid grey;
+  border-radius: 14px;
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  z-index: 1001;
+  width: 90%;
+  max-width: 350px;
+  cursor: pointer;
+  filter: grayscale(1);
+  animation: ${fadeShowHide} 3s forwards, ${vibrate} 0.2s infinite;
+  @media (min-width: 1920px) {
+    top: 140px;
+    max-width: 600px;
+    padding: 20px;
+    gap: 30px;
+  }
+`;
+
+const CardImg = styled.img`
+  width: 50px;
+  height: 35px;
+  border-radius: 8px;
+  object-fit: cover;
+  border: 1px solid #2eb813;
+  @media (min-width: 1920px) { width: 100px; height: 70px; }
+`;
+
+const CardText = styled.div`
+  flex-grow: 1;
+  text-align: left;
+`;
+
+const CardName = styled.h3`
+  margin: 0;
+  font-size: 12px;
+  color: #ffb36c;
+  @media (min-width: 1920px) { font-size: 24px; }
+`;
+
+const CardGoal = styled.p`
+  margin: 2px 0 0;
+  font-size: 10px;
+  color: #a2ff6c;
+  @media (min-width: 1920px) { font-size: 20px; }
+`;
+
+const CardReward = styled.div`
+  width: 45px;
+  height: 25px;
+  background: rgba(46, 184, 19, 0.2);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 10px;
+  border: 1px dashed #ffb36c;
+  color: #ffb36c;
+  flex-shrink: 0;
+  @media (min-width: 1920px) { width: 80px; height: 45px; font-size: 18px; }
 `;
 
 const HeaderDiv = styled.div`
@@ -360,6 +448,19 @@ const Header = ({
   const [isUserSearchOpen, setIsUserSearchOpen] = useState(false);
   const [isBurgerOpen, setIsBurgerOpen] = useState(false);
   const [showVisualSettings, setShowVisualSettings] = useState(false);
+  const [showTurkeyNotify, setShowTurkeyNotify] = useState(false);
+
+  useEffect(() => {
+    const status = localStorage.getItem("turkeyStudioStatus");
+    if (!status || status === "idle") {
+      const timer = setTimeout(() => {
+        setShowTurkeyNotify(true);
+        setTimeout(() => setShowTurkeyNotify(false), 3000);
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, []);
+
   const [visualConfig, setVisualConfig] = useState(() => {
     try {
       const saved = localStorage.getItem("visualConfig");
@@ -417,6 +518,21 @@ const Header = ({
   return (
     <>
       <HeaderDiv $isDarkMode={isDarkMode}>
+        {showTurkeyNotify && (
+          <NotificationCard 
+            onClick={() => {
+              onOpenAchievements();
+              setShowTurkeyNotify(false);
+            }}
+          >
+            <CardImg src={money} alt="TheTurkeyStudio" />
+            <CardText>
+              <CardName>TheTurkeyStudio</CardName>
+              <CardGoal>Ціль: підпишіться на мій фейсбук канал.</CardGoal>
+            </CardText>
+            <CardReward>40 🧧</CardReward>
+          </NotificationCard>
+        )}
         <HeaderFix>
           <HeaderLogo src={logo} alt="Logo" />
           {user && (

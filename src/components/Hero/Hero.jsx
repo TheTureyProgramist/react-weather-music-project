@@ -558,7 +558,7 @@ const Hero = ({ heroDateString, onAddCity, startAnimation, user }) => {
         <HeroDecor>
           <HeroFix>
             <HeroTextLink
-              href="https://www.facebook.com/share/g/15cVdicVtGc/"
+              href="https://www.facebook.com/groups/33984901414490236/?notif_id=1770630384341499&notif_t=group_milestone&ref=notif"
               target="_blank"
             >
               Мій фейсбук канал. Натисніть.
@@ -568,12 +568,6 @@ const Hero = ({ heroDateString, onAddCity, startAnimation, user }) => {
         </HeroDecor>
 
         <DownloadAppsContainer>
-          <DownloadAppButton href="/downloads/stykhiya-pc.exe" download="stykhiya-pc.exe" title="Завантажити для Windows">
-            💻 Скачати для ПК
-          </DownloadAppButton>
-          <DownloadAppButton href="/downloads/stykhiya-mobile.apk" download="stykhiya-mobile.apk" title="Завантажити для Android">
-            📱 Мобільний додаток
-          </DownloadAppButton>
         </DownloadAppsContainer>
         {user && (
           <DownloadAppsContainer>

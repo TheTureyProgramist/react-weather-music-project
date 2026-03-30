@@ -33,7 +33,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-"backup": "powershell -Command \"$date = Get-Date -Format 'yyyy-MM-dd_HH-mm'; Compress-Archive -Path './*' -DestinationPath ('../stykhiya-backup-' + $date + '.zip') -Exclude 'node_modules', 'server/node_modules', '.next', '.git', 'out', 'build', '.env*'\"",
+"backup": "powershell -Command \"$date = Get-Date -Format 'yyyy-MM-dd_HH-mm'; Get-ChildItem -Path './*' -Exclude 'node_modules', 'server', '.next', '.git', 'out', 'build', '.env*' | Compress-Archive -DestinationPath ('../stykhiya-backup-' + $date + '.zip')\"",
  "predeploy": "npm run build",
     "deploy": "gh-pages -d build",
     "test": "react-scripts test",

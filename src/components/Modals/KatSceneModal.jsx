@@ -1,13 +1,11 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import styled, { keyframes } from "styled-components";
 import dinofrozVideo from "../../mp3/dinofroz.mp4";
-import ultra from "../../photos/hero-header/start-image.jpg";
-
+import ultra from "../../photos/hero-header/start-image.webp";
 import ultraTurkeys from "../../photos/vip-images/turkeys/ultra-vip-turkeys.webp";
 import turkeysAudio from "../../mp3/turkeys.mp3";
-import theoryImg from "../../photos/fan-art/theorytwo.jpg";
+import theoryImg from "../../photos/fan-art/theorytwo.webp";
 import theoryAudio from "../../mp3/theoty-of-everything-ll.mp3";
-
 const Overlay = styled.div`
   position: fixed;
   top: 0;

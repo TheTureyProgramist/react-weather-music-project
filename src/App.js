@@ -34,30 +34,25 @@ import AchivmentsModal from "./components/Modals/AchivmentsModal.jsx";
 import Puzzles from "./components/Puzzles/Puzzles.jsx";
 import ClimateMap from "./components/ClimateMap/ClimateMap.jsx";
 import turkeys from "./photos/vip-images/turkeys/ultra-vip-turkeys.webp";
-import dragons from "./photos/vip-images/dinofroz/vip-dragons.jpg";
-import horrordog from "./photos/vip-images/horror/horror.jpg";
-import horse from "./photos/vip-images/horse/horse.jpg";
-import lebid from "./photos/vip-images/vip-lebid.jpg";
-import rooster from "./photos/vip-images/vip-rooster.jpg";
+import dragons from "./photos/vip-images/dinofroz/vip-dragons.webp";
+import horrordog from "./photos/vip-images/horror/horror.webp";
+import horse from "./photos/vip-images/horse/horse.webp";
+import lebid from "./photos/vip-images/vip-lebid.webp";
+import rooster from "./photos/vip-images/vip-rooster.webp";
 import nicerone from "./photos/vip-images/dinofroz/vip-dinofroz.webp";
-import soloveyko from "./photos/vip-images/vip-soloveyko.jpg";
+import soloveyko from "./photos/vip-images/vip-soloveyko.webp";
 import monody from "./photos/vip-images/asium/vip-forest.webp";
 import dizel from "./photos/vip-images/dizel.webp";
-import flame from "./photos/vip-images/flame.jpg";
-import finances from "./photos/fan-art/finance.jpg";
-import parol from "./photos/fan-art/parol.jpg";
+import flame from "./photos/vip-images/flame.webp";
+import finances from "./photos/fan-art/finance.webp";
+import parol from "./photos/fan-art/parol.webp";
 import vovk from "./photos/fan-art/kolada.webp";
 
 // Ресурси для фонового завантаження кат-сцени
 import dinofrozVideo from "./mp3/dinofroz.mp4";
-import startImage from "./photos/hero-header/start-image.jpg";
+import startImage from "./photos/hero-header/start-image.webp";
 import turkeysAudio from "./mp3/turkeys.mp3";
-import horseAudio from "./mp3/horse.mp3";
-import monodyImg from "./photos/fan-art/monody.jpg";
-import monodyAudio from "./mp3/thefatrat-monody.mp3";
-import theoryImg from "./photos/fan-art/theorytwo.jpg";
-import theoryAudio from "./mp3/theoty-of-everything-ll.mp3";
-import ultraImage from "./photos/vip-modal/realultra.jpg";
+import ultraImage from "./photos/vip-modal/realultra.webp";
 
 const AVAILABLE_AVATARS = [
   monody,
@@ -222,12 +217,6 @@ const App = () => {
         startImage,
         turkeys, // Вже імпортовано вище
         turkeysAudio,
-        horse, // Вже імпортовано вище
-        horseAudio,
-        monodyImg,
-        monodyAudio,
-        theoryImg,
-        theoryAudio,
         ultraImage,
       ];
 

@@ -1,80 +1,80 @@
 import styled, { keyframes, css } from "styled-components";
 import { useState, useRef, useEffect, useMemo, useCallback } from "react";
 import dinofrozVideo from "../../mp3/dinofroz.mp4";
-import soloveyko from "../../photos/vip-images/vip-soloveyko.jpg";
-import harmony from "../../photos/vip-images/asium/asium.jpg";
-import horse from "../../photos/vip-images/horse/horse.jpg";
-import theorytwo from "../../photos/fan-art/theorytwo.jpg";
-import fingerdash from "../../photos/vip-images/dinofroz/fingerdash.jpg";
-import electrodynamix from "../../photos/vip-images/electrodynamix.jpg";
+import soloveyko from "../../photos/vip-images/vip-soloveyko.webp";
+import harmony from "../../photos/vip-images/asium/asium.webp";
+import horse from "../../photos/vip-images/horse/horse.webp";
+import theorytwo from "../../photos/fan-art/theorytwo.webp";
+import fingerdash from "../../photos/vip-images/dinofroz/fingerdash.webp";
+import electrodynamix from "../../photos/vip-images/electrodynamix.webp";
 //Desert
 import desert from "../../photos/vip-images/desert/vip-desert.webp";
-import deserttwo from "../../photos/vip-images/desert/deserttwo.jpg";
-import desertthree from "../../photos/vip-images/desert/desertthree.jpg";
-import desertfour from "../../photos/vip-images/desert/desertfour.jpg";
-import desertfive from "../../photos/vip-images/desert/desertfive.jpg";
-import desertone from "../../photos/vip-images/desert/desertone.jpg";
-import unity from "../../photos/fan-art/unity.jpg";
-import mecha from "../../photos/vip-images/mechannic.jpg";
-import monody from "../../photos/fan-art/monody.jpg";
-import christmas from "../../photos/vip-images/christmas.jpg";
-import clubstep from "../../photos/fan-art/clubstep.jpg";
+import deserttwo from "../../photos/vip-images/desert/deserttwo.webp";
+import desertthree from "../../photos/vip-images/desert/desertthree.webp";
+import desertfour from "../../photos/vip-images/desert/desertfour.webp";
+import desertone from "../../photos/vip-images/desert/desertone.webp";
+import unity from "../../photos/fan-art/unity.webp";
+import mecha from "../../photos/vip-images/mechannic.webp";
+import monody from "../../photos/fan-art/monody.webp";
+import christmas from "../../photos/vip-images/christmas.webp";
+import clubstep from "../../photos/fan-art/clubstep.webp";
 import turkeys from "../../photos/vip-images/turkeys/ultra-vip-turkeys.webp";
 //Horses
-import horsethree from "../../photos/vip-images/horse/horsethree.jpg";
-import horsetwo from "../../photos/vip-images/horse/horsetwo.jpg";
-import chess from "../../photos/vip-images/horse/chess.jpg";
+import horsethree from "../../photos/vip-images/horse/horsethree.webp";
+import horsetwo from "../../photos/vip-images/horse/horsetwo.webp";
+import chess from "../../photos/vip-images/horse/chess.webp";
 //Turkeys
-import turkeytwo from "../../photos/vip-images/turkeys/turkeytwo.jpg";
-import turkeythree from "../../photos/vip-images/turkeys/turkeysthree.jpg";
-import turkeyfour from "../../photos/vip-images/turkeys/turkeysfour.jpg";
-import turkeyfive from "../../photos/vip-images/turkeys/turkeysfive.jpg";
-import turkeysix from "../../photos/vip-images/turkeys/turkeyssix.jpg";
-import turkeysone from "../../photos/vip-images/turkeys/turkeysone.jpg";
-import turkeyseven from "../../photos/vip-images/turkeys/turkeysseven.jpg";
+import turkeytwo from "../../photos/vip-images/turkeys/turkeytwo.webp";
+import turkeythree from "../../photos/vip-images/turkeys/turkeysthree.webp";
+import turkeyfour from "../../photos/vip-images/turkeys/turkeysfour.webp";
+import turkeyfive from "../../photos/vip-images/turkeys/turkeysfive.webp";
+import turkeysix from "../../photos/vip-images/turkeys/turkeyssix.webp";
+import turkeysone from "../../photos/vip-images/turkeys/turkeysone.webp";
+import turkeyseven from "../../photos/vip-images/turkeys/turkeysseven.webp";
 //Asium
 import asiumnine from "../../photos/vip-images/asium/vip-forest.webp";
-import asiumone from "../../photos/vip-images/asium/asiumone.jpg";
-import asiumtwo from "../../photos/vip-images/asium/asiuntwo.jpg";
-import asiumthree from "../../photos/vip-images/asium/asiumthree.jpg";
-import asiumfour from "../../photos/vip-images/asium/asiumfour.jpg";
-import asiumfive from "../../photos/vip-images/asium/asiumfive.jpg";
-import asiumsix from "../../photos/vip-images/asium/asiumsix.jpg";
-import asiumten from "../../photos/vip-images/asium/asiumeleven.jpg";
-import asiumeleven from "../../photos/vip-images/asium/asiumtwelve.jpg";
-import asiumseven from "../../photos/vip-images/asium/asiumseven.jpg";
+import asiumone from "../../photos/vip-images/asium/asiumone.webp";
+import asiumtwo from "../../photos/vip-images/asium/asiuntwo.webp";
+import asiumthree from "../../photos/vip-images/asium/asiumthree.webp";
+import asiumfour from "../../photos/vip-images/asium/asiumfour.webp";
+import asiumfive from "../../photos/vip-images/asium/asiumfive.webp";
+import asiumsix from "../../photos/vip-images/asium/asiumsix.webp";
+import asiumten from "../../photos/vip-images/asium/asiumeleven.webp";
+import asiumeleven from "../../photos/vip-images/asium/asiumtwelve.webp";
+import asiumseven from "../../photos/vip-images/asium/asiumseven.webp";
 //Swamp
-import swamptwo from "../../photos/vip-images/swamp/swamptwo.jpg";
-import swampthree from "../../photos/vip-images/swamp/swampthree.jpg";
-import swampfour from "../../photos/vip-images/swamp/swampfour.jpg";
-import swampfive from "../../photos/vip-images/swamp/swampfive.jpg";
-import swampsix from "../../photos/vip-images/swamp/swampsix.jpg";
-import swampseven from "../../photos/vip-images/swamp/seampseven.jpg";
-import swampeight from "../../photos/vip-images/swamp/swampeight.jpg";
-import swampnine from "../../photos/vip-images/swamp/swampnine.jpg";
-import theory from "../../photos/fan-art/theory.jpg";
-import deadlocked from "../../photos/vip-images/swamp/deadlocked.jpg";
+import swamptwo from "../../photos/vip-images/swamp/swamptwo.webp";
+import swampthree from "../../photos/vip-images/swamp/swampthree.webp";
+import swampfour from "../../photos/vip-images/swamp/swampfour.webp";
+import swampfive from "../../photos/vip-images/swamp/swampfive.webp";
+import swampsix from "../../photos/vip-images/swamp/swampsix.webp";
+import swampseven from "../../photos/vip-images/swamp/seampseven.webp";
+import swampeight from "../../photos/vip-images/swamp/swampeight.webp";
+import swampnine from "../../photos/vip-images/swamp/swampnine.webp";
+import theory from "../../photos/fan-art/theory.webp";
+import deadlocked from "../../photos/vip-images/swamp/deadlocked.webp";
 //Horror
-import horrortwo from "../../photos/vip-images/horror/horrortwo.jpg";
-import horrorthree from "../../photos/vip-images/horror/horrorthree.jpg";
-import horrorfour from "../../photos/vip-images/horror/horrorfour.jpg";
-import horrorfive from "../../photos/vip-images/horror/horrorfive.jpg";
-import horror from "../../photos/vip-images/horror/horror.jpg";
-import horrorsix from "../../photos/vip-images/horror/horrorsix.jpg";
-import horrorseven from "../../photos/vip-images/horror/horrorseven.jpg";
-import horroreight from "../../photos/vip-images/horror/horroreight.jpg";
+import horrortwo from "../../photos/vip-images/horror/horrortwo.webp";
+import horrorthree from "../../photos/vip-images/horror/horrorthree.webp";
+import horrorfour from "../../photos/vip-images/horror/horrorfour.webp";
+import horrorfive from "../../photos/vip-images/horror/horrorfive.webp";
+import horror from "../../photos/vip-images/horror/horror.webp";
+import horrorsix from "../../photos/vip-images/horror/horrorsix.webp";
+import horrorseven from "../../photos/vip-images/horror/horrorseven.webp";
+import horroreight from "../../photos/vip-images/horror/horroreight.webp";
 //Динофроз
 import dinofrozone from "../../photos/vip-images/dinofroz/vip-dinofroz.webp";
-import dinofrozthree from "../../photos/vip-images/dinofroz/dinofrozthree.jpg";
-import dinofrozfour from "../../photos/vip-images/dinofroz/dinofrozfour.jpg";
-import dinofrozfive from "../../photos/vip-images/dinofroz/dinofrozfive.jpg";
-import dinofrozsix from "../../photos/vip-images/dinofroz/dinofrozsix.jpg";
-import dinofrozseven from "../../photos/vip-images/dinofroz/dinofrozseven.jpg";
-import dinofrozeight from "../../photos/vip-images/dinofroz/dinofrozeight.jpg";
-import dinofroztwo from "../../photos/vip-images/dinofroz/vip-dragons.jpg";
-import dinofroznine from "../../photos/vip-images/dinofroz/dinofroznine.jpg";
+import dinofrozthree from "../../photos/vip-images/dinofroz/dinofrozthree.webp";
+import dinofrozfour from "../../photos/vip-images/dinofroz/dinofrozfour.webp";
+import dinofrozfive from "../../photos/vip-images/dinofroz/dinofrozfive.webp";
+import dinofrozsix from "../../photos/vip-images/dinofroz/dinofrozsix.webp";
+import dinofrozseven from "../../photos/vip-images/dinofroz/dinofrozseven.webp";
+import dinofrozeight from "../../photos/vip-images/dinofroz/dinofrozeight.webp";
+import dinofroztwo from "../../photos/vip-images/dinofroz/vip-dragons.webp";
+import dinofroznine from "../../photos/vip-images/dinofroz/dinofroznine.webp";
 //Mia and me
 import mia from "../../photos/vip-images/mia/miaandme.webp";
+//MP3
 const slideIn = keyframes`
   0% { 
     transform: translateY(100%) scale(0.5);
@@ -2750,7 +2750,7 @@ const MusicCard = ({ cardData, onOpenModal, rating, onOpenPlayer, onRate }) => {
 const musicCards = [
   {
     id: 1,
-    image: require("../../photos/vip-images/christmas.jpg"),
+    image: christmas,
     audio: require("../../mp3/kolada.mp3"),
     text: "",
     lyrics: [
@@ -2777,7 +2777,7 @@ const musicCards = [
   },
   {
     id: 2,
-    image: require("../../photos/vip-images/dinofroz/vip-dinofroz.webp"),
+    image: dinofrozone,
     audio: require("../../mp3/dinofroz.mp3"),
     category: "мультфільми",
     author: "Динофроз - Mondo TV.",
@@ -2844,7 +2844,7 @@ const musicCards = [
   },
   {
     id: 3,
-    image: require("../../photos/vip-images/turkeys/ultra-vip-turkeys.webp"),
+    image: turkeys,
     audio: require("../../mp3/turkeys.mp3"),
     text: "",
     category: "природа",
@@ -2863,7 +2863,7 @@ const musicCards = [
   },
   {
     id: 4,
-    image: require("../../photos/fan-art/monody.jpg"),
+    image: monody,
     category: "хіти",
     filters: [
       {
@@ -2924,11 +2924,11 @@ const musicCards = [
     text: "Звук дощу. Пустеля розділенна вічно грозовою і сонячною зоною.",
     lyrics: "Звуки дощу, допомагають заснути",
     duration: 300,
-    images: [desert, desertone, deserttwo, desertthree, desertfour, desertfive],
+    images: [desert, desertone, deserttwo, desertthree, desertfour],
   },
   {
     id: 6,
-    image: require("../../photos/vip-images/horse/horse.jpg"),
+    image: horse,
     audio: require("../../mp3/horse.mp3"),
     category: "природа",
     text: "",
@@ -2958,7 +2958,7 @@ const musicCards = [
   },
   {
     id: 8,
-    image: require("../../photos/vip-images/vip-soloveyko.jpg"),
+    image: soloveyko,
     audio: require("../../mp3/soloveyko.mp3"),
     category: "природа",
     text: "Хто кращий по звукам соловеко чи індик? Зроблено за ідеї сім'ї.",
@@ -3390,19 +3390,19 @@ const musicCards = [
 const PLAYLISTS = {
   хіти: {
     title: "Хіти",
-    image: require("../../photos/vip-images/asium/vip-forest.webp"),
+    monody
   },
   мультфільми: {
     title: "Мультфільми",
-    image: require("../../photos/vip-images/dinofroz/vip-dinofroz.webp"),
+    dinofrozone,
   },
   природа: {
     title: "Природа",
-    image: require("../../photos/vip-images/turkeys/ultra-vip-turkeys.webp"),
+    turkeys,
   },
   ігри: {
     title: "Ігри",
-    image: require("../../photos/vip-images/mechannic.jpg"),
+    mecha,
   },
 };
 const CreatePlaylistModal = ({ onClose, onSave, initialData }) => {
