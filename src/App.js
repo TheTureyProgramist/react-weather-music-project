@@ -282,17 +282,31 @@ const App = () => {
   const [isShopOpen, setIsShopOpen] = useState(false);
   const [isAchivmentsOpen, setIsAchivmentsOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isUserSearchOpen, setIsUserSearchOpen] = useState(false);
+  const [isInfoOpen, setIsInfoOpen] = useState(false);
+
   const [isRoutingMode, setIsRoutingMode] = useState(() => {
     const saved = localStorage.getItem("isRoutingMode");
     return saved !== null ? JSON.parse(saved) : false;
   });
+
+  useEffect(() => {
+    const deployId = process.env.REACT_APP_DEPLOY_ID;
+    const lastSeenVersion = localStorage.getItem("last_deployed_version");
+
+    if (deployId && lastSeenVersion !== deployId) {
+      setIsUserSearchOpen(true);
+      localStorage.setItem("last_deployed_version", deployId);
+    }
+  }, []);
+
   const [isLocationEnabled, setIsLocationEnabled] = useState(false);
   const [weatherCards, setWeatherCards] = useState(() => {
     const savedCards = localStorage.getItem("weather_cards");
     return savedCards ? JSON.parse(savedCards) : [];
   });
 
-  const isAnyModalOpen = isModalOpen || isLoginOpen || isSettingsModalOpen || isVipModalOpen || isShopOpen || isAchivmentsOpen;
+  const isAnyModalOpen = isModalOpen || isLoginOpen || isSettingsModalOpen || isVipModalOpen || isShopOpen || isAchivmentsOpen || isUserSearchOpen || isInfoOpen;
 
   const [hideDeleteModalUntil, setHideDeleteModalUntil] = useState(() => {
     const val = localStorage.getItem("hideDeleteModalUntil");
