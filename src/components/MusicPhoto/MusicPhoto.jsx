@@ -16,7 +16,7 @@ import desertone from "../../photos/vip-images/desert/desertone.webp";
 import unity from "../../photos/fan-art/unity.webp";
 import mecha from "../../photos/vip-images/mechannic.webp";
 import monody from "../../photos/fan-art/monody.webp";
-import christmas from "../../photos/vip-images/christmas.webp";
+// import christmas from "../../photos/vip-images/christmas.webp";
 import clubstep from "../../photos/fan-art/clubstep.webp";
 import turkeys from "../../photos/vip-images/turkeys/ultra-vip-turkeys.webp";
 //Horses
@@ -74,7 +74,7 @@ import dinofroztwo from "../../photos/vip-images/dinofroz/vip-dragons.webp";
 import dinofroznine from "../../photos/vip-images/dinofroz/dinofroznine.webp";
 //Mia and me
 import mia from "../../photos/vip-images/mia/miaandme.webp";
-import christmasAudio from "../../mp3/kolada.mp3";
+//import christmasAudio from "../../mp3/kolada.mp3";
 import dinofrozAudio from "../../mp3/dinofroz.mp3";
 import turkeyAudio from "../../mp3/turkeys.mp3";
 import monodyAudio from "../../mp3/thefatrat-monody.mp3";
@@ -3407,36 +3407,35 @@ const musicCards = [
   • 80-100 сек: dinofrozsix
   • 100+ сек: dinofrozseven
 */
-
+  // {
+  //   id: 1,
+  //   image: christmas,
+  //   audio: christmasAudio,
+  //   text: "",
+  //   lyrics: [
+  //     // { time: 17, text: "Літо в пагорбах." },
+  //     // { time: 172, text: "Ті туманні дні у мене в спогадах." },
+  //     // { time: 175, text: "Ми все ще бігали." },
+  //     // { time: 179, text: "Весь світ був біля наших ніг." },
+  //     // { time: 182, text: "Бачачи зміни сезону." },
+  //     // { time: 182, text: "Наші дороги були вкриті пригодами." },
+  //     // { time: 185, text: "Гори на шляху." },
+  //     // { time: 189, text: "Від моря не могли втримати нас." },
+  //     // { time: 195, text: "Ось ми стоїмо з розпростертими обіймами." },
+  //     // { time: 199, text: "Це наш дім." },
+  //     // { time: 202, text: "Завжди сильні у світі, який ми створили." },
+  //     // { time: 209, text: "Я все ще чую тебе у вітрі." },
+  //     // { time: 212, text: "Бачу твої тіні на деревах." },
+  //     // { time: 216, text: "Тримаючись, спогади ніколи не змінюються." },
+  //     { time: 226, text: "" },
+  //   ],
+  //   category: "хіти",
+  //   duration: 180,
+  //   images: [christmas],
+  //   author: "'Україна колядує' Озвучка Ірини Федишин",
+  // },
   {
     id: 1,
-    image: christmas,
-    audio: christmasAudio,
-    text: "",
-    lyrics: [
-      // { time: 17, text: "Літо в пагорбах." },
-      // { time: 172, text: "Ті туманні дні у мене в спогадах." },
-      // { time: 175, text: "Ми все ще бігали." },
-      // { time: 179, text: "Весь світ був біля наших ніг." },
-      // { time: 182, text: "Бачачи зміни сезону." },
-      // { time: 182, text: "Наші дороги були вкриті пригодами." },
-      // { time: 185, text: "Гори на шляху." },
-      // { time: 189, text: "Від моря не могли втримати нас." },
-      // { time: 195, text: "Ось ми стоїмо з розпростертими обіймами." },
-      // { time: 199, text: "Це наш дім." },
-      // { time: 202, text: "Завжди сильні у світі, який ми створили." },
-      // { time: 209, text: "Я все ще чую тебе у вітрі." },
-      // { time: 212, text: "Бачу твої тіні на деревах." },
-      // { time: 216, text: "Тримаючись, спогади ніколи не змінюються." },
-      { time: 226, text: "" },
-    ],
-    category: "хіти",
-    duration: 180,
-    images: [christmas],
-    author: "'Україна колядує' Озвучка Ірини Федишин",
-  },
-  {
-    id: 2,
     image: dinofrozone,
     audio: dinofrozAudio,
     category: "мультфільми",
@@ -3510,6 +3509,12 @@ const musicCards = [
     category: "природа",
     duration: 60,
     author: "Звуки індиків - Моя робота :)",
+     lyrics: [
+      { time: 1, text: "Самець, курликає. У відповідь на гавкіт собаки. Решта їдять травичку у полі." },
+      { time: 25, text: "Дякую всім слухачам! Давно хотів сказати, що робота над піснями, була примною і важкою." },
+      { time: 40, text: "Динофроз, режимом відео, забрав багато часу, та деякі пісні, у плані фільтрів. Тим не менш, індики, попри скромність, заслужили, бути на рівні з іншими." },
+      { time: 55, text: "Друзі, у кожного, своя улюблена тема(спільне, відмінне), і ненавидна. Я розміщую захопливе і заспокійливе, окрім моїх захоплень, тільки скажіть і ваше улюблене може з'явитись. Я це кажу, до того, що Стихію, ми розвиватимемо разом. " },
+    ],
     images: [
       turkeysone,
       turkeytwo,
