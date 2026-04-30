@@ -117,7 +117,7 @@ const CardReward = styled.div`
 `;
 
 const HeaderDiv = styled.div`
-  height: 50px;
+  height: 35px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -134,11 +134,11 @@ const HeaderDiv = styled.div`
   margin: 0;
 
   @media (min-width: 768px) {
-    height: 80px;
+    height: 45px;
     padding: 0 20px;
   }
   @media (min-width: 1920px) {
-    height: 130px;
+    height: 100px;
     padding: 0 60px;
   }
 `;
@@ -147,7 +147,7 @@ const HeaderFix = styled.div`
   display: flex;
   align-items: center;
   min-width: 0;
-  gap: 5px; /* Невеликий проміжок між іконками */
+  gap: 5px; 
 
   @media (min-width: 768px) {
     gap: 10px;
@@ -230,7 +230,7 @@ const HeaderAvatar = styled.img`
   height: 30px;
   border-radius: 50%;
   min-width: 30px;
-  margin-right: 0; /* ВИДАЛЕНО ВСІ МАРДЖІНИ */
+  margin-right: 0; 
   object-fit: cover;
   flex-shrink: 0;
   border: 1.5px solid transparent;
@@ -326,15 +326,14 @@ const HeaderLogo = styled.img`
   border-radius: 50%;
   flex-shrink: 0;
   @media (min-width: 768px) {
-    height: 50px;
-    width: 50px;
+    height: 42px;
+    width: 42px;
   }
   @media (min-width: 1920px) {
-    height: 100px;
-    width: 100px;
+    height: 85px;
+    width: 85px;
   }
 `;
-
 const Spa = styled.span`
   font-size: 9px;
   @media (min-width: 768px) {
@@ -673,8 +672,8 @@ const Header = ({
               ref={logoRef}
               src={logofix}
               alt="Logo"
-              height="32px"
-              width="32px"
+              height="30px"
+              width="30px"
             />
             <FullscreenBtn
               className="logo-action"

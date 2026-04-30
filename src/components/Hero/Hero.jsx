@@ -1,5 +1,6 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import styled, { keyframes, css } from "styled-components";
+import localforage from "localforage";
 import hills from "../../photos/hero-header/fog.webp";
 import herotext from "../../photos/hero-header/herotext.webp";
 
@@ -72,6 +73,7 @@ import dinofrozseven from "../../photos/vip-images/dinofroz/dinofrozseven.webp";
 import dinofrozeight from "../../photos/vip-images/dinofroz/dinofrozeight.webp";
 import dinofroztwo from "../../photos/vip-images/dinofroz/vip-dragons.webp";
 import dinofroznine from "../../photos/vip-images/dinofroz/dinofroznine.webp";
+import nicerone from "../../photos/vip-images/dinofroz/nicerone.webp";
 //Mia and me
 import mia from "../../photos/vip-images/mia/miaandme.webp";
 import volcano from "../../photos/vip-images/fire.webp";
@@ -90,7 +92,7 @@ const DEFAULT_BGS = [
   { src: dinofrozeight, name: "Генерал Трік (1 сезон)", category: "Динофроз" },
   { src: dinofroznine, name: "Погляд у Рокфроз", category: "Динофроз" },
   { src: fingerdash, name: "Замок Ніцерона", category: "Динофроз" },
-
+  { src: nicerone, name: "Іще варіант", category: "Динофроз" },
   // Тварини та Істоти (Індики, Коні)
   { src: horse, name: "Кінь", category: "Тварини" },
   { src: horsetwo, name: "Армія козаків", category: "Тварини" },
@@ -104,7 +106,6 @@ const DEFAULT_BGS = [
   { src: turkeysix, name: "Ми вже виросли!", category: "Тварини" },
   { src: turkeyseven, name: "Шукаю друга", category: "Тварини" },
   { src: soloveyko, name: "Соловейко", category: "Тварини" },
-
   // Природа та Локації (Пустеля, Болото, Азіум)
   { src: desert, name: "Загадки пустелі", category: "Локації" },
   { src: desertone, name: "Кораблі у пустелі", category: "Локації" },
@@ -115,7 +116,6 @@ const DEFAULT_BGS = [
   { src: swamptwo, name: "Записка", category: "Локації" },
   { src: asiumten, name: "Зимовий ліс", category: "Локації" },
   { src: asiumeleven, name: "Водоспад", category: "Локації" },
-
   // Містичні та Казкові місця
   { src: asiumnine, name: "Казковий ліс", category: "Фентезі" },
   { src: asiumone, name: "Під водою", category: "Фентезі" },
@@ -127,7 +127,6 @@ const DEFAULT_BGS = [
   { src: asiumseven, name: "Японський балкон", category: "Фентезі" },
   { src: harmony, name: "Японський храм", category: "Фентезі" },
   { src: mia, name: "Міа та я", category: "Фентезі" },
-
   // Хоррор та Болото (Темна тематика)
   { src: horror, name: "Бійцівська собака", category: "Хоррор" },
   { src: horrortwo, name: "Будинок Granny", category: "Хоррор" },
@@ -142,7 +141,6 @@ const DEFAULT_BGS = [
   { src: swampseven, name: "Туман, що дивиться", category: "Хоррор" },
   { src: swampeight, name: "Болотний дракон", category: "Хоррор" },
   { src: deadlocked, name: "Болото мук", category: "Хоррор" },
-
   // Ігри та Техно
   { src: theorytwo, name: "Чорна діра", category: "Аркада" },
   { src: electrodynamix, name: "Гроза", category: "Аркада" },
@@ -153,68 +151,62 @@ const DEFAULT_BGS = [
   { src: swampthree, name: "Підказка свічки", category: "Аркада" },
   { src: swampsix, name: "Печера кристалів", category: "Аркада" },
 ];
-
 const fadeIn = keyframes`
   from { opacity: 0; }
   to { opacity: 1; }
 `;
-
 const fadeOut = keyframes`
   from { opacity: 1; }
   to { opacity: 0; }
 `;
-
 const slideIn = keyframes`
   0% { transform: translateY(100%) scale(0.5); opacity: 0; }
   100% { transform: translateY(0%) scale(1); opacity: 1; }
 `;
-
 const slideOut = keyframes`
   0% { transform: translateY(0%) scale(1); opacity: 1; }
   100% { transform: translateY(100%) scale(0.5); opacity: 0; }
 `;
-
 const slideUpHero = keyframes`
   0% { transform: translateY(120px) scale(1.8); opacity: 0; }
   100% { transform: translateY(0) scale(1); opacity: 1; }
 `;
-
 const fadeInContent = keyframes`
   0% { opacity: 0; }
   100% { opacity: 1; }
 `;
-
 const HeroDiv = styled.div`
   position: relative;
   width: 100%;
-  min-height: 360px;
-  margin-bottom: 35px;
+  min-height: 712px;
+  margin-bottom: 10px;
   display: flex;
   flex-direction: column;
   justify-content: center;
+  gap: 65px;
   align-items: center;
   overflow: hidden;
   z-index: 1;
   @media (min-width: 768px) {
     gap: 25px;
-    margin-bottom: 50px;
+    margin-bottom: 15px;
   }
   @media (min-width: 1200px) {
-    gap: 95px;
-    min-height: 620px;
-    margin-bottom: 75px;
+    gap: 30px;
+    min-height: 643px;
+    margin-bottom: 20px;
   }
   @media (min-width: 1920px) {
     min-height: 1080px;
-    margin-bottom: 120px;
+    margin-bottom: 30px;
     gap: 96px;
   }
 `;
 const HeroDecors = styled.div`
   display: block;
-  width: 160px;
+  width: 170px;
   margin-top: 85px;
-  height: 67px;
+  height: 78px;
   background-image: url(${(props) => props.$image});
   background-size: cover;
   background-position: center;
@@ -228,12 +220,12 @@ const HeroDecors = styled.div`
         `
       : "none"};
   @media (min-width: 768px) {
-    width: 350px;
-    height: 140px;
+    width: 410px;
+    height: 180px;
   }
   @media (min-width: 1200px) {
-    width: 350px;
-    height: 139px;
+    width: 400px;
+    height: 179px;
   }
   @media (min-width: 1920px) {
     width: 700px;
@@ -245,7 +237,7 @@ const DelayedContent = styled.div`
   flex-direction: column;
   align-items: center;
   width: 100%;
-  gap: 20px;
+  gap: 70px;
   opacity: 0;
   animation: ${(props) =>
     props.$start
@@ -254,7 +246,6 @@ const DelayedContent = styled.div`
         `
       : "none"};
   animation-delay: ${(props) => (props.$start ? "3s" : "0s")};
-
   @media (min-width: 768px) {
     gap: 25px;
   }
@@ -265,13 +256,11 @@ const DelayedContent = styled.div`
     gap: 80px;
   }
 `;
-
 const panAnimation = keyframes`
   0% { background-position-x: 0%; }
   50% { background-position-x: 100%; }
   100% { background-position-x: 0%; }
 `;
-
 const BgLayer = styled.div`
   position: absolute;
   top: 0;
@@ -298,7 +287,6 @@ const BgLayer = styled.div`
         `
       : "none"};
 `;
-
 const Overlay = styled.div`
   position: absolute;
   top: 0;
@@ -308,32 +296,6 @@ const Overlay = styled.div`
   background: rgba(0, 0, 0, ${(props) => props.$opacity});
   z-index: -1;
   pointer-events: none;
-`;
-
-const HeroTitle = styled.h1`
-  text-align: center;
-  font-family: var(--font-family);
-  font-weight: 600;
-  font-size: 10px;
-  color: #fff;
-  width: 250px;
-  margin: 0;
-  text-shadow:
-    2px 2px 4px rgba(0, 0, 0, 0.8),
-    0 0 10px rgba(0, 0, 0, 0.5);
-  @media (min-width: 768px) {
-    font-size: 15px;
-    width: 450px;
-  }
-  @media (min-width: 1200px) {
-    font-size: 20px;
-    width: 650px;
-  }
-  @media (min-width: 1920px) {
-    font-size: 42px;
-    width: 1400px;
-    line-height: 1.3;
-  }
 `;
 const HeroDecor = styled.div`
   display: flex;
@@ -354,9 +316,14 @@ const HeroFix = styled.div`
   @media (min-width: 768px) {
     flex-direction: row;
     gap: 0;
+    width: 550px;
   }
 `;
-
+const HeroFi = styled.div`
+  display: flex;
+  align-items: center; 
+  justify-content: center; 
+`;
 const HeroTextLink = styled.a`
   color: #fff;
   font-family: var(--font-family);
@@ -372,13 +339,13 @@ const HeroTextLink = styled.a`
     0 0 10px rgba(0, 0, 0, 0.5);
 
   @media (min-width: 768px) {
-    font-size: 11px;
+    font-size: 10px;
     flex: 1;
     text-align: right;
     padding-right: 20px;
   }
   @media (min-width: 1200px) {
-    font-size: 19px;
+    font-size: 18px;
     padding-right: 30px;
   }
   @media (min-width: 1920px) {
@@ -388,28 +355,148 @@ const HeroTextLink = styled.a`
 `;
 const HeroDate = styled.div`
   color: #fff;
-  font-size: 10px;
+  font-size: 8px;
   text-align: center;
+font-weight: 600;
   text-shadow:
     2px 2px 4px rgba(0, 0, 0, 0.8),
     0 0 10px rgba(0, 0, 0, 0.5);
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 
   @media (min-width: 768px) {
-    font-size: 11px;
+    font-size: 10px;
     flex: 1;
-    text-align: left;
-    padding-left: 20px;
+    justify-content: center;
+    padding-left: 0px;
+    gap: 10px;
   }
   @media (min-width: 1200px) {
-    font-size: 19px;
+    font-size: 18px;
     padding-left: 30px;
+    gap: 15px;
   }
   @media (min-width: 1920px) {
-    font-size: 34px;
+    font-size: 30px;
     padding-left: 50px;
+    gap: 20px;
   }
 `;
 
+const rotateGear = keyframes`
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+`;
+
+const TimezoneButton = styled.button`
+  background: rgba(255, 179, 108, 0.2);
+  border: 1px solid rgba(255, 179, 108, 0.5);
+  color: #fff;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(5px);
+  padding: 0;
+
+  &:hover {
+    background: rgba(255, 179, 108, 0.4);
+    border-color: #ffb36c;
+    transform: scale(1.1) rotate(360deg); /* Анімація обертання */
+    animation: ${rotateGear} 1s linear infinite; /* Застосовуємо анімацію */
+  }
+
+  @media (min-width: 768px) {
+    width: 28px;
+    height: 28px;
+    font-size: 16px;
+  }
+
+  @media (min-width: 1200px) {
+    width: 22px;
+    height: 22px;
+    font-size: 11px;
+  }
+
+  @media (min-width: 1920px) {
+    width: 40px;
+    height: 40px;
+    font-size: 24px;
+  }
+`;
+
+const TimezoneMenu = styled.div`
+  position: absolute;
+  bottom: -10px;
+  right: 0;
+  transform: translateY(100%);
+  background: #1e1e1e;
+  border: 1px solid #ffb36c;
+  border-radius: 10px;
+  padding: 10px;
+  width: 250px;
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 2000;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+
+  @media (min-width: 768px) {
+    width: 280px;
+    padding: 15px;
+  }
+
+  @media (min-width: 1920px) {
+    width: 350px;
+    padding: 20px;
+  }
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #ffb36c;
+    border-radius: 10px;
+  }
+`;
+
+const TimezoneOption = styled.button`
+  width: 100%;
+  background: transparent;
+  color: ${(props) => (props.$selected ? "#ffb36c" : "#fff")};
+  border: 1px solid ${(props) => (props.$selected ? "#ffb36c" : "transparent")};
+  border-radius: 5px;
+  padding: 8px 10px;
+  margin-bottom: 5px;
+  cursor: pointer;
+  text-align: left;
+  font-size: 12px;
+  transition: all 0.2s ease;
+  font-weight: ${(props) => (props.$selected ? "bold" : "normal")};
+
+  &:hover {
+    background: rgba(255, 179, 108, 0.2);
+    border-color: #ffb36c;
+  }
+
+  @media (min-width: 1920px) {
+    font-size: 16px;
+    padding: 12px 15px;
+  }
+`;
 const DownloadAppsContainer = styled.div`
   display: flex;
   gap: 10px;
@@ -558,6 +645,30 @@ const CoordinateInput = styled.div`
     &::placeholder {
       color: #888;
     }
+  }
+`;
+
+const SortButtonsRow = styled.div`
+  display: flex;
+  gap: 5px;
+  margin-bottom: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(255, 179, 108, 0.3);
+`;
+
+const SortBtn = styled.button`
+  background: ${(props) => (props.$active ? "#ffb36c" : "rgba(255, 179, 108, 0.1)")};
+  color: ${(props) => (props.$active ? "#000" : "#fff")};
+  border: 1px solid #ffb36c;
+  border-radius: 4px;
+  padding: 4px 6px;
+  font-size: 9px;
+  cursor: pointer;
+  flex: 1;
+  font-weight: bold;
+  transition: all 0.2s;
+  &:hover {
+    background: ${(props) => (props.$active ? "#ffb36c" : "rgba(255, 179, 108, 0.3)")};
   }
 `;
 
@@ -756,8 +867,8 @@ const ChangeBgButton = styled.button`
   background: rgba(0, 0, 0, 0.4);
   border: 1px solid rgba(255, 179, 108, 0.5);
   color: white;
-  width: 35px;
-  height: 35px;
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
   cursor: pointer;
   display: flex;
@@ -773,20 +884,16 @@ const ChangeBgButton = styled.button`
     transform: scale(1.1);
   }
   @media (min-width: 720px) {
-    width: 40px;
-    height: 40px;
+    width: 42px;
+    height: 42px;
     font-size: 20px;
-    top: 90px;
-  }
-  @media (min-width: 1200px) {
-    top: 100px;
-    width: 60px;
-    height: 60px;
-    font-size: 30px;
+      right: 20px;
+    top: 60px;
   }
   @media (min-width: 1920px) {
-    width: 100px;
-    height: 100px;
+    width: 85px;
+          right: 60px;
+    height: 85px;
     font-size: 50px;
     top: 136px;
   }
@@ -900,19 +1007,6 @@ const NameOverlay = styled.div`
   text-overflow: ellipsis;
   z-index: 8;
 `;
-
-// const BgItem = styled.div`
-//   position: relative;
-//   border-radius: 10px;
-//   overflow: hidden;
-//   border: 2px solid ${(props) => (props.$active ? "#ffb36c" : "transparent")};
-//   transition: transform 0.2s;
-//   &:hover {
-//     transform: scale(1.05);
-//     ${NameOverlay} { opacity: 1; }
-//   }
-// `;
-
 const ConfigRow = styled.div`
   display: flex;
   flex-direction: column;
@@ -1077,6 +1171,45 @@ const ModalSectionTitle = styled.h3`
   padding-left: 10px;
 `;
 
+const TIMEZONES = [
+  { label: "UTC (Всесвітній час)", value: "UTC" },
+  { label: "GMT (Лондон, Дублін)", value: "Europe/London" },
+  { label: "UTC+1 (Берлін, Париж, Рим, Варшава)", value: "Europe/Berlin" },
+  { label: "UTC+2 (Київ, Хельсінкі, Каїр, Бухарест)", value: "Europe/Kyiv" },
+  { label: "UTC+3 (Стамбул, Ер-Ріяд, Найробі)", value: "Europe/Istanbul" },
+  { label: "UTC+4 (Дубай, Баку, Тбілісі)", value: "Asia/Dubai" },
+  { label: "UTC+5 (Ісламабад, Ташкент, Мальдіви)", value: "Asia/Karachi" },
+  { label: "UTC+6 (Астана, Дакка, Алмати)", value: "Asia/Almaty" },
+  { label: "UTC+7 (Бангкок, Джакарта, Ханой)", value: "Asia/Bangkok" },
+  { label: "UTC+8 (Пекін, Сінгапур, Перт)", value: "Asia/Shanghai" },
+  { label: "UTC+9 (Токіо, Сеул, Іркутськ)", value: "Asia/Tokyo" },
+  { label: "UTC+10 (Сідней, Мельбурн, Порт-Морсбі)", value: "Australia/Sydney" },
+  { label: "UTC+11 (Номеа, Соломонові Острови)", value: "Pacific/Noumea" },
+  { label: "UTC+12 (Окленд, Фіджі)", value: "Pacific/Auckland" },
+  { label: "UTC-1 (Азорські острови, Кабо-Верде)", value: "Atlantic/Azores" },
+  { label: "UTC-2 (Південна Джорджія)", value: "Atlantic/South_Georgia" },
+  { label: "UTC-3 (Буенос-Айрес, Бразиліа, Гренландія)", value: "America/Argentina/Buenos_Aires" },
+  { label: "UTC-4 (Сантьяго, Галіфакс, Каракас)", value: "America/Santiago" },
+  { label: "UTC-5 (Нью-Йорк, Торонто, Богота)", value: "America/New_York" },
+  { label: "UTC-6 (Чикаго, Мехіко, Вінніпег)", value: "America/Chicago" },
+  { label: "UTC-7 (Денвер, Едмонтон, Калгарі)", value: "America/Denver" },
+  { label: "UTC-8 (Лос-Анджелес, Ванкувер, Сан-Франциско)", value: "America/Los_Angeles" },
+  { label: "UTC-9 (Аляска, Анкоридж)", value: "America/Anchorage" },
+  { label: "UTC-10 (Гаваї, Гонолулу)", value: "Pacific/Honolulu" },
+  { label: "UTC-11 (Паго-Паго, Алофі)", value: "Pacific/Pago_Pago" },
+  { label: "UTC-12 (Острів Бейкер, Острів Гоуленд)", value: "Etc/GMT+12" },
+  { label: "EST (Північна Америка: Східний час)", value: "America/New_York" },
+  { label: "CST (Північна Америка: Центральний час)", value: "America/Chicago" },
+  { label: "MST (Північна Америка: Гірський час)", value: "America/Denver" },
+  { label: "PST (Північна Америка: Тихоокеанський час)", value: "America/Los_Angeles" },
+  { label: "CET (Центральна Європа: Прага, Мадрид)", value: "Europe/Berlin" },
+  { label: "EET (Східна Європа: Софія, Таллінн)", value: "Europe/Kyiv" },
+  { label: "IST (Індія, Нью-Делі)", value: "Asia/Kolkata" },
+  { label: "JST (Японія, Токіо)", value: "Asia/Tokyo" },
+  { label: "AEST (Східна Австралія, Брісбен)", value: "Australia/Brisbane" },
+  { label: "Інший (ввести вручну)", value: "custom_input" },
+];
+
 const Hero = ({
   heroDateString,
   onAddCity,
@@ -1087,6 +1220,10 @@ const Hero = ({
   setHeroBg,
   heroBg2,
   setHeroBg2,
+  heroBg3,
+  setHeroBg3,
+  heroBg4,
+  setHeroBg4,
   customHeroBgs = [],
   setCustomHeroBgs,
   heroBgMode,
@@ -1111,11 +1248,17 @@ const Hero = ({
   setHeroBgFocal1,
   heroBgFocal2,
   setHeroBgFocal2,
+  heroBgFocal3,
+  setHeroBgFocal3,
+  heroBgFocal4,
+  setHeroBgFocal4,
   heroBgPanEnabled,
   setHeroBgPanEnabled,
   heroBgPanSpeed,
   setHeroBgPanSpeed,
   screenshots = [],
+  selectedTimezone,
+  setSelectedTimezone,
 }) => {
   const [inputValue, setInputValue] = useState("");
   const [suggestions, setSuggestions] = useState([]);
@@ -1125,42 +1268,22 @@ const Hero = ({
   const [visibleBgCount, setVisibleBgCount] = useState(30);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
-
-  // FIX: Added missing states to resolve ESLint errors
+  const [showTimezoneMenu, setShowTimezoneMenu] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [searchMode, setSearchMode] = useState("city");
   const [latitude, setLatitude] = useState("");
   const [longitude, setLongitude] = useState("");
-
-  // Moved sortType state here to ensure it's within the component's scope
-  const [sortType, setSortType] = useState("rating"); // 'rating', 'az', 'za'
+  const [sortType, setSortType] = useState("rating"); 
   const [activeLayer, setActiveLayer] = useState(1);
-
-  // Define rotationScale as a state or computed value
-  const rotationScale = 1; // You can change this to useState if you want it to be dynamic
-
-  // Логіка слайд-шоу
-  useEffect(() => {
-    if (heroBgMode !== "slideshow" || !heroBg || !heroBg2) return;
-
-    const timer = setInterval(() => {
-      setActiveLayer((prev) => (prev === 1 ? 2 : 1));
-    }, slideshowInterval * 1000);
-
-    return () => clearInterval(timer);
-  }, [heroBgMode, heroBg, heroBg2, slideshowInterval]);
-
-  const handleCloseModal = () => {
-    setIsClosing(true);
-    setTimeout(() => {
-      setIsModalOpen(false);
-      setIsClosing(false);
-    }, 350);
-  };
-
+  const rotationScale = 1; 
+  const [tzSortMode, setTzSortMode] = useState("default");
+  const [randomBgsList, setRandomBgsList] = useState([]);
+  const [showCustomInput, setShowCustomInput] = useState(false); 
+  const [customTimezoneInputValue, setCustomTimezoneInputValue] = useState(""); 
+  
+  // Определяем allBgs до использования в useEffect
   const isCustom = (src) => !DEFAULT_BGS.some((bg) => bg.src === src);
-
-  const allBgs = [
+  const allBgs = useMemo(() => [
     ...DEFAULT_BGS,
     ...(customHeroBgs || []),
     ...(screenshots || []).map((s) => ({
@@ -1168,7 +1291,110 @@ const Hero = ({
       name: `Скріншот: ${s.trackName}`,
       category: "Скріншоти",
     })),
-  ];
+  ], [customHeroBgs, screenshots]);
+  
+  const getTzTimeInfo = useCallback((tzValue) => {
+    if (!tzValue || tzValue === "custom_input") return null;
+    try {
+      const now = new Date();
+      const fmt = new Intl.DateTimeFormat("uk", {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+        timeZone: tzValue,
+      });
+      const timeStr = fmt.format(now);
+      const hour = parseInt(timeStr.split(":")[0]);
+      const isDay = hour >= 6 && hour < 20;
+      return { timeStr, isDay };
+    } catch (e) {
+      return null;
+    }
+  }, []);
+
+  const getNumericOffset = useCallback((tzValue) => {
+    if (tzValue === "UTC") return 0;
+    if (tzValue === "custom_input") return 999;
+    try {
+      const date = new Date();
+      const tzString = date.toLocaleString("en-US", { timeZone: tzValue });
+      const localDate = new Date(tzString);
+      const utcString = date.toLocaleString("en-US", { timeZone: "UTC" });
+      const utcDate = new Date(utcString);
+      return (localDate - utcDate) / (1000 * 60);
+    } catch (e) {
+      return 0;
+    }
+  }, []);
+
+  const sortedTimezones = useMemo(() => {
+    let list = [...TIMEZONES];
+    if (tzSortMode === "alpha") {
+      list.sort((a, b) => a.label.localeCompare(b.label));
+    } else if (tzSortMode === "offset") {
+      list.sort((a, b) => getNumericOffset(a.value) - getNumericOffset(b.value));
+    }
+    return list;
+  }, [tzSortMode, getNumericOffset]);
+  useEffect(() => {
+    if (heroBgMode === "slideshow-2" && heroBg && heroBg2) {
+      setActiveLayer(1);
+      const timer = setInterval(() => {
+        setActiveLayer((prev) => (prev === 1 ? 2 : 1));
+      }, slideshowInterval * 1000);
+      return () => clearInterval(timer);
+    } else if (heroBgMode === "slideshow-3" && heroBg && heroBg2 && heroBg3) {
+      setActiveLayer(1);
+      const timer = setInterval(() => {
+        setActiveLayer((prev) => (prev === 3 ? 1 : prev + 1));
+      }, slideshowInterval * 1000);
+      return () => clearInterval(timer);
+    } else if (heroBgMode === "slideshow-4" && heroBg && heroBg2 && heroBg3 && heroBg4) {
+      setActiveLayer(1);
+      const timer = setInterval(() => {
+        setActiveLayer((prev) => (prev === 4 ? 1 : prev + 1));
+      }, slideshowInterval * 1000);
+      return () => clearInterval(timer);
+    } else if (heroBgMode === "random") {
+      // Ініціалізуємо рандом список при першому запуску
+      if (randomBgsList.length === 0 && allBgs.length > 0) {
+        const shuffled = [...allBgs].sort(() => Math.random() - 0.5);
+        setRandomBgsList(shuffled);
+        if (shuffled[0]) {
+          setHeroBg(shuffled[0].src);
+        }
+        return;
+      }
+      
+      // Чергове циклювання через перемішаний список
+      if (randomBgsList.length > 0) {
+        let currentIndex = 0;
+        const timer = setInterval(() => {
+          currentIndex = (currentIndex + 1) % randomBgsList.length;
+          setHeroBg(randomBgsList[currentIndex].src);
+        }, slideshowInterval * 1000);
+        return () => clearInterval(timer);
+      }
+    }
+  }, [heroBgMode, heroBg, heroBg2, allBgs, heroBg3, setHeroBg, heroBg4, slideshowInterval, randomBgsList, customHeroBgs, screenshots]);
+  useEffect(() => {
+    const isPredefined = TIMEZONES.some(tz => tz.value === selectedTimezone);
+    if (!isPredefined) {
+      setCustomTimezoneInputValue(selectedTimezone);
+      setShowCustomInput(true);
+    } else {
+      setCustomTimezoneInputValue("");
+      setShowCustomInput(false);
+    }
+  }, [selectedTimezone]);
+  const handleCloseModal = () => {
+    setIsClosing(true);
+    setTimeout(() => {
+      setIsModalOpen(false);
+      setIsClosing(false);
+    }, 350);
+  };
+  const timezoneMenuRef = useRef(null);
 
   const filteredBgs = (allBgs || []).filter((bg) => {
     const matchesCategory =
@@ -1191,11 +1417,7 @@ const Hero = ({
     if (rA !== rB) return rB - rA;
     return a.name.localeCompare(b.name);
   });
-
-  // Compute pagedBgs from sortedBgs and visibleBgCount
   const pagedBgs = sortedBgs.slice(0, visibleBgCount);
-
-  // Function to reset background settings
   const resetBgSettings = () => {
     setHeroOverlayOpacity(0.3);
     setHeroBgZoom(1);
@@ -1440,7 +1662,7 @@ const Hero = ({
       />
       <BgLayer
         $image={heroBg2}
-        $active={heroBgMode === "slideshow" && activeLayer === 2}
+        $active={(heroBgMode === "slideshow-2" || heroBgMode === "slideshow-3" || heroBgMode === "slideshow-4") && activeLayer === 2}
         $transition={slideshowTransition}
         $zoom={heroBgZoom}
         $rotation={heroBgRotation}
@@ -1451,6 +1673,32 @@ const Hero = ({
         $panEnabled={heroBgPanEnabled && heroBgZoom > 1}
         $panSpeed={heroBgPanSpeed}
       />
+      <BgLayer
+        $image={heroBg3}
+        $active={(heroBgMode === "slideshow-3" || heroBgMode === "slideshow-4") && activeLayer === 3}
+        $transition={slideshowTransition}
+        $zoom={heroBgZoom}
+        $rotation={heroBgRotation}
+        $rotationScale={rotationScale}
+        $blur={heroBgBlur}
+        $focalX={heroBgFocal3?.x || 50}
+        $focalY={heroBgFocal3?.y || 50}
+        $panEnabled={heroBgPanEnabled && heroBgZoom > 1}
+        $panSpeed={heroBgPanSpeed}
+      />
+      <BgLayer
+        $image={heroBg4}
+        $active={heroBgMode === "slideshow-4" && activeLayer === 4}
+        $transition={slideshowTransition}
+        $zoom={heroBgZoom}
+        $rotation={heroBgRotation}
+        $rotationScale={rotationScale}
+        $blur={heroBgBlur}
+        $focalX={heroBgFocal4?.x || 50}
+        $focalY={heroBgFocal4?.y || 50}
+        $panEnabled={heroBgPanEnabled && heroBgZoom > 1}
+        $panSpeed={heroBgPanSpeed}
+      />
       <Overlay $opacity={heroOverlayOpacity} />
 
       <ChangeBgButton onClick={() => setIsModalOpen(true)} title="Змінити фон">
@@ -1458,20 +1706,121 @@ const Hero = ({
       </ChangeBgButton>
       <HeroDecors $image={herotext} $start={startAnimation} />
       <DelayedContent $start={startAnimation}>
-        <HeroTitle>Погода, музика, фан-арти, ШІ, системи: 🧧, 🏆.</HeroTitle>
-
         <HeroDecor>
           <HeroFix>
             <HeroTextLink
               href="https://www.facebook.com/groups/33984901414490236/?notif_id=1770630384341499&notif_t=group_milestone&ref=notif"
               target="_blank"
             >
-              Мій фейсбук канал. Натисніть.
+              Мій фейсбук канал
             </HeroTextLink>
-            <HeroDate>{heroDateString}</HeroDate>
+            <HeroFi>
+            <HeroDate ref={timezoneMenuRef}>
+              {heroDateString}
+              <TimezoneButton
+                onClick={() => setShowTimezoneMenu(!showTimezoneMenu)}
+                title="Змінити часовий пояс"
+              >
+                ⚙️
+              </TimezoneButton>
+              {showTimezoneMenu && (
+                <TimezoneMenu>
+                  <div style={{ marginBottom: "10px", fontWeight: "bold", color: "#ffb36c", fontSize: "12px" }}>
+                    Часовий пояс
+                  </div>
+                  <SortButtonsRow>
+                    <SortBtn $active={tzSortMode === "default"} onClick={() => setTzSortMode("default")}>По ум.</SortBtn>
+                    <SortBtn $active={tzSortMode === "alpha"} onClick={() => setTzSortMode("alpha")}>А-Я</SortBtn>
+                    <SortBtn $active={tzSortMode === "offset"} onClick={() => setTzSortMode("offset")}>UTC +/-</SortBtn>
+                  </SortButtonsRow>
+                  {sortedTimezones.map((tz) => {
+                    const isSelected = selectedTimezone === tz.value || (tz.value === "custom_input" && showCustomInput);
+                    const info = getTzTimeInfo(tz.value);
+                    return (
+                    <TimezoneOption
+                      key={tz.value}
+                      $selected={isSelected}
+                      onClick={() => {
+                        if (tz.value === "custom_input") {
+                          setShowCustomInput(true);
+                          const isCurrentPredefined = TIMEZONES.some(t => t.value === selectedTimezone);
+                          if (!isCurrentPredefined) {
+                            setCustomTimezoneInputValue(selectedTimezone);
+                          } else {
+                            setCustomTimezoneInputValue("");
+                          }
+                        } else {
+                          setShowCustomInput(false);
+                          setSelectedTimezone(tz.value); // Update the prop directly
+                          localforage.setItem("selected_timezone", tz.value);
+                        } // Menu will not close automatically here
+                      }}
+                    >
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', gap: '8px' }}>
+                        <span>{tz.label}</span>
+                        {info && (
+                          <span style={{ fontSize: '10px', opacity: 0.9, whiteSpace: 'nowrap' }}>
+                            {info.isDay ? "☀️" : "🌙"} {info.timeStr}
+                          </span>
+                        )}
+                      </div>
+                    </TimezoneOption>
+                  )})}
+                  {showCustomInput && (
+                    <div style={{ marginTop: "10px" }}>
+                      <input
+                        type="text"
+                        value={customTimezoneInputValue}
+                        onChange={(e) => setCustomTimezoneInputValue(e.target.value)}
+                        placeholder="Наприклад: Europe/Warsaw"
+                        style={{
+                          width: "100%",
+                          padding: "8px",
+                          borderRadius: "5px",
+                          border: "1px solid #ffb36c",
+                          background: "#333",
+                          color: "#fff",
+                          fontSize: "12px",
+                          marginBottom: "5px",
+                        }}
+                      />
+                      <button
+                        onClick={() => {
+                          if (customTimezoneInputValue.trim()) {
+                            try {
+                              Intl.DateTimeFormat("en", { timeZone: customTimezoneInputValue.trim() });
+                              setSelectedTimezone(customTimezoneInputValue.trim()); // Update the prop
+                              localforage.setItem("selected_timezone", customTimezoneInputValue.trim());
+                              setShowTimezoneMenu(false);
+                            } catch (e) {
+                              alert("Невірний формат часового поясу. Спробуйте, наприклад, 'Europe/Kyiv' або 'America/New_York'.");
+                            }
+                          } else {
+                            alert("Будь ласка, введіть часовий пояс.");
+                          }
+                        }}
+                        style={{
+                          width: "100%",
+                          padding: "8px",
+                          background: "#ffb36c",
+                          border: "none",
+                          borderRadius: "5px",
+                          cursor: "pointer",
+                          fontWeight: "bold",
+                          fontSize: "12px",
+                          color: "#1e1e1e",
+                        }}
+                      >
+                        Застосувати
+                      </button>
+                    </div>
+                  )}
+                </TimezoneMenu>
+              )}
+            </HeroDate>
+            </HeroFi>
           </HeroFix>
         </HeroDecor>
-
         {user && (
           <DownloadAppsContainer>
             <DownloadAppButton
@@ -1697,11 +2046,20 @@ const Hero = ({
                 <label>Режим фону:</label>
                 <select
                   value={heroBgMode}
-                  onChange={(e) => setHeroBgMode(e.target.value)}
+                  onChange={(e) => {
+                    setHeroBgMode(e.target.value);
+                    if (e.target.value === "random") {
+                      setRandomBgsList([]);
+                    }
+                    setActiveLayer(1);
+                  }}
                   style={{ padding: "8px", borderRadius: "5px" }}
                 >
                   <option value="static">Статичний (1 фото)</option>
-                  <option value="slideshow">Слайд-шоу (2 фото)</option>
+                  <option value="slideshow-2">Слайд-шоу (2 фото)</option>
+                  <option value="slideshow-3">Слайд-шоу (3 фото)</option>
+                  <option value="slideshow-4">Слайд-шоу (4 фото)</option>
+                  <option value="random">🎲 Рандом (усі фото)</option>
                 </select>
               </ConfigRow>
               <ConfigRow>
@@ -1756,7 +2114,26 @@ const Hero = ({
 
             <ModalDivider />
             <ModalSectionTitle>🎯 Фокус та ротація</ModalSectionTitle>
-            {heroBgMode === "slideshow" ? (
+            {heroBgMode === "random" ? (
+              <div style={{ display: "flex", gap: "8px" }}>
+                <button
+                  onClick={() => {
+                    setRandomBgsList([]);
+                  }}
+                  style={{
+                    flex: 1,
+                    padding: "10px",
+                    background: "#ffb36c",
+                    border: "none",
+                    borderRadius: "5px",
+                    cursor: "pointer",
+                    fontWeight: "bold",
+                  }}
+                >
+                  🎲 Перетасувати знову
+                </button>
+              </div>
+            ) : heroBgMode === "slideshow-2" ? (
               <FocusButtonsGrid>
                 <div
                   style={{
@@ -1853,6 +2230,95 @@ const Hero = ({
                   </div>
                 </div>
               </FocusButtonsGrid>
+              ) : heroBgMode === "slideshow-3" ? (
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "15px" }}>
+                  {[
+                    { num: 1, focal: heroBgFocal1, setFocal: setHeroBgFocal1 },
+                    { num: 2, focal: heroBgFocal2, setFocal: setHeroBgFocal2 },
+                    { num: 3, focal: heroBgFocal3, setFocal: setHeroBgFocal3 },
+                  ].map((slot) => (
+                    <div
+                      key={slot.num}
+                      style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: "10px",
+                      }}
+                    >
+                      <span
+                        style={{
+                          fontSize: "12px",
+                          color: "#ffb36c",
+                          fontWeight: "bold",
+                        }}
+                      >
+                        Слот {slot.num}
+                      </span>
+                      <div style={{ display: "flex", gap: "8px" }}>
+                        <button
+                          onClick={() => slot.setFocal({ x: 50, y: 50 })}
+                          style={{
+                            flex: 1,
+                            padding: "8px",
+                            background: "#ffb36c",
+                            border: "none",
+                            borderRadius: "5px",
+                            cursor: "pointer",
+                            fontWeight: "bold",
+                            fontSize: "12px",
+                          }}
+                        >
+                          🎯 Центр
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+            ) : heroBgMode === "slideshow-4" ? (
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "15px" }}>
+                {[
+                  { num: 1, focal: heroBgFocal1, setFocal: setHeroBgFocal1 },
+                  { num: 2, focal: heroBgFocal2, setFocal: setHeroBgFocal2 },
+                  { num: 3, focal: heroBgFocal3, setFocal: setHeroBgFocal3 },
+                  { num: 4, focal: heroBgFocal4, setFocal: setHeroBgFocal4 },
+                ].map((slot) => (
+                  <div
+                    key={slot.num}
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: "10px",
+                    }}
+                  >
+                    <span
+                      style={{
+                        fontSize: "12px",
+                        color: "#ffb36c",
+                        fontWeight: "bold",
+                      }}
+                    >
+                      Слот {slot.num}
+                    </span>
+                    <div style={{ display: "flex", gap: "8px", flexDirection: "column" }}>
+                      <button
+                        onClick={() => slot.setFocal({ x: 50, y: 50 })}
+                        style={{
+                          flex: 1,
+                          padding: "8px",
+                          background: "#ffb36c",
+                          border: "none",
+                          borderRadius: "5px",
+                          cursor: "pointer",
+                          fontWeight: "bold",
+                          fontSize: "12px",
+                        }}
+                      >
+                        🎯 Центр фокусу
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
             ) : (
               <div style={{ display: "flex", gap: "8px" }}>
                 <button
@@ -1933,7 +2399,7 @@ const Hero = ({
               </CloseBtn>
             </div>
 
-            {heroBgMode === "slideshow" && (
+            {(heroBgMode === "slideshow-2" || heroBgMode === "slideshow-3" || heroBgMode === "slideshow-4" || heroBgMode === "random") && (
               <div
                 style={{
                   display: "flex",
@@ -2122,7 +2588,7 @@ const Hero = ({
                         </DeleteBtn>
                       </>
                     )}
-                    <NameOverlay $hasSlots={heroBgMode === "slideshow"}>
+                <NameOverlay $hasSlots={heroBgMode === "slideshow-2" || heroBgMode === "slideshow-3" || heroBgMode === "slideshow-4"}>
                       {bg.name}
                     </NameOverlay>
                     <BgSquare
@@ -2131,7 +2597,7 @@ const Hero = ({
                       onClick={() => setHeroBg(bg.src)}
                       title={bg.name}
                     />
-                    {heroBgMode === "slideshow" && (
+                    {heroBgMode === "slideshow-2" && (
                       <SlotButtons>
                         <SlotBtn
                           $active={heroBg === bg.src}
@@ -2144,6 +2610,56 @@ const Hero = ({
                           onClick={() => setHeroBg2(bg.src)}
                         >
                           Слот 2
+                        </SlotBtn>
+                      </SlotButtons>
+                    )}
+                    {heroBgMode === "slideshow-3" && (
+                      <SlotButtons>
+                        <SlotBtn
+                          $active={heroBg === bg.src}
+                          onClick={() => setHeroBg(bg.src)}
+                        >
+                          Слот 1
+                        </SlotBtn>
+                        <SlotBtn
+                          $active={heroBg2 === bg.src}
+                          onClick={() => setHeroBg2(bg.src)}
+                        >
+                          Слот 2
+                        </SlotBtn>
+                        <SlotBtn
+                          $active={heroBg3 === bg.src}
+                          onClick={() => setHeroBg3(bg.src)}
+                        >
+                          Слот 3
+                        </SlotBtn>
+                      </SlotButtons>
+                    )}
+                    {heroBgMode === "slideshow-4" && (
+                      <SlotButtons>
+                        <SlotBtn
+                          $active={heroBg === bg.src}
+                          onClick={() => setHeroBg(bg.src)}
+                        >
+                          Слот 1
+                        </SlotBtn>
+                        <SlotBtn
+                          $active={heroBg2 === bg.src}
+                          onClick={() => setHeroBg2(bg.src)}
+                        >
+                          Слот 2
+                        </SlotBtn>
+                        <SlotBtn
+                          $active={heroBg3 === bg.src}
+                          onClick={() => setHeroBg3(bg.src)}
+                        >
+                          Слот 3
+                        </SlotBtn>
+                        <SlotBtn
+                          $active={heroBg4 === bg.src}
+                          onClick={() => setHeroBg4(bg.src)}
+                        >
+                          Слот 4
                         </SlotBtn>
                       </SlotButtons>
                     )}
@@ -2183,5 +2699,4 @@ const Hero = ({
     </HeroDiv>
   );
 };
-
 export default Hero;

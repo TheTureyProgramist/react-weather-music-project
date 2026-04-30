@@ -1,5 +1,5 @@
 // Міста для тесту: Дубай (>30°C), Якутськ (<-30°C), Кейптаун (вітер >10 м/с). Графік have погодинну перевірку вітру та деталізовані причини небезпеки в підказках.
-import { useState, useEffect, useCallback, memo, lazy, Suspense } from "react";
+import { useState, useEffect, useCallback, memo, Suspense } from "react";
 import styled from "styled-components";
 import localforage from "localforage";
 import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
@@ -57,12 +57,7 @@ import dinofrozVideo from "./mp3/dinofroz.mp4";
 import startImage from "./photos/hero-header/start-image.webp";
 import turkeysAudio from "./mp3/turkeys.mp3";
 import ultraImage from "./photos/vip-modal/realultra.webp";
-
-const LearningModal = lazy(
-  () => import("./components/Modals/UserSearchModal.jsx"),
-);
-const TermsModal = lazy(() => import("./components/Modals/InfoModal.jsx"));
-
+import TermsModal from "./components/Modals/UserSearchModal.jsx";
 const AVAILABLE_AVATARS = [
   monody,
   turkeys,
@@ -263,7 +258,9 @@ const App = () => {
   const [heroBg, setHeroBg] = useState(null);
   const [customHeroBgs, setCustomHeroBgs] = useState([]);
   const [heroBg2, setHeroBg2] = useState(null);
-  const [heroBgMode, setHeroBgMode] = useState("static"); // "static" або "slideshow"
+  const [heroBg3, setHeroBg3] = useState(null);
+  const [heroBg4, setHeroBg4] = useState(null);
+  const [heroBgMode, setHeroBgMode] = useState("static"); // "static", "slideshow-2", "slideshow-4"
   const [heroOverlayOpacity, setHeroOverlayOpacity] = useState(0.2);
   const [bgRatings, setBgRatings] = useState({});
   const [slideshowInterval, setSlideshowInterval] = useState(5);
@@ -274,6 +271,8 @@ const App = () => {
   const [heroBgRotation, setHeroBgRotation] = useState(0);
   const [heroBgFocal1, setHeroBgFocal1] = useState({ x: 50, y: 50 });
   const [heroBgFocal2, setHeroBgFocal2] = useState({ x: 50, y: 50 });
+  const [heroBgFocal3, setHeroBgFocal3] = useState({ x: 50, y: 50 });
+  const [heroBgFocal4, setHeroBgFocal4] = useState({ x: 50, y: 50 });
   const [heroBgPanEnabled, setHeroBgPanEnabled] = useState(false);
   const [heroBgPanSpeed, setHeroBgPanSpeed] = useState(6);
 
@@ -291,6 +290,7 @@ const App = () => {
   const [isUpdatePending, setIsUpdatePending] = useState(false);
   const [timerFinished, setTimerFinished] = useState(false);
   const [isFirstTimeHelpOpen, setIsFirstTimeHelpOpen] = useState(false);
+  const [selectedTimezone, setSelectedTimezone] = useState("UTC");
   const [isHydrated, setIsHydrated] = useState(false);
 
   // Гідратація даних з localforage
@@ -309,6 +309,9 @@ const App = () => {
         const savedRoutingMode = await localforage.getItem("isRoutingMode");
         if (savedRoutingMode !== null) setIsRoutingMode(savedRoutingMode);
 
+        const savedTimezone = await localforage.getItem("selected_timezone");
+        if (savedTimezone) setSelectedTimezone(savedTimezone);
+
         const savedCards = await localforage.getItem("weather_cards");
         if (savedCards) setWeatherCards(savedCards);
 
@@ -324,6 +327,10 @@ const App = () => {
         if (savedHeroBg) setHeroBg(savedHeroBg);
         const savedHeroBg2 = await localforage.getItem("hero_background_2");
         if (savedHeroBg2) setHeroBg2(savedHeroBg2);
+        const savedHeroBg3 = await localforage.getItem("hero_background_3");
+        if (savedHeroBg3) setHeroBg3(savedHeroBg3);
+        const savedHeroBg4 = await localforage.getItem("hero_background_4");
+        if (savedHeroBg4) setHeroBg4(savedHeroBg4);
         const savedCustomBgs = await localforage.getItem(
           "custom_hero_backgrounds",
         );
@@ -349,6 +356,10 @@ const App = () => {
         if (savedFocal1) setHeroBgFocal1(savedFocal1);
         const savedFocal2 = await localforage.getItem("hero_bg_focal2");
         if (savedFocal2) setHeroBgFocal2(savedFocal2);
+        const savedFocal3 = await localforage.getItem("hero_bg_focal3");
+        if (savedFocal3) setHeroBgFocal3(savedFocal3);
+        const savedFocal4 = await localforage.getItem("hero_bg_focal4");
+        if (savedFocal4) setHeroBgFocal4(savedFocal4);
 
         const savedPanEnabled = await localforage.getItem(
           "hero_bg_pan_enabled",
@@ -484,6 +495,8 @@ const App = () => {
       localforage.setItem("hero_background", heroBg);
       localforage.setItem("custom_hero_backgrounds", customHeroBgs);
       localforage.setItem("hero_background_2", heroBg2);
+      localforage.setItem("hero_background_3", heroBg3);
+      localforage.setItem("hero_background_4", heroBg4);
       localforage.setItem("hero_bg_ratings", bgRatings);
       localforage.setItem("hero_bg_mode", heroBgMode);
       localforage.setItem("hero_overlay_opacity", heroOverlayOpacity);
@@ -492,14 +505,20 @@ const App = () => {
       localforage.setItem("hero_bg_filter_category", heroBgFilterCategory);
       localforage.setItem("hero_bg_zoom", heroBgZoom);
       localforage.setItem("hero_bg_rotation", heroBgRotation);
+      localforage.setItem("hero_bg_blur", heroBgBlur);
       localforage.setItem("hero_bg_focal1", heroBgFocal1);
       localforage.setItem("hero_bg_focal2", heroBgFocal2);
+      localforage.setItem("hero_bg_focal3", heroBgFocal3);
+      localforage.setItem("hero_bg_focal4", heroBgFocal4);
       localforage.setItem("hero_bg_pan_enabled", heroBgPanEnabled);
       localforage.setItem("hero_bg_pan_speed", heroBgPanSpeed);
+      localforage.setItem("selected_timezone", selectedTimezone);
     }
   }, [
     heroBg,
     heroBg2,
+    heroBg3,
+    heroBg4,
     customHeroBgs,
     bgRatings,
     heroBgMode,
@@ -509,12 +528,16 @@ const App = () => {
     heroBgFilterCategory,
     heroBgZoom,
     heroBgRotation,
+    heroBgBlur,
     heroBgFocal1,
     heroBgFocal2,
+    heroBgFocal3,
+    heroBgFocal4,
     heroBgPanEnabled,
     heroBgPanSpeed,
     isHydrated,
     isDarkMode,
+    selectedTimezone,
   ]);
 
   useEffect(() => {
@@ -880,13 +903,47 @@ const App = () => {
     setIsDarkMode((prevMode) => !prevMode);
   }, []);
 
-  const heroDateString = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}:${String(now.getSeconds()).padStart(2, "0")} ${
-    new Intl.DateTimeFormat("uk", { weekday: "long" })
-      .format(now)
-      .charAt(0)
-      .toUpperCase() +
-    new Intl.DateTimeFormat("uk", { weekday: "long" }).format(now).slice(1)
-  }, ${now.getDate()}.${new Intl.DateTimeFormat("uk", { month: "2-digit" }).format(now)}.${now.getFullYear()}`;
+  const heroDateString = (() => {
+    const showSeconds = user?.showSeconds !== false;
+    const mode = user?.dateDisplayMode || "both";
+    const hour12 = user?.hour12 === true;
+
+    try {
+      const options = {
+        timeZone: selectedTimezone,
+        hour12: hour12,
+      };
+
+      if (mode === "time" || mode === "both") {
+        options.hour = "2-digit";
+        options.minute = "2-digit";
+        if (showSeconds) options.second = "2-digit";
+      }
+
+      if (mode === "date" || mode === "both") {
+        options.weekday = "long";
+        options.day = "numeric";
+        options.month = "2-digit";
+        options.year = "numeric";
+      }
+
+      const fmt = new Intl.DateTimeFormat("uk", options);
+      const parts = fmt.formatToParts(now);
+      const p = (type) => parts.find((x) => x.type === type)?.value || "";
+
+      const timePart = (mode === "time" || mode === "both") ? `${p("hour")}:${p("minute")}${showSeconds ? ":" + p("second") : ""}` : "";
+      const datePart = (mode === "date" || mode === "both") ? `${p("weekday") ? p("weekday").charAt(0).toUpperCase() + p("weekday").slice(1) : ""}${p("day") ? `, ${p("day")}.${p("month")}.${p("year")}` : ""}` : "";
+
+      if (mode === "both") return `${timePart} ${datePart}`.trim();
+      return timePart || datePart;
+    } catch (e) {
+      const h = String(now.getHours()).padStart(2, "0");
+      const m = String(now.getMinutes()).padStart(2, "0");
+      const s = user?.showSeconds !== false ? `:${String(now.getSeconds()).padStart(2, "0")}` : "";
+      const d = now.toLocaleDateString("uk");
+      return `${h}:${m}${s} ${d}`;
+    }
+  })();
 
   const handleOpenMenu = useCallback(() => setIsMenuOpen(true), []);
   const handleCloseMenu = useCallback(() => setIsMenuOpen(false), []);
@@ -925,6 +982,10 @@ const App = () => {
           setHeroBg={setHeroBg}
           heroBg2={heroBg2}
           setHeroBg2={setHeroBg2}
+          heroBg3={heroBg3}
+          setHeroBg3={setHeroBg3}
+          heroBg4={heroBg4}
+          setHeroBg4={setHeroBg4}
           customHeroBgs={customHeroBgs}
           setCustomHeroBgs={setCustomHeroBgs}
           heroBgMode={heroBgMode}
@@ -949,11 +1010,17 @@ const App = () => {
           setHeroBgFocal1={setHeroBgFocal1}
           heroBgFocal2={heroBgFocal2}
           setHeroBgFocal2={setHeroBgFocal2}
+          heroBgFocal3={heroBgFocal3}
+          setHeroBgFocal3={setHeroBgFocal3}
+          heroBgFocal4={heroBgFocal4}
+          setHeroBgFocal4={setHeroBgFocal4}
           heroBgPanEnabled={heroBgPanEnabled}
           setHeroBgPanEnabled={setHeroBgPanEnabled}
           heroBgPanSpeed={heroBgPanSpeed}
           setHeroBgPanSpeed={setHeroBgPanSpeed}
           screenshots={screenshots}
+          selectedTimezone={selectedTimezone}
+          setSelectedTimezone={setSelectedTimezone}
         />
       </div>
       <SectionContent
@@ -989,6 +1056,10 @@ const App = () => {
           setHeroBg={setHeroBg}
           heroBg2={heroBg2}
           setHeroBg2={setHeroBg2}
+          heroBg3={heroBg3}
+          setHeroBg3={setHeroBg3}
+          heroBg4={heroBg4}
+          setHeroBg4={setHeroBg4}
           customHeroBgs={customHeroBgs}
           setCustomHeroBgs={setCustomHeroBgs}
           heroBgMode={heroBgMode}
@@ -1013,11 +1084,17 @@ const App = () => {
           setHeroBgFocal1={setHeroBgFocal1}
           heroBgFocal2={heroBgFocal2}
           setHeroBgFocal2={setHeroBgFocal2}
+          heroBgFocal3={heroBgFocal3}
+          setHeroBgFocal3={setHeroBgFocal3}
+          heroBgFocal4={heroBgFocal4}
+          setHeroBgFocal4={setHeroBgFocal4}
           heroBgPanEnabled={heroBgPanEnabled}
           setHeroBgPanEnabled={setHeroBgPanEnabled}
           heroBgPanSpeed={heroBgPanSpeed}
           setHeroBgPanSpeed={setHeroBgPanSpeed}
           screenshots={screenshots}
+          selectedTimezone={selectedTimezone}
+          setSelectedTimezone={setSelectedTimezone}
         />
       </div>
       <div className="container">
@@ -1112,6 +1189,10 @@ const App = () => {
                             setHeroBg={setHeroBg}
                             heroBg2={heroBg2}
                             setHeroBg2={setHeroBg2}
+                            heroBg3={heroBg3}
+                            setHeroBg3={setHeroBg3}
+                            heroBg4={heroBg4}
+                            setHeroBg4={setHeroBg4}
                             customHeroBgs={customHeroBgs}
                             setCustomHeroBgs={setCustomHeroBgs}
                             heroBgMode={heroBgMode}
@@ -1136,11 +1217,17 @@ const App = () => {
                             setHeroBgFocal1={setHeroBgFocal1}
                             heroBgFocal2={heroBgFocal2}
                             setHeroBgFocal2={setHeroBgFocal2}
+                            heroBgFocal3={heroBgFocal3}
+                            setHeroBgFocal3={setHeroBgFocal3}
+                            heroBgFocal4={heroBgFocal4}
+                            setHeroBgFocal4={setHeroBgFocal4}
                             heroBgPanEnabled={heroBgPanEnabled}
                             setHeroBgPanEnabled={setHeroBgPanEnabled}
                             heroBgPanSpeed={heroBgPanSpeed}
                             setHeroBgPanSpeed={setHeroBgPanSpeed}
                             screenshots={screenshots}
+                            selectedTimezone={selectedTimezone}
+                            setSelectedTimezone={setSelectedTimezone}
                           />
                         ) : (
                           <SectionContent
@@ -1166,7 +1253,6 @@ const App = () => {
                   }
                 />
               ))}
-              {/* 404 Route */}
               <Route path="*" element={<NotFound />} />
             </Routes>
           </main>
@@ -1211,13 +1297,13 @@ const App = () => {
           )}
           <Suspense fallback={null}>
             {isUserSearchOpen && (
-              <LearningModal
+              <TermsModal
                 isOpen={isUserSearchOpen}
                 onClose={() => setIsUserSearchOpen(false)}
               />
             )}
             {isFirstTimeHelpOpen && (
-              <LearningModal
+              <TermsModal
                 isOpen={isFirstTimeHelpOpen}
                 onClose={() => setIsFirstTimeHelpOpen(false)}
               />

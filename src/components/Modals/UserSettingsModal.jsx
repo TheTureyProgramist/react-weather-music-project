@@ -5,7 +5,7 @@ import {
   removeCustomDay,
 } from "../../features/counter/Counter.js";
 import styled, { keyframes, css } from "styled-components";
-import InfoModal from "./InfoModal";
+import InfoModal from "./UserSearchModal.jsx";
 import KatSceneModal from "./KatSceneModal";
 const slideIn = keyframes`
   0% { 
@@ -395,6 +395,7 @@ const DEFAULT_SECTIONS = [
   "textColor",
   "borderColor",
   "avatar",
+  "dateDisplay",
 ];
 
 const SECTION_LABELS = {
@@ -405,6 +406,7 @@ const SECTION_LABELS = {
   borderColor: "Колір рамки",
   avatar: "Аватар",
   customCalendar: "Мої важливі дні",
+  dateDisplay: "Відображення часу",
 };
 
 const UserSettingsModal = ({ onClose, user, availableAvatars, onUpdate }) => {
@@ -427,17 +429,28 @@ const UserSettingsModal = ({ onClose, user, availableAvatars, onUpdate }) => {
         : 0,
     textColor: user?.textColor || "grey",
     borderColor: user?.borderColor || "grey",
+    showSeconds: user?.showSeconds !== false,
+    dateDisplayMode: user?.dateDisplayMode || "both",
+    hour12: user?.hour12 === true,
   });
   const [showTerms, setShowTerms] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
   const [sectionsOrder, setSectionsOrder] = useState([...DEFAULT_SECTIONS]);
 
-  const handleClose = (e) => {
-    if (e) e.stopPropagation();
+  // Зберігаємо початковий стан користувача для відкату у разі скасування без збереження
+  const initialUser = useMemo(() => ({ ...user }), [user]);
+
+  const finishClosing = (e) => {
+    if (e && e.stopPropagation) e.stopPropagation();
     setIsClosing(true);
-    setTimeout(() => {
-      onClose();
-    }, 500);
+    setTimeout(() => onClose(), 500);
+  };
+
+  const handleCancel = (e) => {
+    if (e) e.stopPropagation();
+    // Відкочуємо зміни в App.js до стану, який був при відкритті вікна
+    onUpdate(initialUser);
+    finishClosing();
   };
 
   const days = Array.from({ length: 31 }, (_, i) => i + 1);
@@ -460,6 +473,25 @@ const UserSettingsModal = ({ onClose, user, availableAvatars, onUpdate }) => {
     { length: currentYear - 1909 + 1 },
     (_, i) => currentYear - i,
   );
+
+  // Функція для миттєвого оновлення вигляду годинника в App.js
+  const updateLivePreview = (updates) => {
+    const newFormData = { ...formData, ...updates };
+    setFormData(newFormData);
+
+    // Викликаємо onUpdate відразу, щоб App.js перерендерився з новими налаштуваннями
+    onUpdate({
+      ...user,
+      firstName: newFormData.name,
+      avatar: availableAvatars[newFormData.avatarIndex],
+      birthDate: `${newFormData.year}-${newFormData.month.toString().padStart(2, "0")}-${newFormData.day.toString().padStart(2, "0")}`,
+      textColor: newFormData.textColor,
+      borderColor: newFormData.borderColor,
+      showSeconds: newFormData.showSeconds,
+      dateDisplayMode: newFormData.dateDisplayMode,
+      hour12: newFormData.hour12,
+    });
+  };
 
   const isInvalidDate = useMemo(() => {
     if (!formData.day || !formData.month || !formData.year) return false;
@@ -509,6 +541,9 @@ const UserSettingsModal = ({ onClose, user, availableAvatars, onUpdate }) => {
       birthDate: `${formData.year}-${formData.month.toString().padStart(2, "0")}-${formData.day.toString().padStart(2, "0")}`,
       textColor: formData.textColor,
       borderColor: formData.borderColor,
+      showSeconds: formData.showSeconds,
+      dateDisplayMode: formData.dateDisplayMode,
+      hour12: formData.hour12,
       ...(formData.newPassword
         ? {
             oldPassword: formData.oldPassword,
@@ -516,7 +551,7 @@ const UserSettingsModal = ({ onClose, user, availableAvatars, onUpdate }) => {
           }
         : {}),
     });
-    handleClose();
+    finishClosing();
   };
 
   const moveSection = (idx, dir) => {
@@ -537,17 +572,17 @@ const UserSettingsModal = ({ onClose, user, availableAvatars, onUpdate }) => {
   const [showKatScene, setShowKatScene] = useState(false);
   const handleKatSceneClose = () => {
     setShowKatScene(false);
-    handleClose();
+    finishClosing();
   };
   return (
     <>
       {showKatScene && <KatSceneModal onClose={handleKatSceneClose} />}
-      <ModalOverlay $isClosing={isClosing} onClick={handleClose}>
+      <ModalOverlay $isClosing={isClosing} onClick={handleCancel}>
         <ModalContent
           $isClosing={isClosing}
           onClick={(e) => e.stopPropagation()}
         >
-          <CloseButton onClick={handleClose}>&times;</CloseButton>
+          <CloseButton onClick={handleCancel}>&times;</CloseButton>
           <Title style={{ textAlign: "center" }}>Налаштування</Title>
           <div
             style={{
@@ -772,6 +807,44 @@ const UserSettingsModal = ({ onClose, user, availableAvatars, onUpdate }) => {
                   </AvatarSlider>
                 </Section>
               );
+            } else if (section === "dateDisplay") {
+              content = (
+                <Section key="dateDisplay">
+                  <label style={{ fontSize: "13px", fontWeight: "bold" }}>
+                    Налаштування годинника
+                  </label>
+                  <CheckboxRow>
+                    <input
+                      type="checkbox"
+                      checked={formData.showSeconds}
+                      onChange={(e) =>
+                        updateLivePreview({ showSeconds: e.target.checked })
+                      }
+                    />
+                    <label>Показувати секунди (17:23:17)</label>
+                  </CheckboxRow>
+                  <CheckboxRow>
+                    <input
+                      type="checkbox"
+                      checked={formData.hour12}
+                      onChange={(e) =>
+                        updateLivePreview({ hour12: e.target.checked })
+                      }
+                    />
+                    <label>12-годинний формат (AM/PM)</label>
+                  </CheckboxRow>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '5px', marginTop: '5px' }}>
+                    <Select
+                      value={formData.dateDisplayMode}
+                      onChange={(e) => updateLivePreview({ dateDisplayMode: e.target.value })}
+                    >
+                      <option value="both">Час та Дата (разом)</option>
+                      <option value="time">Тільки Час</option>
+                      <option value="date">Тільки Дата</option>
+                    </Select>
+                  </div>
+                </Section>
+              );
             } else if (section === "customCalendar") {
               content = (
                 <Section key="customCalendar">
@@ -944,18 +1017,25 @@ const UserSettingsModal = ({ onClose, user, availableAvatars, onUpdate }) => {
             />
             <label>
               Ви погодились з{" "}
-              <TermsBtn onClick={() => setShowTerms(true)}>Угодою</TermsBtn>
+<TermsBtn onClick={(e) => {
+  setShowTerms(true);
+}}>Угодою</TermsBtn>
             </label>
           </CheckboxRow>
           <div style={{ display: "flex", gap: "10px", marginTop: "10px" }}>
-            <CancelButton onClick={handleClose}>Назад</CancelButton>
+            <CancelButton onClick={handleCancel}>Скасувати</CancelButton>
             <SaveButton onClick={handleSubmit} disabled={isInvalidDate}>
               Зберегти
             </SaveButton>
           </div>
-          {showTerms && <InfoModal onClose={() => setShowTerms(false)} />}
         </ModalContent>
       </ModalOverlay>
+      {showTerms && (
+        <InfoModal
+          isOpen={showTerms}
+          onClose={() => setShowTerms(false)}
+        />
+      )}
     </>
   );
 };
