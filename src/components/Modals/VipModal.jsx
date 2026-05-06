@@ -367,7 +367,7 @@ const BenefitImage = styled.img`
 `;
 
 const VipBonus = styled.div`
-  font-size: 11.4px;
+  font-size: 10.4px;
   line-height: 1.3;
   color: #ffb36c;
   flex: 1;
@@ -573,15 +573,6 @@ const VipText = styled.p`
   justify-content: flex-end;
   color: #ffb36c;
 `;
-
-const YearlyWarningRed = styled.p`
-  color: #ff4d4d;
-  font-size: 10px;
-  font-weight: bold;
-  margin-top: 2px;
-  text-align: center;
-`;
-
 const RedLine = styled.div`
   background: #ff8a80;
   width: 100%;
@@ -803,7 +794,7 @@ const OverlayText = styled.div`
   transform: translateX(-50%);
   color: #fff;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
-  font-size: 14px;
+  font-size: 11px;
   text-align: center;
   width: 90%;
   transition: opacity 0.35s ease-in-out;
@@ -898,24 +889,18 @@ const ULTRA_CARDS_LIST = [
 
 const SEQUENCE = [
   { type: "thematic", duration: 3000, text: "" },
-  { type: "black", duration: 10000, text: "У нас надійна погода" },
+  { type: "black", duration: 10000, text: "Стихія дає надійну погоду, красиву оселю, з вашим принтером із нашими, пошуковими або власними фанартами." },
   {
-    type: "card",
-    imgIdx: 0,
-    duration: 10000,
-    text: "Ми зробимо красиву оселю, з вашим принтером і нашими, пошуковими або власними фанартами. Як і наш сайт, фільтрами, та налаштуванням стилю і часу.",
-  },
-    {
     type: "card",
     imgIdx: 1,
     duration: 10000,
-    text: "Налаштуйте сайт під себе. З нашими власними валютами. Безкоштовно: Скачуйте музику, зображення, відео. Фоновий режим + картинка в картинці.",
+    text: "Налаштуйте сайт, фільтрами, та налаштуванням стилю і часу. З нашими власними валютами. Безкоштовно: Скачуйте музику, зображення, відео. Фоновий режим + картинка в картинці.",
   },
   {
     type: "video",
     start: 10,
     end: 20,
-    text: "Різноманітна та захоплива музика, яку можна додавати, шукати. Спец режим відео (динофроз), плавне перегортання зображень або фільтри під час програвання деяких музичних файлів",
+    text: "Різноманітна та захоплива музика, яку можна додавати, шукати. Спец режим відео (динофроз), плавне перегортання зображень або фільтри під час програвання деяких музичних файлів.",
   },
   {
     type: "video",
@@ -1300,6 +1285,40 @@ const UltraPlayer = ({ volume, setVolume, onPlayerClose }) => {
   );
 };
 
+const PlusPlayer = ({ volume, setVolume }) => {
+  const audioRef = useRef(null);
+
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.volume = volume;
+    }
+  }, [volume]);
+
+  return (
+    <div style={{ width: "100%", height: "100%", position: "relative" }}>
+      <VipImage src={turkeys} $isUltra={false} />
+      <audio ref={audioRef} src={turs} autoPlay loop />
+      <VolumeControlContainer style={{ opacity: 1, left: "10px" }}>
+        <span style={{ fontSize: "14px" }}>🔊</span>
+        <input
+          type="range"
+          min="0"
+          max="1"
+          step="0.05"
+          value={volume}
+          onChange={(e) => setVolume(parseFloat(e.target.value))}
+          style={{
+            width: "80px",
+            accentColor: "#ffb36c",
+            cursor: "pointer",
+            height: "4px",
+          }}
+        />
+      </VolumeControlContainer>
+    </div>
+  );
+};
+
 const VipModal = ({ onClose }) => {
   const [isClosing, setIsClosing] = useState(false);
   const [tier, setTier] = useState("plus");
@@ -1370,7 +1389,7 @@ const VipModal = ({ onClose }) => {
     economics: [
       {
         src: dragons,
-        text: "Знижка 5грн у магазині 🧧, 🏆 дають додатково до 20🧧, якщо їх к-сть у 🏆 < 40. У сумі вийде 40. Навіть, якщо ви вже виконали 🏆 вони будуть після оплати автоматично відправлені. Сплата тарифу переодоплатою(разово) та місячним тарифом дає 50🧧. Ліміт покупок наборів 🧧*2. Можна зберігати 5000🧧, замість 2500(Після кінця зайві не анулюються, але ви не зможете отримувати наступну партію, доти доки к-сть буде >= ліміту). Шанс 25%(не 20%) на джекпот(Ціна збільшена на 10🧧). Отримуйте 600🧧 при сплаті тарифу.",
+        text: "Знижка 5грн у магазині Доміно, 🏆 дають додатково до 20🧧, якщо їх к-сть у 🏆 < 40. У сумі вийде 40. Навіть, якщо ви вже виконали 🏆 вони будуть після оплати автоматично відправлені. Можна зберігати 5000🧧, замість 2500(Після кінця зайві не анулюються, але ви не зможете отримувати наступну партію, доти доки к-сть буде >= ліміту). Шанс 25%(не 20%) на джекпот(Ціна збільшена на 10🧧).",
       },
       {
         src: puzzle5,
@@ -1402,10 +1421,10 @@ const VipModal = ({ onClose }) => {
         src: documentImg,
         text: "Доступно 10 останніх новин, а не 5.",
       },
-      // {
-      //   src: puzzle3,
-      //   text: "Прив'язуйте до акаунту 3пристрої, не 2. Назавжди!",
-      // },
+       {
+         src: puzzle3,
+         text: "Прив'язуйте до акаунту 3пристрої, не 2. Назавжди!"
+       },
     ],
   };
 
@@ -1443,7 +1462,7 @@ const VipModal = ({ onClose }) => {
     economics: [
       {
         src: dragons,
-        text: "Знижка 15грн у магазині 🧧. Сплата тарифу переодоплатою(разово) та місячним тарифом дає 750🧧. Ліміт покупок наборів 🧧*3. Можна зберігати 10000🧧. Шанс 50% на джекпот(Ціна збільшена на 20🧧). Отримуйте 800🧧 при сплаті тарифу.",
+        text: "Знижка 10грн у магазині Доміно. Можна зберігати 10000🧧. Шанс 50% на джекпот(Ціна збільшена на 20🧧).",
       },
       {
         src: puzzle4,
@@ -1493,18 +1512,12 @@ const VipModal = ({ onClose }) => {
 
     try {
       const urlsToCache = new Set();
-
-      // 1. Основні зображення та відео
       urlsToCache.add(turkeys); // Plus image
-      urlsToCache.add(dinofrozVideo); // Ultra video
-
-      // 2. Медіа з Ultra плеєра (аудіо та картинки)
+      urlsToCache.add(dinofrozVideo);
       ULTRA_CARDS_LIST.forEach((item) => {
         if (item.image) urlsToCache.add(item.image);
         if (item.audio) urlsToCache.add(item.audio);
       });
-
-      // 3. Іконки з переліку переваг (Plus та Ultra)
       [plusBenefits, ultraBenefits].forEach((benefitsObj) => {
         Object.values(benefitsObj).forEach((categoryList) => {
           categoryList.forEach((benefit) => {
@@ -1512,8 +1525,6 @@ const VipModal = ({ onClose }) => {
           });
         });
       });
-
-      // Виконуємо запити для кешування
       const promises = Array.from(urlsToCache).map((url) => fetch(url));
       await Promise.all(promises);
 
@@ -1572,7 +1583,7 @@ const VipModal = ({ onClose }) => {
           >
             <ImageContainer $isUltra={tier === "ultra"}>
               {tier === "plus" ? (
-                <VipImage src={turkeys} key="img-plus" $isUltra={false} />
+                <PlusPlayer volume={volume} setVolume={setVolume} />
               ) : (
                 <UltraPlayer
                   volume={volume}

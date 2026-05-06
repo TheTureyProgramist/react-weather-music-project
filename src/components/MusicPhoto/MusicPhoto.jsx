@@ -171,10 +171,8 @@ const cinemascopeBottom = keyframes`
 const symbolAnimation = keyframes`
   0% { transform: translate(-50%, -50%) scale(0.7); opacity: 0; }
   20% { opacity: 0.5; }
-  /* Рух до цілі та пульсація від гучності */
   50% { transform: translate(calc(-50% + var(--end-x, 0px)), calc(-50% + var(--end-y, 0px))) scale(var(--pulse-scale, 1)); }
   80% { opacity: 0.5; }
-  /* Повернення назад (ефект туди-сюди) */
   100% { transform: translate(-50%, -50%) scale(1.2); opacity: 0; }
 `;
 
@@ -266,42 +264,6 @@ const SortSelect = styled.select`
     border-color: orange;
   }
 `;
-
-const PlayAllButton = styled.button`
-  background: orange;
-  color: white;
-  border: none;
-  border-radius: 25px;
-  padding: 12px 25px;
-  font-size: 21px;
-  font-weight: bold;
-  cursor: pointer;
-  transition:
-    background 0.3s,
-    transform 0.2s;
-  &:hover {
-    background: #e69500;
-    transform: scale(1.05);
-  }
-`;
-
-const ShuffleButton = styled.button`
-  background: ${(props) => (props.$active ? "orange" : "white")};
-  color: ${(props) => (props.$active ? "white" : "black")};
-  border: 2px solid ${(props) => (props.$active ? "orange" : "#ccc")};
-  border-radius: 25px;
-  padding: 12px 20px;
-  font-size: 16px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: all 0.3s;
-  &:hover {
-    background: ${(props) => (props.$active ? "rgb(230, 149, 0)" : "#f0f0f0")};
-    border-color: ${(props) => (props.$active ? "#e69500" : "#bbb")};
-    transform: scale(1.05);
-  }
-`;
-
 const PlaylistGrid = styled.div`
   display: flex;
   flex-wrap: wrap;
@@ -455,7 +417,7 @@ const MusicText = styled.div`
 `;
 
 const AuthorText = styled.div`
-  color: rgb(73, 73, 73);
+  color: rgb(37, 37, 37);
   font-size: 9.5px;
   margin-top: 4px;
 `;
@@ -894,7 +856,7 @@ const ActionButton = styled.button`
   border-radius: 5px;
   width: 34px;
   padding: 3px 9px;
-  font-size: 19px;
+  font-size: 12px;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -1041,8 +1003,8 @@ const MiniControlBtn = styled.button`
   border: none;
   color: white;
   cursor: pointer;
-  font-size: 14px;
-  padding: 2px;
+  font-size: 12px;
+  padding: 1px;
   display: flex;
   align-items: center;
   opacity: 0.7;
@@ -1316,7 +1278,6 @@ const MiniPlayer = ({
           ✕
         </MiniControlBtn>
       </MiniPlayerHeader>
-      {/* Приховані елементи для генерації PiP потоку */}
       <canvas
         ref={canvasRef}
         width="400"
@@ -1425,9 +1386,8 @@ const FSCloseButton = styled.button`
   background: rgba(255, 255, 255, 0.2);
   border: none;
   color: white;
-  font-size: 24px;
-  width: 40px;
-  height: 40px;
+  font-size: 16px;
+  padding: 5px 7px;
   border-radius: 50%;
   cursor: pointer;
   &:hover {
@@ -5715,29 +5675,15 @@ const PlaylistModal = ({
       setFullScreenTrack(processedCards[idx - 1]);
     }
   };
-
-  const handlePlayAll = () => {
-    if (processedCards.length > 0) {
-      if (isShuffle) {
-        const randomIndex = Math.floor(Math.random() * processedCards.length);
-        setFullScreenTrack(processedCards[randomIndex]);
-      } else {
-        setFullScreenTrack(processedCards[0]);
-      }
-    }
-  };
-
   const handleClose = () => {
     setIsClosing(true);
     setTimeout(onClose, 500);
   };
-
   const playlistTitle =
     playlistKey === "custom"
       ? customPlaylistName || "Мій Плейлист"
       : PLAYLISTS[playlistKey].title;
   const tracksToShow = playlistKey === "custom" ? customTracks : processedCards;
-
   return (
     <ModalOverlay $isClosing={isClosing} onClick={handleClose}>
       <PlaylistModalContent
@@ -5745,7 +5691,7 @@ const PlaylistModal = ({
         onClick={(e) => e.stopPropagation()}
       >
         <PlaylistCloseButton onClick={handleClose}>&times;</PlaylistCloseButton>
-        <h2 style={{ textAlign: "center", color: "#333" }}>
+        <h2 style={{ textAlign: "center", color: "#333", fontSize: "20px", marginBottom: "10px" }}>
           {playlistTitle}
           {playlistKey === "custom" && ` (${tracksToShow?.length || 0}/10)`}
         </h2>
@@ -5784,14 +5730,6 @@ const PlaylistModal = ({
             <option value="duration_asc">Тривалість (мін-макс)</option>
             <option value="duration_desc">Тривалість (макс-мін)</option>
           </SortSelect>
-          <ShuffleButton
-            $active={isShuffle}
-            onClick={() => setIsShuffle(!isShuffle)}
-            title="Випадковий порядок"
-          >
-            🔀
-          </ShuffleButton>
-          <PlayAllButton onClick={handlePlayAll}>Грати все</PlayAllButton>
         </ControlsContainer>
 
         <MusicPhotoFix>

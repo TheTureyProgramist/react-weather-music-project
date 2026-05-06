@@ -1,9 +1,19 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useSelector } from "react-redux";
+import localforage from "localforage";
 import styled, { keyframes, css } from "styled-components";
 import hills from "../../photos/hero-header/fog.webp";
-import rooster from "../../photos/vip-images/vip-rooster.webp";
+import texts from "../../photos/vip-modal/texts.webp";
+//import rooster from "../../photos/vip-images/vip-rooster.webp";
 import logofix from "../../photos/hero-header/logo-fix.webp";
+import preview from "../../photos/hero-header/prewiew.webp";
+import info from "../../photos/hero-header/what.webp";
+import one from "../../photos/hero-header/my/myone.webp";
+import two from "../../photos/hero-header/my/mytwo.webp";
+import soon from "../../photos/hero-header/my/soon.webp";
+import might from "../../photos/hero-header/my/myone.webp"
+import puzzle from "../../photos/vip-modal/puzzle.webp"
+import three from "../../photos/hero-header/my/mythree.webp";
 const slideIn = keyframes`
   0% { transform: translateY(100%) scale(0.9); opacity: 0; }
   100% { transform: translateY(0%) scale(1); opacity: 1; }
@@ -14,6 +24,10 @@ const slideOut = keyframes`
   100% { transform: translateY(100%) scale(0.9); opacity: 0; }
 `;
 
+ const fadeIn = keyframes`
+   from { opacity: 0; transform: scale(0.8); }
+   to { opacity: 1; transform: scale(1); }
+ `;
 const appearAndShrink = keyframes`
   0% { opacity: 0; transform: scale(1.3); filter: blur(10px); }
   50% { opacity: 0.5; transform: scale(1.1); filter: blur(2px); }
@@ -51,9 +65,9 @@ const Overlay = styled.div`
 
 const Content = styled.div`
   background: #ffd001;
-  padding: 40px;
+  padding: 20px;
   border-radius: 20px;
-  max-width: 700px;
+  max-width: 900px;
   width: 95%;
   position: relative;
   font-family:
@@ -80,26 +94,30 @@ const Content = styled.div`
 
 const CloseBtn = styled.button`
   position: absolute;
-  top: 20px;
-  right: 20px;
+  top: 10px;
+  right: 10px;
   background: transparent;
   border: none;
   width: 40px;
   height: 40px;
   font-size: 34px;
   cursor: pointer;
-  transition: all 0.2s;
-  &:hover {
-    transform: rotate(90deg);
-  }
+`;
+
+const PreviewCloseBtn = styled(CloseBtn)`
+  color: white;
+  top: 20px;
+  right: 20px;
+  z-index: 9601;
+  animation: ${fadeIn} 0.3s ease-out forwards;
+  &:hover { color: #ffb36c; }
 `;
 
 const AccordionWrapper = styled.div`
-  margin-top: 20px;
+  margin-top: 10px;
 `;
 
 const AccordionItem = styled.div`
-  margin-bottom: 10px;
   border-bottom: 1px solid rgba(0, 0, 0, 0.05);
   ${animatedStyle}
 `;
@@ -108,10 +126,10 @@ const Question = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 15px 0;
+  padding: 0;
   cursor: pointer;
   font-weight: 700;
-  font-size: 16px;
+  font-size: 14px;
   color: #111;
 
   &:hover {
@@ -133,7 +151,7 @@ const QuestionContent = styled.div`
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  gap: 15px;
+  gap: 5px;
 `;
 
 const QuestionText = styled.div`
@@ -144,15 +162,14 @@ const LikeButton = styled.button`
   background: none;
   border: none;
   cursor: pointer;
-  font-size: 24px;
+  font-size: 14px;
   padding: 5px;
   transition: transform 0.2s;
   display: flex;
   align-items: center;
-  gap: 5px;
-  min-width: 50px;
+  gap: 3px;
+  min-width: 20px;
   justify-content: flex-end;
-
   &:hover {
     transform: scale(1.2);
   }
@@ -161,7 +178,7 @@ const LikeButton = styled.button`
 const ArrowContainer = styled.div`
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 7px;
 `;
 
 const Arrow = styled.span`
@@ -171,29 +188,84 @@ const Arrow = styled.span`
 `;
 
 const Answer = styled.div`
-  max-height: ${(props) => (props.$isOpen ? "3000px" : "0")};
+  max-height: ${(props) => (props.$isOpen ? "6000px" : "0")};
   overflow: hidden;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  padding-bottom: ${(props) => (props.$isOpen ? "15px" : "0")};
-  font-size: 14px;
+  padding-bottom: ${(props) => (props.$isOpen ? "5px" : "0")};
+  font-size: 13px;
   line-height: 1.6;
-  color: #333;
+  color: #4a4a4a;
   opacity: ${(props) => (props.$isOpen ? "1" : "0")};
   white-space: pre-line;
 `;
 
 const AnswerImage = styled.img`
   max-width: 100%;
-  max-height: 300px;
   width: 100%;
   border-radius: 10px;
-  margin-bottom: 15px;
+  margin-bottom: 10px;
   object-fit: cover;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
   cursor: pointer;
-  transition: transform 0.2s ease;
+  transition: all 0.3s ease-in-out;
+  height: auto;
+  max-height: ${(props) => (props.$isHovered || props.$isPinned ? "800px" : "10px")};
+  opacity: ${(props) => (props.$isHovered || props.$isPinned ? 1 : 0.4)};
+
   &:hover {
-    transform: scale(1.02);
+    transform: scale(1.01);
+  }
+`;
+
+const ImagePreviewActions = styled.div`
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9600;
+  display: flex;
+  gap: 15px;
+  animation: ${fadeIn} 0.3s ease-out forwards;
+`;
+
+const ActionButton = styled.button`
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  color: white;
+  padding: 8px 15px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.3s ease;
+  &:hover {
+    background: rgba(255, 255, 255, 0.4);
+    transform: translateY(-2px);
+  }
+`;
+
+const ImageActionsContainer = styled.div`
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 10;
+  display: flex;
+  gap: 8px;
+  transition: all 0.3s ease-in-out;
+  opacity: ${(props) => (props.$isHovered || props.$isPinned ? 1 : 0)};
+  pointer-events: ${(props) => (props.$isHovered || props.$isPinned ? "auto" : "none")};
+`;
+
+const AnswerActionButton = styled.button`
+  background: #8a2be2;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 2px 10px;
+  cursor: pointer;
+  font-size: 12px;
+  transition: background 0.2s ease;
+  &:hover {
+    background: #a25be2;
   }
 `;
 
@@ -204,7 +276,7 @@ const ImagePreviewOverlay = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 20px;
+  padding: 10px;
   z-index: 9500;
 `;
 
@@ -220,11 +292,12 @@ const PreviewImage = styled.img`
 const AnswerContent = styled.div`
   display: flex;
   flex-direction: column;
+  position: relative;
 `;
 
 const AcceptBtn = styled.button`
-  margin-top: 30px;
-  padding: 12px 40px;
+  margin-top: 5px;
+  padding: 6px 20px;
   background: #8a2be2;
   color: white;
   border: none;
@@ -252,14 +325,14 @@ const PointsCounter = styled.div`
 
 const SearchInput = styled.input`
   width: 100%;
-  padding: 12px 20px;
+  padding: 6px 10px;
   border: 2px solid rgba(138, 43, 226, 0.3);
   border-radius: 25px;
   background: rgba(255, 255, 255, 0.9);
   color: #333;
   font-size: 16px;
   outline: none;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
   transition: border-color 0.3s ease;
 
   &:focus {
@@ -278,20 +351,64 @@ const InfoModal = ({ onClose, isOpen }) => {
   const [activeIndex, setActiveIndex] = useState(null);
   const [ratings, setRatings] = useState({});
   const [totalPoints, setTotalPoints] = useState(0);
+  const [hoveredImage, setHoveredImage] = useState(null);
+  const [isActionsPinned, setIsActionsPinned] = useState(false);
   const [previewImage, setPreviewImage] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const MAX_POINTS = 15;
   const RED_HEART = 1;
   const GOLD_HEART = 2;
 
-  const handleClose = useCallback(() => {
+  // Load pinned state
+  useEffect(() => {
+    const loadPinnedState = async () => {
+      try {
+        const saved = await localforage.getItem("training_actions_pinned");
+        if (saved !== null) setIsActionsPinned(saved);
+      } catch (e) {
+        console.error("Error loading pinned state:", e);
+      }
+    };
+    loadPinnedState();
+  }, []);
+
+  // Save pinned state
+  const togglePin = async (e) => {
+    e.stopPropagation();
+    const newState = !isActionsPinned;
+    setIsActionsPinned(newState);
+    await localforage.setItem("training_actions_pinned", newState);
+  };
+
+  const handleClose = useCallback(() => { // Modified to handle previewImage first
+    if (previewImage) {
+      setPreviewImage(null);
+      return; // Don't close the main modal if only preview was closed
+    }
     setPreviewImage(null);
     setIsClosing(true);
     setTimeout(() => {
       setIsClosing(false);
       onClose();
     }, 400);
-  }, [onClose]);
+  }, [onClose, previewImage]);
+
+  const handleDownloadImage = (imgSrc) => {
+    const a = document.createElement("a");
+    a.href = imgSrc;
+    a.download = `stykhiya_image_${Date.now()}.png`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  };
+
+  const handlePrintImage = (imgSrc) => {
+    const printWindow = window.open("", "_blank");
+    printWindow.document.write(
+      `<html><head><title>Print Image</title></head><body style="text-align:center;"><img src="${imgSrc}" style="max-width:100%;" onload="window.print();window.close()" /></body></html>`,
+    );
+    printWindow.document.close();
+  };
 
   useEffect(() => {
     const handleEsc = (e) => {
@@ -394,8 +511,9 @@ const InfoModal = ({ onClose, isOpen }) => {
 
 10. Майбутні зміни:
 Я поки, що не планую нічого тут змінювати.
+11. Я сам малював :) Вибачте Ніцерона не дуже намалював. І 2 орфорграфічні помилки у слові бундюча.
 `,
-      image: null,
+      image: preview,
     },
         {
       q: "Примітки підписок і конвертів",
@@ -405,7 +523,7 @@ const InfoModal = ({ onClose, isOpen }) => {
           3.Переваги Plus оптимізовані в Стихія Ultrа, ті що не були вказані в Стихія Ultra(присутні, але ті самі як в Plus)
           4.Для власників Plus ціна знижена на 5грн, а Ultra на 10грн. Знижка діє і для обмежених подій. Початок нової доби о 0:00 за Київським часом. Ліміт конвертів 2500, ті що перевищують ліміт, будуть анульовані(збільште ліміт з підписками).
 `,
-      image: null,
+      image: texts,
     },
     {
       q: "Календар версій(Мінорні 1.0 - 1.5)",
@@ -415,12 +533,12 @@ const InfoModal = ({ onClose, isOpen }) => {
           1.4 - 08.03.2027
           1.5 - 29.05.2027
 `,
-      image: null,
+      image: info,
     },
     {
       q: "Співпраця та поради. Можливсості сайту.",
       a: "Так! Я можу підказати через email, як отримати доступ до API сайтів та плагінів, які я використовую. А ось можливості сайту: Погода, музика, фан-арти, ШІ, системи: 🧧, 🏆.",
-      image: null,
+      image: might,
     },
     {
       q: "Погода: навчання",
@@ -431,6 +549,11 @@ const InfoModal = ({ onClose, isOpen }) => {
       q: "Невідомі кнопки в меню",
       a: "Роз’яснення всіх функцій можна знайти, натиснувши на символ меню ☰. Кожна кнопка має свою підказку. При наведенні на лого є 4 кнопки: скачати - зліва, друкувати - вгорі, повноеранний - справа, перемикання - на VIP стилі та версії - внизу.",
       image: logofix,
+    },
+        {
+      q: "Валюти Стихії",
+      a: "-----------------------------------",
+      image: null,
     },
     {
       q: "Чому ШІ відмовив у запиті за конверти?",
@@ -453,7 +576,7 @@ const InfoModal = ({ onClose, isOpen }) => {
 ФАЗА ЕВАКУАЦІЇ: Пили стають невидимими (радіус 1) і наносять x2 ШКОДИ (2❤️)!
 Як вижити? Активуйте 8 точок 📍. При кожній активації пили стають видимими на 1с.
       `, 
-      image: null,
+      image: puzzle,
     },
     {
       q: "Я втратив акаунт. Чому?",
@@ -463,7 +586,7 @@ const InfoModal = ({ onClose, isOpen }) => {
     {
       q: "Про тематику та ностальгію",
       a: "Скоріше за все, мені нудно, тому спогади вставив: музику з Geometry Dash та Minecraft, бо мої друзі любили грати в ці ігри. А я в My Litle Universe. Індики, бо вони роблять мене щасливими. А Динофроз, бо я маю надію, що Malatko TV, повернеться і можливо покажуть, і я відкритий до ваших ідей!",
-      image: rooster,
+      image: two,
     },
     {
       q: "Чому є реклама при переході на новину?",
@@ -473,17 +596,17 @@ const InfoModal = ({ onClose, isOpen }) => {
     {
       q: "Обмеження підписки на музику",
       a: "Ми поважаємо авторське право. Заробляти на чужих піснях — це неправильно.",
-      image: null,
+      image: three,
     },
     {
-      q: "Навіщо реєстрація для погоди та арту?",
-      a: "Це необхідно для ідентифікації підписників та впевненості, що контент використовується за призначенням.",
-      image: null,
+      q: "Навіщо реєстрація?",
+      a: "Це необхідно для ідентифікації підписників та впевненості, що контент використовується за призначенням, стабільності системи оплати, ШІ та підписок.",
+      image: one,
     },
     {
       q: "Чи буде після Стихії щось?",
       a: "Ви навіть не уявляєте мій задум! Час покаже, а ваша підтримка та мотивація збільшують шанси!",
-      image: null,
+      image: soon,
     },
     {
       q: "Механіки плейлисту",
@@ -548,16 +671,14 @@ Clubstep: рандомні фільтри.
             textAlign: "center",
             fontSize: "13px",
             color: "#666",
-            marginBottom: "30px",
+            marginBottom: "5px",
           }}
         >
-          Останнє оновлення: 8 квітня 2026 року
+          Останнє оновлення: 6 травня 2026 року
         </p>
-
         <PointsCounter>
           💛 Використано балів: {totalPoints} / {MAX_POINTS}
         </PointsCounter>
-
         <SearchInput
           type="text"
           placeholder="Пошук по питанням та відповідям..."
@@ -601,11 +722,27 @@ Clubstep: рандомні фільтри.
                 <Answer $isOpen={activeIndex === originalIndex}>
                   <AnswerContent>
                     {item.image && (
-                      <AnswerImage
-                        src={item.image}
-                        alt={item.q}
-                        onClick={() => setPreviewImage(item.image)}
-                      />
+                      <>
+                        <AnswerImage
+                          src={item.image}
+                          alt={item.q}
+                          $isHovered={hoveredImage === item.image}
+                          $isPinned={isActionsPinned}
+                          onClick={() => setPreviewImage(item.image)}
+                          onMouseEnter={() => setHoveredImage(item.image)}
+                          onMouseLeave={() => setHoveredImage(null)}
+                        />
+                        <ImageActionsContainer
+                          $isHovered={hoveredImage === item.image}
+                          $isPinned={isActionsPinned}
+                          onMouseEnter={() => setHoveredImage(item.image)}
+                          onMouseLeave={() => setHoveredImage(null)}
+                        >
+                          <AnswerActionButton onClick={togglePin} title={isActionsPinned ? "Відкріпити кнопки" : "Закріпити кнопки"}>{isActionsPinned ? "📌" : "📍"}</AnswerActionButton>
+                          <AnswerActionButton onClick={(e) => { e.stopPropagation(); handleDownloadImage(item.image); }}>⇩ Скачати</AnswerActionButton>
+                          <AnswerActionButton onClick={(e) => { e.stopPropagation(); handlePrintImage(item.image); }}>🖨️ Друкувати</AnswerActionButton>
+                        </ImageActionsContainer>
+                      </>
                     )}
                     {item.a}
                   </AnswerContent>
@@ -614,22 +751,34 @@ Clubstep: рандомні фільтри.
             );
           })}
         </AccordionWrapper>
-
-        {previewImage && (
-          <ImagePreviewOverlay onClick={() => setPreviewImage(null)}>
-            <PreviewImage
-              src={previewImage}
-              alt="Прев'ю зображення"
-              onClick={(e) => e.stopPropagation()}
-            />
-          </ImagePreviewOverlay>
-        )}
         <div style={{ textAlign: "center" }}>
           <AcceptBtn $index={faqData.length + 2} onClick={handleClose}>
             Дякую, зрозуміло!
           </AcceptBtn>
         </div>
       </Content>
+      {previewImage && (
+      <ImagePreviewOverlay onClick={() => setPreviewImage(null)}>
+        <PreviewCloseBtn
+          onClick={() => setPreviewImage(null)}
+        >
+          &times;
+        </PreviewCloseBtn>
+        <ImagePreviewActions>
+          <ActionButton onClick={(e) => { e.stopPropagation(); handleDownloadImage(previewImage); }}>
+            ⇩ Скачати
+          </ActionButton>
+          <ActionButton onClick={(e) => { e.stopPropagation(); handlePrintImage(previewImage); }}>
+            🖨️ Друкувати
+          </ActionButton>
+        </ImagePreviewActions>
+        <PreviewImage
+          src={previewImage}
+          alt="Прев'ю зображення"
+          onClick={(e) => e.stopPropagation()}
+        />
+      </ImagePreviewOverlay>
+    )}
     </Overlay>
   );
 };
