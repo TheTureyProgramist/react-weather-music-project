@@ -194,7 +194,7 @@ const BloodIcon = styled.div`
   height: 60%;
   border-radius: 50%;
   background: #8b0000;
-  box-shadow: 
+  box-shadow:
     0 0 10px #ff0000,
     inset 0 0 5px rgba(255, 0, 0, 0.5);
   animation: ${keyframes`
@@ -633,9 +633,12 @@ const PuzzleFour = ({ onExit }) => {
       const bloodAtPlayerPos = blood.find(
         (b) => b.x === finalX && b.y === finalY,
       );
-      if (bloodAtPlayerPos && hypnotized === 0) { // Only apply if not already hypnotized
+      if (bloodAtPlayerPos && hypnotized === 0) {
+        // Only apply if not already hypnotized
         setHypnotized(2); // Hypnotized for 2 turns
-        setBlood((prevBlood) => prevBlood.filter((b) => !(b.x === finalX && b.y === finalY))); // Remove blood spot
+        setBlood((prevBlood) =>
+          prevBlood.filter((b) => !(b.x === finalX && b.y === finalY)),
+        ); // Remove blood spot
         setStatusMsg("ГІПНОЗ!");
       }
 
@@ -789,13 +792,23 @@ const PuzzleFour = ({ onExit }) => {
         const dy = closestSaw.y - player.y;
 
         // Prioritize moving towards the saw
-        if (dx !== 0 && canMove(dx > 0 ? "right" : "left")) targetDir = dx > 0 ? "right" : "left";
-        else if (dy !== 0 && canMove(dy > 0 ? "down" : "up")) targetDir = dy > 0 ? "down" : "up";
-        else { // If direct path blocked, try any valid move towards it
-            const possibleMoves = [];
-            if (dx > 0) possibleMoves.push("right"); if (dx < 0) possibleMoves.push("left");
-            if (dy > 0) possibleMoves.push("down"); if (dy < 0) possibleMoves.push("up");
-            for (const move of possibleMoves) { if (canMove(move)) { targetDir = move; break; } }
+        if (dx !== 0 && canMove(dx > 0 ? "right" : "left"))
+          targetDir = dx > 0 ? "right" : "left";
+        else if (dy !== 0 && canMove(dy > 0 ? "down" : "up"))
+          targetDir = dy > 0 ? "down" : "up";
+        else {
+          // If direct path blocked, try any valid move towards it
+          const possibleMoves = [];
+          if (dx > 0) possibleMoves.push("right");
+          if (dx < 0) possibleMoves.push("left");
+          if (dy > 0) possibleMoves.push("down");
+          if (dy < 0) possibleMoves.push("up");
+          for (const move of possibleMoves) {
+            if (canMove(move)) {
+              targetDir = move;
+              break;
+            }
+          }
         }
         if (targetDir) moveAction(targetDir); // Perform the move
         setHypnotized((prev) => prev - 1); // Decrement hypnotized turns after attempting a move
@@ -960,11 +973,15 @@ const PuzzleFour = ({ onExit }) => {
 
         {/* Render Blood */}
         {blood.map((b, i) => (
-          <MovingObject key={`blood-${i}`} $x={b.x} $y={b.y} style={{ zIndex: 15 }}>
+          <MovingObject
+            key={`blood-${i}`}
+            $x={b.x}
+            $y={b.y}
+            style={{ zIndex: 15 }}
+          >
             <BloodIcon />
           </MovingObject>
         ))}
-
 
         {saws.map((s, i) => {
           const isTransparent = bonusTime > 0;

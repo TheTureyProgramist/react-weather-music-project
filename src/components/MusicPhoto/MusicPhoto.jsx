@@ -74,6 +74,7 @@ import dinofrozeight from "../../photos/vip-images/dinofroz/dinofrozeight.webp";
 import dinofroztwo from "../../photos/vip-images/dinofroz/vip-dragons.webp";
 import dinofroznine from "../../photos/vip-images/dinofroz/dinofroznine.webp";
 //Mia and me
+import domino from "../../mp3/dominos-shop.mp3"
 import hunger from "../../photos/hero-header/hunger.webp";
 import mia from "../../photos/vip-images/mia/miaandme.webp";
 //import christmasAudio from "../../mp3/kolada.mp3";
@@ -83,13 +84,14 @@ import monodyAudio from "../../mp3/thefatrat-monody.mp3";
 import windAudio from "../../mp3/kolada.mp3";
 import unityAudio from "../../mp3/unity.mp3";
 import horseAudio from "../../mp3/horse.mp3";
-import hungerAudio from "../../mp3/thefatrat-hunger.mp3"
+import hungerAudio from "../../mp3/thefatrat-hunger.mp3";
 import dragonoraAudio from "../../mp3/dragon.mp3";
 import soloveykoAudio from "../../mp3/soloveyko.mp3";
 import harmonyAudio from "../../mp3/harmonic-japan.mp3";
 import electrodynamixAudio from "../../mp3/electrodynamix.mp3";
 import clubstepAudio from "../../mp3/clubstep.mp3";
 import fingerdashAudio from "../../mp3/fingerdash.mp3";
+import fingerbang from "../../mp3/mdk-fingerbang-full.mp3";
 import theorytwoAudio from "../../mp3/theoty-of-everything-ll.mp3";
 import theoryAudio from "../../mp3/theory-of-everyting.mp3";
 import deadlockedAudio from "../../mp3/deadlocked.mp3";
@@ -146,6 +148,14 @@ const chaosAnimation = keyframes`
   100% { background-color: rgba(255, 0, 0, var(--chaos-opacity)); }
 `;
 
+const ultrachaosAnimation = keyframes`
+  0% { background-position: 0% 0%; filter: hue-rotate(0deg) contrast(1.2); }
+  25% { background-position: 100% 0%; filter: hue-rotate(90deg) contrast(1.4); }
+  50% { background-position: 100% 100%; filter: hue-rotate(180deg) contrast(1.2); }
+  75% { background-position: 0% 100%; filter: hue-rotate(270deg) contrast(1.4); }
+  100% { background-position: 0% 0%; filter: hue-rotate(360deg) contrast(1.2); }
+`;
+
 const oldFilmNoise = keyframes`
   0% { background-position: 0% 0%; }
   100% { background-position: 100% 100%; }
@@ -178,6 +188,25 @@ const symbolAnimation = keyframes`
   100% { transform: translate(-50%, -50%) scale(1.2); opacity: 0; }
 `;
 
+const fireworkAnimation = keyframes`
+  0% { 
+    transform: translate(-50%, -50%) scale(0.1); 
+    opacity: 1; 
+  }
+  40% { 
+    transform: translate(calc(-50% + var(--end-x)), calc(-50% + var(--end-y))) scale(1); 
+    opacity: 1;
+  }
+  70% {
+    transform: translate(calc(-50% + var(--end-x)), calc(-50% + var(--end-y) + 30px)) scale(1);
+    opacity: 1;
+  }
+  100% { 
+    transform: translate(calc(-50% + var(--end-x)), calc(-50% + var(--end-y) + 120px)) scale(0); 
+    opacity: 0;
+  }
+`;
+
 const seekAnimation = keyframes`
   0% { opacity: 0; background-color: rgba(255, 255, 255, 0); }
   30% { opacity: 1; background-color: rgba(255, 255, 255, 0.1); }
@@ -187,7 +216,7 @@ const seekAnimation = keyframes`
 const SeekIndicator = styled.div`
   position: absolute;
   top: 0;
-  ${props => props.$side === 'left' ? 'left: 0;' : 'right: 0;'}
+  ${(props) => (props.$side === "left" ? "left: 0;" : "right: 0;")}
   width: 40%;
   height: 100%;
   display: flex;
@@ -198,8 +227,14 @@ const SeekIndicator = styled.div`
   pointer-events: none;
   animation: ${seekAnimation} 0.8s ease-out forwards;
   color: white;
-  .icon { font-size: 36px; margin-bottom: 5px; }
-  .text { font-size: 18px; font-weight: bold; }
+  .icon {
+    font-size: 36px;
+    margin-bottom: 5px;
+  }
+  .text {
+    font-size: 18px;
+    font-weight: bold;
+  }
 `;
 
 const LongPressBadge = styled.div`
@@ -235,14 +270,11 @@ const blinkAnimation = keyframes`
 const MusicPhotoDiv = styled.div`
   background: #e8e8e8;
   border-radius: 20px;
-  margin-top: 35px;
+  margin-top: 15px;
   padding: 5px;
   text-align: center;
   @media (min-width: 768px) {
-    margin-top: 50px;
-  }
-  @media (min-width: 1200px) {
-    margin-top: 80px;
+    margin-top: 20px;
   }
 `;
 
@@ -255,17 +287,14 @@ const MusicPhotoFix = styled.div`
 `;
 
 const MusicPhotoText = styled.div`
-  font-size: 14px;
+  font-size: 17px;
   text-align: center;
   font-family: var(--font-family);
   font-weight: 600;
   color: black;
   margin-bottom: 20px;
   @media (min-width: 768px) {
-    font-size: 20px;
-  }
-  @media (min-width: 1200px) {
-    font-size: 30px;
+    font-size: 25px;
   }
 `;
 const ControlsContainer = styled.div`
@@ -281,11 +310,11 @@ const ControlsContainer = styled.div`
 
 const SearchInput = styled.input`
   width: 100%;
-  max-width: 300px;
-  padding: 12px 20px;
+  max-width: 250px;
+  padding: 6px 10px;
   border-radius: 25px;
   border: 2px solid #ccc;
-  font-size: 16px;
+  font-size: 13px;
   outline: none;
   transition: border-color 0.3s;
   &:focus {
@@ -294,10 +323,10 @@ const SearchInput = styled.input`
 `;
 
 const SortSelect = styled.select`
-  padding: 12px 20px;
+  padding: 6px 10px;
   border-radius: 25px;
   border: 2px solid #ccc;
-  font-size: 16px;
+  font-size: 13px;
   font-family: var(--font-family);
   outline: none;
   cursor: pointer;
@@ -537,12 +566,17 @@ const FilterOverlay = styled.div`
   transition:
     background-color ${(props) => (props.$type === "flash" ? "0.05s" : "0.5s")}
       ease,
+    opacity 0.5s ease,
     backdrop-filter 0.5s ease,
     -webkit-backdrop-filter 0.5s ease;
 
-  background-color: transparent;
-  backdrop-filter: blur(0px) grayscale(0%);
-  -webkit-backdrop-filter: blur(0px) grayscale(0%);
+  background-color: rgba(0, 0, 0, 0);
+  background-image: none;
+  opacity: 1;
+  /* Для плавності переходу структура функцій у backdrop-filter має бути незмінною */
+  backdrop-filter: grayscale(0%) blur(0px) contrast(1) invert(0%) sepia(0);
+  -webkit-backdrop-filter: grayscale(0%) blur(0px) contrast(1) invert(0%)
+    sepia(0);
 
   ${(props) =>
     props.$active &&
@@ -566,8 +600,14 @@ const FilterOverlay = styled.div`
       `background-color: rgba(139, 69, 19, ${props.$opacity});`}
       ${props.$type === "white" &&
       `background-color: rgba(255, 255, 255, ${props.$opacity});`}
-      ${props.$type === "negative" &&
-      `background-color: transparent;`}
+      ${props.$type === "image" &&
+      css`
+        background-image: url(${props.$imageUrl});
+        background-size: cover;
+        background-position: center;
+        background-color: transparent;
+        opacity: ${props.$opacity || 1};
+      `}
       ${(props.$type === "flash" ||
         props.$type === "flicker" ||
         props.$flicker) &&
@@ -633,7 +673,20 @@ const FilterOverlay = styled.div`
         --chaos-opacity: ${props.$opacity || 0.4};
         animation: ${chaosAnimation} 1.5s linear infinite;
       `}
-      ${(props.$type === "grayscale" || props.$type === "greyscale") &&
+      ${props.$type === "ultrachaos" &&
+      css`
+        background: radial-gradient(
+          circle at center,
+          rgba(255, 0, 150, ${props.$opacity || 0.5}),
+          rgba(0, 204, 255, ${props.$opacity || 0.5}),
+          rgba(255, 255, 0, ${props.$opacity || 0.5}),
+          rgba(0, 255, 0, ${props.$opacity || 0.5})
+        );
+        background-size: 300% 300%;
+        animation: ${ultrachaosAnimation} 6s ease-in-out infinite;
+        backdrop-filter: blur(2px) saturate(1.5);
+      `}
+      ${props.$type === "grayscale" &&
       css`
         background-color: rgba(119, 119, 119, ${props.$opacity * 0.2});
       `}
@@ -679,10 +732,17 @@ const StyledSymbol = styled.span`
   will-change: transform, opacity;
   backface-visibility: hidden;
   transform: translateZ(0);
-  animation:
-    ${symbolAnimation} ${(props) => props.$duration}s ease-in-out infinite,
-    ${blinkAnimation} 3s ease-in-out
-      ${(props) => Math.max(0, props.$duration - 3)}s infinite;
+  animation: ${(props) =>
+    props.$variation === "firework"
+      ? css`
+          ${fireworkAnimation} ${props.$duration}s ease-out forwards
+        `
+      : css`
+          ${symbolAnimation} ${props.$duration}s ease-in-out infinite, ${blinkAnimation} 3s ease-in-out ${Math.max(
+            0,
+            props.$duration - 3,
+          )}s infinite
+        `};
 
   top: ${(props) => props.$top}%;
   left: ${(props) => props.$left}%;
@@ -706,33 +766,64 @@ const SymbolOverlay = ({
   speed = 0,
   blur = 0,
   isExiting = false,
+  variation = "default",
 }) => {
   const [isMounted, setIsMounted] = useState(false);
+  const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1200);
+
   useEffect(() => {
     setIsMounted(true);
+    const handleResize = () => setWindowWidth(window.innerWidth);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   const symbols = useMemo(() => {
-    return Array.from({ length: count }).map((_, i) => {
+    const isFirework = variation === "firework";
+
+    // Адаптивність: розраховуємо множник залежно від ширини екрана
+    let multiplier = 1;
+    if (windowWidth < 480) {
+      multiplier = 0.3; // Лише 30% нот для телефонів
+    } else if (windowWidth < 1024) {
+      multiplier = 0.6; // 60% для планшетів та малих ноутбуків
+    }
+    const realCount = isFirework ? 6 : Math.max(1, Math.floor(count * multiplier));
+
+    return Array.from({ length: realCount }).map((_, i) => {
       const r1 = Math.random();
       const r2 = Math.random();
-      const r3 = Math.random();
-      const r4 = Math.random();
-      const r5 = Math.random();
+
+      let top = r2 * 100;
+      let left = r1 * 100;
+      let moveX = speed > 0 ? (r1 - 0.5) * 200 * speed : 0;
+      let moveY = speed > 0 ? (r2 - 0.5) * 200 * speed : 0;
+      let duration = 2 + Math.random() * 4;
+
+      if (isFirework) {
+        top = 50;
+        left = 50;
+        const angle = i * (360 / 6) * (Math.PI / 180);
+        const dist = 120 + Math.random() * 60;
+        moveX = Math.cos(angle) * dist;
+        moveY = Math.sin(angle) * dist;
+        duration = 1.8 + Math.random() * 0.4;
+      }
+
       return {
         key: i,
-        char: musicSymbols[Math.floor(r1 * 4)],
-        top: r2 * 100,
-        left: r3 * 100,
-        size: 30 + r4 * 30,
-        opacity: 0.2 + r5 * 0.3,
-        duration: 2 + Math.random() * 4,
-        moveX: speed > 0 ? (r1 - 0.5) * 200 * speed : 0,
-        moveY: speed > 0 ? (r2 - 0.5) * 200 * speed : 0,
+        char: musicSymbols[Math.floor(Math.random() * musicSymbols.length)],
+        top,
+        left,
+        size: isFirework ? 40 : 30 + Math.random() * 30,
+        opacity: isFirework ? 1 : 0.2 + Math.random() * 0.3,
+        duration,
+        moveX,
+        moveY,
         blur: blur > 0 ? Math.random() * blur : 0,
       };
     });
-  }, [count, speed, blur]);
+  }, [count, speed, blur, variation, windowWidth]);
   return (
     <div
       style={{
@@ -760,6 +851,7 @@ const SymbolOverlay = ({
           $moveY={s.moveY}
           $volume={volume}
           $blur={blur}
+          $variation={variation}
         >
           {s.char}
         </StyledSymbol>
@@ -1115,21 +1207,19 @@ const MiniPlayer = ({
   }, [speed, volume]);
 
   useEffect(() => {
-    if ('mediaSession' in navigator && track) {
+    if ("mediaSession" in navigator && track) {
       navigator.mediaSession.metadata = new window.MediaMetadata({
-        title: track.text || track.author || 'Стихія',
-        artist: track.author || 'Stykhiya',
-        album: track.category || 'Music',
-        artwork: [
-          { src: track.image, sizes: '512x512', type: 'image/webp' }
-        ]
+        title: track.text || track.author || "Стихія",
+        artist: track.author || "Stykhiya",
+        album: track.category || "Music",
+        artwork: [{ src: track.image, sizes: "512x512", type: "image/webp" }],
       });
 
-      navigator.mediaSession.setActionHandler('play', () => {
+      navigator.mediaSession.setActionHandler("play", () => {
         mediaRef.current?.play();
         setIsPlaying(true);
       });
-      navigator.mediaSession.setActionHandler('pause', () => {
+      navigator.mediaSession.setActionHandler("pause", () => {
         mediaRef.current?.pause();
         setIsPlaying(false);
       });
@@ -1137,8 +1227,8 @@ const MiniPlayer = ({
   }, [track]);
 
   useEffect(() => {
-    if ('mediaSession' in navigator) {
-      navigator.mediaSession.playbackState = isPlaying ? 'playing' : 'paused';
+    if ("mediaSession" in navigator) {
+      navigator.mediaSession.playbackState = isPlaying ? "playing" : "paused";
     }
   }, [isPlaying]);
 
@@ -1152,7 +1242,7 @@ const MiniPlayer = ({
           return i;
         }
       }
-      return 0; 
+      return 0;
     } else {
       const segment = (duration || 1) / images.length;
       return Math.min(Math.floor(currentTime / segment), images.length - 1);
@@ -1361,6 +1451,7 @@ const MiniPlayer = ({
           $type={mainFilter?.type}
           $opacity={mainFilter?.opacity}
           $blur={mainFilter?.blur}
+          $imageUrl={mainFilter?.imageUrl}
         />
         {isDinofroz ? (
           <video
@@ -1414,7 +1505,14 @@ const MiniPlayer = ({
           ▶
         </div>
         {activeFilters.some((f) => f.type === "symbols") && (
-          <SymbolOverlay count={9} volume={0.5} speed={1.5} />
+          <SymbolOverlay
+            count={9}
+            volume={0.5}
+            speed={1.5}
+            variation={
+              activeFilters.find((f) => f.type === "symbols")?.variation
+            }
+          />
         )}
       </div>
       <MiniResizeHandle onMouseDown={handleResize} />
@@ -1817,7 +1915,7 @@ const ProgressBarFill = styled.div`
   box-shadow: 0 0 10px #94fffa;
 `;
 
-const LyricsViewer = ({ lyrics, currentTime }) => {
+const LyricsViewer = ({ lyrics, currentTime, voiceActingMode, trackText }) => {
   const activeLineIndex = useMemo(() => {
     if (!Array.isArray(lyrics)) return -1;
     for (let i = lyrics.length - 1; i >= 0; i--) {
@@ -1827,14 +1925,14 @@ const LyricsViewer = ({ lyrics, currentTime }) => {
   }, [lyrics, currentTime]);
 
   if (!Array.isArray(lyrics)) {
-    return <>{lyrics || "Текст відсутній."}</>;
+    return <>{lyrics || trackText || "Текст відсутній."}</>;
   }
 
   return (
     <div>
       {lyrics.map((line, index) => (
         <LyricsLine key={index} $active={index === activeLineIndex}>
-          {line.text}
+          {voiceActingMode === "bbkids" && line.text_bbkids ? line.text_bbkids : line.text}
         </LyricsLine>
       ))}
     </div>
@@ -1854,10 +1952,12 @@ const FullScreenPlayer = ({
   user,
   playlist,
   onSelectTrack,
+  onUpdateUser,
 }) => {
   const isDinofroz =
     (track.category === "мультфільми" && track.video) || // Existing check
-    (track.text && track.text.toLowerCase().includes("динофроз") && // Check if track.text is defined
+    (track.text &&
+      track.text.toLowerCase().includes("динофроз") && // Check if track.text is defined
       track.category === "мультфільми");
 
   const [isPlaying, setIsPlaying] = useState(false);
@@ -1870,7 +1970,25 @@ const FullScreenPlayer = ({
   const [seekBackwardAmount, setSeekBackwardAmount] = useState(10);
   const [activeSeekIndicator, setActiveSeekIndicator] = useState(null);
   const [isSeekLoaded, setIsSeekLoaded] = useState(false);
-  
+
+  useEffect(() => {
+    const loadVolume = async () => {
+      try {
+        const savedVolume = await localforage.getItem("player_volume");
+        if (savedVolume !== null) setVolume(savedVolume);
+      } catch (e) {
+        console.error("Error loading volume:", e);
+      }
+    };
+    loadVolume();
+  }, []);
+
+  useEffect(() => {
+    if (isAssetsLoaded) {
+      localforage.setItem("player_volume", volume);
+    }
+  }, [volume, isAssetsLoaded]);
+
   const [longPressSpeedIndicator, setLongPressSpeedIndicator] = useState(null); // Changed from dynamicSpeed to longPressSpeedIndicator
   const longPressTimerRef = useRef(null);
   const originalSpeedRef = useRef(null);
@@ -1884,7 +2002,10 @@ const FullScreenPlayer = ({
         if (fwd !== null) setSeekForwardAmount(fwd);
         if (bwd !== null) setSeekBackwardAmount(bwd);
         setIsSeekLoaded(true);
-      } catch (e) { console.error(e); setIsSeekLoaded(true); }
+      } catch (e) {
+        console.error(e);
+        setIsSeekLoaded(true);
+      }
     };
     loadSeekSettings();
   }, []);
@@ -1906,7 +2027,7 @@ const FullScreenPlayer = ({
   const [showScreenshotMenu, setShowScreenshotMenu] = useState(false);
   const [showPlaylist, setShowPlaylist] = useState(false);
   const [loop, setLoop] = useState(false);
-  const [progressMode, setProgressMode] = useState("linear"); 
+  const [progressMode, setProgressMode] = useState("linear");
   const [currentImgIdx, setCurrentImgIdx] = useState(0);
   const [downloadRange, setDownloadRange] = useState({ start: 0, end: 0 });
   const [showControls, setShowControls] = useState(true);
@@ -1914,21 +2035,21 @@ const FullScreenPlayer = ({
   const [isClosing, setIsClosing] = useState(false);
   const [playMode, setPlayMode] = useState(isShuffle ? 1 : 0);
   const [hoverTime, setHoverTime] = useState(null);
-  const [pendingScreenshotAction, setPendingScreenshotAction] = useState(null); 
+  const [pendingScreenshotAction, setPendingScreenshotAction] = useState(null);
   const [loadingProgress, setLoadingProgress] = useState(0);
   const [isAssetsLoaded, setIsAssetsLoaded] = useState(false);
   const [activeFilterKey, setActiveFilterKey] = useState(null);
   const [filtersEnabled, setFiltersEnabled] = useState(true); // Режим вимкнення фільтрів
   const [dynamicOpacity, setDynamicOpacity] = useState(null);
   const [dynamicBlur, setDynamicBlur] = useState(null);
-  const [dynamicColor, setDynamicColor] = useState(null); 
+  const [dynamicColor, setDynamicColor] = useState(null);
   const [dynamicIntensity, setDynamicIntensity] = useState(null); // Changed from dynamicIntensity to dynamicSymbolIntensity
   const mediaRef = useRef(null);
   const [waveform, setWaveform] = useState([]);
   const [isGeneratingWave, setIsGeneratingWave] = useState(false);
   const [isAutoSlideshow, setIsAutoSlideshow] = useState(false);
   const [autoSlideshowInterval, setAutoSlideshowInterval] = useState(3);
-//  const [selectedVoiceNarration, setSelectedVoiceNarration] = useState("off");
+  //  const [selectedVoiceNarration, setSelectedVoiceNarration] = useState("off");
   const fsCanvasRef = useRef(null);
   const fsPipVideoRef = useRef(null);
   const lastActionRef = useRef(0);
@@ -1988,7 +2109,7 @@ const FullScreenPlayer = ({
     () => activeFilters.some((f) => f.type === "symbols"),
     [activeFilters],
   );
-useEffect(() => {
+  useEffect(() => {
     if (filtersEnabled && mainFilter) {
       const key = `${mainFilter.start}-${mainFilter.end}`;
       if (key !== activeFilterKey) {
@@ -2021,13 +2142,15 @@ useEffect(() => {
       setActiveFilterKey(null);
       setDynamicOpacity(null);
       setDynamicBlur(null);
-      setDynamicColor(null); 
+      setDynamicColor(null);
     }
-  }, [mainFilter, activeFilterKey, filtersEnabled]); 
+  }, [mainFilter, activeFilterKey, filtersEnabled]);
   const [dynamicBlurSymbols] = useState(0);
   useEffect(() => {
-    if (!filtersEnabled || progressMode !== "stereogram" || !isAssetsLoaded) return; // Added filtersEnabled
-    if (!filtersEnabled || progressMode !== "stereogram" || !isAssetsLoaded) return; // Added filtersEnabled to dependencies
+    if (!filtersEnabled || progressMode !== "stereogram" || !isAssetsLoaded)
+      return; // Added filtersEnabled
+    if (!filtersEnabled || progressMode !== "stereogram" || !isAssetsLoaded)
+      return; // Added filtersEnabled to dependencies
     let isCancelled = false;
     const generateWave = async () => {
       setIsGeneratingWave(true);
@@ -2041,7 +2164,7 @@ useEffect(() => {
         const audioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
         if (isCancelled) return;
         const rawData = audioBuffer.getChannelData(0);
-        const samples = 280; 
+        const samples = 280;
         const blockSize = Math.floor(rawData.length / samples);
         const filteredData = [];
 
@@ -2078,7 +2201,10 @@ useEffect(() => {
   ]);
 
   const lastSymbolFilter = useMemo(
-    () => filtersEnabled ? [...activeFilters].reverse().find((f) => f.type === "symbols") : null, // Added filtersEnabled
+    () =>
+      filtersEnabled
+        ? [...activeFilters].reverse().find((f) => f.type === "symbols")
+        : null, // Added filtersEnabled
     [activeFilters, filtersEnabled],
   );
   const [activeSymbols, setActiveSymbols] = useState(null);
@@ -2086,7 +2212,8 @@ useEffect(() => {
   const [isSymbolsExiting, setIsSymbolsExiting] = useState(false);
   const [activeSymbolKey, setActiveSymbolKey] = useState(0);
   const [dynamicSpeed, setDynamicSpeed] = useState(5); // Changed from dynamicSpeed to dynamicSymbolSpeed
-  useEffect(() => { // This useEffect will be modified to respect filtersEnabled
+  useEffect(() => {
+    // This useEffect will be modified to respect filtersEnabled
     if (filtersEnabled && lastSymbolFilter) {
       const key = `${lastSymbolFilter.start}-${lastSymbolFilter.end}`;
       if (key !== activeSymbolKey || isSymbolsExiting) {
@@ -2094,7 +2221,7 @@ useEffect(() => {
         setActiveSymbols(lastSymbolFilter);
         setShouldRenderSymbols(true);
         setIsSymbolsExiting(false);
-  
+
         if (lastSymbolFilter.isRandomIntensity) {
           const min = lastSymbolFilter.minIntensity || 50;
           const max = lastSymbolFilter.maxIntensity || 200;
@@ -2122,7 +2249,7 @@ useEffect(() => {
         setActiveSymbolKey(null);
         setDynamicIntensity(null); // Changed from dynamicIntensity to dynamicSymbolIntensity
         setDynamicSpeed(null);
-      }, 1000); 
+      }, 1000);
       return () => clearTimeout(timer);
     } // Removed the activeSymbolKey check, filtersEnabled is the main gate
   }, [
@@ -2133,7 +2260,8 @@ useEffect(() => {
     activeSymbolKey,
   ]); // Added filtersEnabled to dependencies
 
-  const sliderImages = useMemo(() => { // This useMemo will be modified to respect filtersEnabled
+  const sliderImages = useMemo(() => {
+    // This useMemo will be modified to respect filtersEnabled
     if (track.images && track.images.length > 0) {
       if (
         track.images[0] &&
@@ -2258,7 +2386,6 @@ useEffect(() => {
       media.removeEventListener("loadedmetadata", updateDur);
       media.removeEventListener("ended", handleEnded);
       media.removeEventListener("error", handleErrorEvent);
-
     };
   }, [track, loop, handleError]);
 
@@ -2270,40 +2397,52 @@ useEffect(() => {
   }, [volume, speed]);
 
   useEffect(() => {
-    if ('mediaSession' in navigator && track) {
+    if ("mediaSession" in navigator && track) {
       navigator.mediaSession.metadata = new window.MediaMetadata({
-        title: track.text || track.author || 'Стихія',
-        artist: track.author || 'Stykhiya',
-        album: track.category || 'Music',
-        artwork: [
-          { src: track.image, sizes: '512x512', type: 'image/webp' }
-        ]
+        title: track.text || track.author || "Стихія",
+        artist: track.author || "Stykhiya",
+        album: track.category || "Music",
+        artwork: [{ src: track.image, sizes: "512x512", type: "image/webp" }],
       });
 
-      navigator.mediaSession.setActionHandler('play', togglePlay);
-      navigator.mediaSession.setActionHandler('pause', togglePlay);
-      navigator.mediaSession.setActionHandler('previoustrack', () => {
+      navigator.mediaSession.setActionHandler("play", togglePlay);
+      navigator.mediaSession.setActionHandler("pause", togglePlay);
+      navigator.mediaSession.setActionHandler("previoustrack", () => {
         if (canPerformAction()) onPrev();
       });
-      navigator.mediaSession.setActionHandler('nexttrack', () => {
+      navigator.mediaSession.setActionHandler("nexttrack", () => {
         if (canPerformAction()) onNext();
       });
-      navigator.mediaSession.setActionHandler('seekbackward', () => {
+      navigator.mediaSession.setActionHandler("seekbackward", () => {
         if (mediaRef.current) {
-          mediaRef.current.currentTime = Math.max(0, mediaRef.current.currentTime - seekBackwardAmount);
+          mediaRef.current.currentTime = Math.max(
+            0,
+            mediaRef.current.currentTime - seekBackwardAmount,
+          );
         }
       });
-      navigator.mediaSession.setActionHandler('seekforward', () => {
+      navigator.mediaSession.setActionHandler("seekforward", () => {
         if (mediaRef.current) {
-          mediaRef.current.currentTime = Math.min(mediaRef.current.duration, mediaRef.current.currentTime + seekForwardAmount);
+          mediaRef.current.currentTime = Math.min(
+            mediaRef.current.duration,
+            mediaRef.current.currentTime + seekForwardAmount,
+          );
         }
       });
     }
-  }, [track, onNext, onPrev, togglePlay, seekForwardAmount, seekBackwardAmount, canPerformAction]);
+  }, [
+    track,
+    onNext,
+    onPrev,
+    togglePlay,
+    seekForwardAmount,
+    seekBackwardAmount,
+    canPerformAction,
+  ]);
 
   useEffect(() => {
-    if ('mediaSession' in navigator) {
-      navigator.mediaSession.playbackState = isPlaying ? 'playing' : 'paused';
+    if ("mediaSession" in navigator) {
+      navigator.mediaSession.playbackState = isPlaying ? "playing" : "paused";
     }
   }, [isPlaying]);
 
@@ -2315,8 +2454,12 @@ useEffect(() => {
         Math.max(0.2, Math.min(2.0, +(prev + delta * 0.1).toFixed(1))),
       );
     } else if (e.ctrlKey || e.altKey) {
-      setSeekForwardAmount((prev) => Math.max(5, Math.min(30, prev + delta * 5)));
-      setSeekBackwardAmount((prev) => Math.max(5, Math.min(30, prev + delta * 5)));
+      setSeekForwardAmount((prev) =>
+        Math.max(5, Math.min(30, prev + delta * 5)),
+      );
+      setSeekBackwardAmount((prev) =>
+        Math.max(5, Math.min(30, prev + delta * 5)),
+      );
     } else {
       setVolume((prev) =>
         Math.max(0, Math.min(1, +(prev + delta * 0.05).toFixed(2))),
@@ -2359,19 +2502,23 @@ useEffect(() => {
       window.removeEventListener("touchstart", resetControlsTimeout);
       window.removeEventListener("touchmove", resetControlsTimeout);
     };
-  }, [resetControlsTimeout]); 
+  }, [resetControlsTimeout]);
   const currentLyric = useMemo(() => {
     if (!Array.isArray(track.lyrics)) return null;
     let active = null;
+    const mode = user?.voiceActingMode || "malyatko";
+    if (mode === "off") return null;
+
     for (let i = 0; i < track.lyrics.length; i++) {
       if (progress >= track.lyrics[i].time) {
-        active = track.lyrics[i].text;
+        const line = track.lyrics[i];
+        active = mode === "bbkids" && line.text_bbkids ? line.text_bbkids : line.text;
       } else {
         break;
       }
     }
     return active;
-  }, [track.lyrics, progress]);
+  }, [track.lyrics, progress, user?.voiceActingMode]);
 
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -2379,7 +2526,7 @@ useEffect(() => {
       if (e.code === "Escape") handleClose();
 
       if (e.code === "Space") {
-        e.preventDefault(); 
+        e.preventDefault();
       }
 
       if (!mediaRef.current) return;
@@ -2391,21 +2538,28 @@ useEffect(() => {
           mediaRef.current.duration,
           mediaRef.current.currentTime + amount,
         );
-        triggerIndicator('right', amount);
+        triggerIndicator("right", amount);
       } else if (e.code === "ArrowLeft") {
         const amount = seekBackwardAmount;
         mediaRef.current.currentTime = Math.max(
           0,
           mediaRef.current.currentTime - amount,
         );
-        triggerIndicator('left', amount);
+        triggerIndicator("left", amount);
       }
-
     };
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [handleClose, togglePlay, resetControlsTimeout, canPerformAction, seekForwardAmount, seekBackwardAmount, triggerIndicator]);
+  }, [
+    handleClose,
+    togglePlay,
+    resetControlsTimeout,
+    canPerformAction,
+    seekForwardAmount,
+    seekBackwardAmount,
+    triggerIndicator,
+  ]);
 
   useEffect(() => {
     if (isDinofroz || !duration || sliderImages.length === 0) return;
@@ -2458,7 +2612,6 @@ useEffect(() => {
     const slideshowInterval = setInterval(() => {
       setCurrentImgIdx((prev) => (prev + 1) % sliderImages.length);
     }, autoSlideshowInterval * 1000);
-
 
     return () => clearInterval(slideshowInterval);
   }, [isAutoSlideshow, autoSlideshowInterval, sliderImages.length]);
@@ -2540,7 +2693,7 @@ useEffect(() => {
     const dataUrl = await getCroppedDataUrl(source, applyFilter);
     const a = document.createElement("a");
     a.href = dataUrl;
-    a.download = `screenshot-${track.text.replace(/\s+/g, '_')}-${Date.now()}.jpg`;
+    a.download = `screenshot-${track.text.replace(/\s+/g, "_")}-${Date.now()}.jpg`;
     a.click();
     setShowScreenshotMenu(false);
   };
@@ -2642,7 +2795,7 @@ useEffect(() => {
 
   useEffect(() => {
     checkCache();
-  }, [checkCache]); 
+  }, [checkCache]);
 
   const toggleCache = async () => {
     if (!("caches" in window)) return;
@@ -2675,64 +2828,84 @@ useEffect(() => {
     }
   };
 
-  const handleInteractionStart = useCallback((x, width) => {
-    const side = x < width * 0.2 ? 'left' : x > width * 0.8 ? 'right' : 'center';
-    const now = Date.now();
+  const handleInteractionStart = useCallback(
+    (x, width) => {
+      const side =
+        x < width * 0.2 ? "left" : x > width * 0.8 ? "right" : "center";
+      const now = Date.now();
 
-    // 1. Логіка подвійного кліку для перемотування
-    if (side !== 'center' && side === lastClickRef.current.side && (now - lastClickRef.current.time) < 350) {
-      if (mediaRef.current) {
-        const amount = side === 'left' ? seekBackwardAmount : seekForwardAmount;
-        if (side === 'left') {
-          mediaRef.current.currentTime = Math.max(0, mediaRef.current.currentTime - amount);
-        } else {
-          mediaRef.current.currentTime = Math.min(mediaRef.current.duration, mediaRef.current.currentTime + amount);
+      // 1. Логіка подвійного кліку для перемотування
+      if (
+        side !== "center" &&
+        side === lastClickRef.current.side &&
+        now - lastClickRef.current.time < 350
+      ) {
+        if (mediaRef.current) {
+          const amount =
+            side === "left" ? seekBackwardAmount : seekForwardAmount;
+          if (side === "left") {
+            mediaRef.current.currentTime = Math.max(
+              0,
+              mediaRef.current.currentTime - amount,
+            );
+          } else {
+            mediaRef.current.currentTime = Math.min(
+              mediaRef.current.duration,
+              mediaRef.current.currentTime + amount,
+            );
+          }
+          triggerIndicator(side, amount);
         }
-        triggerIndicator(side, amount);
+        // Очищуємо таймер затиснення, щоб подвійний клік не активував швидкість
+        if (longPressTimerRef.current) clearTimeout(longPressTimerRef.current);
+        lastClickRef.current = { time: 0, side: null };
+        return;
       }
-      // Очищуємо таймер затиснення, щоб подвійний клік не активував швидкість
-      if (longPressTimerRef.current) clearTimeout(longPressTimerRef.current);
-      lastClickRef.current = { time: 0, side: null };
-      return;
-    }
 
-    lastClickRef.current = { time: now, side };
+      lastClickRef.current = { time: now, side };
 
-    // 2. Логіка тривалого затиснення для зміни швидкості
-    if (side !== 'center') {
-      if (longPressTimerRef.current) clearTimeout(longPressTimerRef.current);
-      longPressTimerRef.current = setTimeout(() => {
-        if (!originalSpeedRef.current) {
-          originalSpeedRef.current = speed;
+      // 2. Логіка тривалого затиснення для зміни швидкості
+      if (side !== "center") {
+        if (longPressTimerRef.current) clearTimeout(longPressTimerRef.current);
+        longPressTimerRef.current = setTimeout(() => {
+          if (!originalSpeedRef.current) {
+            originalSpeedRef.current = speed;
+          }
+          const newSpeed = side === "right" ? 2 : 0.5;
+          setSpeed(newSpeed);
+          setLongPressSpeedIndicator(side === "right" ? "2x >>" : "<< 0.5x");
+        }, 2000);
+      }
+    },
+    [speed, seekBackwardAmount, seekForwardAmount, triggerIndicator],
+  );
+
+  const handleInteractionEnd = useCallback(
+    (side) => {
+      if (longPressTimerRef.current) {
+        clearTimeout(longPressTimerRef.current);
+        longPressTimerRef.current = null;
+      }
+
+      // Повертаємо оригінальну швидкість
+      if (longPressSpeedIndicator) {
+        if (originalSpeedRef.current !== null) {
+          setSpeed(originalSpeedRef.current);
+          originalSpeedRef.current = null;
         }
-        const newSpeed = side === 'right' ? 2 : 0.5;
-        setSpeed(newSpeed);
-        setLongPressSpeedIndicator(side === 'right' ? '2x >>' : '<< 0.5x');
-      }, 2000);
-    }
-  }, [speed, seekBackwardAmount, seekForwardAmount, triggerIndicator]);
-
-  const handleInteractionEnd = useCallback((side) => {
-    if (longPressTimerRef.current) {
-      clearTimeout(longPressTimerRef.current);
-      longPressTimerRef.current = null;
-    }
-
-    // Повертаємо оригінальну швидкість
-    if (longPressSpeedIndicator) {
-      if (originalSpeedRef.current !== null) {
-        setSpeed(originalSpeedRef.current);
-        originalSpeedRef.current = null;
+        setLongPressSpeedIndicator(null);
+      } else if (side === "center" && !longPressSpeedIndicator) {
+        // Якщо це був просто короткий клік по центру - toggle play
+        togglePlay();
       }
-      setLongPressSpeedIndicator(null);
-    } else if (side === 'center' && !longPressSpeedIndicator) {
-      // Якщо це був просто короткий клік по центру - toggle play
-      togglePlay();
-    }
-  }, [longPressSpeedIndicator, togglePlay]);
+    },
+    [longPressSpeedIndicator, togglePlay],
+  );
 
   useEffect(() => {
-    return () => { if (longPressTimerRef.current) clearTimeout(longPressTimerRef.current); };
+    return () => {
+      if (longPressTimerRef.current) clearTimeout(longPressTimerRef.current);
+    };
   }, []);
 
   const formatTime = (t) => {
@@ -2880,34 +3053,41 @@ useEffect(() => {
 
       <FSContent
         ref={containerRef}
-        onMouseDown={(e) => handleInteractionStart(e.clientX, containerRef.current.clientWidth)}
+        onMouseDown={(e) =>
+          handleInteractionStart(e.clientX, containerRef.current.clientWidth)
+        }
         onMouseUp={() => handleInteractionEnd()}
         onMouseLeave={() => handleInteractionEnd()}
         onTouchStart={(e) => {
           resetControlsTimeout();
-          handleInteractionStart(e.touches[0].clientX, containerRef.current.clientWidth);
+          handleInteractionStart(
+            e.touches[0].clientX,
+            containerRef.current.clientWidth,
+          );
         }}
         onTouchEnd={() => handleInteractionEnd()}
       >
         <FSVisualWrapper style={{ position: "relative" }}>
           {longPressSpeedIndicator && (
-            <LongPressBadge>
-              Швидкість {longPressSpeedIndicator}
-            </LongPressBadge>
+            <LongPressBadge>Швидкість {longPressSpeedIndicator}</LongPressBadge>
           )}
           {activeSeekIndicator && (
-            <SeekIndicator $side={activeSeekIndicator.side} key={activeSeekIndicator.key}>
+            <SeekIndicator
+              $side={activeSeekIndicator.side}
+              key={activeSeekIndicator.key}
+            >
               <div className="icon">
-                {activeSeekIndicator.side === 'left' ? '◀◀◀' : '▶▶▶'}
+                {activeSeekIndicator.side === "left" ? "◀◀◀" : "▶▶▶"}
               </div>
               <div className="text">
-                {activeSeekIndicator.side === 'left' ? '-' : '+'}{activeSeekIndicator.amount}с
+                {activeSeekIndicator.side === "left" ? "-" : "+"}
+                {activeSeekIndicator.amount}с
               </div>
             </SeekIndicator>
           )}
           <FilterOverlay
-          $active={filtersEnabled && !!mainFilter}
-          $type={dynamicColor || mainFilter?.type} 
+            $active={filtersEnabled && !!mainFilter}
+            $type={dynamicColor || mainFilter?.type}
             $opacity={
               dynamicOpacity !== null
                 ? dynamicOpacity
@@ -2915,11 +3095,12 @@ useEffect(() => {
             }
             $blur={dynamicBlur !== null ? dynamicBlur : mainFilter?.blur}
             $grayscale={mainFilter?.grayscale}
+            $imageUrl={mainFilter?.imageUrl}
             style={{ zIndex: 10 }}
           />
 
           <FilterOverlay
-          $active={filtersEnabled && !!flickerFilter}
+            $active={filtersEnabled && !!flickerFilter}
             $type="flicker"
             $opacity={flickerFilter?.opacity || 0.1}
             style={{ zIndex: 11 }}
@@ -2953,12 +3134,13 @@ useEffect(() => {
             </>
           )}
           {shouldRenderSymbols && (
-            <SymbolOverlay 
+            <SymbolOverlay
               count={dynamicIntensity || activeSymbols?.intensity || 50}
               volume={volume}
               speed={dynamicSpeed || activeSymbols?.speed || 0} // Changed from dynamicSpeed to dynamicSymbolSpeed
               blur={dynamicBlurSymbols || activeSymbols?.blur || 0}
               isExiting={isSymbolsExiting}
+              variation={activeSymbols?.variation}
             />
           )}
         </FSVisualWrapper>
@@ -3165,7 +3347,7 @@ useEffect(() => {
                     0,
                     mediaRef.current.currentTime - amount,
                   );
-                  triggerIndicator('left', amount);
+                  triggerIndicator("left", amount);
                 }
               }}
             >
@@ -3211,7 +3393,7 @@ useEffect(() => {
                     duration,
                     mediaRef.current.currentTime + amount,
                   );
-                  triggerIndicator('right', amount);
+                  triggerIndicator("right", amount);
                 }
               }}
             >
@@ -3229,22 +3411,20 @@ useEffect(() => {
             >
               {isCached ? "✓" : "⇩"}
             </LoopButton>
-            
+
             {/* Контроль режиму слайд-шоу */}
             {!isDinofroz && sliderImages.length > 1 && (
               <LoopButton
                 $active={isAutoSlideshow}
                 onClick={() => setIsAutoSlideshow(!isAutoSlideshow)}
                 title={
-                  isAutoSlideshow
-                    ? "Слайд-шоу ввімкнено"
-                    : "Слайд-шоу вимкнено"
+                  isAutoSlideshow ? "Слайд-шоу ввімкнено" : "Слайд-шоу вимкнено"
                 }
               >
                 📽️
               </LoopButton>
             )}
-            
+
             {/* Вибір інтервалу слайд-шоу */}
             {!isDinofroz && isAutoSlideshow && sliderImages.length > 1 && (
               <div
@@ -3290,7 +3470,7 @@ useEffect(() => {
                 </span>
               </div>
             )}
-            
+
             <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
               <span style={{ color: "white", fontSize: "12px" }}>🔊</span>
               <VolumeSlider
@@ -3326,7 +3506,9 @@ useEffect(() => {
         <GearModal>
           <h4>Налаштування</h4>
           <SliderRow>
-            <span style={{ color: "white" }}>Промотка назад ({seekBackwardAmount}с)</span>
+            <span style={{ color: "white" }}>
+              Промотка назад ({seekBackwardAmount}с)
+            </span>
             <SeekAmountSlider
               type="range"
               min="5"
@@ -3334,11 +3516,15 @@ useEffect(() => {
               step="5"
               $activeColor="#7afcff"
               value={seekBackwardAmount}
-              onChange={(e) => setSeekBackwardAmount(parseInt(e.target.value, 10))}
+              onChange={(e) =>
+                setSeekBackwardAmount(parseInt(e.target.value, 10))
+              }
             />
           </SliderRow>
           <SliderRow>
-            <span style={{ color: "white" }}>Промотка вперед ({seekForwardAmount}с)</span>
+            <span style={{ color: "white" }}>
+              Промотка вперед ({seekForwardAmount}с)
+            </span>
             <SeekAmountSlider
               type="range"
               min="5"
@@ -3346,9 +3532,57 @@ useEffect(() => {
               step="5"
               $activeColor="#7afcff"
               value={seekForwardAmount}
-              onChange={(e) => setSeekForwardAmount(parseInt(e.target.value, 10))}
+              onChange={(e) =>
+                setSeekForwardAmount(parseInt(e.target.value, 10))
+              }
             />
           </SliderRow>
+          {(track.lyrics || track.text) && (
+            <SliderRow>
+              <span style={{ color: "white" }}>Версія озвучки</span>
+              {Array.isArray(track.lyrics) ? (
+                <select
+                  value={user?.voiceActingMode || "malyatko"}
+                  onChange={(e) => {
+                    if (onUpdateUser) {
+                      onUpdateUser({ ...user, voiceActingMode: e.target.value });
+                    }
+                  }}
+                  style={{
+                    background: "#444",
+                    color: "white",
+                    border: "1px solid #666",
+                    borderRadius: "4px",
+                    padding: "3px 6px",
+                    cursor: "pointer",
+                    fontSize: "11px",
+                  }}
+                >
+                  <option value="malyatko">Малятко ТВ</option>
+                  <option value="bbkids">BBKidsUA</option>
+                  <option value="off">Вимкнути</option>
+                </select>
+              ) : (
+                <button
+                  onClick={() => {
+                    const newMode = (user?.voiceActingMode === "off" ? "malyatko" : "off");
+                    if (onUpdateUser) onUpdateUser({ ...user, voiceActingMode: newMode });
+                  }}
+                  style={{
+                    background: (user?.voiceActingMode || "malyatko") === "off" ? "#444" : "orange",
+                    color: "white",
+                    border: "none",
+                    borderRadius: "4px",
+                    padding: "3px 8px",
+                    cursor: "pointer",
+                    fontSize: "11px",
+                  }}
+                >
+                  {(user?.voiceActingMode || "malyatko") === "off" ? "Вимкнено" : "Увімкнено"}
+                </button>
+              )}
+            </SliderRow>
+          )}
           {track.filters && track.filters.length > 0 && (
             <SliderRow>
               <span style={{ color: "white" }}>Ефекти</span>
@@ -3405,11 +3639,11 @@ useEffect(() => {
               {progressMode === "linear" ? "Ютуб" : "Стереограми"}
             </button>
           </SliderRow>
-        {/* //  {track.lyrics && ( */}
-            {/* // <SliderRow>
+          {/* //  {track.lyrics && ( */}
+          {/* // <SliderRow>
             //   <span style={{ color: "white" }}>Озвучка</span>
             //   <select */}
-            {/* //     value={selectedVoiceNarration}
+          {/* //     value={selectedVoiceNarration}
             //     onChange={(e) => setSelectedVoiceNarration(e.target.value)}
             //     style={{
             //       background: "#444",
@@ -3942,24 +4176,78 @@ const musicCards = [
     video: dinofrozVideo,
     text: "Легендарний мультфільм на Малятко ТВ(нажаль закритий). Зображено Імператора дрaконів Ніцерона.",
     lyrics: [
-      { time: 8, text: "Динофроз...Динофроз!", voice: "voice1" },
-      { time: 15, text: "Світять яскраві зірки. Пригод крізь віки.", voice: "voice1" },
-      { time: 21, text: "В доісторичний світ потрапили ми.", voice: "voice1" },
-      { time: 26, text: "Тут динозаври б'ються в парі з людьми.", voice: "voice1" },
-      { time: 33, text: "В битвах з ворогом твердий гартується дух!", voice: "voice1" },
-      { time: 38, text: "Страху немає, упевненим робиться рух!", voice: "voice1" },
+      {
+        time: 8,
+        text: "Динофроз...Динофроз!",
+        voice: "voice1",
+        text_bbkids: "Динофроз...Динофроз!",
+      },
+      {
+        time: 15,
+        text: "Світять яскраві зірки. Пригод крізь віки.",
+        text_bbkids: "Четверо друзів знайшли дивну гру. В доісторичну пішли давнину.",
+      },
+      {
+        time: 21,
+        text: "В доісторичний світ потрапили ми.",
+        voice: "voice1",
+        text_bbkids: "Там динозаврами стали вони",
+      },
+      {
+        time: 26,
+        text: "Тут динозаври б'ються в парі з людьми.",
+        text_bbkids: "Тут динозаври б'ються в парі з людьми.",
+      },
+      {
+        time: 33,
+        text: "В битвах з ворогом твердий гартується дух!",
+        text_bbkids: "В цьому карти їм допомогли. ",
+      },
+      {
+        time: 38,
+        text: "Страху немає, упевненим робиться рух!",
+        text_bbkids: "У давнині небезпечні дракони. Та з ними впорались наші герої.",
+      },
       {
         time: 44,
         text: "Бачимемо ціль і до бою рушаєм! Ми батьківшину свою захищаєм!",
-        voice: "voice1",
+        text_bbkids: "До бою готові всюди і завжди. І утілюють мрiї свої в боротьбі.",
       },
-      { time: 50, text: "Динофроз! Воїни світла і воїни миру!", voice: "voice1" },
-      { time: 56, text: "Динофроз! Лиш в боротьбі здобувам довіру!", voice: "voice1" },
-      { time: 62, text: "Динофроз! Готуємось до бою завзято!", voice: "voice1" },
-      { time: 66, text: "Будь сміливим друже! Переможе дужий!", voice: "voice1" },
-      { time: 72, text: "Чистимо зброю! Готові до бою!", voice: "voice1" },
-      { time: 75, text: "В битві за волю! Пірна з головою!", voice: "voice1" },
-      { time: 77, text: "Пекло за дух. І мороз усе це динофроз!", voice: "voice1" },
+      {
+        time: 50,
+        text: "Динофроз! Воїни світла і воїни миру!",
+        text_bbkids: "Динофроз! Дружні, завзяті, зброя в руках. ",
+      },
+      {
+        time: 56,
+        text: "Динофроз! Лиш в боротьбі здобувам довіру!",
+        text_bbkids: "Динофроз! Вони Ніцерону не по зубах.",
+      },
+      {
+        time: 62,
+        text: "Динофроз! Готуємось до бою завзято!",
+        text_bbkids: "Динофроз! Дружні, завзяті, зброя в руках. Вони Ніцерону не по зубах.",
+      },
+      {
+        time: 66,
+        text: "Будь сміливим друже! Переможе дужий!",
+        text_bbkids: "Друзі б'ються завзято. Дракони тікають!",
+      },
+      {
+        time: 72,
+        text: "Чистимо зброю! Готові до бою!",
+        text_bbkids: "Четверо друзів майбутнє спасають!",
+      },
+      {
+        time: 75,
+        text: "В битві за волю! Пірна з головою!",
+        text_bbkids: "До бою завжди готові вони.",
+      },
+      {
+        time: 77,
+        text: "Пекло за дух. І мороз усе це динофроз!",
+        text_bbkids: "Ховайтеся, вороги!",
+      },
     ],
 
     duration: 120,
@@ -3974,10 +4262,6 @@ const musicCards = [
     duration: 60,
     author: "Звуки індиків - Моя робота :)",
     lyrics: [
-      {
-        time: 1,
-        text: "Самець, курликає. У відповідь на гавкіт собаки. Решта їдять травичку у полі.",
-      },
       {
         time: 25,
         text: "Дякую всім слухачам! Давно хотів сказати, що робота над піснями, була примною і важкою.",
@@ -4001,16 +4285,6 @@ const musicCards = [
       turkeyseven,
       turkeys,
     ],
-    // Voice narrations can be added by creating mp3 files:
-    // src/mp3/turkeys-narration-voice1.mp3
-    // src/mp3/turkeys-narration-voice2.mp3
-    // src/mp3/turkeys-narration-voice3.mp3
-    // Then uncomment below:
-    // voiceNarrations: {
-    //   voice1: require("../../mp3/turkeys-narration-voice1.mp3"),
-    //   voice2: require("../../mp3/turkeys-narration-voice2.mp3"),
-    //   voice3: require("../../mp3/turkeys-narration-voice3.mp3"),
-    // },
   },
   {
     id: 4,
@@ -4030,15 +4304,15 @@ const musicCards = [
       { start: 26, end: 45, type: "blue", opacity: 0.25 },
       { start: 45, end: 52, type: "flicker", opacity: 0.4 },
       { start: 52, end: 53, type: "flash", opacity: 1 },
-      { start: 53, end: 71, type: "chaos", opacity: 0.25 },
+      { start: 53, end: 71, type: "ultrachaos", opacity: 0.25 },
       { start: 89, end: 104, type: "chaos", opacity: 0.25 },
       { start: 104, end: 124, type: "orange", opacity: 0.25 },
       { start: 124, end: 143, type: "green", opacity: 0.25 },
       { start: 143, end: 158, type: "orange", opacity: 0.25 },
-      { start: 158, end: 168, type: "greyscale", opacity: 1 },
+      { start: 158, end: 168, type: "grayscale", opacity: 1 },
       { start: 196, end: 208, type: "purple", opacity: 0.25 },
       { start: 208, end: 227, type: "cyan", opacity: 0.25 },
-      { start: 227, end: 243, type: "chaos", opacity: 0.25 },
+      { start: 227, end: 243, type: "ultrachaos", opacity: 0.25 },
       { start: 243, end: 262, type: "purple", opacity: 0.25 },
       { start: 262, end: 278, type: "orange", opacity: 0.25 },
       { start: 278, end: 300, type: "black", opacity: 0.85 },
@@ -4083,7 +4357,6 @@ const musicCards = [
     audio: windAudio,
     category: "природа",
     text: "Звук дощу. Пустеля розділенна вічно грозовою і сонячною зоною.",
-    lyrics: "Звуки дощу, допомагають заснути",
     duration: 300,
     images: [desert, desertone, deserttwo, desertthree, desertfour],
   },
@@ -4160,17 +4433,6 @@ const musicCards = [
     images: [mecha],
   },
   {
-    id: 11,
-    image: mecha,
-    audio: require("../../mp3/zootopia.mp3"),
-    category: "мультфільми",
-    text: "Це пробна версія, я її можливо приберу. Картинки локацій(не героїв) обох частин мультфільму. Пісню Zoo шукайте у Deezer.com",
-    author: "Shakira - Try Everything. Використана у Зоотрополіс 1 (Disney).",
-    lyrics: "Текст в розробці",
-    duration: 200,
-    images: [mecha],
-  },
-  {
     id: 12,
     image: mia,
     audio: require("../../mp3/mia-and-me.mp3"),
@@ -4191,7 +4453,7 @@ const musicCards = [
     duration: 160,
     images: [electrodynamix],
     filters: [
-     {
+      {
         start: 127,
         end: 134,
         type: "symbols",
@@ -4204,7 +4466,7 @@ const musicCards = [
         end: 154,
         type: "symbols",
         intensity: 115,
-        speed: 0/3,
+        speed: 0 / 3,
         blur: 1.7,
       },
       { start: 1, end: 4, type: "flicker", opacity: 0.4 },
@@ -4212,22 +4474,22 @@ const musicCards = [
       { start: 4, end: 7, type: "black", opacity: 1 },
       { start: 11, end: 15, type: "blue", opacity: 0.2 },
       { start: 19, end: 23, type: "black", opacity: 0.95 },
-      { start: 23, end: 35, type: "chaos", opacity: 0.15 },
+      { start: 23, end: 35, type: "ultrachaos", opacity: 0.15 },
       { start: 35, end: 37, type: "flash", opacity: 1 },
       { start: 37, end: 52, type: "chaos", opacity: 0.15 },
       { start: 37, end: 52, type: "flicker", opacity: 0.2 },
-      { start: 52, end: 60, type: "greyscale", opacity: 1 },
+      { start: 52, end: 60, type: "grayscale", opacity: 1 },
       { start: 60, end: 75, type: "red", opacity: 0.2 },
-      { start: 75, end: 77, type: "greyscale", opacity: 1 },
+      { start: 75, end: 77, type: "grayscale", opacity: 1 },
       { start: 77, end: 80, type: "red", opacity: 0.2 },
       { start: 80, end: 91, type: "black", opacity: 1 },
       { start: 91, end: 97, type: "black", opacity: 0.9 },
-      { start: 97, end: 112, type: "chaos", opacity: 0.2 },
+      { start: 97, end: 112, type: "ultrachaos", opacity: 0.2 },
       { start: 112, end: 127, type: "red", opacity: 0.2 },
       { start: 134, end: 148, type: "cyan", opacity: 0.14 },
       { start: 154, end: 170, type: "red", opacity: 0.2 },
       { start: 170, end: 188, type: "green", opacity: 0.12 },
-      { start: 188, end: 199, type: "greyscale", opacity: 1 },
+      { start: 188, end: 199, type: "grayscale", opacity: 1 },
       { start: 199, end: 201, type: "white", opacity: 1 },
       { start: 201, end: 206, type: "black", opacity: 1 },
     ],
@@ -4334,7 +4596,7 @@ const musicCards = [
         start: 103,
         end: 133,
         randomColor: true,
-        colorOptions: ["cyan", "chaos"],
+        colorOptions: ["ultrachaos", "chaos"],
         isRandom: true,
         minOpacity: 0.1,
         maxOpacity: 0.25,
@@ -4353,46 +4615,56 @@ const musicCards = [
       },
     ],
     category: "ігри",
-    lyrics: [{ time: 143, text: "Текст хаотичний, лише для атмосфери" }],
     duration: 160,
     images: [clubstep],
   },
   {
     id: 15,
     image: fingerdash,
-    audio: fingerdashAudio,
-    text: "Гаряча мелодія. Ласково просимо в хаос!",
-    author: "Fingerdash-MDK(GeometryDash)",
+    audio: fingerbang,
+    text: "Fingerdash, для додавання у GeometryDash, скоріше за все перемонтували і скоротили. Щоб рівень не був довгий.",
+    author: "Fingerbang-MDK(Fingerdash - Full Version)",
     category: "ігри",
-    lyrics: [
-      { time: 0, text: "Текст хаотичний, лише для атмосфери" },
-      { time: 17, text: "" },
-      { time: 55, text: "Handsome (Гарно)" },
-      { time: 56, text: "" },
-    ],
     duration: 140,
     images: [fingerdash],
     filters: [
       {
-        start: 44,
-        end: 52,
+        start: 77,
+        end: 85,
         type: "symbols",
         intensity: 120,
         speed: 1,
-        blur: 1.7,
       },
-      { start: 8, end: 9, type: "greyscale", opacity: 1 },
-      { start: 17, end: 19, type: "grayscale", opacity: 1 },
-      { start: 19, end: 19.4, type: "flash", opacity: 1 },
-      { start: 26, end: 32.5, type: "flicker", opacity: 0.15 },
-      { start: 32.5, end: 34.2, type: "greyscale", opacity: 1 },
-      { start: 34.2, end: 35, type: "flash", opacity: 1 },
-      { start: 35, end: 43, type: "red", opacity: 0.2 },
-      { start: 43, end: 44, type: "greyscale", opacity: 1 },
-      { start: 52, end: 60, type: "greyscale", opacity: 1 },
-      { start: 60, end: 73, type: "orange", opacity: 0.2 },
-      { start: 73, end: 78, type: "greyscale", opacity: 1 },
-      { start: 85, end: 89, type: "greyscale", opacity: 1 },
+      {
+        start: 104,
+        end: 128,
+        type: "symbols",
+        intensity: 120,
+        speed: 1,
+      },
+      { start: 17, end: 34, type: "flicker", opacity: 1 },
+      { start: 34, end: 41, type: "grayscale", opacity: 1 },
+      { start: 41, end: 43, type: "black", opacity: 0.75 },
+      { start: 43, end: 49, type: "grayscale", opacity: 1 },
+      { start: 49, end: 51, type: "black", opacity: 0.75 },
+      { start: 51, end: 68, type: "red", opacity: 0.25 },
+      { start: 68, end: 77, type: "flicker", opacity: 0.95 },
+      { start: 77, end: 85, type: "chaos", opacity: 0.25 },
+      { start: 85, end: 87, type: "grayscale", opacity: 1 },
+      { start: 87, end: 102, type: "ultrachaos", opacity: 0.25 },
+      { start: 102, end: 104, type: "grayscale", opacity: 1 },
+      { start: 110, end: 128, type: "grayscale", opacity: 1 },
+      { start: 145, end: 156, type: "flicker", opacity: 1 },
+      { start: 156, end: 170, type: "ultrachaos", opacity: 0.25 },
+      { start: 170, end: 187, type: "grayscale", opacity: 1 },
+      { start: 187, end: 206, type: "black", opacity: 0.67 },
+      { start: 186, end: 223, type: "flicker", opacity: 0.95 },
+      { start: 231, end: 246, type: "ultrachaos", opacity: 0.2 },
+      { start: 246, end: 248, type: "grayscale", opacity: 1 },
+      { start: 248, end: 253, type: "ultrachaos", opacity: 0.2 },
+      { start: 253, end: 257, type: "grayscale", opacity: 1 },
+      { start: 257, end: 264, type: "ultrachaos", opacity: 0.2 },
+      { start: 264, end: 277, type: "grayscale", opacity: 1 },
     ],
   },
   {
@@ -4401,7 +4673,6 @@ const musicCards = [
     audio: theorytwoAudio,
     author: "Theory of everything II - DJ-Nate(GeometryDash).",
     category: "ігри",
-    lyrics: [{ time: 200, text: "Кінець, виконаний піаніно." }],
     duration: 140,
     text: "",
     images: [theorytwo],
@@ -4420,13 +4691,13 @@ const musicCards = [
       { start: 7, end: 10, type: "red", opacity: 0.3 },
       { start: 10, end: 18, type: "purple", opacity: 0.4 },
       { start: 18, end: 23, type: "blue", opacity: 0.3 },
-      { start: 23, end: 25, type: "greyscale", opacity: 0.4 },
+      { start: 23, end: 25, type: "grayscale", opacity: 1 },
       { start: 25, end: 32, type: "cyan", opacity: 0.3 },
       { start: 32, end: 37, type: "brown", opacity: 0.4 },
-      { start: 37, end: 40, type: "greyscale", opacity: 0.4 },
+      { start: 37, end: 40, type: "grayscale", opacity: 1 },
       { start: 40, end: 40.2, type: "flash", opacity: 1 },
       { start: 40.3, end: 45, type: "purple", opacity: 0.4 },
-      { start: 45, end: 47, type: "greyscale", opacity: 1 },
+      { start: 45, end: 47, type: "grayscale", opacity: 1 },
       { start: 47, end: 52, type: "chaos", opacity: 0.3 },
       { start: 52, end: 57, type: "black", opacity: 0.33, blur: 3.3 },
       { start: 57, end: 63, type: "black", opacity: 0.67, blur: 6.7 },
@@ -4436,7 +4707,7 @@ const musicCards = [
       { start: 72, end: 78, type: "chaos", opacity: 0.3 },
       { start: 78, end: 90, type: "cyan", opacity: 0.3 },
       { start: 90, end: 92, type: "white", opacity: 0.6 },
-      { start: 92, end: 120, type: "chaos", opacity: 0.3 },
+      { start: 92, end: 120, type: "ultrachaos", opacity: 0.3 },
       { start: 120, end: 122, type: "white", opacity: 0.6 },
       { start: 122, end: 129, type: "green", opacity: 0.3 },
       { start: 129, end: 135, type: "black", opacity: 1 },
@@ -4445,50 +4716,95 @@ const musicCards = [
       { start: 152, end: 154, type: "blue", opacity: 0.3, blur: 10 },
       { start: 154, end: 164, type: "brown", opacity: 0.4 },
       { start: 164, end: 168, type: "cyan", opacity: 0.3 },
-      { start: 168, end: 170, type: "greyscale", opacity: 0.4 },
+      { start: 168, end: 170, type: "grayscale", opacity: 1 },
       { start: 170, end: 182, type: "purple", opacity: 0.4 },
-      { start: 182, end: 184, type: "greyscale", opacity: 0.4 },
+      { start: 182, end: 184, type: "grayscale", opacity: 1 },
       { start: 184, end: 190, type: "orange", opacity: 0.4 },
       { start: 190, end: 194, type: "white", opacity: 0.4 },
       { start: 194, end: 198, type: "red", opacity: 0.5 },
-      { start: 198, end: 222, type: "greyscale", opacity: 0.4 },
+      { start: 198, end: 222, type: "grayscale", opacity: 1 },
     ],
   },
   {
     id: 17,
     image: deadlocked,
     audio: deadlockedAudio,
-lyrics: [
-  { time: 1, text: "Діма: Кейт, де це ми?" },
-  { time: 6, text: "Кейт: Ми на якомусь болоті. Тут лежить книга, можливо, вона нам допоможе." },
-  { time: 13, text: "Книга: Колись це прекрасне озеро було прихистком для людей і тварин. Але болотний дракон знищив нормальне життя, і всі втекли. Це місце стало останнім притулком для багатьох подорожніх, як і для мене. Існує легенда про скарб, що здолає дракона і поверне все назад." },
-  { time: 24, text: "Кейт: Тут якась свічка, погляньмо в неї." },
-  { time: 27, text: "Діма: Шестерні... вони прояснюються у полум'ї. Може, це і є скарб?" },
-  { time: 30, text: "Кейт: Точно! Це підказка сценотвору. Але є погана новина: це місце прискорює старіння шкіри. Треба поквапитись, бо тутешнє життя минає як одна доба." },
-  { time: 33, text: "Діма: Давай оглянемось. Підемо вправо." },
-  { time: 37, text: "Діма: Давай через міст, бо тут гігантський павук!" },
-  { time: 40, text: "Кейт: По-перше, це павучиха, а по-друге — тут шестерня!" },
-  { time: 43, text: "Діма: Слухай, я сам вирушу у наступну пригоду, але благаю: йдемо по мосту." },
-  { time: 50, text: "Кейт: Діма, я згодна." },
-  { time: 61, text: "Діма: Кейт, тут немає шестерні, але ці кристали ніби дивляться на нас." },
-  { time: 64, text: "Володар кристалів: Охороно, знищити їх!" },
-  { time: 73, text: "Кейт: Стрибай у ліфт!" },
-  { time: 75, text: "Кейт: Молодець, схопив шестерню під час підйому!" },
-  { time: 83, text: "Кейт: Кидай у дракона!" },
-  { time: 96, text: "Шестерня знищила дракона. І Болото Мук знову стало Озером Волі." },
-  { time: 100, text: "Діма: Переживаю за Влада." },
-  { time: 103, text: "Кейт: Я теж. Під час переміщення у цей світ він залишився в реальності. Сказав, що зараз біля покинутого будинку, а навкруги — крижана пустеля." },
-{ time: 109, text: "Влад: Зараза, Кейт розвела руками... ну нічо, я сейчас осмотрю тут все." },
- { time: 113, text: "Влад: О, цуцик! А де твій хазяїн? Чо ти на мене бросаєшся? Зараз геймер ФНАФу дасть тобі!" },
- { time: 116, text: "Класична помилка любителя фільмів жахів, спідранера по ФНАФу і Поппі Плейтайм. До того ж Влад згадав жарт Діми, в якому той порівняв його з драконом-генералом Владом з мультфільму «Динофроз». Замість спокійних і повільних кроків він зарядив ногою в бійцівську собаку. Вона з нелюдською силою переламала йому стопу. Влад ледь за допомогою рук доповз до дверей і скинув собаку з ноги." },
- { time: 123, text: "Влад: Чого це у фільмі «Пила» сработало, а тут ні? А, пофіг. О, Фредді, дарова! Спати — так? А де твій друг Хагі? Бо на полу написано «час грати». Блін, Андрій Дебрін, чо сюда не їде з «Реальною містикою»? (Влад впав на підлогу)." },
- { time: 135, text: "Клоун: Зіграймо! Ти ховаєшся, а я шукаю. Ти ж так пишався, що в реальності нам вріжеш. Метра зробив нас реальними, так покажи, на що ти здатний. Чи твій друг тебе не вихваляв, а просто посміявся? До речі, Фредді сказав, що з ним у тебе нуль шансів, тому я тут. Ха-ха-ха! Я поки нагуляю апетит." },
- { time: 155, text: "Клоун: Здавайся, я можу з'явитись будь-де." },
- { time: 170, text: "Влад: О, в маяку портал! Він у ньому не може з'явитись, але може залізти, розбивши вікно. Давай, працюй, працюй!" },
- { time: 175, text: "Клоун: Час вийшов!" },
- { time: 177, text: "Влад: Де я? Кругом темрява..." },
- { time: 187, text: "Далі буде..." }
-],
+    lyrics: [
+      { time: 1, text: "Діма: Кейт, де це ми?" },
+      {
+        time: 6,
+        text: "Кейт: Ми на якомусь болоті. Тут лежить книга, можливо, вона нам допоможе.",
+      },
+      {
+        time: 13,
+        text: "Книга: Колись це прекрасне озеро було прихистком для людей і тварин. Але болотний дракон знищив нормальне життя, і всі втекли. Це місце стало останнім притулком для багатьох подорожніх, як і для мене. Існує легенда про скарб, що здолає дракона і поверне все назад.",
+      },
+      { time: 24, text: "Кейт: Тут якась свічка, погляньмо в неї." },
+      {
+        time: 27,
+        text: "Діма: Шестерні... вони прояснюються у полум'ї. Може, це і є скарб?",
+      },
+      {
+        time: 30,
+        text: "Кейт: Точно! Це підказка сценотвору. Але є погана новина: це місце прискорює старіння шкіри. Треба поквапитись, бо тутешнє життя минає як одна доба.",
+      },
+      { time: 33, text: "Діма: Давай оглянемось. Підемо вправо." },
+      { time: 37, text: "Діма: Давай через міст, бо тут гігантський павук!" },
+      {
+        time: 40,
+        text: "Кейт: По-перше, це павучиха, а по-друге — тут шестерня!",
+      },
+      {
+        time: 43,
+        text: "Діма: Слухай, я сам вирушу у наступну пригоду, але благаю: йдемо по мосту.",
+      },
+      { time: 50, text: "Кейт: Діма, я згодна." },
+      {
+        time: 61,
+        text: "Діма: Кейт, тут немає шестерні, але ці кристали ніби дивляться на нас.",
+      },
+      { time: 64, text: "Володар кристалів: Охороно, знищити їх!" },
+      { time: 73, text: "Кейт: Стрибай у ліфт!" },
+      { time: 75, text: "Кейт: Молодець, схопив шестерню під час підйому!" },
+      { time: 83, text: "Кейт: Кидай у дракона!" },
+      {
+        time: 96,
+        text: "Шестерня знищила дракона. І Болото Мук знову стало Озером Волі.",
+      },
+      { time: 100, text: "Діма: Переживаю за Влада." },
+      {
+        time: 103,
+        text: "Кейт: Я теж. Під час переміщення у цей світ він залишився в реальності. Сказав, що зараз біля покинутого будинку, а навкруги — крижана пустеля.",
+      },
+      {
+        time: 109,
+        text: "Влад: Зараза, Кейт розвела руками... ну нічо, я сейчас осмотрю тут все.",
+      },
+      {
+        time: 113,
+        text: "Влад: О, цуцик! А де твій хазяїн? Чо ти на мене бросаєшся? Зараз геймер ФНАФу дасть тобі!",
+      },
+      {
+        time: 116,
+        text: "Класична помилка любителя фільмів жахів, спідранера по ФНАФу і Поппі Плейтайм. До того ж Влад згадав жарт Діми, в якому той порівняв його з драконом-генералом Владом з мультфільму «Динофроз». Замість спокійних і повільних кроків він зарядив ногою в бійцівську собаку. Вона з нелюдською силою переламала йому стопу. Влад ледь за допомогою рук доповз до дверей і скинув собаку з ноги.",
+      },
+      {
+        time: 123,
+        text: "Влад: Чого це у фільмі «Пила» сработало, а тут ні? А, пофіг. О, Фредді, дарова! Спати — так? А де твій друг Хагі? Бо на полу написано «час грати». Блін, Андрій Дебрін, чо сюда не їде з «Реальною містикою»? (Влад впав на підлогу).",
+      },
+      {
+        time: 135,
+        text: "Клоун: Зіграймо! Ти ховаєшся, а я шукаю. Ти ж так пишався, що в реальності нам вріжеш. Метра зробив нас реальними, так покажи, на що ти здатний. Чи твій друг тебе не вихваляв, а просто посміявся? До речі, Фредді сказав, що з ним у тебе нуль шансів, тому я тут. Ха-ха-ха! Я поки нагуляю апетит.",
+      },
+      { time: 155, text: "Клоун: Здавайся, я можу з'явитись будь-де." },
+      {
+        time: 170,
+        text: "Влад: О, в маяку портал! Він у ньому не може з'явитись, але може залізти, розбивши вікно. Давай, працюй, працюй!",
+      },
+      { time: 175, text: "Клоун: Час вийшов!" },
+      { time: 177, text: "Влад: Де я? Кругом темрява..." },
+      { time: 187, text: "Далі буде..." },
+    ],
     text: "Моторошна, але епічна пісня. Друг фанат цього рівня :).",
     author: "Deadlocked - F77(GeometryDash).",
     category: "ігри",
@@ -4520,13 +4836,6 @@ lyrics: [
     text: "",
     author: "Theory of everything(GeometryDash) - DJ-Nate",
     category: "ігри",
-    lyrics: [
-      { time: 81, text: "Say Down" },
-      { time: 83, text: "" },
-      { time: 118, text: "Say Down" },
-      { time: 120, text: "" },
-      { time: 275, text: "Білий шум" },
-    ],
     duration: 140,
     filters: [
       {
@@ -4542,14 +4851,14 @@ lyrics: [
       { start: 15, end: 15.5, type: "flash", opacity: 1 },
       { start: 21, end: 33, type: "green", opacity: 0.15 },
       { start: 55, end: 65, type: "orange", opacity: 0.15 },
-      { start: 81, end: 83, type: "greyscale", opacity: 1 },
+      { start: 81, end: 83, type: "grayscale", opacity: 1 },
       { start: 83, end: 88, type: "blue", opacity: 0.15 },
       { start: 88, end: 103, type: "chaos", opacity: 0.15 },
       { start: 103, end: 118, type: "red", opacity: 0.15 },
-      { start: 118, end: 120, type: "greyscale", opacity: 1 },
+      { start: 118, end: 120, type: "grayscale", opacity: 1 },
       { start: 120, end: 132, type: "purple", opacity: 0.2 },
-      { start: 132, end: 134, type: "greyscale", opacity: 1 },
-      { start: 134, end: 146, type: "chaos", opacity: 0.2 },
+      { start: 132, end: 134, type: "grayscale", opacity: 1 },
+      { start: 134, end: 146, type: "ultrachaos", opacity: 0.2 },
       { start: 146, end: 150, type: "chaos", opacity: 0.28 },
       { start: 150, end: 162, type: "black", opacity: 0.67 },
       { start: 162, end: 179, type: "purple", opacity: 0.2 },
@@ -4590,9 +4899,9 @@ lyrics: [
       { start: 27, end: 27.5, type: "flash", opacity: 1 },
       { start: 45, end: 63, type: "blue", opacity: 0.2 },
       { start: 100, end: 116, type: "orange", opacity: 0.2 },
-      { start: 116, end: 119.6, type: "greyscale", opacity: 0.2 },
+      { start: 116, end: 119.6, type: "grayscale", opacity: 1 },
       { start: 119.6, end: 120, type: "flash", opacity: 1 },
-      { start: 120, end: 136, type: "chaos", opacity: 0.2 },
+      { start: 120, end: 136, type: "ultrachaos", opacity: 0.2 },
       { start: 136, end: 154, type: "cyan", opacity: 0.2 },
       { start: 154, end: 170, type: "brown", opacity: 0.2 },
       { start: 170, end: 191, type: "chaos", opacity: 0.2 },
@@ -4603,47 +4912,74 @@ lyrics: [
     duration: 180,
     images: [unity],
   },
-   {
+  {
     id: 20,
     image: hunger,
     audio: hungerAudio,
     author: "Hunger-TheFatRat.",
-     text: "",
+    text: "",
     lyrics: [
-      { time: 11, text: "Донечко, не лишай страх на згадку, я подбаю про те, щоб ти була у порядку" },
-       { time: 16, text: "Донечко, не хвилюйся за мене, все погане мине" },
-       { time: 22, text: "Віддам все, тобі моє" },
-       { time: 27, text: "Сподіваюся, ти не помітиш страх голоду, в моїх очах" },
-       { time: 34, text: "Все, про що ми мріяли" },
-       { time: 39, text: "Брехню за хмарами нам повіяли" },
+      {
+        time: 11,
+        text: "Донечко, не лишай страх на згадку, я подбаю про те, щоб ти була у порядку",
+      },
+      { time: 16, text: "Донечко, не хвилюйся за мене, все погане мине" },
+      { time: 22, text: "Віддам все, тобі моє" },
+      { time: 27, text: "Сподіваюся, ти не помітиш страх голоду, в моїх очах" },
+      { time: 34, text: "Все, про що ми мріяли" },
+      { time: 39, text: "Брехню за хмарами нам повіяли" },
       { time: 44, text: "Зі страхами, з дощами, сльозами та болями" },
-      { time: 49, text: "Донечко, не бійся за неньку, я подбаю про твою безпеконьку" },
-       { time: 52, text: "Я продовжуватиму боротьбу, я продовжуватиму боротьбу" },
+      {
+        time: 49,
+        text: "Донечко, не бійся за неньку, я подбаю про твою безпеконьку",
+      },
+      {
+        time: 52,
+        text: "Я продовжуватиму боротьбу, я продовжуватиму боротьбу",
+      },
       { time: 66, text: "Ховайся тут на ходу, поки я йду" },
-       { time: 69, text: "Ніхто не зашкодить, тобі хочу пообіцять" },
-        { time: 72, text: "Все буде добре, тут залишайся і мовчи, завдання тобі таке" },
+      { time: 69, text: "Ніхто не зашкодить, тобі хочу пообіцять" },
+      {
+        time: 72,
+        text: "Все буде добре, тут залишайся і мовчи, завдання тобі таке",
+      },
       { time: 75, text: "Не йди за мною, я повернуся завтра з тобою" },
       { time: 78, text: "Віддам все, тобі моє" },
-       { time: 82, text: "Сподіваюся, ти не помітиш страх голоду, в моїх очах" },
-       { time: 89, text: "Все, про що ми мріяли" },
-       { time: 94, text: "Брехню за хмарами нам повіяли" },
+      { time: 82, text: "Сподіваюся, ти не помітиш страх голоду, в моїх очах" },
+      { time: 89, text: "Все, про що ми мріяли" },
+      { time: 94, text: "Брехню за хмарами нам повіяли" },
       { time: 100, text: "Зі страхами, зі дощами, сльозами та болями" },
-      { time: 104, text: "Донечко, не бійся за неньку, я подбаю про твою безпеконьку" },
-       { time: 110, text: "Я продовжуватиму боротьбу, я продовжуватиму боротьбу" },
-       { time: 133, text: "Не плач, моя айстра. Я повернуся завтра, коли прокинешся" },
-        { time: 145, text: "Не плач. Я буду сьогодні ввечері та триматиму монстрів подалі" },
-        { time: 155, text: "" },
-      { time: 165, text: "(Come closer, пошепки) Підійди ближче, підійди ближче." },
+      {
+        time: 104,
+        text: "Донечко, не бійся за неньку, я подбаю про твою безпеконьку",
+      },
+      {
+        time: 110,
+        text: "Я продовжуватиму боротьбу, я продовжуватиму боротьбу",
+      },
+      {
+        time: 133,
+        text: "Не плач, моя айстра. Я повернуся завтра, коли прокинешся",
+      },
+      {
+        time: 145,
+        text: "Не плач. Я буду сьогодні ввечері та триматиму монстрів подалі",
+      },
+      { time: 155, text: "" },
+      {
+        time: 165,
+        text: "(Come closer, пошепки) Підійди ближче, підійди ближче.",
+      },
       { time: 175, text: "Я продовжуватиму боротьбу, бо я їх здолаю" },
     ],
     filters: [
       {
-      start: 55,
-      end: 66,
-      type: "symbols",
-      intensity: 140,
-      speed: 1.4,
-       },
+        start: 55,
+        end: 66,
+        type: "symbols",
+        intensity: 140,
+        speed: 1.4,
+      },
       { start: 10, end: 22, type: "purple", opacity: 0.25 },
       { start: 22, end: 33, type: "cyan", opacity: 0.2 },
       { start: 33, end: 44, type: "green", opacity: 0.2 },
@@ -4660,6 +4996,75 @@ lyrics: [
     duration: 180,
     images: [hunger],
   },
+  {
+    id: 21,
+    image: fingerdash,
+    audio: fingerdashAudio,
+    author: "Fingerdash-MDK(GeometryDash)",
+    category: "ігри",
+    duration: 140,
+    images: [fingerdash],
+    filters: [
+      {
+        start: 44,
+        end: 52,
+        type: "symbols",
+        intensity: 120,
+        speed: 1,
+        blur: 1.7,
+      },
+      { start: 8, end: 9, type: "grayscale", opacity: 1 },
+      { start: 17, end: 19, type: "grayscale", opacity: 1 },
+      { start: 19, end: 19.4, type: "flash", opacity: 1 },
+      { start: 26, end: 32.5, type: "flicker", opacity: 0.15 },
+      { start: 32.5, end: 34.2, type: "grayscale", opacity: 1 },
+      { start: 34.2, end: 35, type: "flash", opacity: 1 },
+      { start: 35, end: 43, type: "red", opacity: 0.2 },
+      { start: 43, end: 44, type: "grayscale", opacity: 1 },
+      { start: 52, end: 60, type: "grayscale", opacity: 1 },
+      { start: 60, end: 73, type: "orange", opacity: 0.2 },
+      { start: 73, end: 78, type: "grayscale", opacity: 1 },
+      { start: 85, end: 89, type: "grayscale", opacity: 1 },
+    ],
+  },
+    {
+    id: 22,
+    image: horror,
+    text: "Друзі, хоррор зроблений мною (склеїв з різних джерел звуки). Я додаю сюжет у сайт, щоб зробити його більш атмосферним.",
+    audio: domino,
+    author: "Болотна крамниця",
+    category: "природа",
+    duration: 140,
+    images: [horror, horrortwo, horrorthree],
+    filters: [
+      {
+        start: 5,
+        end: 15,
+        type: "image",
+        imageUrl: theorytwo,
+        opacity: 0.4,
+      },
+    ],
+  },
+      {
+    id: 22,
+    image: horror,
+    text: "Друзі, хоррор зроблений мною (склеїв з різних джерел звуки). Я додаю сюжет у сайт, щоб зробити його більш атмосферним.",
+    audio: domino,
+    author: "Болотна крамниця",
+    category: "природа",
+    duration: 140,
+    images: [horror, horrortwo, horrorthree],
+    filters: [
+      {
+        start: 5,
+        end: 15,
+        type: "image",
+        imageUrl: theorytwo,
+        opacity: 0.4,
+      },
+    ],
+  },
 ];
 
 const PLAYLISTS = {
@@ -4672,7 +5077,7 @@ const PLAYLISTS = {
     dinofrozone,
   },
   природа: {
-    title: "Природа",
+    title: "Моя робота",
     turkeys,
   },
   ігри: {
@@ -4701,26 +5106,13 @@ const CreatePlaylistModal = ({ onClose, onSave, initialData }) => {
       setActiveProgressId(progressId);
       setProgress(0);
     }
-
-    const reader = new FileReader();
-
+    
+    // Замість FileReader просто повертаємо файл
+    callback(file);
     if (progressId) {
-      reader.onprogress = (ev) => {
-        if (ev.lengthComputable) {
-          const percent = Math.round((ev.loaded / ev.total) * 100);
-          setProgress(percent);
-        }
-      };
+      setProgress(0);
+      setActiveProgressId(null);
     }
-
-    reader.onload = (ev) => {
-      callback(ev.target.result);
-      if (progressId) {
-        setProgress(0);
-        setActiveProgressId(null);
-      }
-    };
-    reader.readAsDataURL(file);
   };
 
   const handleAudio = (e, index) => {
@@ -4740,22 +5132,13 @@ const CreatePlaylistModal = ({ onClose, onSave, initialData }) => {
         setProgress(0);
         return;
       }
-      const reader = new FileReader();
-      reader.onprogress = (ev) => {
-        if (ev.lengthComputable) {
-          const percent = Math.round((ev.loaded / ev.total) * 100);
-          setProgress(percent);
-        }
-      };
-      reader.onload = (ev) => {
-        const newTracks = [...tracks];
-        newTracks[index].audio = ev.target.result;
-        newTracks[index].duration = audio.duration;
-        setTracks(newTracks);
-        setActiveProgressId(null);
-        setProgress(0);
-      };
-      reader.readAsDataURL(file);
+      const newTracks = [...tracks];
+      newTracks[index].audio = file; // Зберігаємо Blob
+      newTracks[index].duration = audio.duration;
+      setTracks(newTracks);
+      setActiveProgressId(null);
+      setProgress(0);
+      URL.revokeObjectURL(audio.src);
     };
   };
 
@@ -4793,7 +5176,6 @@ const CreatePlaylistModal = ({ onClose, onSave, initialData }) => {
     }
     return () => clearInterval(interval);
   }, [searchCooldown]);
-
 
   useEffect(() => {
     let interval;
@@ -5328,6 +5710,7 @@ const PlaylistModal = ({
   onDeleteTrack,
   customPlaylistName,
   initialFullScreenTrack,
+  onUpdateUser,
 }) => {
   const [isClosing, setIsClosing] = useState(false);
   const [visibleCount, setVisibleCount] = useState(8);
@@ -5337,7 +5720,7 @@ const PlaylistModal = ({
   const [fullScreenTrack, setFullScreenTrack] = useState(null);
   const [isLyricsClosing, setIsLyricsClosing] = useState(false);
 
-  const voiceActingMode = user?.voiceActingMode || 'malyatko';
+  const voiceActingMode = user?.voiceActingMode || "malyatko";
 
   useEffect(() => {
     if (initialFullScreenTrack) {
@@ -5412,7 +5795,7 @@ const PlaylistModal = ({
       return;
     }
     setFavorites((prev) => {
-      let currentRating = getRating(id); 
+      let currentRating = getRating(id);
       let nextRating = (currentRating + 1) % 3;
       if (Array.isArray(prev)) {
         const newObj = {};
@@ -5537,7 +5920,14 @@ const PlaylistModal = ({
         onClick={(e) => e.stopPropagation()}
       >
         <PlaylistCloseButton onClick={handleClose}>&times;</PlaylistCloseButton>
-        <h2 style={{ textAlign: "center", color: "#333", fontSize: "20px", marginBottom: "10px" }}>
+        <h2
+          style={{
+            textAlign: "center",
+            color: "#333",
+            fontSize: "20px",
+            marginBottom: "10px",
+          }}
+        >
           {playlistTitle}
           {playlistKey === "custom" && ` (${tracksToShow?.length || 0}/10)`}
         </h2>
@@ -5957,6 +6347,7 @@ const PlaylistModal = ({
                   lyrics={lyricsModalData.lyrics}
                   currentTime={lyricsCurrentTime}
                   voiceActingMode={voiceActingMode}
+                  trackText={lyricsModalData.text}
                 />
               </LyricsContainer>
             </LyricsModalContent>
@@ -5980,6 +6371,7 @@ const PlaylistModal = ({
           }}
           playlist={processedCards}
           onSelectTrack={setFullScreenTrack}
+          onUpdateUser={onUpdateUser}
         />
       )}
     </ModalOverlay>
@@ -6026,7 +6418,7 @@ const PlaylistCover = ({ playlistKey, defaultImage, customImage }) => {
   );
 };
 
-const MusicPhoto = ({ user, onOpenRegister, isAnyModalOpen }) => {
+const MusicPhoto = ({ user, onOpenRegister, isAnyModalOpen, onUpdateUser }) => {
   const [currentPlaylist, setCurrentPlaylist] = useState(null);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [miniPlayerTrack, setMiniPlayerTrack] = useState(null);
@@ -6179,6 +6571,7 @@ const MusicPhoto = ({ user, onOpenRegister, isAnyModalOpen }) => {
             currentPlaylist === "custom" ? customPlaylist?.name : null
           }
           initialFullScreenTrack={restoreTrack}
+          onUpdateUser={onUpdateUser}
         />
       )}
 

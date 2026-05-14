@@ -147,7 +147,7 @@ const HeaderFix = styled.div`
   display: flex;
   align-items: center;
   min-width: 0;
-  gap: 5px; 
+  gap: 5px;
 
   @media (min-width: 768px) {
     gap: 10px;
@@ -230,7 +230,7 @@ const HeaderAvatar = styled.img`
   height: 30px;
   border-radius: 50%;
   min-width: 30px;
-  margin-right: 0; 
+  margin-right: 0;
   object-fit: cover;
   flex-shrink: 0;
   border: 1.5px solid transparent;
@@ -269,7 +269,9 @@ const RainbowText = styled.h1`
   font-family: "Inter", sans-serif;
   font-size: 7px;
   font-weight: bold;
-  display: flex; align-items: center; justify-content: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   padding: 1.3px 0px;
   border: 2px solid;
   border-image-source: linear-gradient(
@@ -309,7 +311,7 @@ const RainbowText = styled.h1`
 const UltraText = styled.h1`
   font-family: "Inter", sans-serif;
   font-size: 7px;
-    border: 2px solid;
+  border: 2px solid;
   border-image-source: linear-gradient(
     270deg,
     #ff7eb3,
@@ -330,7 +332,9 @@ const UltraText = styled.h1`
     #58e2c2
   );
   padding: 1px 8px;
-  display: flex; align-items: center; justify-content: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   background-size: 400% 400%;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;

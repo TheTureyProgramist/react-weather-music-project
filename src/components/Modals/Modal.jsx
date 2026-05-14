@@ -618,8 +618,8 @@ const Modal = ({ onClose, onRegister, availableAvatars = [] }) => {
               >
                 Аватар оберіть, 1-ий доступний з
                 <AnimatedText>Стихія+</AnimatedText>, наступні 2 за{" "}
-                <GreenText>досягнення</GreenText>, та ще 3 за 🧧, та сама логіка з
-                вибором кольору імені, та рамки аватара.
+                <GreenText>досягнення</GreenText>, та ще 3 за 🧧, та сама логіка
+                з вибором кольору імені, та рамки аватара.
               </div>
 
               <ImageSelectionContainer>
@@ -671,7 +671,8 @@ const Modal = ({ onClose, onRegister, availableAvatars = [] }) => {
                         borderRadius: "3px",
                         backgroundColor: pwStrength.color,
                         width: pwStrength.width,
-                        transition: "width 0.3s ease, background-color 0.3s ease",
+                        transition:
+                          "width 0.3s ease, background-color 0.3s ease",
                       }}
                     />
                   </div>
@@ -710,7 +711,11 @@ const Modal = ({ onClose, onRegister, availableAvatars = [] }) => {
 
               {error && (
                 <div
-                  style={{ color: "red", fontSize: "12px", textAlign: "center" }}
+                  style={{
+                    color: "red",
+                    fontSize: "12px",
+                    textAlign: "center",
+                  }}
                 >
                   {error}
                 </div>

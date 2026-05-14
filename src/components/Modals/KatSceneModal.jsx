@@ -744,19 +744,23 @@ const KatSceneModal = ({ onClose }) => {
   }, [volume]);
 
   useEffect(() => {
-    if ('mediaSession' in navigator) {
+    if ("mediaSession" in navigator) {
       navigator.mediaSession.metadata = new window.MediaMetadata({
-        title: 'Кат-сцена Стихія',
-        artist: 'TurkeyStudio',
-        artwork: [{ src: ultra, sizes: '512x512', type: 'image/webp' }]
+        title: "Кат-сцена Стихія",
+        artist: "TurkeyStudio",
+        artwork: [{ src: ultra, sizes: "512x512", type: "image/webp" }],
       });
 
-      navigator.mediaSession.setActionHandler('play', () => {
-        if (videoRef.current && (step.type === 'video' || step.type === 'black')) videoRef.current.play();
-        if (audioRef.current && step.type === 'card') audioRef.current.play();
+      navigator.mediaSession.setActionHandler("play", () => {
+        if (
+          videoRef.current &&
+          (step.type === "video" || step.type === "black")
+        )
+          videoRef.current.play();
+        if (audioRef.current && step.type === "card") audioRef.current.play();
         setIsPaused(false);
       });
-      navigator.mediaSession.setActionHandler('pause', () => {
+      navigator.mediaSession.setActionHandler("pause", () => {
         videoRef.current?.pause();
         audioRef.current?.pause();
         setIsPaused(true);
@@ -765,8 +769,8 @@ const KatSceneModal = ({ onClose }) => {
   }, [step.type]);
 
   useEffect(() => {
-    if ('mediaSession' in navigator) {
-      navigator.mediaSession.playbackState = isPaused ? 'paused' : 'playing';
+    if ("mediaSession" in navigator) {
+      navigator.mediaSession.playbackState = isPaused ? "paused" : "playing";
     }
   }, [isPaused]);
 

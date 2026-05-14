@@ -115,7 +115,7 @@ const VipModalDiv = styled.div`
     forwards;
 
   @media (max-width: 768px) {
-    padding-bottom: 90px; 
+    padding-bottom: 90px;
   }
 `;
 
@@ -889,7 +889,11 @@ const ULTRA_CARDS_LIST = [
 
 const SEQUENCE = [
   { type: "thematic", duration: 3000, text: "" },
-  { type: "black", duration: 10000, text: "Стихія дає надійну погоду, красиву оселю, з вашим принтером із нашими, пошуковими або власними фанартами." },
+  {
+    type: "black",
+    duration: 10000,
+    text: "Стихія дає надійну погоду, красиву оселю, з вашим принтером із нашими, пошуковими або власними фанартами.",
+  },
   {
     type: "card",
     imgIdx: 1,
@@ -914,8 +918,8 @@ const SEQUENCE = [
     end: 45,
     text: "Пишіть, підказуйте, що зробити для вас :)",
   },
-  { type: "video", start: 45, end:50, text: "Досягнення різного смаку. " },
-   { type: "video", start: 50, end:65, text: "Присутне навчання." },
+  { type: "video", start: 45, end: 50, text: "Досягнення різного смаку. " },
+  { type: "video", start: 50, end: 65, text: "Присутне навчання." },
   {
     type: "video",
     start: 65,
@@ -1128,19 +1132,23 @@ const UltraPlayer = ({ volume, setVolume, onPlayerClose }) => {
   }, [volume]);
 
   useEffect(() => {
-    if ('mediaSession' in navigator) {
+    if ("mediaSession" in navigator) {
       navigator.mediaSession.metadata = new window.MediaMetadata({
-        title: 'Стихія Ultra Player',
-        artist: 'TurkeyStudio',
-        artwork: [{ src: ultra, sizes: '512x512', type: 'image/webp' }]
+        title: "Стихія Ultra Player",
+        artist: "TurkeyStudio",
+        artwork: [{ src: ultra, sizes: "512x512", type: "image/webp" }],
       });
 
-      navigator.mediaSession.setActionHandler('play', () => {
-        if (videoRef.current && (step.type === 'video' || step.type === 'black')) videoRef.current.play();
-        if (audioRef.current && step.type === 'card') audioRef.current.play();
+      navigator.mediaSession.setActionHandler("play", () => {
+        if (
+          videoRef.current &&
+          (step.type === "video" || step.type === "black")
+        )
+          videoRef.current.play();
+        if (audioRef.current && step.type === "card") audioRef.current.play();
         setIsPaused(false);
       });
-      navigator.mediaSession.setActionHandler('pause', () => {
+      navigator.mediaSession.setActionHandler("pause", () => {
         videoRef.current?.pause();
         audioRef.current?.pause();
         setIsPaused(true);
@@ -1149,8 +1157,8 @@ const UltraPlayer = ({ volume, setVolume, onPlayerClose }) => {
   }, [step.type]);
 
   useEffect(() => {
-    if ('mediaSession' in navigator) {
-      navigator.mediaSession.playbackState = isPaused ? 'paused' : 'playing';
+    if ("mediaSession" in navigator) {
+      navigator.mediaSession.playbackState = isPaused ? "paused" : "playing";
     }
   }, [isPaused]);
 
@@ -1360,7 +1368,7 @@ const VipModal = ({ onClose }) => {
 
   const plusBenefits = {
     ai: [
-            {
+      {
         src: puzzle2,
         text: "Пам'ять на 15днів, не на 7днів! Ліміт історії запитів 70, не 50. Ліміт паралельних чатів спілкування 5, не 3.",
       },
@@ -1421,16 +1429,16 @@ const VipModal = ({ onClose }) => {
         src: documentImg,
         text: "Доступно 10 останніх новин, а не 5.",
       },
-       {
-         src: puzzle3,
-         text: "Прив'язуйте до акаунту 3пристрої, не 2. Назавжди!"
-       },
+      {
+        src: puzzle3,
+        text: "Прив'язуйте до акаунту 3пристрої, не 2. Назавжди!",
+      },
     ],
   };
 
   const ultraBenefits = {
     ai: [
-            {
+      {
         src: puzzle2,
         text: "Пам'ять доки діє підписка(якщо на телефоні є місце)! Пам'ять запитів 100. Ліміт паралельних чатів 7. Лімітована акція!",
       },
@@ -1705,7 +1713,7 @@ const VipModal = ({ onClose }) => {
         </VipBlock>
         <RedLine />
         <VipWarning>
-         Усі примітки, розміщені в навчанні, кнопка ? вгорі.
+          Усі примітки, розміщені в навчанні, кнопка ? вгорі.
         </VipWarning>
         <ViWarning>.</ViWarning>
       </VipModalDiv>

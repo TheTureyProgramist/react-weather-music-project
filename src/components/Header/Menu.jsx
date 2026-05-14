@@ -36,7 +36,8 @@ const LogoActionsRow = styled.div`
 `;
 
 const MiniLogoButton = styled.button`
-  background: ${(props) => (props.$isDarkMode ? "rgba(255, 255, 255, 0.05)" : "rgba(0, 0, 0, 0.03)")};
+  background: ${(props) =>
+    props.$isDarkMode ? "rgba(255, 255, 255, 0.05)" : "rgba(0, 0, 0, 0.03)"};
   border: 1px solid ${(props) => (props.$isDarkMode ? "#444" : "#ccc")};
   color: ${(props) => (props.$isDarkMode ? "#ffb36c" : "#1a1a1a")};
   border-radius: 8px;
@@ -67,7 +68,8 @@ const SubsMenuItem = styled.button`
   align-items: center;
   gap: 15px;
   width: 100%;
-  background: ${(props) => (props.$isUltra ? "rgba(113, 0, 151, 0.05)" : "rgba(255, 179, 108, 0.05)")};
+  background: ${(props) =>
+    props.$isUltra ? "rgba(113, 0, 151, 0.05)" : "rgba(255, 179, 108, 0.05)"};
   border: 1.5px solid ${(props) => (props.$isUltra ? "#710097" : "#ffb36c")};
   padding: 5px 4px;
   margin-bottom: 5px;
@@ -77,9 +79,12 @@ const SubsMenuItem = styled.button`
   text-align: left;
 
   &:hover {
-    background: ${(props) => (props.$isUltra ? "rgba(113, 0, 151, 0.15)" : "rgba(255, 179, 108, 0.15)")};
+    background: ${(props) =>
+      props.$isUltra ? "rgba(113, 0, 151, 0.15)" : "rgba(255, 179, 108, 0.15)"};
     transform: translateX(5px);
-    box-shadow: 0 4px 15px ${(props) => (props.$isUltra ? "rgba(113, 0, 151, 0.2)" : "rgba(255, 179, 108, 0.2)")};
+    box-shadow: 0 4px 15px
+      ${(props) =>
+        props.$isUltra ? "rgba(113, 0, 151, 0.2)" : "rgba(255, 179, 108, 0.2)"};
   }
 
   @media (min-width: 1920px) {
@@ -118,21 +123,40 @@ const SubsAnimatedPart = styled.span`
   opacity: ${(props) => (props.$show ? 1 : 0)};
   font-size: ${(props) => (props.$isSymbol ? "20px" : "16px")};
 
-  ${(props) => props.$variant === "rainbow" && css`
-    background: linear-gradient(45deg, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #8b00ff);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  `}
+  ${(props) =>
+    props.$variant === "rainbow" &&
+    css`
+      background: linear-gradient(
+        45deg,
+        #ff0000,
+        #ff7f00,
+        #ffff00,
+        #00ff00,
+        #0000ff,
+        #8b00ff
+      );
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    `}
 
-  ${(props) => props.$variant === "ultra" && css`
-    background: linear-gradient(270deg, #ff7eb3, #ff758c, #7afcff, #feffb7, #58e2c2);
-    background-size: 400% 400%;
-    animation: ${flow} 3s ease infinite;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  `}
+  ${(props) =>
+    props.$variant === "ultra" &&
+    css`
+      background: linear-gradient(
+        270deg,
+        #ff7eb3,
+        #ff758c,
+        #7afcff,
+        #feffb7,
+        #58e2c2
+      );
+      background-size: 400% 400%;
+      animation: ${flow} 3s ease infinite;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    `}
 
   @media (min-width: 1920px) {
     font-size: ${(props) => (props.$isSymbol ? "38px" : "32px")};
@@ -574,42 +598,83 @@ const Menu = ({
             <MenuSectionTitle>Керування</MenuSectionTitle>
             <LegendList>
               <li>
-                <SubsMenuItem $isUltra={showUltra} onClick={() => { onOpenVip(); onClose(); }}>
+                <SubsMenuItem
+                  $isUltra={showUltra}
+                  onClick={() => {
+                    onOpenVip();
+                    onClose();
+                  }}
+                >
                   <SubsIconBox $isUltra={showUltra}>
-                    <SubsAnimatedPart $show={!showUltra} $variant="rainbow" $isSymbol>+</SubsAnimatedPart>
-                    <SubsAnimatedPart $show={showUltra} $variant="ultra" $isSymbol>♔</SubsAnimatedPart>
+                    <SubsAnimatedPart
+                      $show={!showUltra}
+                      $variant="rainbow"
+                      $isSymbol
+                    >
+                      +
+                    </SubsAnimatedPart>
+                    <SubsAnimatedPart
+                      $show={showUltra}
+                      $variant="ultra"
+                      $isSymbol
+                    >
+                      ♔
+                    </SubsAnimatedPart>
                   </SubsIconBox>
                   <SubsTextWrapper>
-                    <SubsAnimatedPart $show={!showUltra} $variant="rainbow">Стихія+</SubsAnimatedPart>
-                    <SubsAnimatedPart $show={showUltra} $variant="ultra">Стихія Ultra</SubsAnimatedPart>
+                    <SubsAnimatedPart $show={!showUltra} $variant="rainbow">
+                      Стихія+
+                    </SubsAnimatedPart>
+                    <SubsAnimatedPart $show={showUltra} $variant="ultra">
+                      Стихія Ultra
+                    </SubsAnimatedPart>
                   </SubsTextWrapper>
-                  <span style={{ fontSize: '12px', color: showUltra ? '#710097' : '#ffb36c', fontWeight: 'bold' }}>
+                  <span
+                    style={{
+                      fontSize: "12px",
+                      color: showUltra ? "#710097" : "#ffb36c",
+                      fontWeight: "bold",
+                    }}
+                  >
                     ➔
                   </span>
                 </SubsMenuItem>
               </li>
               <li>
-                <div style={{ fontSize: "14px", fontWeight: "bold", marginBottom: "10px", color: isDarkMode ? "#ffb36c" : "#ff005d" }}>
+                <div
+                  style={{
+                    fontSize: "14px",
+                    fontWeight: "bold",
+                    marginBottom: "10px",
+                    color: isDarkMode ? "#ffb36c" : "#ff005d",
+                  }}
+                >
                   🖼️ Логотип сайту
                 </div>
                 <LogoActionsRow>
-                  <MiniLogoButton 
-                    $isDarkMode={isDarkMode} 
-                    onClick={(e) => { onDownloadLogo(e); }} 
+                  <MiniLogoButton
+                    $isDarkMode={isDarkMode}
+                    onClick={(e) => {
+                      onDownloadLogo(e);
+                    }}
                     title="Скачати лого"
                   >
                     ⇩
                   </MiniLogoButton>
-                  <MiniLogoButton 
-                    $isDarkMode={isDarkMode} 
-                    onClick={(e) => { onFullscreenLogo(e); }} 
+                  <MiniLogoButton
+                    $isDarkMode={isDarkMode}
+                    onClick={(e) => {
+                      onFullscreenLogo(e);
+                    }}
                     title="Повний екран"
                   >
                     ⛶
                   </MiniLogoButton>
-                  <MiniLogoButton 
-                    $isDarkMode={isDarkMode} 
-                    onClick={(e) => { onPrintLogo(e); }} 
+                  <MiniLogoButton
+                    $isDarkMode={isDarkMode}
+                    onClick={(e) => {
+                      onPrintLogo(e);
+                    }}
                     title="Друкувати"
                   >
                     ⎙

@@ -9,8 +9,9 @@
 ### 1. Підготуйте MP3 файли
 
 Створіть три MP3 файли для озвучки:
+
 - `src/mp3/{song-name}-narration-voice1.mp3` - Голос 1
-- `src/mp3/{song-name}-narration-voice2.mp3` - Голос 2  
+- `src/mp3/{song-name}-narration-voice2.mp3` - Голос 2
 - `src/mp3/{song-name}-narration-voice3.mp3` - Голос 3
 
 Де `{song-name}` - це назва пісні (наприклад: `dinofroz`, `turkeys`, `monody`)
@@ -47,6 +48,7 @@ import dinofroz3Audio from "../../mp3/dinofroz-narration-voice3.mp3";
 ## Поточна поддержка
 
 Озвучка встроєна для:
+
 - Динофроз (Dinofroz)
 - Індики (Turkeys)
 - Monody
@@ -54,9 +56,10 @@ import dinofroz3Audio from "../../mp3/dinofroz-narration-voice3.mp3";
 ## Використання
 
 У плеєрі (повноекранний режим) відкрийте налаштування (⚙️) і виберіть озвучку з випадаючого меню "Озвучка":
+
 - **Без озвучки** - озвучка вимкнена
 - **Голос 1** - перша версія озвучки
-- **Голос 2** - друга версія озвучки  
+- **Голос 2** - друга версія озвучки
 - **Голос 3** - третя версія озвучки
 
 ## Примітки

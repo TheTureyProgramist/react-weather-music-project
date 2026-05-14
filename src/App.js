@@ -3,7 +3,7 @@ import { useState, useEffect, useCallback, memo, Suspense } from "react";
 import styled from "styled-components";
 import localforage from "localforage";
 import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
-import { useSelector } from 'react-redux';
+import { useSelector } from "react-redux";
 import Loader from "./components/Loader/Loader.jsx";
 import WeatherCardComponent from "./components/Weather/Weather.jsx";
 import NotFound from "./components/NotFound.jsx";
@@ -118,73 +118,35 @@ const WeatherCardsContainer = styled.div`
     gap: 40px;
   }
 `;
-
-const CustomDaysContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  justify-content: center;
-  margin: 20px 0;
-  padding: 20px;
-  background-color: ${props => props.$isDarkMode ? '#333' : '#f9f9f9'};
-  border-radius: 10px;
-  border: 1px solid ${props => props.$isDarkMode ? '#555' : '#ddd'};
-`;
-
-const CustomDayInput = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-  align-items: center;
-`;
-
-const Input = styled.input`
-  padding: 8px;
-  border: 1px solid ${props => props.$isError ? '#ff4d4d' : (props.$isDarkMode ? '#555' : '#ccc')};
-  border-radius: 4px;
-  background-color: ${props => props.$isDarkMode ? '#444' : '#fff'};
-  color: ${props => props.$isDarkMode ? '#fff' : '#000'};
-  outline: none;
-  transition: border-color 0.2s;
-`;
-
-const CharCount = styled.span`
-  font-size: 10px;
-  color: ${props => props.$isError ? '#ff4d4d' : (props.$isDarkMode ? '#aaa' : '#888')};
-  margin-top: 2px;
-  align-self: flex-end;
-`;
-
 const LOADING_PHRASES = [
   "Підпішіться на мій фейсбук і ютуб, щоб знати, що буде в наступній версії! TheTurkeyStudio.",
   "Доміно, хоче вже продавати!",
-  "Головоломки в розробці🧩",
+  "Головоломки та сюжет в розробці🧩",
   "Зворотній зв'язок: фейсбук або акаунт theturkeystudio@gmail.com, на випадок помилок або якщо ви правовласник, і хочете обговорити умови розміщення треку на сайті.",
   "Питання по навігації можете задати до нашого ШІ✨",
   "Фан-арти безкоштовні, для роздрукування! 🎨",
   "Розблокуйте переваги з Стихія+ та Стихія+ Ультра!",
   "Ви знаєте, що за рандомний текст, можна отримати досягнення? Треба побачити кожний :)",
   "Скиньте мені в фейсбук, картинки до треків деяких",
-  "У вас характер Ніцерона, індика(в плані упертості птаха), чи кого?",
   "СлівкіШоу та Дизель шоу, це легенди.",
   "Лише по секрету, 5bn games, одні з накращих, у створення сюжетів і загадок(Спадщина і Темрява та Полум'я найвдаліше!)",
   "Ми вас здивуємо, багато чим :)",
   "Пробачте за рекламу, при переході на новини, я просто хочу, щоб ви мене морально підтримали.",
-  "? угорі, є відповіді на деякі питання.",
+  "Навчання, оцінювання та коментування",
   "Тут написано, про випуск, нової детективної гри.",
   "Помилка 404, це жарт :)",
   "Джомолунгма: .... ...... 6 і 8",
   "Якщо буде багато підписніків, Стихія буде доступна айфонам!",
-  "Код по першій букві: Україна, Ніцерон, Aurora hills, місце, увага, Трініті, аварія, Ніжин, обмеження, Загадки Нью-Йорка.",
-  "Оновлення скоро",
+  "Код по першій букві: уміння, Ніцерон, альпінізми, місце, увага, Транс, аварія, Ніжин, обмеження, Загадки.",
+  "Любите малювати? Любите танцювати?",
   "Теорія неймовірності(Макс Кіндрук) має одну частину :(",
   "Режим відео: Динофроз. Рандомні фільтри: Clubstep",
-  "Сейсмічне явище, ми покажемо!",
+  "Хто ваш кумир? Зібров чи Вінник?",
   "Багато змін клімату, мультиплікації, моди, життя. І мене теж. Не знаю який обрати :( чи :)",
   "Хто знає, той у нас шукає",
   "Місія неможлива, ніде не помилитись",
   "Досягнення 99: Хто я, якщо нас менше 70?. ",
-  "Дасте пораду щодо дизайну, Стихії",
+  "Давайте поради щодо дизайну, Стихії",
   "Правило 20: Дивіться на все під різними кутами.",
   "A new day! A new adventure! A new update!",
   "A new day! A new adventure! A new update!",
@@ -213,6 +175,7 @@ const SectionContent = memo(
     setIsLocationEnabled,
     user,
     handleOpenRegister,
+    onUpdateUser,
     setHeroBg,
     customHeroBgs,
     setCustomHeroBgs,
@@ -226,22 +189,6 @@ const SectionContent = memo(
     if (section.key === "weather") {
       return (
         <div id="weather">
-          <CustomDaysContainer $isDarkMode={isDarkMode}>
-            <h3>Що за свято?</h3>
-            <CustomDayInput>
-              <Input
-                $isDarkMode={isDarkMode}
-                $isError={(customHolidayName || '').length > 12}
-                type="text"
-                value={customHolidayName} // eslint-disable-line no-undef
-                onChange={(e) => setCustomHolidayName(e.target.value)} // eslint-disable-line no-undef
-                placeholder="Назва свята"
-              />
-              <CharCount $isDarkMode={isDarkMode} $isError={(customHolidayName || '').length > 12}>
-                {(customHolidayName || '').length}/12
-              </CharCount>
-            </CustomDayInput>
-          </CustomDaysContainer>
           <WeatherCardsContainer>
             {weatherCards.map((card, index) => {
               const isExtremeTemp =
@@ -285,6 +232,7 @@ const SectionContent = memo(
             user={user}
             onOpenRegister={handleOpenRegister}
             isAnyModalOpen={isAnyModalOpen}
+            onUpdateUser={onUpdateUser}
           />
         )}
         {section.key === "fanart" && (
@@ -335,7 +283,7 @@ const App = () => {
   const [heroBgPanEnabled, setHeroBgPanEnabled] = useState(false);
   const [heroBgPanSpeed, setHeroBgPanSpeed] = useState(6);
 
-  const [customHolidayName, setCustomHolidayName] = useState('');
+  const [customHolidayName, setCustomHolidayName] = useState("");
 
   const [currentAvatar, setCurrentAvatar] = useState(userDefault);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -398,9 +346,13 @@ const App = () => {
         if (savedCustomBgs) setCustomHeroBgs(savedCustomBgs);
         const savedMode = await localforage.getItem("hero_bg_mode");
         if (savedMode) setHeroBgMode(savedMode);
-        const savedInterval = await localforage.getItem("hero_slideshow_interval");
+        const savedInterval = await localforage.getItem(
+          "hero_slideshow_interval",
+        );
         if (savedInterval !== null) setSlideshowInterval(savedInterval);
-        const savedTransition = await localforage.getItem("hero_slideshow_transition");
+        const savedTransition = await localforage.getItem(
+          "hero_slideshow_transition",
+        );
         if (savedTransition !== null) setSlideshowTransition(savedTransition);
         const savedHeroFilter = await localforage.getItem(
           "hero_bg_filter_category",
@@ -429,10 +381,15 @@ const App = () => {
         const savedPanSpeed = await localforage.getItem("hero_bg_pan_speed");
         if (savedPanSpeed !== null) setHeroBgPanSpeed(savedPanSpeed);
 
-        const savedCustomHolidayName = await localforage.getItem("custom_holiday_name");
-        if (savedCustomHolidayName) setCustomHolidayName(savedCustomHolidayName);
+        const savedCustomHolidayName = await localforage.getItem(
+          "custom_holiday_name",
+        );
+        if (savedCustomHolidayName)
+          setCustomHolidayName(savedCustomHolidayName);
 
-        const savedScreenshots = await localforage.getItem("dinofroz_screenshots");
+        const savedScreenshots = await localforage.getItem(
+          "dinofroz_screenshots",
+        );
         if (savedScreenshots) setScreenshots(savedScreenshots);
 
         const lastSeenVersion = await localforage.getItem(
@@ -998,15 +955,24 @@ const App = () => {
       const parts = fmt.formatToParts(now);
       const p = (type) => parts.find((x) => x.type === type)?.value || "";
 
-      const timePart = (mode === "time" || mode === "both") ? `${p("hour")}:${p("minute")}${showSeconds ? ":" + p("second") : ""}` : "";
-      const datePart = (mode === "date" || mode === "both") ? `${p("weekday") ? p("weekday").charAt(0).toUpperCase() + p("weekday").slice(1) : ""}${p("day") ? `, ${p("day")}.${p("month")}.${p("year")}` : ""}` : "";
+      const timePart =
+        mode === "time" || mode === "both"
+          ? `${p("hour")}:${p("minute")}${showSeconds ? ":" + p("second") : ""}`
+          : "";
+      const datePart =
+        mode === "date" || mode === "both"
+          ? `${p("weekday") ? p("weekday").charAt(0).toUpperCase() + p("weekday").slice(1) : ""}${p("day") ? `, ${p("day")}.${p("month")}.${p("year")}` : ""}`
+          : "";
 
       if (mode === "both") return `${timePart} ${datePart}`.trim();
       return timePart || datePart;
     } catch (e) {
       const h = String(now.getHours()).padStart(2, "0");
       const m = String(now.getMinutes()).padStart(2, "0");
-      const s = user?.showSeconds !== false ? `:${String(now.getSeconds()).padStart(2, "0")}` : "";
+      const s =
+        user?.showSeconds !== false
+          ? `:${String(now.getSeconds()).padStart(2, "0")}`
+          : "";
       const d = now.toLocaleDateString("uk");
       return `${h}:${m}${s} ${d}`;
     }
@@ -1102,6 +1068,7 @@ const App = () => {
         setIsLocationEnabled={setIsLocationEnabled}
         user={user}
         isAnyModalOpen={isAnyModalOpen}
+        onUpdateUser={setUser}
         setHeroBg={setHeroBg}
         customHeroBgs={customHeroBgs}
         setCustomHeroBgs={setCustomHeroBgs}
@@ -1183,6 +1150,7 @@ const App = () => {
                 setIsLocationEnabled={setIsLocationEnabled}
                 user={user}
                 isAnyModalOpen={isAnyModalOpen}
+                onUpdateUser={setUser}
                 setHeroBg={setHeroBg}
                 customHeroBgs={customHeroBgs}
                 setCustomHeroBgs={setCustomHeroBgs}
@@ -1314,6 +1282,7 @@ const App = () => {
                             setIsLocationEnabled={setIsLocationEnabled}
                             user={user}
                             isAnyModalOpen={isAnyModalOpen}
+                            onUpdateUser={setUser}
                             setHeroBg={setHeroBg}
                             customHeroBgs={customHeroBgs}
                             setCustomHeroBgs={setCustomHeroBgs}

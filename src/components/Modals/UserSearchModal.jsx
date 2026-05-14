@@ -11,8 +11,8 @@ import info from "../../photos/hero-header/what.webp";
 import one from "../../photos/hero-header/my/myone.webp";
 import two from "../../photos/hero-header/my/mytwo.webp";
 import soon from "../../photos/hero-header/my/soon.webp";
-import might from "../../photos/hero-header/my/myone.webp"
-import puzzle from "../../photos/vip-modal/puzzle.webp"
+import might from "../../photos/hero-header/my/myone.webp";
+import puzzle from "../../photos/vip-modal/puzzle.webp";
 import three from "../../photos/hero-header/my/mythree.webp";
 const slideIn = keyframes`
   0% { transform: translateY(100%) scale(0.9); opacity: 0; }
@@ -24,7 +24,7 @@ const slideOut = keyframes`
   100% { transform: translateY(100%) scale(0.9); opacity: 0; }
 `;
 
- const fadeIn = keyframes`
+const fadeIn = keyframes`
    from { opacity: 0; transform: scale(0.8); }
    to { opacity: 1; transform: scale(1); }
  `;
@@ -110,7 +110,9 @@ const PreviewCloseBtn = styled(CloseBtn)`
   right: 20px;
   z-index: 9601;
   animation: ${fadeIn} 0.3s ease-out forwards;
-  &:hover { color: #ffb36c; }
+  &:hover {
+    color: #ffb36c;
+  }
 `;
 
 const AccordionWrapper = styled.div`
@@ -209,7 +211,8 @@ const AnswerImage = styled.img`
   cursor: pointer;
   transition: all 0.3s ease-in-out;
   height: auto;
-  max-height: ${(props) => (props.$isHovered || props.$isPinned ? "800px" : "10px")};
+  max-height: ${(props) =>
+    props.$isHovered || props.$isPinned ? "800px" : "10px"};
   opacity: ${(props) => (props.$isHovered || props.$isPinned ? 1 : 0.4)};
 
   &:hover {
@@ -252,7 +255,8 @@ const ImageActionsContainer = styled.div`
   gap: 8px;
   transition: all 0.3s ease-in-out;
   opacity: ${(props) => (props.$isHovered || props.$isPinned ? 1 : 0)};
-  pointer-events: ${(props) => (props.$isHovered || props.$isPinned ? "auto" : "none")};
+  pointer-events: ${(props) =>
+    props.$isHovered || props.$isPinned ? "auto" : "none"};
 `;
 
 const AnswerActionButton = styled.button`
@@ -380,7 +384,8 @@ const InfoModal = ({ onClose, isOpen }) => {
     await localforage.setItem("training_actions_pinned", newState);
   };
 
-  const handleClose = useCallback(() => { // Modified to handle previewImage first
+  const handleClose = useCallback(() => {
+    // Modified to handle previewImage first
     if (previewImage) {
       setPreviewImage(null);
       return; // Don't close the main modal if only preview was closed
@@ -442,9 +447,9 @@ const InfoModal = ({ onClose, isOpen }) => {
   };
 
   const pastEvents = React.useMemo(() => {
-    const today = new Date().toISOString().split('T')[0];
+    const today = new Date().toISOString().split("T")[0];
     return customDays
-      .filter(day => day.date < today)
+      .filter((day) => day.date < today)
       .sort((a, b) => b.date.localeCompare(a.date)) // Свіжіші спочатку
       .slice(0, 5);
   }, [customDays]);
@@ -515,9 +520,9 @@ const InfoModal = ({ onClose, isOpen }) => {
 `,
       image: preview,
     },
-        {
+    {
       q: "Примітки підписок і конвертів",
-          a: `1.Mісячний/Річний тариф перемикається автоматично! При активній Стихія+ ви можете миттєво перейти на Ultra. Скасування Ultra, повертає Plus на решту терміну. Помилки оплати повертають гроші (або 🧧)
+      a: `1.Mісячний/Річний тариф перемикається автоматично! При активній Стихія+ ви можете миттєво перейти на Ultra. Скасування Ultra, повертає Plus на решту терміну. Помилки оплати повертають гроші (або 🧧)
           2.Коли підписка закінчиться привілегії(не всі) зникнуть. Врахуйте: У тарифі Ultra діє лімітована акція, що активується після другої оплати поспіль(річні миттєво!). Якщо підписка Ultra буде перервана на термін понад 3 місяці, бонус зникне(доступ лише при
           дії Ultra, при Plus таймер заморожується.), і для його відновлення треба повторна серія оплат. Також доступна послуга «Швидкий старт»(2 безкоштовні) за 3,19 грн для миттєвої активації 1 акції.
           3.Переваги Plus оптимізовані в Стихія Ultrа, ті що не були вказані в Стихія Ultra(присутні, але ті самі як в Plus)
@@ -550,10 +555,25 @@ const InfoModal = ({ onClose, isOpen }) => {
       a: "Роз’яснення всіх функцій можна знайти, натиснувши на символ меню ☰. Кожна кнопка має свою підказку. При наведенні на лого є 4 кнопки: скачати - зліва, друкувати - вгорі, повноеранний - справа, перемикання - на VIP стилі та версії - внизу.",
       image: logofix,
     },
-        {
+    {
       q: "Валюти Стихії",
       a: "-----------------------------------",
       image: null,
+    },
+        {
+      q: "Загальний план і історія",
+      a: `Друзі, я хочу в головоломки, і кілька пісень вселити сюжет 'Сценотвору'. Сполерів небагато: Діма(головний герой), Кейт(добра, але серйозна індичка), Влад(друг Діми, харизматичний, і потрапляє у важкі ситуації), Поліна(зникла безвіти, її треба знайти і врятувати) боряться проти Метра(творіння хаосу і зла). 
+Як виглядиме проходження? На вас чекає 104головоломки(7рідкостей, як у В'язниці), 1ша і 104та, будуть hidden object adventure(з скрімерами та лімітом життів), інші будуть мати харакер: знайди к-ка предметів в кількох локаціях, і розблокуй головоломку. Головоломки розблокуються одна за одною, деякі розблоковуюють у налаштуваннях пісень, режим сюжету де герої кажуть фрази субтитрами. Буду вдячний, чкщо хтось вас, вміє робити 3д відеоролики 20с, які зроблять сюжет живим. Головоломки, стають доступними з оновленнями. Крім 104головоломок, головоломка пазли, в якій ви будете відновлювати історію локації або героя.`,
+      image: logofix,
+    },
+      {
+      q: "Історія Доміно",
+      a: `Колись давно був Орден Хаосу, який хотів захопити світ, пристроєм, що створює фантазії. Їх здолав орден Концетрації, але пристрій, зробив потайні ходи в інші світи. 
+      Пристрій зник, але потративши на острів де жило 2маленьких індики(Доміно і Кейт), вони здобули свідомість і вічне життя, вони мандрували світами. Але ідилія не буває вічною, Доміно зник, а Кейт продовжила подорожі, пошуки не дали результатів. 
+      Ходять чутки, що в печері, живе індик, в якого висять картини, І таблички з написами: Магазин Доміно, Кейт, де ти? Та різні сувеніри.
+      Кейт переслідувала невідома сутність, і вона сховалась на одному з островів. 
+      Її життя змінилось, коли діти(Поліна і Діма) потрапили через портал у кінотеатрі на її острів(Метра доклав до цього руки). Спойлерні питання: Куде, зникне Поліна? Що з Дімою, станеться на Евересті?, В якому опиниться ця трійця? Яку дрібницю, ніхто, крім Кейт, не помітить у тв шоу Світ навиворіт, Реальна містика, оповіданні кртвенька качечка та Динофрозі?`,
+      image: logofix,
     },
     {
       q: "Чому ШІ відмовив у запиті за конверти?",
@@ -575,7 +595,7 @@ const InfoModal = ({ onClose, isOpen }) => {
 НЕВРАЗЛИВІСТЬ: Після 4-го модуля — 8с безпеки (зелені пили).
 ФАЗА ЕВАКУАЦІЇ: Пили стають невидимими (радіус 1) і наносять x2 ШКОДИ (2❤️)!
 Як вижити? Активуйте 8 точок 📍. При кожній активації пили стають видимими на 1с.
-      `, 
+      `,
       image: puzzle,
     },
     {
@@ -628,11 +648,13 @@ Clubstep: рандомні фільтри.
   ];
 
   if (pastEvents.length > 0) {
-    const pastText = pastEvents.map(e => `• ${e.date}: ${e.reason}`).join('\n');
+    const pastText = pastEvents
+      .map((e) => `• ${e.date}: ${e.reason}`)
+      .join("\n");
     faqData.unshift({
       q: "📚 Архів минулих подій (ліміт 5)",
       a: `Це події, які ви додавали, але їх час уже минув:\n\n${pastText}`,
-      image: null
+      image: null,
     });
   }
 
@@ -738,9 +760,32 @@ Clubstep: рандомні фільтри.
                           onMouseEnter={() => setHoveredImage(item.image)}
                           onMouseLeave={() => setHoveredImage(null)}
                         >
-                          <AnswerActionButton onClick={togglePin} title={isActionsPinned ? "Відкріпити кнопки" : "Закріпити кнопки"}>{isActionsPinned ? "📌" : "📍"}</AnswerActionButton>
-                          <AnswerActionButton onClick={(e) => { e.stopPropagation(); handleDownloadImage(item.image); }}>⇩ Скачати</AnswerActionButton>
-                          <AnswerActionButton onClick={(e) => { e.stopPropagation(); handlePrintImage(item.image); }}>🖨️ Друкувати</AnswerActionButton>
+                          <AnswerActionButton
+                            onClick={togglePin}
+                            title={
+                              isActionsPinned
+                                ? "Відкріпити кнопки"
+                                : "Закріпити кнопки"
+                            }
+                          >
+                            {isActionsPinned ? "📌" : "📍"}
+                          </AnswerActionButton>
+                          <AnswerActionButton
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDownloadImage(item.image);
+                            }}
+                          >
+                            ⇩ Скачати
+                          </AnswerActionButton>
+                          <AnswerActionButton
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handlePrintImage(item.image);
+                            }}
+                          >
+                            🖨️ Друкувати
+                          </AnswerActionButton>
                         </ImageActionsContainer>
                       </>
                     )}
@@ -758,27 +803,35 @@ Clubstep: рандомні фільтри.
         </div>
       </Content>
       {previewImage && (
-      <ImagePreviewOverlay onClick={() => setPreviewImage(null)}>
-        <PreviewCloseBtn
-          onClick={() => setPreviewImage(null)}
-        >
-          &times;
-        </PreviewCloseBtn>
-        <ImagePreviewActions>
-          <ActionButton onClick={(e) => { e.stopPropagation(); handleDownloadImage(previewImage); }}>
-            ⇩ Скачати
-          </ActionButton>
-          <ActionButton onClick={(e) => { e.stopPropagation(); handlePrintImage(previewImage); }}>
-            🖨️ Друкувати
-          </ActionButton>
-        </ImagePreviewActions>
-        <PreviewImage
-          src={previewImage}
-          alt="Прев'ю зображення"
-          onClick={(e) => e.stopPropagation()}
-        />
-      </ImagePreviewOverlay>
-    )}
+        <ImagePreviewOverlay onClick={() => setPreviewImage(null)}>
+          <PreviewCloseBtn onClick={() => setPreviewImage(null)}>
+            &times;
+          </PreviewCloseBtn>
+          <ImagePreviewActions>
+            <ActionButton
+              onClick={(e) => {
+                e.stopPropagation();
+                handleDownloadImage(previewImage);
+              }}
+            >
+              ⇩ Скачати
+            </ActionButton>
+            <ActionButton
+              onClick={(e) => {
+                e.stopPropagation();
+                handlePrintImage(previewImage);
+              }}
+            >
+              🖨️ Друкувати
+            </ActionButton>
+          </ImagePreviewActions>
+          <PreviewImage
+            src={previewImage}
+            alt="Прев'ю зображення"
+            onClick={(e) => e.stopPropagation()}
+          />
+        </ImagePreviewOverlay>
+      )}
     </Overlay>
   );
 };

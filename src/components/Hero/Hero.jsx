@@ -1,11 +1,20 @@
-import React, { useState, useEffect, useRef, useMemo, useCallback } from "react";
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  useMemo,
+  useCallback,
+} from "react";
 import styled, { keyframes, css } from "styled-components";
-import { useSelector, useDispatch } from 'react-redux';
-import { addCustomDay, removeCustomDay } from '../../features/counter/Counter.js';
+import { useSelector, useDispatch } from "react-redux";
+import {
+  addCustomDay,
+  removeCustomDay,
+} from "../../features/counter/Counter.js";
 import localforage from "localforage";
 import hills from "../../photos/hero-header/fog.webp";
 import herotext from "../../photos/hero-header/herotext.webp";
-import dinofrozVideo from "../../mp3/dinofroz.mp4"
+import dinofrozVideo from "../../mp3/dinofroz.mp4";
 import soloveyko from "../../photos/vip-images/vip-soloveyko.webp";
 import harmony from "../../photos/vip-images/asium/asium.webp";
 import horse from "../../photos/vip-images/horse/horse.webp";
@@ -85,7 +94,11 @@ const DEFAULT_BGS = [
   { src: hills, name: "Туманний ліс", category: "Стихія" },
   { src: volcano, name: "Вулкан", category: "Стихія" },
   // Світ Динофроз та Дракони
-  // { src: dinofrozVideo, name: "Динофроз (Відео-шпалери)", category: "Динофроз" },
+  {
+    src: dinofrozVideo,
+    name: "Динофроз (Відео-шпалери)",
+    category: "Динофроз",
+  },
   { src: dinofrozone, name: "Імператор Ніцерон", category: "Динофроз" },
   { src: dinofroztwo, name: "Генерал Влад (2 сезон)", category: "Динофроз" },
   { src: dinofrozthree, name: "Прев'ю мультфільму", category: "Динофроз" },
@@ -149,7 +162,7 @@ const DEFAULT_BGS = [
   { src: theorytwo, name: "Чорна діра", category: "Аркада" },
   { src: electrodynamix, name: "Гроза", category: "Аркада" },
   { src: mecha, name: "Шестерні", category: "Аркада" },
-  {src: clubstepVideo, name: "Невідоме місце(Відео)", category: "Аркада"},
+  { src: clubstepVideo, name: "Невідоме місце(Відео)", category: "Аркада" },
   { src: clubstep, name: "Невідоме місце", category: "Аркада" },
   { src: theory, name: "Вогнище", category: "Аркада" },
   { src: chess, name: "Шахи", category: "Аркада" },
@@ -193,20 +206,14 @@ const HeroDiv = styled.div`
   overflow: hidden;
   z-index: 1;
   @media (min-width: 768px) {
-    gap: 25px;
+    gap: 19px;
     margin-bottom: 15px;
-        min-height: 643px;
-  }
-  @media (min-width: 1920px) {
-    min-height: 1080px;
-    margin-bottom: 30px;
-    gap: 96px;
+    min-height: 712px;
   }
 `;
 const HeroDecors = styled.div`
   display: block;
   width: 170px;
-  margin-top: 85px;
   height: 78px;
   background-image: url(${(props) => props.$image});
   background-size: cover;
@@ -260,6 +267,7 @@ const panAnimation = keyframes`
 `;
 
 const isVideoSource = (src) => {
+  if (src instanceof Blob) return src.type.startsWith("video/");
   if (typeof src !== "string") return false;
   return src.includes(".mp4") || src.startsWith("data:video/");
 };
@@ -289,8 +297,21 @@ const BgLayerStyled = styled.div`
 
 const BgLayer = (props) => {
   const { $image, $active, $focalX, $focalY } = props;
-  const isVideo = isVideoSource($image);
+  const [url, setUrl] = useState(typeof $image === 'string' ? $image : "");
   const videoRef = useRef(null);
+
+  useEffect(() => {
+    let objectUrl = null;
+    if ($image instanceof Blob) {
+      objectUrl = URL.createObjectURL($image);
+      setUrl(objectUrl);
+    } else {
+      setUrl($image);
+    }
+    return () => {
+      if (objectUrl) URL.revokeObjectURL(objectUrl);
+    };
+  }, [$image]);
 
   useEffect(() => {
     if (videoRef.current) {
@@ -302,12 +323,14 @@ const BgLayer = (props) => {
     }
   }, [$active]);
 
+  const isVideo = isVideoSource($image);
+
   return (
     <BgLayerStyled {...props}>
       {isVideo ? (
         <video
           ref={videoRef}
-          src={$image}
+          src={url}
           muted
           loop
           playsInline
@@ -316,22 +339,24 @@ const BgLayer = (props) => {
               e.target.currentTime = 0;
             }
           }}
-          style={{ 
-            width: "100%", 
-            height: "100%", 
+          style={{
+            width: "100%",
+            height: "100%",
             objectFit: "cover",
-            objectPosition: `${$focalX}% ${$focalY}%`
+            objectPosition: `${$focalX}% ${$focalY}%`,
           }}
         />
       ) : (
-        <div style={{
-          width: "100%",
-          height: "100%",
-          backgroundImage: `url(${$image || hills})`,
-          backgroundSize: "cover",
-          backgroundPosition: `${$focalX}% ${$focalY}%`,
-          backgroundRepeat: "no-repeat"
-        }} />
+        <div
+          style={{
+            width: "100%",
+            height: "100%",
+            backgroundImage: `url(${url || hills})`,
+            backgroundSize: "cover",
+            backgroundPosition: `${$focalX}% ${$focalY}%`,
+            backgroundRepeat: "no-repeat",
+          }}
+        />
       )}
     </BgLayerStyled>
   );
@@ -371,8 +396,8 @@ const HeroFix = styled.div`
 `;
 const HeroFi = styled.div`
   display: flex;
-  align-items: center; 
-  justify-content: center; 
+  align-items: center;
+  justify-content: center;
 `;
 const HeroTextLink = styled.a`
   color: #fff;
@@ -407,7 +432,7 @@ const HeroDate = styled.div`
   color: #fff;
   font-size: 8px;
   text-align: center;
-font-weight: 600;
+  font-weight: 600;
   text-shadow:
     2px 2px 4px rgba(0, 0, 0, 0.8),
     0 0 10px rgba(0, 0, 0, 0.5);
@@ -590,8 +615,10 @@ const Firefly = styled.div`
   position: absolute;
   width: 6px;
   height: 6px;
-  background: ${props => props.$color || "#fff59d"};
-  box-shadow: 0 0 15px ${props => props.$color || "#fff176"}, 0 0 5px white;
+  background: ${(props) => props.$color || "#fff59d"};
+  box-shadow:
+    0 0 15px ${(props) => props.$color || "#fff176"},
+    0 0 5px white;
   pointer-events: none;
   z-index: 5;
   animation: ${fireflyAnim} var(--d) ease-in-out infinite;
@@ -605,18 +632,22 @@ const FestiveOverlay = styled.div`
   inset: 0;
   pointer-events: none;
   z-index: 2;
-  background: radial-gradient(circle, rgba(255, 215, 0, 0.1) 0%, transparent 70%);
+  background: radial-gradient(
+    circle,
+    rgba(255, 215, 0, 0.1) 0%,
+    transparent 70%
+  );
   border: 4px solid rgba(255, 215, 0, 0.15);
   box-shadow: inset 0 0 50px rgba(255, 215, 0, 0.2);
-  opacity: ${props => props.$active ? 1 : 0};
+  opacity: ${(props) => (props.$active ? 1 : 0)};
   transition: opacity 2s ease;
 
   &::after {
-    content: '${props => props.$label || 'СЬОГОДНІ СВЯТО! 🎉'}';
+    content: "${(props) => props.$label || "СЬОГОДНІ СВЯТО! 🎉"}";
     position: absolute;
     top: 20px;
     left: 20px;
-    color: ${props => props.$color || "gold"};
+    color: ${(props) => props.$color || "gold"};
     font-size: 14px;
     font-weight: 900;
     text-shadow: 0 0 10px black;
@@ -650,7 +681,7 @@ const DayInputCard = styled.div`
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 179, 108, 0.3);
   width: 140px;
-  
+
   button {
     background: #ffb36c;
     border: none;
@@ -660,13 +691,15 @@ const DayInputCard = styled.div`
     cursor: pointer;
     font-weight: bold;
     color: #1e1e1e;
-    &:hover { background: #ffa04d; }
+    &:hover {
+      background: #ffa04d;
+    }
   }
 `;
 
 const StyledHeroInput = styled.input`
   background: #d9d9d9;
-  border: 1px solid ${props => props.$isError ? '#ff4d4d' : '#ffb36c'};
+  border: 1px solid ${(props) => (props.$isError ? "#ff4d4d" : "#ffb36c")};
   border-radius: 6px;
   padding: 3px 6px;
   font-size: 10px;
@@ -678,7 +711,7 @@ const StyledHeroInput = styled.input`
 
 const HeroCharCount = styled.span`
   font-size: 8px;
-  color: ${props => props.$isError ? '#ff4d4d' : '#fff'};
+  color: ${(props) => (props.$isError ? "#ff4d4d" : "#fff")};
   margin-top: -2px;
   margin-bottom: 2px;
   align-self: flex-end;
@@ -810,7 +843,8 @@ const SortButtonsRow = styled.div`
 `;
 
 const SortBtn = styled.button`
-  background: ${(props) => (props.$active ? "#ffb36c" : "rgba(255, 179, 108, 0.1)")};
+  background: ${(props) =>
+    props.$active ? "#ffb36c" : "rgba(255, 179, 108, 0.1)"};
   color: ${(props) => (props.$active ? "#000" : "#fff")};
   border: 1px solid #ffb36c;
   border-radius: 4px;
@@ -821,7 +855,8 @@ const SortBtn = styled.button`
   font-weight: bold;
   transition: all 0.2s;
   &:hover {
-    background: ${(props) => (props.$active ? "#ffb36c" : "rgba(255, 179, 108, 0.3)")};
+    background: ${(props) =>
+      props.$active ? "#ffb36c" : "rgba(255, 179, 108, 0.3)"};
   }
 `;
 
@@ -1040,12 +1075,12 @@ const ChangeBgButton = styled.button`
     width: 42px;
     height: 42px;
     font-size: 20px;
-      right: 20px;
+    right: 20px;
     top: 60px;
   }
   @media (min-width: 1920px) {
     width: 85px;
-          right: 60px;
+    right: 60px;
     height: 85px;
     font-size: 50px;
     top: 136px;
@@ -1336,25 +1371,40 @@ const TIMEZONES = [
   { label: "UTC+7 (Бангкок, Джакарта, Ханой)", value: "Asia/Bangkok" },
   { label: "UTC+8 (Пекін, Сінгапур, Перт)", value: "Asia/Shanghai" },
   { label: "UTC+9 (Токіо, Сеул, Іркутськ)", value: "Asia/Tokyo" },
-  { label: "UTC+10 (Сідней, Мельбурн, Порт-Морсбі)", value: "Australia/Sydney" },
+  {
+    label: "UTC+10 (Сідней, Мельбурн, Порт-Морсбі)",
+    value: "Australia/Sydney",
+  },
   { label: "UTC+11 (Номеа, Соломонові Острови)", value: "Pacific/Noumea" },
   { label: "UTC+12 (Окленд, Фіджі)", value: "Pacific/Auckland" },
   { label: "UTC-1 (Азорські острови, Кабо-Верде)", value: "Atlantic/Azores" },
   { label: "UTC-2 (Південна Джорджія)", value: "Atlantic/South_Georgia" },
-  { label: "UTC-3 (Буенос-Айрес, Бразиліа, Гренландія)", value: "America/Argentina/Buenos_Aires" },
+  {
+    label: "UTC-3 (Буенос-Айрес, Бразиліа, Гренландія)",
+    value: "America/Argentina/Buenos_Aires",
+  },
   { label: "UTC-4 (Сантьяго, Галіфакс, Каракас)", value: "America/Santiago" },
   { label: "UTC-5 (Нью-Йорк, Торонто, Богота)", value: "America/New_York" },
   { label: "UTC-6 (Чикаго, Мехіко, Вінніпег)", value: "America/Chicago" },
   { label: "UTC-7 (Денвер, Едмонтон, Калгарі)", value: "America/Denver" },
-  { label: "UTC-8 (Лос-Анджелес, Ванкувер, Сан-Франциско)", value: "America/Los_Angeles" },
+  {
+    label: "UTC-8 (Лос-Анджелес, Ванкувер, Сан-Франциско)",
+    value: "America/Los_Angeles",
+  },
   { label: "UTC-9 (Аляска, Анкоридж)", value: "America/Anchorage" },
   { label: "UTC-10 (Гаваї, Гонолулу)", value: "Pacific/Honolulu" },
   { label: "UTC-11 (Паго-Паго, Алофі)", value: "Pacific/Pago_Pago" },
   { label: "UTC-12 (Острів Бейкер, Острів Гоуленд)", value: "Etc/GMT+12" },
   { label: "EST (Північна Америка: Східний час)", value: "America/New_York" },
-  { label: "CST (Північна Америка: Центральний час)", value: "America/Chicago" },
+  {
+    label: "CST (Північна Америка: Центральний час)",
+    value: "America/Chicago",
+  },
   { label: "MST (Північна Америка: Гірський час)", value: "America/Denver" },
-  { label: "PST (Північна Америка: Тихоокеанський час)", value: "America/Los_Angeles" },
+  {
+    label: "PST (Північна Америка: Тихоокеанський час)",
+    value: "America/Los_Angeles",
+  },
   { label: "CET (Центральна Європа: Прага, Мадрид)", value: "Europe/Berlin" },
   { label: "EET (Східна Європа: Софія, Таллінн)", value: "Europe/Kyiv" },
   { label: "IST (Індія, Нью-Делі)", value: "Asia/Kolkata" },
@@ -1415,7 +1465,7 @@ const Hero = ({
 }) => {
   const dispatch = useDispatch();
   const customDays = useSelector((state) => state.calendar?.customDays || []);
-  const [newDayInput, setNewDayInput] = useState({ date: '', reason: '' });
+  const [newDayInput, setNewDayInput] = useState({ date: "", reason: "" });
   const [inputValue, setInputValue] = useState("");
   const [suggestions, setSuggestions] = useState([]);
   const [limit, setLimit] = useState(5);
@@ -1429,24 +1479,27 @@ const Hero = ({
   const [searchMode, setSearchMode] = useState("city");
   const [latitude, setLatitude] = useState("");
   const [longitude, setLongitude] = useState("");
-  const [sortType, setSortType] = useState("rating"); 
+  const [sortType, setSortType] = useState("rating");
   const [activeLayer, setActiveLayer] = useState(1);
-  const rotationScale = 1; 
+  const rotationScale = 1;
   const [tzSortMode, setTzSortMode] = useState("default");
   const [randomBgsList, setRandomBgsList] = useState([]);
-  const [showCustomInput, setShowCustomInput] = useState(false); 
-  const [customTimezoneInputValue, setCustomTimezoneInputValue] = useState(""); 
+  const [showCustomInput, setShowCustomInput] = useState(false);
+  const [customTimezoneInputValue, setCustomTimezoneInputValue] = useState("");
   const isCustom = (src) => !DEFAULT_BGS.some((bg) => bg.src === src);
-  const allBgs = useMemo(() => [
-    ...DEFAULT_BGS,
-    ...(customHeroBgs || []),
-    ...(screenshots || []).map((s) => ({
-      src: s.image,
-      name: `Скріншот: ${s.trackName}`,
-      category: "Скріншоти",
-    })),
-  ], [customHeroBgs, screenshots]);
-  
+  const allBgs = useMemo(
+    () => [
+      ...DEFAULT_BGS,
+      ...(customHeroBgs || []),
+      ...(screenshots || []).map((s) => ({
+        src: s.image,
+        name: `Скріншот: ${s.trackName}`,
+        category: "Скріншоти",
+      })),
+    ],
+    [customHeroBgs, screenshots],
+  );
+
   const getTzTimeInfo = useCallback((tzValue) => {
     if (!tzValue || tzValue === "custom_input") return null;
     try {
@@ -1486,7 +1539,9 @@ const Hero = ({
     if (tzSortMode === "alpha") {
       list.sort((a, b) => a.label.localeCompare(b.label));
     } else if (tzSortMode === "offset") {
-      list.sort((a, b) => getNumericOffset(a.value) - getNumericOffset(b.value));
+      list.sort(
+        (a, b) => getNumericOffset(a.value) - getNumericOffset(b.value),
+      );
     }
     return list;
   }, [tzSortMode, getNumericOffset]);
@@ -1503,7 +1558,13 @@ const Hero = ({
         setActiveLayer((prev) => (prev === 3 ? 1 : prev + 1));
       }, slideshowInterval * 1000);
       return () => clearInterval(timer);
-    } else if (heroBgMode === "slideshow-4" && heroBg && heroBg2 && heroBg3 && heroBg4) {
+    } else if (
+      heroBgMode === "slideshow-4" &&
+      heroBg &&
+      heroBg2 &&
+      heroBg3 &&
+      heroBg4
+    ) {
       setActiveLayer(1);
       const timer = setInterval(() => {
         setActiveLayer((prev) => (prev === 4 ? 1 : prev + 1));
@@ -1519,7 +1580,7 @@ const Hero = ({
         }
         return;
       }
-      
+
       // Чергове циклювання через перемішаний список
       if (randomBgsList.length > 0) {
         let currentIndex = 0;
@@ -1530,9 +1591,21 @@ const Hero = ({
         return () => clearInterval(timer);
       }
     }
-  }, [heroBgMode, heroBg, heroBg2, allBgs, heroBg3, setHeroBg, heroBg4, slideshowInterval, randomBgsList, customHeroBgs, screenshots]);
+  }, [
+    heroBgMode,
+    heroBg,
+    heroBg2,
+    allBgs,
+    heroBg3,
+    setHeroBg,
+    heroBg4,
+    slideshowInterval,
+    randomBgsList,
+    customHeroBgs,
+    screenshots,
+  ]);
   useEffect(() => {
-    const isPredefined = TIMEZONES.some(tz => tz.value === selectedTimezone);
+    const isPredefined = TIMEZONES.some((tz) => tz.value === selectedTimezone);
     if (!isPredefined) {
       setCustomTimezoneInputValue(selectedTimezone);
       setShowCustomInput(true);
@@ -1604,15 +1677,12 @@ const Hero = ({
         alert("Відео занадто велике! Максимум 20мб для стабільності.");
         return;
       }
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setCustomHeroBgs((prev) => [
-          { src: e.target.result, name: file.name, category: "Ваші відео" },
-          ...prev,
-        ]);
-        setHeroBg(e.target.result);
-      };
-      reader.readAsDataURL(file);
+      // Зберігаємо сам об'єкт File (він є типом Blob)
+      setCustomHeroBgs((prev) => [
+        { src: file, name: file.name, category: "Ваші відео" },
+        ...prev,
+      ]);
+      setHeroBg(file);
       startCooldown();
       return;
     }
@@ -1630,15 +1700,16 @@ const Hero = ({
         canvas.height = img.height * scale;
         const ctx = canvas.getContext("2d");
         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-        const compressed = canvas.toDataURL("image/jpeg", 0.7);
-        setCustomHeroBgs((prev) => [
-          { src: compressed, name: file.name },
-          ...prev,
-        ]);
-        setHeroBg(compressed);
+        
+        canvas.toBlob((blob) => {
+          setCustomHeroBgs((prev) => [
+            { src: blob, name: file.name, category: "Ваші картинки" },
+            ...prev,
+          ]);
+          setHeroBg(blob);
+        }, "image/jpeg", 0.7);
       };
     };
-    reader.readAsDataURL(file);
   };
 
   const handleDragOver = (e) => {
@@ -1840,37 +1911,50 @@ const Hero = ({
         return;
       }
 
-      dispatch(addCustomDay({ date: newDayInput.date, reason: newDayInput.reason }));
-      setNewDayInput({ date: '', reason: '' });
+      dispatch(
+        addCustomDay({ date: newDayInput.date, reason: newDayInput.reason }),
+      );
+      setNewDayInput({ date: "", reason: "" });
     }
   };
 
   // Перевірка типу свята та кольору для ефектів
   const todayHolidayInfo = useMemo(() => {
     const now = new Date();
-    const todayStr = now.toISOString().split('T')[0];
-    
+    const todayStr = now.toISOString().split("T")[0];
+
     // 1. Пріоритет: День народження (Червоний)
     if (user?.birthDate) {
       const [, uMonth, uDay] = user.birthDate.split("-");
-      if (now.getDate() === parseInt(uDay) && (now.getMonth() + 1) === parseInt(uMonth)) {
-        return { active: true, color: '#ff5252', label: 'З ДНЕМ НАРОДЖЕННЯ! 🎂' };
+      if (
+        now.getDate() === parseInt(uDay) &&
+        now.getMonth() + 1 === parseInt(uMonth)
+      ) {
+        return {
+          active: true,
+          color: "#ff5252",
+          label: "З ДНЕМ НАРОДЖЕННЯ! 🎂",
+        };
       }
     }
 
     // 2. Пріоритет: Важлива подія (Золотистий)
-    const customDay = customDays.find(day => day.date === todayStr);
+    const customDay = customDays.find((day) => day.date === todayStr);
     if (customDay) {
-      return { active: true, color: '#fff59d', label: customDay.reason.toUpperCase() + '! 🎉' };
+      return {
+        active: true,
+        color: "#fff59d",
+        label: customDay.reason.toUpperCase() + "! 🎉",
+      };
     }
 
     // 3. Пріоритет: Вихідний (Жовтий)
     const dayOfWeek = now.getDay(); // 0 - Sun, 6 - Sat
     if (dayOfWeek === 0 || dayOfWeek === 6) {
-      return { active: true, color: '#ffff00', label: 'ВИХІДНИЙ! ☀️' };
+      return { active: true, color: "#ffff00", label: "ВИХІДНИЙ! ☀️" };
     }
 
-    return { active: false, color: '#fff59d', label: '' };
+    return { active: false, color: "#fff59d", label: "" };
   }, [customDays, user]);
 
   const isTodayHoliday = todayHolidayInfo.active;
@@ -1885,7 +1969,7 @@ const Hero = ({
       x: `${(Math.random() - 0.5) * 100}px`,
       y: `${(Math.random() - 0.5) * 100}px`,
       duration: `${3 + Math.random() * 4}s`,
-      delay: `${Math.random() * 5}s`
+      delay: `${Math.random() * 5}s`,
     }));
   }, [isTodayHoliday]);
 
@@ -1893,23 +1977,23 @@ const Hero = ({
     <HeroDiv>
       {isTodayHoliday && (
         <>
-          <FestiveOverlay 
-            $active={isTodayHoliday} 
-            $color={todayHolidayInfo.color} 
-            $label={todayHolidayInfo.label} 
+          <FestiveOverlay
+            $active={isTodayHoliday}
+            $color={todayHolidayInfo.color}
+            $label={todayHolidayInfo.label}
           />
-          {fireflies.map(f => (
-            <Firefly 
-              key={f.id} 
+          {fireflies.map((f) => (
+            <Firefly
+              key={f.id}
               $color={todayHolidayInfo.color}
-              style={{ 
-                '--top': f.top, 
-                '--left': f.left, 
-                '--x': f.x, 
-                '--y': f.y, 
-                '--d': f.duration,
-                animationDelay: f.delay
-              }} 
+              style={{
+                "--top": f.top,
+                "--left": f.left,
+                "--x": f.x,
+                "--y": f.y,
+                "--d": f.duration,
+                animationDelay: f.delay,
+              }}
             />
           ))}
         </>
@@ -1929,7 +2013,12 @@ const Hero = ({
       />
       <BgLayer
         $image={heroBg2}
-        $active={(heroBgMode === "slideshow-2" || heroBgMode === "slideshow-3" || heroBgMode === "slideshow-4") && activeLayer === 2}
+        $active={
+          (heroBgMode === "slideshow-2" ||
+            heroBgMode === "slideshow-3" ||
+            heroBgMode === "slideshow-4") &&
+          activeLayer === 2
+        }
         $transition={slideshowTransition}
         $zoom={heroBgZoom}
         $rotation={heroBgRotation}
@@ -1942,7 +2031,10 @@ const Hero = ({
       />
       <BgLayer
         $image={heroBg3}
-        $active={(heroBgMode === "slideshow-3" || heroBgMode === "slideshow-4") && activeLayer === 3}
+        $active={
+          (heroBgMode === "slideshow-3" || heroBgMode === "slideshow-4") &&
+          activeLayer === 3
+        }
         $transition={slideshowTransition}
         $zoom={heroBgZoom}
         $rotation={heroBgRotation}
@@ -1976,17 +2068,21 @@ const Hero = ({
       <CustomDaysWrapper>
         <DayInputsContainer>
           <DayInputCard>
-            <StyledHeroInput 
-              type="date" 
-              value={newDayInput.date} 
-              onChange={e => setNewDayInput({ ...newDayInput, date: e.target.value })}
+            <StyledHeroInput
+              type="date"
+              value={newDayInput.date}
+              onChange={(e) =>
+                setNewDayInput({ ...newDayInput, date: e.target.value })
+              }
             />
-            <StyledHeroInput 
-              type="text" 
-              placeholder="Що за свято?" 
+            <StyledHeroInput
+              type="text"
+              placeholder="Що за свято?"
               $isError={newDayInput.reason.length > 12}
               value={newDayInput.reason}
-              onChange={e => setNewDayInput({ ...newDayInput, reason: e.target.value })}
+              onChange={(e) =>
+                setNewDayInput({ ...newDayInput, reason: e.target.value })
+              }
             />
             <HeroCharCount $isError={newDayInput.reason.length > 12}>
               {newDayInput.reason.length}/12
@@ -1996,12 +2092,27 @@ const Hero = ({
         </DayInputsContainer>
 
         {customDays.length > 0 && (
-          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', justifyContent: 'center' }}>
-            {customDays.map(day => (
-              <button 
+          <div
+            style={{
+              display: "flex",
+              gap: "8px",
+              flexWrap: "wrap",
+              justifyContent: "center",
+            }}
+          >
+            {customDays.map((day) => (
+              <button
                 key={day.date}
                 onClick={() => dispatch(removeCustomDay(day.date))}
-                style={{ background: 'rgba(255,0,0,0.1)', border: '1px solid rgba(255,0,0,0.5)', color: '#ff8a80', borderRadius: '15px', padding: '3px 10px', fontSize: '10px', cursor: 'pointer' }}
+                style={{
+                  background: "rgba(255,0,0,0.1)",
+                  border: "1px solid rgba(255,0,0,0.5)",
+                  color: "#ff8a80",
+                  borderRadius: "15px",
+                  padding: "3px 10px",
+                  fontSize: "10px",
+                  cursor: "pointer",
+                }}
               >
                 {day.date}: {day.reason} ✕
               </button>
@@ -2020,109 +2131,164 @@ const Hero = ({
               Мій фейсбук канал
             </HeroTextLink>
             <HeroFi>
-            <HeroDate ref={timezoneMenuRef}>
-              {heroDateString}
-              <TimezoneButton
-                onClick={() => setShowTimezoneMenu(!showTimezoneMenu)}
-                title="Змінити часовий пояс"
-              >
-                ⚙️
-              </TimezoneButton>
-              {showTimezoneMenu && (
-                <TimezoneMenu>
-                  <div style={{ marginBottom: "10px", fontWeight: "bold", color: "#ffb36c", fontSize: "12px" }}>
-                    Часовий пояс
-                  </div>
-                  <SortButtonsRow>
-                    <SortBtn $active={tzSortMode === "default"} onClick={() => setTzSortMode("default")}>По ум.</SortBtn>
-                    <SortBtn $active={tzSortMode === "alpha"} onClick={() => setTzSortMode("alpha")}>А-Я</SortBtn>
-                    <SortBtn $active={tzSortMode === "offset"} onClick={() => setTzSortMode("offset")}>UTC +/-</SortBtn>
-                  </SortButtonsRow>
-                  {sortedTimezones.map((tz) => {
-                    const isSelected = selectedTimezone === tz.value || (tz.value === "custom_input" && showCustomInput);
-                    const info = getTzTimeInfo(tz.value);
-                    return (
-                    <TimezoneOption
-                      key={tz.value}
-                      $selected={isSelected}
-                      onClick={() => {
-                        if (tz.value === "custom_input") {
-                          setShowCustomInput(true);
-                          const isCurrentPredefined = TIMEZONES.some(t => t.value === selectedTimezone);
-                          if (!isCurrentPredefined) {
-                            setCustomTimezoneInputValue(selectedTimezone);
-                          } else {
-                            setCustomTimezoneInputValue("");
-                          }
-                        } else {
-                          setShowCustomInput(false);
-                          setSelectedTimezone(tz.value); // Update the prop directly
-                          localforage.setItem("selected_timezone", tz.value);
-                        } // Menu will not close automatically here
+              <HeroDate ref={timezoneMenuRef}>
+                {heroDateString}
+                <TimezoneButton
+                  onClick={() => setShowTimezoneMenu(!showTimezoneMenu)}
+                  title="Змінити часовий пояс"
+                >
+                  ⚙️
+                </TimezoneButton>
+                {showTimezoneMenu && (
+                  <TimezoneMenu>
+                    <div
+                      style={{
+                        marginBottom: "10px",
+                        fontWeight: "bold",
+                        color: "#ffb36c",
+                        fontSize: "12px",
                       }}
                     >
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', gap: '8px' }}>
-                        <span>{tz.label}</span>
-                        {info && (
-                          <span style={{ fontSize: '10px', opacity: 0.9, whiteSpace: 'nowrap' }}>
-                            {info.isDay ? "☀️" : "🌙"} {info.timeStr}
-                          </span>
-                        )}
-                      </div>
-                    </TimezoneOption>
-                  )})}
-                  {showCustomInput && (
-                    <div style={{ marginTop: "10px" }}>
-                      <input
-                        type="text"
-                        value={customTimezoneInputValue}
-                        onChange={(e) => setCustomTimezoneInputValue(e.target.value)}
-                        placeholder="Наприклад: Europe/Warsaw"
-                        style={{
-                          width: "100%",
-                          padding: "8px",
-                          borderRadius: "5px",
-                          border: "1px solid #ffb36c",
-                          background: "#333",
-                          color: "#fff",
-                          fontSize: "12px",
-                          marginBottom: "5px",
-                        }}
-                      />
-                      <button
-                        onClick={() => {
-                          if (customTimezoneInputValue.trim()) {
-                            try {
-                              Intl.DateTimeFormat("en", { timeZone: customTimezoneInputValue.trim() });
-                              setSelectedTimezone(customTimezoneInputValue.trim()); // Update the prop
-                              localforage.setItem("selected_timezone", customTimezoneInputValue.trim());
-                              setShowTimezoneMenu(false);
-                            } catch (e) {
-                              alert("Невірний формат часового поясу. Спробуйте, наприклад, 'Europe/Kyiv' або 'America/New_York'.");
-                            }
-                          } else {
-                            alert("Будь ласка, введіть часовий пояс.");
-                          }
-                        }}
-                        style={{
-                          width: "100%",
-                          padding: "8px",
-                          background: "#ffb36c",
-                          border: "none",
-                          borderRadius: "5px",
-                          cursor: "pointer",
-                          fontWeight: "bold",
-                          fontSize: "12px",
-                          color: "#1e1e1e",
-                        }}
-                      >
-                        Застосувати
-                      </button>
+                      Часовий пояс
                     </div>
-                  )}
-                </TimezoneMenu>
-              )}
-            </HeroDate>
+                    <SortButtonsRow>
+                      <SortBtn
+                        $active={tzSortMode === "default"}
+                        onClick={() => setTzSortMode("default")}
+                      >
+                        По ум.
+                      </SortBtn>
+                      <SortBtn
+                        $active={tzSortMode === "alpha"}
+                        onClick={() => setTzSortMode("alpha")}
+                      >
+                        А-Я
+                      </SortBtn>
+                      <SortBtn
+                        $active={tzSortMode === "offset"}
+                        onClick={() => setTzSortMode("offset")}
+                      >
+                        UTC +/-
+                      </SortBtn>
+                    </SortButtonsRow>
+                    {sortedTimezones.map((tz) => {
+                      const isSelected =
+                        selectedTimezone === tz.value ||
+                        (tz.value === "custom_input" && showCustomInput);
+                      const info = getTzTimeInfo(tz.value);
+                      return (
+                        <TimezoneOption
+                          key={tz.value}
+                          $selected={isSelected}
+                          onClick={() => {
+                            if (tz.value === "custom_input") {
+                              setShowCustomInput(true);
+                              const isCurrentPredefined = TIMEZONES.some(
+                                (t) => t.value === selectedTimezone,
+                              );
+                              if (!isCurrentPredefined) {
+                                setCustomTimezoneInputValue(selectedTimezone);
+                              } else {
+                                setCustomTimezoneInputValue("");
+                              }
+                            } else {
+                              setShowCustomInput(false);
+                              setSelectedTimezone(tz.value); // Update the prop directly
+                              localforage.setItem(
+                                "selected_timezone",
+                                tz.value,
+                              );
+                            } // Menu will not close automatically here
+                          }}
+                        >
+                          <div
+                            style={{
+                              display: "flex",
+                              justifyContent: "space-between",
+                              alignItems: "center",
+                              width: "100%",
+                              gap: "8px",
+                            }}
+                          >
+                            <span>{tz.label}</span>
+                            {info && (
+                              <span
+                                style={{
+                                  fontSize: "10px",
+                                  opacity: 0.9,
+                                  whiteSpace: "nowrap",
+                                }}
+                              >
+                                {info.isDay ? "☀️" : "🌙"} {info.timeStr}
+                              </span>
+                            )}
+                          </div>
+                        </TimezoneOption>
+                      );
+                    })}
+                    {showCustomInput && (
+                      <div style={{ marginTop: "10px" }}>
+                        <input
+                          type="text"
+                          value={customTimezoneInputValue}
+                          onChange={(e) =>
+                            setCustomTimezoneInputValue(e.target.value)
+                          }
+                          placeholder="Наприклад: Europe/Warsaw"
+                          style={{
+                            width: "100%",
+                            padding: "8px",
+                            borderRadius: "5px",
+                            border: "1px solid #ffb36c",
+                            background: "#333",
+                            color: "#fff",
+                            fontSize: "12px",
+                            marginBottom: "5px",
+                          }}
+                        />
+                        <button
+                          onClick={() => {
+                            if (customTimezoneInputValue.trim()) {
+                              try {
+                                Intl.DateTimeFormat("en", {
+                                  timeZone: customTimezoneInputValue.trim(),
+                                });
+                                setSelectedTimezone(
+                                  customTimezoneInputValue.trim(),
+                                ); // Update the prop
+                                localforage.setItem(
+                                  "selected_timezone",
+                                  customTimezoneInputValue.trim(),
+                                );
+                                setShowTimezoneMenu(false);
+                              } catch (e) {
+                                alert(
+                                  "Невірний формат часового поясу. Спробуйте, наприклад, 'Europe/Kyiv' або 'America/New_York'.",
+                                );
+                              }
+                            } else {
+                              alert("Будь ласка, введіть часовий пояс.");
+                            }
+                          }}
+                          style={{
+                            width: "100%",
+                            padding: "8px",
+                            background: "#ffb36c",
+                            border: "none",
+                            borderRadius: "5px",
+                            cursor: "pointer",
+                            fontWeight: "bold",
+                            fontSize: "12px",
+                            color: "#1e1e1e",
+                          }}
+                        >
+                          Застосувати
+                        </button>
+                      </div>
+                    )}
+                  </TimezoneMenu>
+                )}
+              </HeroDate>
             </HeroFi>
           </HeroFix>
         </HeroDecor>
@@ -2535,52 +2701,64 @@ const Hero = ({
                   </div>
                 </div>
               </FocusButtonsGrid>
-              ) : heroBgMode === "slideshow-3" ? (
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "15px" }}>
-                  {[
-                    { num: 1, focal: heroBgFocal1, setFocal: setHeroBgFocal1 },
-                    { num: 2, focal: heroBgFocal2, setFocal: setHeroBgFocal2 },
-                    { num: 3, focal: heroBgFocal3, setFocal: setHeroBgFocal3 },
-                  ].map((slot) => (
-                    <div
-                      key={slot.num}
+            ) : heroBgMode === "slideshow-3" ? (
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "1fr 1fr",
+                  gap: "15px",
+                }}
+              >
+                {[
+                  { num: 1, focal: heroBgFocal1, setFocal: setHeroBgFocal1 },
+                  { num: 2, focal: heroBgFocal2, setFocal: setHeroBgFocal2 },
+                  { num: 3, focal: heroBgFocal3, setFocal: setHeroBgFocal3 },
+                ].map((slot) => (
+                  <div
+                    key={slot.num}
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: "10px",
+                    }}
+                  >
+                    <span
                       style={{
-                        display: "flex",
-                        flexDirection: "column",
-                        gap: "10px",
+                        fontSize: "12px",
+                        color: "#ffb36c",
+                        fontWeight: "bold",
                       }}
                     >
-                      <span
+                      Слот {slot.num}
+                    </span>
+                    <div style={{ display: "flex", gap: "8px" }}>
+                      <button
+                        onClick={() => slot.setFocal({ x: 50, y: 50 })}
                         style={{
-                          fontSize: "12px",
-                          color: "#ffb36c",
+                          flex: 1,
+                          padding: "8px",
+                          background: "#ffb36c",
+                          border: "none",
+                          borderRadius: "5px",
+                          cursor: "pointer",
                           fontWeight: "bold",
+                          fontSize: "12px",
                         }}
                       >
-                        Слот {slot.num}
-                      </span>
-                      <div style={{ display: "flex", gap: "8px" }}>
-                        <button
-                          onClick={() => slot.setFocal({ x: 50, y: 50 })}
-                          style={{
-                            flex: 1,
-                            padding: "8px",
-                            background: "#ffb36c",
-                            border: "none",
-                            borderRadius: "5px",
-                            cursor: "pointer",
-                            fontWeight: "bold",
-                            fontSize: "12px",
-                          }}
-                        >
-                          🎯 Центр
-                        </button>
-                      </div>
+                        🎯 Центр
+                      </button>
                     </div>
-                  ))}
-                </div>
+                  </div>
+                ))}
+              </div>
             ) : heroBgMode === "slideshow-4" ? (
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "15px" }}>
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "1fr 1fr",
+                  gap: "15px",
+                }}
+              >
                 {[
                   { num: 1, focal: heroBgFocal1, setFocal: setHeroBgFocal1 },
                   { num: 2, focal: heroBgFocal2, setFocal: setHeroBgFocal2 },
@@ -2604,7 +2782,13 @@ const Hero = ({
                     >
                       Слот {slot.num}
                     </span>
-                    <div style={{ display: "flex", gap: "8px", flexDirection: "column" }}>
+                    <div
+                      style={{
+                        display: "flex",
+                        gap: "8px",
+                        flexDirection: "column",
+                      }}
+                    >
                       <button
                         onClick={() => slot.setFocal({ x: 50, y: 50 })}
                         style={{
@@ -2704,7 +2888,10 @@ const Hero = ({
               </CloseBtn>
             </div>
 
-            {(heroBgMode === "slideshow-2" || heroBgMode === "slideshow-3" || heroBgMode === "slideshow-4" || heroBgMode === "random") && (
+            {(heroBgMode === "slideshow-2" ||
+              heroBgMode === "slideshow-3" ||
+              heroBgMode === "slideshow-4" ||
+              heroBgMode === "random") && (
               <div
                 style={{
                   display: "flex",
@@ -2893,16 +3080,30 @@ const Hero = ({
                         </DeleteBtn>
                       </>
                     )}
-                <NameOverlay $hasSlots={heroBgMode === "slideshow-2" || heroBgMode === "slideshow-3" || heroBgMode === "slideshow-4"}>
+                    <NameOverlay
+                      $hasSlots={
+                        heroBgMode === "slideshow-2" ||
+                        heroBgMode === "slideshow-3" ||
+                        heroBgMode === "slideshow-4"
+                      }
+                    >
                       {bg.name}
                     </NameOverlay>
                     {isVideoSource(bg.src) ? (
                       <video
                         src={bg.src}
                         muted
-                        style={{ width: '100%', aspectRatio: '3/2', objectFit: 'cover', cursor: 'pointer' }}
+                        style={{
+                          width: "100%",
+                          aspectRatio: "3/2",
+                          objectFit: "cover",
+                          cursor: "pointer",
+                        }}
                         onMouseEnter={(e) => e.target.play()}
-                        onMouseLeave={(e) => { e.target.pause(); e.target.currentTime = 0; }}
+                        onMouseLeave={(e) => {
+                          e.target.pause();
+                          e.target.currentTime = 0;
+                        }}
                         onClick={() => setHeroBg(bg.src)}
                       />
                     ) : (
