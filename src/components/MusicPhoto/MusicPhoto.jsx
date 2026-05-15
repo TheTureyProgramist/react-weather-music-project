@@ -1,12 +1,15 @@
 import styled, { keyframes, css } from "styled-components";
 import { useState, useRef, useEffect, useMemo, useCallback } from "react";
 import localforage from "localforage";
+import { motion, AnimatePresence} from "framer-motion"
 import dinofrozVideo from "../../mp3/dinofroz.mp4";
 import soloveyko from "../../photos/vip-images/vip-soloveyko.webp";
 import harmony from "../../photos/vip-images/asium/asium.webp";
 import horse from "../../photos/vip-images/horse/horse.webp";
 import theorytwo from "../../photos/fan-art/theorytwo.webp";
 import fingerdash from "../../photos/vip-images/dinofroz/fingerdash.webp";
+import humorVideo from "../../mp3/humor.mp4"
+import humorAudio from "../../mp3/humor.mp3"
 import electrodynamix from "../../photos/vip-images/electrodynamix.webp";
 //Desert
 import desert from "../../photos/vip-images/desert/vip-desert.webp";
@@ -90,7 +93,6 @@ import soloveykoAudio from "../../mp3/soloveyko.mp3";
 import harmonyAudio from "../../mp3/harmonic-japan.mp3";
 import electrodynamixAudio from "../../mp3/electrodynamix.mp3";
 import clubstepAudio from "../../mp3/clubstep.mp3";
-import fingerdashAudio from "../../mp3/fingerdash.mp3";
 import fingerbang from "../../mp3/mdk-fingerbang-full.mp3";
 import theorytwoAudio from "../../mp3/theoty-of-everything-ll.mp3";
 import theoryAudio from "../../mp3/theory-of-everyting.mp3";
@@ -106,7 +108,6 @@ const slideIn = keyframes`
     opacity: 1; 
   }
 `;
-
 const slideOut = keyframes`
   0% { 
     transform: translateY(0%) scale(1);
@@ -117,23 +118,19 @@ const slideOut = keyframes`
     opacity: 0; 
   }
 `;
-
 const fadeOut = keyframes`
   0% { opacity: 1; }
   100% { opacity: 0; }
 `;
-
 const pulseRedBorder = keyframes`
   0% { border-color: #ff0000; box-shadow: 0 0 5px #ff0000; }
   50% { border-color: #ff4d4d; box-shadow: 0 0 15px #ff0000; }
   100% { border-color: #ff0000; box-shadow: 0 0 5px #ff0000; }
 `;
-
 const flickerAnimation = keyframes`
   0% { opacity: 0.4; }
   100% { opacity: 1; }
 `;
-
 const chaosAnimation = keyframes`
   0% { background-color: rgba(255, 0, 0, var(--chaos-opacity)); }      /* червоний */
   10% { background-color: rgba(255, 255, 0, var(--chaos-opacity)); }    /* жовтий */
@@ -147,7 +144,6 @@ const chaosAnimation = keyframes`
   90% { background-color: rgba(128, 128, 128, var(--chaos-opacity)); }  /* чорнобілий (сірий) */
   100% { background-color: rgba(255, 0, 0, var(--chaos-opacity)); }
 `;
-
 const ultrachaosAnimation = keyframes`
   0% { background-position: 0% 0%; filter: hue-rotate(0deg) contrast(1.2); }
   25% { background-position: 100% 0%; filter: hue-rotate(90deg) contrast(1.4); }
@@ -155,12 +151,10 @@ const ultrachaosAnimation = keyframes`
   75% { background-position: 0% 100%; filter: hue-rotate(270deg) contrast(1.4); }
   100% { background-position: 0% 0%; filter: hue-rotate(360deg) contrast(1.2); }
 `;
-
 const oldFilmNoise = keyframes`
   0% { background-position: 0% 0%; }
   100% { background-position: 100% 100%; }
 `;
-
 const oldFilmShake = keyframes`
   0% { transform: translate(0, 0); }
   20% { transform: translate(-1px, 1px); }
@@ -169,17 +163,14 @@ const oldFilmShake = keyframes`
   80% { transform: translate(1px, -1px); }
   100% { transform: translate(0, 0); }
 `;
-
 const cinemascopeTop = keyframes`
   from { height: 0; }
   to { height: 12%; }
 `;
-
 const cinemascopeBottom = keyframes`
   from { height: 0; }
   to { height: 12%; }
 `;
-
 const symbolAnimation = keyframes`
   0% { transform: translate(-50%, -50%) scale(0.7); opacity: 0; }
   20% { opacity: 0.5; }
@@ -187,7 +178,6 @@ const symbolAnimation = keyframes`
   80% { opacity: 0.5; }
   100% { transform: translate(-50%, -50%) scale(1.2); opacity: 0; }
 `;
-
 const fireworkAnimation = keyframes`
   0% { 
     transform: translate(-50%, -50%) scale(0.1); 
@@ -206,13 +196,11 @@ const fireworkAnimation = keyframes`
     opacity: 0;
   }
 `;
-
 const seekAnimation = keyframes`
   0% { opacity: 0; background-color: rgba(255, 255, 255, 0); }
   30% { opacity: 1; background-color: rgba(255, 255, 255, 0.1); }
   100% { opacity: 0; background-color: rgba(255, 255, 255, 0); }
 `;
-
 const SeekIndicator = styled.div`
   position: absolute;
   top: 0;
@@ -236,7 +224,6 @@ const SeekIndicator = styled.div`
     font-weight: bold;
   }
 `;
-
 const LongPressBadge = styled.div`
   position: absolute;
   top: 70px;
@@ -252,7 +239,6 @@ const LongPressBadge = styled.div`
   pointer-events: none;
   border: 1px solid rgba(255, 255, 255, 0.2);
 `;
-
 const blinkAnimation = keyframes`
   0% { opacity: var(--initial-opacity); }
   10% { opacity: 0.05; }
@@ -266,18 +252,37 @@ const blinkAnimation = keyframes`
   90% { opacity: 0.05; }
   100% { opacity: var(--initial-opacity); }
 `;
-
 const MusicPhotoDiv = styled.div`
   background: #e8e8e8;
   border-radius: 20px;
   margin-top: 15px;
   padding: 5px;
   text-align: center;
+  transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+
+  ${(props) =>
+    props.$isAudioBarActive &&
+    css`
+      height: 55vh;
+      max-height: 420px;
+      overflow-y: auto;
+      width: 98%;
+      margin: 10px auto 90px auto;
+      border: 3px solid orange;
+      box-shadow: 0 15px 50px rgba(0, 0, 0, 0.6);
+      &::-webkit-scrollbar {
+        width: 6px;
+      }
+      &::-webkit-scrollbar-thumb {
+        background: orange;
+        border-radius: 3px;
+      }
+    `}
+
   @media (min-width: 768px) {
     margin-top: 20px;
   }
 `;
-
 const MusicPhotoFix = styled.div`
   display: flex;
   gap: 9px;
@@ -285,7 +290,6 @@ const MusicPhotoFix = styled.div`
   justify-content: center;
   align-items: flex-start;
 `;
-
 const MusicPhotoText = styled.div`
   font-size: 17px;
   text-align: center;
@@ -307,7 +311,6 @@ const ControlsContainer = styled.div`
   width: 100%;
   padding: 0 10px;
 `;
-
 const SearchInput = styled.input`
   width: 100%;
   max-width: 250px;
@@ -321,7 +324,6 @@ const SearchInput = styled.input`
     border-color: orange;
   }
 `;
-
 const SortSelect = styled.select`
   padding: 6px 10px;
   border-radius: 25px;
@@ -342,7 +344,6 @@ const PlaylistGrid = styled.div`
   gap: 20px;
   padding: 20px;
 `;
-
 const PlaylistCard = styled.div`
   width: 320px;
   border-radius: 15px;
@@ -353,18 +354,15 @@ const PlaylistCard = styled.div`
   background: #fff;
   display: flex;
   flex-direction: column;
-
   &:hover {
     transform: scale(1.05);
   }
 `;
-
 const PlaylistImage = styled.img`
   width: 100%;
   height: 150px;
   object-fit: cover;
 `;
-
 const PlaylistTitle = styled.div`
   color: #333;
   padding: 10px;
@@ -372,7 +370,6 @@ const PlaylistTitle = styled.div`
   font-size: 18px;
   text-align: center;
 `;
-
 const CardWrapper = styled.div`
   position: relative;
   display: flex;
@@ -401,7 +398,6 @@ const CardWrapper = styled.div`
     transform: translateY(-5px);
   }
 `;
-
 const LyricsModalImage = styled.img`
   width: calc(100% + 20px);
   margin: -10px -10px 15px -10px;
@@ -414,7 +410,6 @@ const LyricsModalImage = styled.img`
   object-fit: cover;
   max-height: 250px;
 `;
-
 const MusicImageContainer = styled.div`
   position: relative;
   width: 308px;
@@ -424,7 +419,6 @@ const MusicImageContainer = styled.div`
   overflow: hidden;
   flex-shrink: 0;
 `;
-
 const MusicImage = styled.img`
   width: 308px;
   height: 100%;
@@ -446,7 +440,6 @@ const MusicImage = styled.img`
     opacity: 0.7;
   }
 `;
-
 const HeartButton = styled.button`
   position: absolute;
   top: 10px;
@@ -780,26 +773,21 @@ const SymbolOverlay = ({
 
   const symbols = useMemo(() => {
     const isFirework = variation === "firework";
-
-    // Адаптивність: розраховуємо множник залежно від ширини екрана
     let multiplier = 1;
     if (windowWidth < 480) {
-      multiplier = 0.3; // Лише 30% нот для телефонів
+      multiplier = 0.3; 
     } else if (windowWidth < 1024) {
-      multiplier = 0.6; // 60% для планшетів та малих ноутбуків
+      multiplier = 0.6; 
     }
     const realCount = isFirework ? 6 : Math.max(1, Math.floor(count * multiplier));
-
     return Array.from({ length: realCount }).map((_, i) => {
       const r1 = Math.random();
       const r2 = Math.random();
-
       let top = r2 * 100;
       let left = r1 * 100;
       let moveX = speed > 0 ? (r1 - 0.5) * 200 * speed : 0;
       let moveY = speed > 0 ? (r2 - 0.5) * 200 * speed : 0;
       let duration = 2 + Math.random() * 4;
-
       if (isFirework) {
         top = 50;
         left = 50;
@@ -1159,12 +1147,200 @@ const MiniResizeHandle = styled.div`
   z-index: 3010;
 `;
 
+const AudioBarContainer = styled(motion.div)`
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 80px;
+  background: #111;
+  border-top: 2px solid orange;
+  z-index: 5000;
+  display: flex;
+  align-items: center;
+  padding: 0 8px;
+  gap: 5px;
+  box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.5);
+  color: white;
+  font-family: sans-serif;
+  @media (max-width: 768px) {
+    height: auto;
+    flex-wrap: wrap;
+  }
+`;
+
+const AudioBarBtn = styled.button`
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  opacity: 0.8;
+  transition: all 0.2s;
+  &:hover { opacity: 1; color: orange; }
+`;
+
+const AudioBar = ({ track, initialTime, isPlaying: startPlaying, volume: startVolume, speed: startSpeed, onClose, onRestore }) => {
+  const [isPlaying, setIsPlaying] = useState(startPlaying);
+  const [currentTime, setCurrentTime] = useState(initialTime);
+  const [duration, setDuration] = useState(0);
+  const [volume, setVolume] = useState(startVolume);
+  const [speed, setSpeed] = useState(startSpeed);
+  const [mode, setMode] = useState("linear"); // "linear" або "stereo"
+  const [waveform, setWaveform] = useState([]);
+  const [isGeneratingWave, setIsGeneratingWave] = useState(false);
+  const mediaRef = useRef(null);
+
+  const isVideo = !!track.video;
+
+  useEffect(() => {
+    if (mediaRef.current) {
+      mediaRef.current.currentTime = initialTime;
+      mediaRef.current.volume = volume;
+      mediaRef.current.playbackRate = speed;
+    }
+  }, [track.id, initialTime, volume, speed]);
+
+  useEffect(() => {
+    if (mode !== "stereo") return;
+    let isCancelled = false;
+    const generateWave = async () => {
+      setIsGeneratingWave(true);
+      try {
+        const url = isVideo ? track.video : track.audio;
+        const response = await fetch(url);
+        const arrayBuffer = await response.arrayBuffer();
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const audioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
+        if (isCancelled) return;
+        const rawData = audioBuffer.getChannelData(0);
+        const samples = 150;
+        const blockSize = Math.floor(rawData.length / samples);
+        const filteredData = [];
+        for (let i = 0; i < samples; i++) {
+          let blockStart = blockSize * i;
+          let sum = 0;
+          for (let j = 0; j < blockSize; j++) {
+            sum += Math.abs(rawData[blockStart + j]);
+          }
+          filteredData.push(sum / blockSize);
+        }
+        const multiplier = Math.pow(Math.max(...filteredData), -1);
+        setWaveform(filteredData.map(n => n * multiplier));
+      } catch (e) { console.error("Waveform error:", e); }
+      finally { setIsGeneratingWave(false); }
+    };
+    generateWave();
+    return () => { isCancelled = true; };
+  }, [mode, track.audio, track.video, isVideo]);
+
+  const formatTime = (t) => {
+    const m = Math.floor(t / 60) || 0;
+    const s = Math.floor(t % 60) || 0;
+    return `${m}:${s < 10 ? "0" : ""}${s}`;
+  };
+
+  const handleStereoSeek = (e) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const p = Math.max(0, Math.min(1, x / rect.width));
+    if (mediaRef.current) {
+      mediaRef.current.currentTime = p * duration;
+    }
+  };
+
+  return (
+    <AudioBarContainer
+      initial={{ y: "100%" }}
+      animate={{ y: 0 }}
+      exit={{ y: "100%" }}
+      transition={{ type: "spring", damping: 25, stiffness: 200 }}
+    >
+      <div style={{ display: "flex", flexDirection: "column", width: "150px" }}>
+        <span style={{ fontSize: "9.5px", fontWeight: "bold", color: "orange", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{track.author}</span>
+        <span style={{ fontSize: "8px", color: "#888" }}>{track.text?.slice(0, 190)}.</span>
+      </div>
+
+      <div style={{ display: "flex", gap: "10px" }}>
+        <AudioBarBtn onClick={() => mediaRef.current.currentTime -= 10} title="Назад 10с">⏪</AudioBarBtn>
+        <AudioBarBtn onClick={() => {
+          if (isPlaying) { mediaRef.current.pause(); setIsPlaying(false); }
+          else { mediaRef.current.play(); setIsPlaying(true); }
+        }}>{isPlaying ? "⏸" : "▶"}</AudioBarBtn>
+        <AudioBarBtn onClick={() => mediaRef.current.currentTime += 10} title="Вперед 10с">⏩</AudioBarBtn>
+      </div>
+
+      <div style={{ display: "flex", alignItems: "center", gap: "5px", background: "rgba(255,255,255,0.1)", padding: "2px 8px", borderRadius: "10px" }}>
+        <span style={{ fontSize: "10px" }}>⚡</span>
+        <SpeedSlider type="range" min="0.5" max="2" step="0.1" value={speed} onChange={(e) => setSpeed(parseFloat(e.target.value))} style={{ width: "40px" }} />
+        <span style={{ fontSize: "10px", width: "22px" }}>{speed}x</span>
+      </div>
+
+      <div style={{ flex: 1, display: "flex", alignItems: "center", gap: "10px" }}>
+        <span style={{ fontSize: "11px", minWidth: "35px" }}>{formatTime(currentTime)}</span>
+        {mode === "linear" ? (
+          <SeekBar 
+            type="range" min="0" max={duration || 0} value={currentTime} 
+            onChange={(e) => mediaRef.current.currentTime = e.target.value} 
+            style={{ flex: 1 }}
+          />
+        ) : (
+          <StereoSeekBar onClick={handleStereoSeek} style={{ height: "30px" }}>
+            {isGeneratingWave ? (
+              <span style={{ color: "white", fontSize: "10px", margin: "auto" }}>Обробка...</span>
+            ) : (
+              waveform.map((height, i) => (
+                <StereoChannel key={i} $height={height} $active={(currentTime / duration) * 100 > (i / waveform.length) * 100} />
+              ))
+            )}
+          </StereoSeekBar>
+        )}
+        <span style={{ fontSize: "11px", minWidth: "35px" }}>{formatTime(duration)}</span>
+        <AudioBarBtn title="Перемикач на стереограму" onClick={() => setMode(mode === "linear" ? "stereo" : "linear")}>📊</AudioBarBtn>
+      </div>
+
+      <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+        <span style={{ fontSize: "12px" }}>🔊</span>
+        <VolumeSlider type="range" min="0" max="1" step="0.05" value={volume} onChange={(e) => setVolume(parseFloat(e.target.value))} style={{ width: "60px" }} />
+      </div>
+
+      <div style={{ display: "flex", gap: "10px" }}>
+        <AudioBarBtn onClick={() => onRestore(currentTime, isPlaying, volume, speed)} title="Розгорнути">🔼</AudioBarBtn>
+        <AudioBarBtn onClick={onClose} title="Закрити">✕</AudioBarBtn>
+      </div>
+
+      {track.video ? (
+        <video 
+          ref={mediaRef} 
+          src={track.video} 
+          autoPlay={isPlaying} 
+          hidden 
+          onTimeUpdate={(e) => setCurrentTime(e.target.currentTime)} 
+          onLoadedMetadata={(e) => setDuration(e.target.duration)} 
+          onEnded={() => setIsPlaying(false)}
+        />
+      ) : (
+        <audio 
+          ref={mediaRef} 
+          src={track.audio} 
+          autoPlay={isPlaying} 
+          onTimeUpdate={(e) => setCurrentTime(e.target.currentTime)} 
+          onLoadedMetadata={(e) => setDuration(e.target.duration)} 
+          onEnded={() => setIsPlaying(false)}
+        />
+      )}
+    </AudioBarContainer>
+  );
+};
+
 const MiniPlayer = ({
   track,
   initialTime,
   isPlaying: initialPlaying,
-  speed,
-  volume,
+  speed: startSpeed,
+  volume: startVolume,
   onClose,
   onRestore,
 }) => {
@@ -1172,18 +1348,21 @@ const MiniPlayer = ({
     x: Math.max(0, window.innerWidth - 320),
     y: Math.max(0, window.innerHeight - 220),
   });
-
   const [pos, setPos] = useState(getDefaultPos());
   const [size, setSize] = useState({ width: 300, height: 180 });
   const [isPlaying, setIsPlaying] = useState(initialPlaying);
-  const [currentTime, setCurrentTime] = useState(initialTime);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
+  const [volume] = useState(startVolume);
+  const [speed] = useState(startSpeed);
   const mediaRef = useRef(null);
-  const canvasRef = useRef(null);
-  const pipVideoRef = useRef(null);
-  const isDinofroz =
-    (track.category === "мультфільми" && track.video) ||
-    // Check if track.text is defined before calling toLowerCase()
-    (track.text && track.text.toLowerCase().includes("динофроз"));
+  const isDinofroz = !!track.video;
+
+  const handleError = useCallback(() => {
+    alert("Помилка завантаження медіа в міні-плеєрі. Спробуйте ще раз.");
+    setIsPlaying(false);
+    mediaRef.current?.pause();
+  }, []);
 
   useEffect(() => {
     setPos(getDefaultPos());
@@ -1198,14 +1377,18 @@ const MiniPlayer = ({
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
-
   useEffect(() => {
     if (mediaRef.current) {
-      mediaRef.current.playbackRate = speed || 1;
-      mediaRef.current.volume = volume ?? 1;
+      mediaRef.current.currentTime = initialTime;
+      mediaRef.current.playbackRate = speed;
+      mediaRef.current.volume = volume;
+      if (isPlaying) {
+        mediaRef.current.play().catch(() => {});
+      } else {
+        mediaRef.current.pause();
+      }
     }
-  }, [speed, volume]);
-
+  }, [initialTime, isPlaying, speed, volume, track.id]);
   useEffect(() => {
     if ("mediaSession" in navigator && track) {
       navigator.mediaSession.metadata = new window.MediaMetadata({
@@ -1232,33 +1415,40 @@ const MiniPlayer = ({
     }
   }, [isPlaying]);
 
-  const getImageIndexByTime = (images, currentTime, duration) => {
-    if (!images || images.length === 0) return 0;
-    const isTimedFormat =
-      images[0] && typeof images[0] === "object" && "image" in images[0];
-    if (isTimedFormat) {
-      for (let i = images.length - 1; i >= 0; i--) {
-        if (images[i].time <= currentTime) {
-          return i;
-        }
+  const sliderImages = useMemo(() => {
+    if (track.images && track.images.length > 0) {
+      if (
+        track.images[0] &&
+        typeof track.images[0] === "object" &&
+        "image" in track.images[0]
+      ) {
+        return track.images.map((item) => item.image);
       }
-      return 0;
-    } else {
-      const segment = (duration || 1) / images.length;
-      return Math.min(Math.floor(currentTime / segment), images.length - 1);
+      return track.images;
     }
-  };
+    return [track.image];
+  }, [track]);
+
   const currentImgIdx = useMemo(() => {
-    return getImageIndexByTime(track.images, currentTime, track.duration);
-  }, [track, currentTime]);
+    if (!sliderImages || sliderImages.length === 0) return 0;
+    const segment = (duration || 1) / sliderImages.length;
+    return Math.min(
+      Math.floor(currentTime / segment),
+      sliderImages.length - 1,
+    );
+  }, [sliderImages, currentTime, duration]);
+
   const getCurrentImageSrc = useCallback(
     (index) => {
-      if (!track.images || !track.images[index]) return track.image;
-      const imageItem = track.images[index];
-      return imageItem.image ? imageItem.image : imageItem;
+      if (!sliderImages || !sliderImages[index]) return track.image;
+      return sliderImages[index];
     },
-    [track.images, track.image],
+    [sliderImages, track.image],
   );
+
+  const canvasRef = useRef(null);
+  const pipVideoRef = useRef(null);
+
   useEffect(() => {
     if (isDinofroz || !canvasRef.current) return;
     const canvas = canvasRef.current;
@@ -1267,14 +1457,36 @@ const MiniPlayer = ({
     img.crossOrigin = "anonymous";
     img.src = getCurrentImageSrc(currentImgIdx);
     img.onload = () => {
+      canvas.width = img.naturalWidth;
+      canvas.height = img.naturalHeight;
       ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
       ctx.fillStyle = "rgba(0,0,0,0.6)";
       ctx.fillRect(0, canvas.height - 50, canvas.width, 50);
       ctx.fillStyle = "white";
       ctx.font = "bold 20px Inter, sans-serif";
       ctx.fillText(track.author || "Стихія", 15, canvas.height - 20);
+    }; 
+  }, [track, currentImgIdx, isDinofroz, getCurrentImageSrc, sliderImages]);
+  useEffect(() => {
+    const media = mediaRef.current;
+    if (!media) return;
+    const updateTime = () => setCurrentTime(media.currentTime);
+    const updateDur = () => setDuration(media.duration);
+    const handleEnded = () => setIsPlaying(false);
+    const handleErrorEvent = () => handleError();
+
+    media.addEventListener("timeupdate", updateTime);
+    media.addEventListener("loadedmetadata", updateDur);
+    media.addEventListener("ended", handleEnded);
+    media.addEventListener("error", handleErrorEvent);
+
+    return () => {
+      media.removeEventListener("timeupdate", updateTime);
+      media.removeEventListener("loadedmetadata", updateDur);
+      media.removeEventListener("ended", handleEnded);
+      media.removeEventListener("error", handleErrorEvent);
     };
-  }, [track, currentImgIdx, isDinofroz, getCurrentImageSrc]);
+  }, [track, handleError]);
 
   const activeFilters = useMemo(() => {
     if (!track.filters) return [];
@@ -1282,19 +1494,12 @@ const MiniPlayer = ({
       (f) => currentTime >= f.start && currentTime <= f.end,
     );
   }, [track.filters, currentTime]);
-
   const mainFilter = activeFilters.find(
-    (f) => !["symbols", "flicker"].includes(f.type),
-  );
-
-  useEffect(() => {
-    if (mediaRef.current) mediaRef.current.currentTime = initialTime;
-  }, [initialTime]);
-
+    (f) => !["symbols", "flicker"].includes(f.type)
+  ); 
   const handleDrag = (e) => {
     const startX = e.clientX - pos.x;
     const startY = e.clientY - pos.y;
-
     const move = (me) => {
       let newX = me.clientX - startX;
       let newY = me.clientY - startY;
@@ -1354,11 +1559,10 @@ const MiniPlayer = ({
             setTimeout(resolve, 500);
           }
         });
-
         await pipVideoRef.current
           .play()
           .catch((err) => console.error("Play error:", err));
-        elementToPip = pipVideoRef.current;
+        elementToPip = pipVideoRef.current; 
       }
       if (!elementToPip) {
         alert(
@@ -1387,15 +1591,12 @@ const MiniPlayer = ({
     }
   };
 
-  const handleError = useCallback(() => {
-    alert("Помилка завантаження медіа в міні-плеєрі. Спробуйте ще раз.");
-    // Optionally, you might want to pause playback or skip to the next track
-    setIsPlaying(false);
-    mediaRef.current?.pause();
-  }, []);
-
-  return (
+  return track ? (
     <MiniPlayerContainer
+      initial={{ opacity: 0, scale: 0.5, y: 50 }}
+      animate={{ opacity: 1, scale: 1, y: 0 }}
+      exit={{ opacity: 0, scale: 0.5, y: 50 }}
+      transition={{ duration: 0.3 }}
       style={{
         left: pos.x,
         top: pos.y,
@@ -1405,7 +1606,7 @@ const MiniPlayer = ({
     >
       <MiniPlayerHeader onMouseDown={handleDrag}>
         <MiniControlBtn
-          onClick={() => onRestore(currentTime, isPlaying)}
+          onClick={() => onRestore(currentTime, isPlaying, volume, speed)}
           title="Повернути у повний екран"
         >
           🔙 Відновити
@@ -1438,7 +1639,7 @@ const MiniPlayer = ({
           height: "1px",
         }}
       />
-
+      {/* Main content area for media */}
       <div
         style={{ flex: 1, position: "relative", overflow: "hidden" }}
         onClick={() => {
@@ -1459,25 +1660,15 @@ const MiniPlayer = ({
             src={track.video}
             autoPlay={isPlaying}
             muted={volume === 0}
-            onError={handleError}
+            onError={handleError} 
             loop
             style={{ width: "100%", height: "100%", objectFit: "cover" }}
             onTimeUpdate={(e) => setCurrentTime(e.target.currentTime)}
           />
         ) : (
           <>
-            <img
-              src={
-                track.images?.[
-                  Math.min(
-                    Math.floor(
-                      currentTime /
-                        (track.duration / (track.images?.length || 1)),
-                    ),
-                    (track.images?.length || 1) - 1,
-                  )
-                ] || track.image
-              }
+            <img 
+              src={getCurrentImageSrc(currentImgIdx)}
               style={{ width: "100%", height: "100%", objectFit: "cover" }}
               alt=""
             />
@@ -1486,7 +1677,7 @@ const MiniPlayer = ({
               src={track.audio}
               autoPlay={isPlaying}
               loop
-              onError={handleError}
+              onError={handleError} // Pass handleError to audio
               onTimeUpdate={(e) => setCurrentTime(e.target.currentTime)}
             />
           </>
@@ -1517,7 +1708,7 @@ const MiniPlayer = ({
       </div>
       <MiniResizeHandle onMouseDown={handleResize} />
     </MiniPlayerContainer>
-  );
+  ) : null;
 };
 
 const FSHeader = styled.div`
@@ -1948,28 +2139,41 @@ const FullScreenPlayer = ({
   onRate,
   isShuffle,
   onSetShuffle,
+  onAudioBar,
   onMiniPlayer,
   user,
   playlist,
   onSelectTrack,
   onUpdateUser,
 }) => {
-  const isDinofroz =
-    (track.category === "мультфільми" && track.video) || // Existing check
-    (track.text &&
-      track.text.toLowerCase().includes("динофроз") && // Check if track.text is defined
-      track.category === "мультфільми");
+  const isDinofroz = !!track.video;
 
   const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
   const [buffered, setBuffered] = useState(0);
+  const [isFullscreenNative, setIsFullscreenNative] = useState(false);
   const [duration, setDuration] = useState(0);
   const [volume, setVolume] = useState(1);
   const [speed, setSpeed] = useState(1);
   const [seekForwardAmount, setSeekForwardAmount] = useState(10);
   const [seekBackwardAmount, setSeekBackwardAmount] = useState(10);
   const [activeSeekIndicator, setActiveSeekIndicator] = useState(null);
+
+  const handleError = useCallback(() => {
+    alert("Помилка завантаження медіа. Спробуйте ще раз.");
+    setIsPlaying(false);
+    mediaRef.current?.pause();
+  }, []);
+
+  const updateProgress = useCallback(() => {
+    const media = mediaRef.current;
+    if (media && media.buffered.length > 0) {
+      setBuffered(media.buffered.end(media.buffered.length - 1));
+    }
+  }, []);
+
   const [isSeekLoaded, setIsSeekLoaded] = useState(false);
+  const [isAssetsLoaded, setIsAssetsLoaded] = useState(false);
 
   useEffect(() => {
     const loadVolume = async () => {
@@ -1988,6 +2192,29 @@ const FullScreenPlayer = ({
       localforage.setItem("player_volume", volume);
     }
   }, [volume, isAssetsLoaded]);
+
+  // Функція для перемикання системного повноекранного режиму
+  const toggleFullscreen = useCallback(() => {
+    const elem = overlayRef.current;
+    if (!elem) return;
+
+    if (!document.fullscreenElement) {
+      if (elem.requestFullscreen) elem.requestFullscreen();
+      else if (elem.webkitRequestFullscreen) elem.webkitRequestFullscreen();
+      else if (elem.msRequestFullscreen) elem.msRequestFullscreen();
+    } else {
+      if (document.exitFullscreen) document.exitFullscreen();
+    }
+  }, []);
+
+  // Слідкуємо за зміною стану повноекранного режиму (наприклад, при натисканні F11)
+  useEffect(() => {
+    const handleFsChange = () => {
+      setIsFullscreenNative(!!document.fullscreenElement);
+    };
+    document.addEventListener("fullscreenchange", handleFsChange);
+    return () => document.removeEventListener("fullscreenchange", handleFsChange);
+  }, []);
 
   const [longPressSpeedIndicator, setLongPressSpeedIndicator] = useState(null); // Changed from dynamicSpeed to longPressSpeedIndicator
   const longPressTimerRef = useRef(null);
@@ -2037,7 +2264,6 @@ const FullScreenPlayer = ({
   const [hoverTime, setHoverTime] = useState(null);
   const [pendingScreenshotAction, setPendingScreenshotAction] = useState(null);
   const [loadingProgress, setLoadingProgress] = useState(0);
-  const [isAssetsLoaded, setIsAssetsLoaded] = useState(false);
   const [activeFilterKey, setActiveFilterKey] = useState(null);
   const [filtersEnabled, setFiltersEnabled] = useState(true); // Режим вимкнення фільтрів
   const [dynamicOpacity, setDynamicOpacity] = useState(null);
@@ -2282,13 +2508,6 @@ const FullScreenPlayer = ({
     }, 300);
   }, [onClose]);
 
-  const handleError = useCallback(() => {
-    alert("Помилка завантаження медіа. Спробуйте ще раз.");
-    // Optionally, you might want to pause playback or skip to the next track
-    setIsPlaying(false);
-    mediaRef.current?.pause();
-  }, []);
-
   const togglePlay = useCallback(() => {
     if (!mediaRef.current) return;
     if (mediaRef.current.paused) {
@@ -2363,11 +2582,6 @@ const FullScreenPlayer = ({
         end: Math.floor(media.duration),
       }));
     };
-    const updateProgress = () => {
-      if (media.buffered.length > 0) {
-        setBuffered(media.buffered.end(media.buffered.length - 1));
-      }
-    };
 
     const handleEnded = () => {
       if (!loop) setIsPlaying(false);
@@ -2387,7 +2601,7 @@ const FullScreenPlayer = ({
       media.removeEventListener("ended", handleEnded);
       media.removeEventListener("error", handleErrorEvent);
     };
-  }, [track, loop, handleError]);
+  }, [track, loop, handleError, updateProgress]);
 
   useEffect(() => {
     if (mediaRef.current) {
@@ -2978,11 +3192,26 @@ const FullScreenPlayer = ({
           </ActionButton>
           <ActionButton
             onClick={() => {
+              if (canPerformAction())
+                onAudioBar(progress, isPlaying, volume, speed);
+            }}
+            title="Згорнути в аудіосмугу"
+          >
+            ▬
+          </ActionButton>
+          <ActionButton
+            onClick={() => {
               if (canPerformAction()) togglePiP();
             }}
             title="Режим картинка в картинці"
           >
             🖼️
+          </ActionButton>
+          <ActionButton
+            onClick={() => { if (canPerformAction()) toggleFullscreen(); }}
+            title={isFullscreenNative ? "Вийти з повного екрану" : "На весь екран"}
+          >
+            {isFullscreenNative ? "⏹" : "⛶"}
           </ActionButton>
           <div style={{ display: "flex", flexDirection: "column" }}>
             <FSTitle>{track.author}</FSTitle>
@@ -3230,7 +3459,7 @@ const FullScreenPlayer = ({
                 type="range"
                 min="0"
                 max={duration || 0}
-                $buffered={isDinofroz ? buffered : 0}
+                $buffered={0}
                 value={progress}
                 onChange={(e) =>
                   (mediaRef.current.currentTime = e.target.value)
@@ -3639,29 +3868,6 @@ const FullScreenPlayer = ({
               {progressMode === "linear" ? "Ютуб" : "Стереограми"}
             </button>
           </SliderRow>
-          {/* //  {track.lyrics && ( */}
-          {/* // <SliderRow>
-            //   <span style={{ color: "white" }}>Озвучка</span>
-            //   <select */}
-          {/* //     value={selectedVoiceNarration}
-            //     onChange={(e) => setSelectedVoiceNarration(e.target.value)}
-            //     style={{
-            //       background: "#444",
-            //       color: "white",
-            //       border: "1px solid #666",
-            //       borderRadius: "4px",
-            //       padding: "3px 6px",
-            //       cursor: "pointer",
-            //       fontSize: "11px",
-            //     }}
-            //   >
-            //     <option value="off">Без озвучки</option>
-            //     <option value="voice1">Голос 1</option>
-            //     <option value="voice2">Голос 2</option>
-            //     <option value="voice3">Голос 3</option>
-            //   </select>
-            // </SliderRow>
-        //  )} */}
           <button
             onClick={async () => {
               for (const img of sliderImages) {
@@ -4171,7 +4377,7 @@ const musicCards = [
     id: 1,
     image: dinofrozone,
     audio: dinofrozAudio,
-    category: "мультфільми",
+    category: "хіти",
     author: "Динофроз - Mondo TV.",
     video: dinofrozVideo,
     text: "Легендарний мультфільм на Малятко ТВ(нажаль закритий). Зображено Імператора дрaконів Ніцерона.",
@@ -4249,10 +4455,23 @@ const musicCards = [
         text_bbkids: "Ховайтеся, вороги!",
       },
     ],
-
     duration: 120,
     images: [dinofrozone],
   },
+    {
+    id: 2,
+     image: turkeys,
+   audio: humorAudio,
+   video: humorVideo,
+     text: "Найгірший(і найсмішніший) виступ у шоу 'Україна має талант'. Дивіться самі. (Я думав лише Динофроз матиме відео)",
+     lyrics: [
+       { time: 226, text: "" },
+     ],
+    category: "хіти",
+     duration: 180,
+     images: [turkeys],
+    author: "'Нас немає' Оксана Самойлова(врахуйте вона переспівала, а не написала цю пісню)",
+   },
   {
     id: 3,
     image: turkeys,
@@ -4436,7 +4655,7 @@ const musicCards = [
     id: 12,
     image: mia,
     audio: require("../../mp3/mia-and-me.mp3"),
-    category: "мультфільми",
+    category: "хіти",
     text: "",
     author: "Мія та я.",
     lyrics: "Текст в розробці.",
@@ -4996,37 +5215,6 @@ const musicCards = [
     duration: 180,
     images: [hunger],
   },
-  {
-    id: 21,
-    image: fingerdash,
-    audio: fingerdashAudio,
-    author: "Fingerdash-MDK(GeometryDash)",
-    category: "ігри",
-    duration: 140,
-    images: [fingerdash],
-    filters: [
-      {
-        start: 44,
-        end: 52,
-        type: "symbols",
-        intensity: 120,
-        speed: 1,
-        blur: 1.7,
-      },
-      { start: 8, end: 9, type: "grayscale", opacity: 1 },
-      { start: 17, end: 19, type: "grayscale", opacity: 1 },
-      { start: 19, end: 19.4, type: "flash", opacity: 1 },
-      { start: 26, end: 32.5, type: "flicker", opacity: 0.15 },
-      { start: 32.5, end: 34.2, type: "grayscale", opacity: 1 },
-      { start: 34.2, end: 35, type: "flash", opacity: 1 },
-      { start: 35, end: 43, type: "red", opacity: 0.2 },
-      { start: 43, end: 44, type: "grayscale", opacity: 1 },
-      { start: 52, end: 60, type: "grayscale", opacity: 1 },
-      { start: 60, end: 73, type: "orange", opacity: 0.2 },
-      { start: 73, end: 78, type: "grayscale", opacity: 1 },
-      { start: 85, end: 89, type: "grayscale", opacity: 1 },
-    ],
-  },
     {
     id: 22,
     image: horror,
@@ -5065,6 +5253,39 @@ const musicCards = [
       },
     ],
   },
+    {
+    id: 23,
+    image: turkeys,
+    audio: turkeyAudio,
+    text: "",
+    category: "природа",
+    duration: 60,
+    author: "Звуки індиків - Моя робота :)",
+    lyrics: [
+      {
+        time: 25,
+        text: "Дякую всім слухачам! Давно хотів сказати, що робота над піснями, була примною і важкою.",
+      },
+      {
+        time: 40,
+        text: "Динофроз, режимом відео, забрав багато часу, та деякі пісні, у плані фільтрів. Тим не менш, індики, попри скромність, заслужили, бути на рівні з іншими.",
+      },
+      {
+        time: 55,
+        text: "Друзі, у кожного, своя улюблена тема(спільне, відмінне), і ненавидна. Я розміщую захопливе і заспокійливе, окрім моїх захоплень, тільки скажіть і ваше улюблене може з'явитись. Я це кажу, до того, що Стихію, ми розвиватимемо разом. ",
+      },
+    ],
+    images: [
+      turkeysone,
+      turkeytwo,
+      turkeythree,
+      turkeyfour,
+      turkeyfive,
+      turkeysix,
+      turkeyseven,
+      turkeys,
+    ],
+  },
 ];
 
 const PLAYLISTS = {
@@ -5072,10 +5293,10 @@ const PLAYLISTS = {
     title: "Хіти",
     monody,
   },
-  мультфільми: {
-    title: "Мультфільми",
-    dinofrozone,
-  },
+  // мультфільми: {
+  //   title: "Українські",
+  //   енеїда,
+  // },
   природа: {
     title: "Моя робота",
     turkeys,
@@ -5707,6 +5928,7 @@ const PlaylistModal = ({
   customTracks,
   onEdit,
   onMiniPlayer,
+  onAudioBar,
   onDeleteTrack,
   customPlaylistName,
   initialFullScreenTrack,
@@ -6369,6 +6591,10 @@ const PlaylistModal = ({
             setFullScreenTrack(null);
             onMiniPlayer(fullScreenTrack, time, isPlaying, vol, spd);
           }}
+          onAudioBar={(time, isPlaying, vol, spd) => {
+            setFullScreenTrack(null);
+            onAudioBar(fullScreenTrack, time, isPlaying, vol, spd);
+          }}
           playlist={processedCards}
           onSelectTrack={setFullScreenTrack}
           onUpdateUser={onUpdateUser}
@@ -6421,13 +6647,13 @@ const PlaylistCover = ({ playlistKey, defaultImage, customImage }) => {
 const MusicPhoto = ({ user, onOpenRegister, isAnyModalOpen, onUpdateUser }) => {
   const [currentPlaylist, setCurrentPlaylist] = useState(null);
   const [showCreateModal, setShowCreateModal] = useState(false);
+
   const [miniPlayerTrack, setMiniPlayerTrack] = useState(null);
-  const [miniPlayerTime, setMiniPlayerTime] = useState(0);
-  const [miniPlayerState, setMiniPlayerState] = useState({
-    isPlaying: false,
-    volume: 1,
-    speed: 1,
-  });
+  const [miniPlayerInitialTime, setMiniPlayerInitialTime] = useState(0);
+  const [miniPlayerInitialIsPlaying, setMiniPlayerInitialIsPlaying] = useState(false);
+  const [miniPlayerInitialVolume, setMiniPlayerInitialVolume] = useState(1);
+  const [miniPlayerInitialSpeed, setMiniPlayerInitialSpeed] = useState(1);
+  const [audioBarTrack, setAudioBarTrack] = useState(null);
   const [restoreTrack, setRestoreTrack] = useState(null);
 
   const [customPlaylist, setCustomPlaylist] = useState(null);
@@ -6445,11 +6671,21 @@ const MusicPhoto = ({ user, onOpenRegister, isAnyModalOpen, onUpdateUser }) => {
   }, []);
 
   useEffect(() => {
-    if (isAnyModalOpen && miniPlayerTrack) setMiniPlayerTrack(null);
+    if (isAnyModalOpen) {
+        setMiniPlayerTrack(null);
+        setAudioBarTrack(null);
+    }
   }, [isAnyModalOpen, miniPlayerTrack]);
 
   const deleteTrackFromCustomPlaylist = async (trackId) => {
-    if (!customPlaylist) return;
+    if (!customPlaylist) {
+      console.error("Custom playlist is null, cannot delete track.");
+      return;
+    }
+    if (!Array.isArray(customPlaylist.tracks)) {
+      console.error("Custom playlist tracks is not an array, cannot delete track.");
+      return;
+    }
     const updatedTracks = customPlaylist.tracks.filter((t) => t.id !== trackId);
     const updatedPlaylist = { ...customPlaylist, tracks: updatedTracks };
     setCustomPlaylist(updatedPlaylist);
@@ -6480,7 +6716,7 @@ const MusicPhoto = ({ user, onOpenRegister, isAnyModalOpen, onUpdateUser }) => {
   };
 
   return (
-    <MusicPhotoDiv>
+    <MusicPhotoDiv $isAudioBarActive={!!audioBarTrack}>
       <MusicPhotoText>Оберіть плейлист</MusicPhotoText>
       <PlaylistGrid>
         {Object.keys(PLAYLISTS).map((key) => (
@@ -6559,9 +6795,22 @@ const MusicPhoto = ({ user, onOpenRegister, isAnyModalOpen, onUpdateUser }) => {
           }
           onMiniPlayer={(track, time, isPlaying, volume, speed) => {
             setMiniPlayerTrack(track);
-            setMiniPlayerTime(time);
-            setMiniPlayerState({ isPlaying, volume, speed });
+            setMiniPlayerInitialTime(time);
+            setMiniPlayerInitialIsPlaying(isPlaying);
+            setMiniPlayerInitialVolume(volume);
+            setMiniPlayerInitialSpeed(speed);
             setCurrentPlaylist(null);
+            setAudioBarTrack(null);
+            setRestoreTrack(null);
+          }}
+          onAudioBar={(track, time, isPlaying, volume, speed) => {
+            setAudioBarTrack(track);
+            setMiniPlayerInitialTime(time);
+            setMiniPlayerInitialIsPlaying(isPlaying);
+            setMiniPlayerInitialVolume(volume);
+            setMiniPlayerInitialSpeed(speed);
+            setCurrentPlaylist(null);
+            setMiniPlayerTrack(null);
             setRestoreTrack(null);
           }}
           onDeleteTrack={
@@ -6575,25 +6824,53 @@ const MusicPhoto = ({ user, onOpenRegister, isAnyModalOpen, onUpdateUser }) => {
         />
       )}
 
-      {miniPlayerTrack && (
-        <MiniPlayer
-          track={miniPlayerTrack}
-          initialTime={miniPlayerTime}
-          isPlaying={miniPlayerState.isPlaying}
-          speed={miniPlayerState.speed}
-          volume={miniPlayerState.volume}
-          onClose={() => setMiniPlayerTrack(null)}
-          onRestore={(time, isPlaying) => {
-            const track = miniPlayerTrack;
-            setRestoreTrack(track);
-            setMiniPlayerTrack(null);
-            setMiniPlayerState((prev) => ({ ...prev, isPlaying }));
-            setCurrentPlaylist(
-              track.category === "custom" ? "custom" : track.category,
-            );
-          }}
-        />
-      )}
+      <AnimatePresence>
+        {miniPlayerTrack && (
+          <MiniPlayer
+            track={miniPlayerTrack}
+            initialTime={miniPlayerInitialTime}
+            isPlaying={miniPlayerInitialIsPlaying}
+            speed={miniPlayerInitialSpeed}
+            volume={miniPlayerInitialVolume}
+            onClose={() => setMiniPlayerTrack(null)}
+            onRestore={(time, isPlaying, volume, speed) => {
+              const track = miniPlayerTrack;
+              setMiniPlayerInitialTime(time);
+              setMiniPlayerInitialIsPlaying(isPlaying);
+              setMiniPlayerInitialVolume(volume);
+              setMiniPlayerInitialSpeed(speed);
+              setRestoreTrack(track);
+              setMiniPlayerTrack(null);
+              setCurrentPlaylist(
+                track.category === "custom" ? "custom" : track.category,
+              );
+            }}
+          />
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {audioBarTrack && (
+          <AudioBar
+            track={audioBarTrack}
+            initialTime={miniPlayerInitialTime}
+            isPlaying={miniPlayerInitialIsPlaying}
+            speed={miniPlayerInitialSpeed}
+            volume={miniPlayerInitialVolume}
+            onClose={() => setAudioBarTrack(null)}
+            onRestore={(time, isPlaying, volume, speed) => {
+              const track = audioBarTrack;
+              setMiniPlayerInitialTime(time);
+              setMiniPlayerInitialIsPlaying(isPlaying);
+              setMiniPlayerInitialVolume(volume);
+              setMiniPlayerInitialSpeed(speed);
+              setRestoreTrack(track);
+              setAudioBarTrack(null);
+              setCurrentPlaylist(track.category === "custom" ? "custom" : track.category);
+            }}
+          />
+        )}
+      </AnimatePresence>
     </MusicPhotoDiv>
   );
 };

@@ -838,10 +838,19 @@ const UserSettingsModal = ({ onClose, user, availableAvatars, onUpdate }) => {
                     />
                     <label>12-годинний формат (AM/PM)</label>
                   </CheckboxRow>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '5px', marginTop: '5px' }}>
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: "5px",
+                      marginTop: "5px",
+                    }}
+                  >
                     <Select
                       value={formData.dateDisplayMode}
-                      onChange={(e) => updateLivePreview({ dateDisplayMode: e.target.value })}
+                      onChange={(e) =>
+                        updateLivePreview({ dateDisplayMode: e.target.value })
+                      }
                     >
                       <option value="both">Час та Дата (разом)</option>
                       <option value="time">Тільки Час</option>
@@ -980,7 +989,9 @@ const UserSettingsModal = ({ onClose, user, availableAvatars, onUpdate }) => {
                   </label>
                   <Select
                     value={formData.voiceActingMode}
-                    onChange={(e) => updateLivePreview({ voiceActingMode: e.target.value })}
+                    onChange={(e) =>
+                      updateLivePreview({ voiceActingMode: e.target.value })
+                    }
                   >
                     <option value="malyatko">Малятко ТВ</option>
                     <option value="bbkids">BBKidsUA</option>
@@ -1037,9 +1048,13 @@ const UserSettingsModal = ({ onClose, user, availableAvatars, onUpdate }) => {
             />
             <label>
               Ви погодились з{" "}
-<TermsBtn onClick={(e) => {
-  setShowTerms(true);
-}}>Угодою</TermsBtn>
+              <TermsBtn
+                onClick={(e) => {
+                  setShowTerms(true);
+                }}
+              >
+                Угодою
+              </TermsBtn>
             </label>
           </CheckboxRow>
           <div style={{ display: "flex", gap: "10px", marginTop: "10px" }}>
@@ -1051,10 +1066,7 @@ const UserSettingsModal = ({ onClose, user, availableAvatars, onUpdate }) => {
         </ModalContent>
       </ModalOverlay>
       {showTerms && (
-        <InfoModal
-          isOpen={showTerms}
-          onClose={() => setShowTerms(false)}
-        />
+        <InfoModal isOpen={showTerms} onClose={() => setShowTerms(false)} />
       )}
     </>
   );
