@@ -341,8 +341,8 @@ const PlaylistGrid = styled.div`
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 20px;
-  padding: 20px;
+  gap: 10px;
+  padding: 5px;
 `;
 const PlaylistCard = styled.div`
   width: 320px;
@@ -473,7 +473,7 @@ const MusicText = styled.div`
   font-weight: 500;
   width: 100%;
   margin-top: 10px;
-  padding: 0 10px;
+  padding: 0 8px;
   line-height: 1.4;
   height: 108px;
   overflow: hidden;
@@ -493,7 +493,7 @@ const SliderRow = styled.div`
   gap: 4px;
   width: 100%;
   margin-bottom: 5px;
-  padding: 0 5px;
+  padding: 0 0px;
   span {
     font-size: 10px;
     color: rgb(119, 119, 119);
@@ -692,7 +692,7 @@ const FilterOverlay = styled.div`
 
 const StyledSymbol = styled.span`
   position: absolute;
-  color: rgba(255, 255, 255, 0.81);
+  color: rgba(255, 255, 255, 0.91);
   pointer-events: none;
   user-select: none;
   will-change: transform, opacity;
@@ -946,18 +946,6 @@ const ActionButtonsContainer = styled.div`
   margin-top: auto;
   padding: 0 8px;
 `;
-// const LoopButton = styled.button`
-//   background: transparent;
-//   border: none;
-//   color: ${(props) => (props.$active ? "skyblue" : "orange")};
-//   font-size: 20px;
-//   cursor: pointer;
-//   margin-bottom: 5px;
-//   width: 40px;
-//   display: inline-flex;
-//   align-items: center;
-//   justify-content: center;
-// `;
 const ActionButton = styled.button`
   background: transparent;
  border: none;
@@ -1170,7 +1158,7 @@ const AudioBarBtn = styled.button`
   &:hover { opacity: 1; color: orange; }
 `;
 
-const AudioBar = ({ track, initialTime, isPlaying: startPlaying, volume: startVolume, speed: startSpeed, onClose, onRestore }) => {
+const AudioBar = ({ track, initialTime, isPlaying: startPlaying, volume: startVolume, speed: startSpeed, onClose, onRestore, checkpoint, checkpointsEnabled, onSaveCheckpoint, onClearCheckpoint }) => {
   const [isPlaying, setIsPlaying] = useState(startPlaying);
   const [currentTime, setCurrentTime] = useState(initialTime);
   const [duration, setDuration] = useState(0);
@@ -1183,6 +1171,31 @@ const AudioBar = ({ track, initialTime, isPlaying: startPlaying, volume: startVo
   const [pipWindow, setPipWindow] = useState(null);
   const mediaRef = useRef(null);
   const containerRef = useRef(null);
+
+  const progRef = useRef(currentTime);
+  const durRef = useRef(duration);
+  useEffect(() => { progRef.current = currentTime; }, [currentTime]);
+  useEffect(() => { durRef.current = duration; }, [duration]);
+
+  useEffect(() => {
+    const handleSave = () => {
+      if (onSaveCheckpoint && progRef.current > 5 && progRef.current < durRef.current - 5) {
+        onSaveCheckpoint(track.id, progRef.current);
+      }
+    };
+
+    window.addEventListener("beforeunload", handleSave);
+    return () => {
+      handleSave();
+      window.removeEventListener("beforeunload", handleSave);
+    };
+  }, [track.id, onSaveCheckpoint]);
+
+  useEffect(() => {
+    if (checkpointsEnabled && checkpoint && Math.abs(currentTime - checkpoint) < 1.5) {
+      onClearCheckpoint(track.id);
+    }
+  }, [currentTime, checkpoint, track.id, checkpointsEnabled, onClearCheckpoint]);
 
   useEffect(() => {
     setIsMobile(/iPhone|iPad|iPod|Android/i.test(navigator.userAgent));
@@ -1307,12 +1320,12 @@ const AudioBar = ({ track, initialTime, isPlaying: startPlaying, volume: startVo
         >
           ⇤
         </AudioBarBtn>
-        <AudioBarBtn onClick={() => mediaRef.current.currentTime -= 10} title="Назад 10с">⏪</AudioBarBtn>
+        <AudioBarBtn onClick={() => mediaRef.current.currentTime -= 10} title="Назад 10с" style={{ fontSize: "8px" }}>◀◀</AudioBarBtn>
         <AudioBarBtn onClick={() => {
           if (isPlaying) { mediaRef.current.pause(); setIsPlaying(false); }
           else { mediaRef.current.play(); setIsPlaying(true); }
         }}>{isPlaying ? "⏸" : "▶"}</AudioBarBtn>
-        <AudioBarBtn onClick={() => mediaRef.current.currentTime += 10} title="Вперед 10с">⏩</AudioBarBtn>
+        <AudioBarBtn onClick={() => mediaRef.current.currentTime += 10} title="Вперед 10с" style={{ fontSize: "8px" }}>▶▶</AudioBarBtn>
         <AudioBarBtn 
           onClick={() => { 
             if (mediaRef.current) mediaRef.current.currentTime = duration - 1; 
@@ -1330,15 +1343,40 @@ const AudioBar = ({ track, initialTime, isPlaying: startPlaying, volume: startVo
       </div>
 
       <div style={{ flex: 1, display: "flex", alignItems: "center", gap: "10px" }}>
+        <div style={{ display: 'flex', gap: '5px' }}>
+          {checkpointsEnabled && checkpoint > 0 && (
+            <AudioBarBtn onClick={() => mediaRef.current.currentTime = checkpoint} title="До чекпоінту">🚩</AudioBarBtn>
+          )}
+        </div>
         <span style={{ fontSize: "11px", minWidth: "35px" }}>{formatTime(currentTime)}</span>
         {mode === "linear" ? (
-          <SeekBar 
-            type="range" min="0" max={duration || 0} value={currentTime} 
-            onChange={(e) => mediaRef.current.currentTime = e.target.value} 
-            style={{ flex: 1 }}
-          />
+          <SeekBarWrapper style={{ flex: 1 }}>
+             {checkpointsEnabled && checkpoint > 0 && duration > 0 && (
+                <CheckpointMarker 
+                  $left={(checkpoint / duration) * 100}
+                  title="Ви тут зупинилися"
+                  style={{ fontSize: '10px' }}
+                >
+                  🚩
+                </CheckpointMarker>
+              )}
+            <SeekBar 
+              type="range" min="0" max={duration || 0} value={currentTime} 
+              onChange={(e) => mediaRef.current.currentTime = e.target.value} 
+              style={{ width: '100%' }}
+            />
+          </SeekBarWrapper>
         ) : (
           <StereoSeekBar onClick={handleStereoSeek} style={{ height: "30px" }}>
+            {checkpointsEnabled && checkpoint > 0 && duration > 0 && (
+              <CheckpointMarker 
+                $left={(checkpoint / duration) * 100} 
+                style={{ bottom: 'auto', top: '-10px', fontSize: '10px' }}
+                title="Ви тут зупинилися"
+              >
+                🚩
+              </CheckpointMarker>
+            )}
             {isGeneratingWave ? (
               <span style={{ color: "white", fontSize: "10px", margin: "auto" }}>Обробка...</span>
             ) : (
@@ -1358,7 +1396,7 @@ const AudioBar = ({ track, initialTime, isPlaying: startPlaying, volume: startVo
       </div>
 
       <div style={{ display: "flex", gap: "10px" }}>
-        <AudioBarBtn onClick={() => onRestore(currentTime, isPlaying, volume, speed)} title="Розгорнути">🔼</AudioBarBtn>
+        <AudioBarBtn onClick={() => onRestore(currentTime, isPlaying, volume, speed)} title="Розгорнути">⏶</AudioBarBtn>
         {!isMobile && "documentPictureInPicture" in window && (
           <AudioBarBtn onClick={toggleDocumentPiP} title="Винести на робочий стіл">🖼️</AudioBarBtn>
         )}
@@ -1395,6 +1433,10 @@ const MiniPlayer = ({
   isPlaying: initialPlaying,
   speed: startSpeed,
   volume: startVolume,
+  checkpoint,
+  checkpointsEnabled,
+  onSaveCheckpoint,
+  onClearCheckpoint,
   onClose,
   onRestore,
 }) => {
@@ -1411,6 +1453,30 @@ const MiniPlayer = ({
   const [speed] = useState(startSpeed);
   const mediaRef = useRef(null);
   const isDinofroz = !!track.video;
+
+  const progRef = useRef(currentTime);
+  const durRef = useRef(duration);
+  useEffect(() => { progRef.current = currentTime; }, [currentTime]);
+  useEffect(() => { durRef.current = duration; }, [duration]);
+
+  useEffect(() => {
+    const handleSave = () => {
+      if (onSaveCheckpoint && progRef.current > 5 && progRef.current < durRef.current - 5) {
+        onSaveCheckpoint(track.id, progRef.current);
+      }
+    };
+    window.addEventListener("beforeunload", handleSave);
+    return () => {
+      handleSave();
+      window.removeEventListener("beforeunload", handleSave);
+    };
+  }, [track.id, onSaveCheckpoint]);
+
+  useEffect(() => {
+    if (checkpointsEnabled && checkpoint && Math.abs(currentTime - checkpoint) < 1.5) {
+      onClearCheckpoint(track.id);
+    }
+  }, [currentTime, checkpoint, track.id, checkpointsEnabled, onClearCheckpoint]);
 
   const handleError = useCallback(() => {
     alert("Помилка завантаження медіа в міні-плеєрі. Спробуйте ще раз.");
@@ -1770,8 +1836,7 @@ const FSHeader = styled.div`
   top: 0;
   left: 0;
   width: 100%;
-  padding: 15px;
-  padding-top: 20px;
+  padding: 5px;
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
@@ -1829,7 +1894,7 @@ const FSControls = styled.div`
   left: 0;
   width: 100%;
   background: linear-gradient(to top, rgba(0, 0, 0, 0.9), transparent);
-  padding: 15px 20px 15px 15px;
+  padding: 0px 33px 3px 2px;
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -1856,8 +1921,8 @@ const FSSliderContainer = styled.div`
 `;
 
 const FSSliderImage = styled.img`
-  height: 50px;
-  width: 100px;
+  height: 40px;
+  width: 80px;
   object-fit: cover;
   border-radius: 6px;
   opacity: ${(props) => (props.$active ? 1 : 0.5)};
@@ -1882,7 +1947,7 @@ const GearModal = styled.div`
   bottom: 80px;
   right: 20px;
   background: rgba(30, 30, 30, 0.95);
-  padding: 5px;
+  padding: 2px;
   border-radius: 12px;
   color: white;
   width: 250px;
@@ -1890,13 +1955,13 @@ const GearModal = styled.div`
   border: 1px solid #444;
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 1px;
 `;
 
 const SubtitleOverlay = styled.div`
   position: absolute;
   bottom: ${(props) =>
-    props.$show ? (props.$controlsVisible ? "32%" : "15%") : "32%"};
+    props.$show ? (props.$controlsVisible ? "25%" : "1%") : "25%"};
   left: 50%;
   transform: translateX(-50%);
   color: #fff;
@@ -2001,8 +2066,8 @@ const SliderItemWrapper = styled.div`
 
 const CheckpointBadge = styled.div`
   position: absolute;
-  top: 10px;
-  left: 10px;
+  bottom: 8px;
+  right: 8px;
   background: rgba(0, 0, 0, 0.7);
   color: #ffb36c;
   padding: 2px 6px;
@@ -2011,6 +2076,46 @@ const CheckpointBadge = styled.div`
   font-weight: bold;
   z-index: 10;
   border: 1px solid #ffb36c;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  user-select: none;
+
+  &::before {
+    content: "Ви зупинилися тут";
+    position: absolute;
+    bottom: 130%;
+    right: 50%;
+    transform: translateX(50%) translateY(10px);
+    background: #222;
+    color: #ffb36c;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 9px;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.2s ease-out;
+    border: 1px solid #ffb36c;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+    pointer-events: none;
+  }
+
+  &:hover {
+    transform: scale(1.1);
+    background: rgba(255, 179, 108, 0.2);
+    box-shadow: 0 0 12px rgba(255, 179, 108, 0.6);
+    color: #fff;
+
+    &::before {
+      opacity: 1;
+      visibility: visible;
+      transform: translateX(50%) translateY(0);
+    }
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
 `;
 
 const CheckpointMarker = styled.div`
@@ -2040,16 +2145,16 @@ const SliderOverlay = styled.div`
 `;
 
 const SliderBtn = styled.button`
-  background: orange;
+  background: #006eff;
   color: white;
   border: none;
   font-size: 10px;
-  padding: 3px 8px;
+  padding: 1px 4px;
   border-radius: 4px;
   cursor: pointer;
   width: 90%;
   &:hover {
-    background: #ffaa00;
+    background: #d46000;
   }
 `;
 
@@ -2221,8 +2326,13 @@ const FullScreenPlayer = ({
   const isDinofroz = !!track.video;
 
   const [isPlaying, setIsPlaying] = useState(false);
-  const [progress, setProgress] = useState(0);
+  const [progress, setProgress] = useState(track.initialTime || 0);
   const [buffered, setBuffered] = useState(0);
+  const [videoFrames, setVideoFrames] = useState([]);
+  const [isGeneratingFrames, setIsGeneratingFrames] = useState(false);
+  const [showFramesGallery, setShowFramesGallery] = useState(false);
+  const [framesCount, setFramesCount] = useState(60);
+
   const [isFullscreenNative, setIsFullscreenNative] = useState(false);
   const [duration, setDuration] = useState(0);
   const [volume, setVolume] = useState(1);
@@ -2344,6 +2454,33 @@ const FullScreenPlayer = ({
   const [dynamicIntensity, setDynamicIntensity] = useState(null); // Changed from dynamicIntensity to dynamicSymbolIntensity
   const mediaRef = useRef(null);
   const [waveform, setWaveform] = useState([]);
+  const [videoQuality, setVideoQuality] = useState("768з");
+
+  useEffect(() => {
+    const loadQuality = async () => {
+      try {
+        const q = await localforage.getItem("video_quality");
+        if (q) setVideoQuality(q);
+      } catch (e) { console.error(e); }
+    };
+    loadQuality();
+  }, []);
+
+  useEffect(() => {
+    localforage.setItem("video_quality", videoQuality);
+  }, [videoQuality]);
+
+  const handleQualityChange = (q) => {
+    const currentPos = mediaRef.current ? mediaRef.current.currentTime : progress;
+    setVideoQuality(q);
+    // Логіка для перемикання джерела, якщо воно з'явиться в об'єкті track
+    if (mediaRef.current) {
+      mediaRef.current.load();
+      mediaRef.current.currentTime = currentPos;
+      if (isPlaying) mediaRef.current.play().catch(() => {});
+    }
+  };
+
   const [isGeneratingWave, setIsGeneratingWave] = useState(false);
   const [isAutoSlideshow, setIsAutoSlideshow] = useState(false);
   const [autoSlideshowInterval, setAutoSlideshowInterval] = useState(3);
@@ -2604,8 +2741,27 @@ const FullScreenPlayer = ({
     }, 300);
   }, [onClose, onSaveCheckpoint, track.id, progress, duration]);
 
+  const progressRef = useRef(progress);
+  const durationRef = useRef(duration);
+  useEffect(() => { progressRef.current = progress; }, [progress]);
+  useEffect(() => { durationRef.current = duration; }, [duration]);
+
   useEffect(() => {
-    if (checkpointsEnabled && checkpoint && progress >= checkpoint) {
+    const handleSave = () => {
+      if (onSaveCheckpoint && progressRef.current > 5 && progressRef.current < durationRef.current - 5) {
+        onSaveCheckpoint(track.id, progressRef.current);
+      }
+    };
+
+    window.addEventListener("beforeunload", handleSave);
+    return () => {
+      handleSave();
+      window.removeEventListener("beforeunload", handleSave);
+    };
+  }, [track.id, onSaveCheckpoint]);
+
+  useEffect(() => {
+    if (checkpointsEnabled && checkpoint && Math.abs(progress - checkpoint) < 1.5) {
       onClearCheckpoint(track.id);
     }
   }, [progress, checkpoint, track.id, checkpointsEnabled, onClearCheckpoint]);
@@ -2768,6 +2924,54 @@ const FullScreenPlayer = ({
       navigator.mediaSession.playbackState = isPlaying ? "playing" : "paused";
     }
   }, [isPlaying]);
+
+  const generateFrames = async () => {
+    if (!track.video || isGeneratingFrames) return;
+    setIsGeneratingFrames(true);
+    setVideoFrames([]);
+    const frames = [];
+    const tempVideo = document.createElement("video");
+    
+    // Використовуємо той самий URL, що і в плеєрі
+    tempVideo.src = track.video;
+    tempVideo.muted = true;
+    tempVideo.crossOrigin = "anonymous";
+    tempVideo.preload = "auto";
+
+    try {
+      await new Promise((resolve, reject) => {
+        tempVideo.onloadedmetadata = resolve;
+        tempVideo.onerror = () => reject(new Error("Video load error"));
+        setTimeout(() => reject(new Error("Timeout")), 15000);
+      });
+
+      const totalDuration = tempVideo.duration;
+      const interval = totalDuration / framesCount;
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
+
+      for (let i = 0; i < framesCount; i++) {
+        tempVideo.currentTime = i * interval;
+        await new Promise((resolve) => {
+          tempVideo.onseeked = resolve;
+        });
+        
+        canvas.width = tempVideo.videoWidth || 640;
+        canvas.height = tempVideo.videoHeight || 360;
+        ctx.drawImage(tempVideo, 0, 0, canvas.width, canvas.height);
+        frames.push(canvas.toDataURL("image/jpeg", 0.7));
+        setLoadingProgress(Math.round(((i + 1) / framesCount) * 100));
+      }
+      setVideoFrames(frames);
+      setShowFramesGallery(true);
+    } catch (err) {
+      console.error("Frame generation failed", err);
+      alert("Помилка при створенні кадрів. Перевірте з'єднання.");
+    } finally {
+      setIsGeneratingFrames(false);
+      setLoadingProgress(0);
+    }
+  };
 
   const handleWheel = useCallback((e) => {
     const delta = Math.sign(e.deltaY) * -1;
@@ -3268,7 +3472,6 @@ const FullScreenPlayer = ({
       $closing={isClosing}
       onWheel={handleWheel}
     >
-      {/* Hidden elements for PiP stream generation */}
       <canvas
         ref={fsCanvasRef}
         width="640"
@@ -3285,7 +3488,7 @@ const FullScreenPlayer = ({
       <FSHeader
         style={{ opacity: showControls ? 1 : 0, transition: "opacity 0.3s" }}
       >
-        <div style={{ display: "flex", gap: "2px", alignItems: "center" }}>
+        <div style={{ display: "flex", gap: "0px", alignItems: "center" }}>
           <ActionButton style={{ fontSize: "26px" }}
             onClick={() => {
               if (canPerformAction()) handleClose();
@@ -3577,6 +3780,11 @@ const FullScreenPlayer = ({
                     )
                   )}
                   <span>{formatTime(hoverTime)}</span>
+                  {checkpoint > 0 && Math.abs(hoverTime - checkpoint) < 5 && (
+                    <span style={{ fontSize: '9px', color: 'orange', marginTop: '2px' }}>
+                      Ви зупинилися тут
+                    </span>
+                  )}
                 </SeekTooltip>
               )}
               <SeekBar
@@ -3591,7 +3799,11 @@ const FullScreenPlayer = ({
               />
             </SeekBarWrapper>
           ) : (
-            <StereoSeekBar onClick={handleStereoSeek}>
+            <StereoSeekBar 
+              onClick={handleStereoSeek}
+              onMouseMove={handleSeekHover}
+              onMouseLeave={() => setHoverTime(null)}
+            >
               {checkpointsEnabled && checkpoint > 0 && duration > 0 && (
                 <CheckpointMarker 
                   $left={(checkpoint / duration) * 100} 
@@ -3600,6 +3812,43 @@ const FullScreenPlayer = ({
                 >
                   🚩
                 </CheckpointMarker>
+              )}
+              {hoverTime !== null && duration > 0 && (
+                <SeekTooltip
+                  $left={(hoverTime / duration) * 100}
+                  className="seek-tooltip"
+                >
+                  {isDinofroz ? (
+                    <video
+                      ref={previewVideoRef}
+                      src={track.video || dinofrozVideo}
+                      muted
+                      preload="auto"
+                    />
+                  ) : (
+                    sliderImages.length > 0 && (
+                      <img
+                        src={
+                          sliderImages[
+                            Math.min(
+                              Math.floor(
+                                hoverTime / (duration / sliderImages.length),
+                              ),
+                              sliderImages.length - 1,
+                            )
+                          ]
+                        }
+                        alt="preview"
+                      />
+                    )
+                  )}
+                  <span>{formatTime(hoverTime)}</span>
+                  {checkpoint > 0 && Math.abs(hoverTime - checkpoint) < 5 && (
+                    <span style={{ fontSize: '9px', color: 'orange', marginTop: '2px' }}>
+                      Ви зупинилися тут
+                    </span>
+                  )}
+                </SeekTooltip>
               )}
               {isGeneratingWave ? (
                 <span
@@ -3680,7 +3929,7 @@ const FullScreenPlayer = ({
             padding: "0 10px",
           }}
         >
-          <div style={{ display: "flex", gap: "10px" }}>
+          <div style={{ display: "flex", gap: "1px" }}>
             {checkpointsEnabled && checkpoint > 0 && (
               <ActionButton
                 onClick={() => {
@@ -3806,8 +4055,6 @@ const FullScreenPlayer = ({
             >
               {isCached ? "✓" : "⇩"}
             </LoopButton>
-
-            {/* Контроль режиму слайд-шоу */}
             {!isDinofroz && sliderImages.length > 1 && (
               <LoopButton
                 $active={isAutoSlideshow}
@@ -3970,7 +4217,7 @@ const FullScreenPlayer = ({
                     color: "white",
                     border: "none",
                     borderRadius: "4px",
-                    padding: "3px 8px",
+                    padding: "2px 8px",
                     cursor: "pointer",
                     fontSize: "11px",
                   }}
@@ -3986,7 +4233,7 @@ const FullScreenPlayer = ({
               <button
                 onClick={() => setFiltersEnabled(!filtersEnabled)}
                 style={{
-                  background: filtersEnabled ? "orange" : "#444",
+                  background: filtersEnabled ? "#b000cf" : "#444",
                   color: "white",
                   border: "none",
                   borderRadius: "4px",
@@ -3997,6 +4244,28 @@ const FullScreenPlayer = ({
               >
                 {filtersEnabled ? "Увімкнено" : "Вимкнено"}
               </button>
+            </SliderRow>
+          )}
+          {isDinofroz && (
+            <SliderRow>
+              <span style={{ color: "white" }}>Якість відео</span>
+              <select
+                value={videoQuality}
+                onChange={(e) => handleQualityChange(e.target.value)}
+                style={{
+                  background: "#444",
+                  color: "white",
+                  border: "1px solid #666",
+                  borderRadius: "4px",
+                  padding: "3px 6px",
+                  cursor: "pointer",
+                  fontSize: "11px",
+                }}
+              >
+                <option value="1080з">1080з</option>
+                <option value="768з">768з</option>
+                <option value="480р">480р</option>
+              </select>
             </SliderRow>
           )}
           {hasSymbols && (
@@ -4020,7 +4289,7 @@ const FullScreenPlayer = ({
             <button
               onClick={onToggleCheckpoints}
               style={{
-                background: checkpointsEnabled ? "orange" : "#444",
+                background: checkpointsEnabled ? "#b000cf" : "#444",
                 color: "white",
                 border: "none",
                 borderRadius: "4px",
@@ -4037,7 +4306,7 @@ const FullScreenPlayer = ({
             <button
               onClick={onToggleBackgroundMode}
               style={{
-                background: backgroundMode ? "#4caf50" : "#444",
+                background: backgroundMode ? "#00a405" : "#444",
                 color: "white",
                 border: "none",
                 borderRadius: "4px",
@@ -4058,7 +4327,7 @@ const FullScreenPlayer = ({
                 )
               }
               style={{
-                background: progressMode === "linear" ? "#444" : "orange",
+                background: progressMode === "linear" ? "#7300ff" : "#b000cf",
                 color: "white",
                 border: "none",
                 borderRadius: "4px",
@@ -4067,9 +4336,51 @@ const FullScreenPlayer = ({
                 fontSize: "11px",
               }}
             >
-              {progressMode === "linear" ? "Ютуб" : "Стереограми"}
+              {progressMode === "linear" ? "Часова шкала" : "Стереограмa"}
             </button>
           </SliderRow>
+          {isDinofroz && (
+            <>
+              <SliderRow>
+                <span style={{ color: "white" }}>Кількість кадрів</span>
+                <select
+                  value={framesCount}
+                  onChange={(e) => setFramesCount(parseInt(e.target.value))}
+                  style={{
+                    background: "#444",
+                    color: "white",
+                    border: "1px solid #666",
+                    borderRadius: "4px",
+                    padding: "3px 6px",
+                    cursor: "pointer",
+                    fontSize: "11px",
+                  }}
+                >
+                  <option value={30}>30 кадрів</option>
+                  <option value={60}>60 кадрів</option>
+                  <option value={120}>120 кадрів</option>
+                </select>
+              </SliderRow>
+              <button
+                onClick={generateFrames}
+                disabled={isGeneratingFrames}
+                style={{
+                  marginTop: "2px",
+                  width: "100%",
+                   fontSize: "11px",
+                  background: isGeneratingFrames ? "#3f3f3f" : "#b12c00",
+                  color: "white",
+                  border: "none",
+                  padding: "2px",
+                  borderRadius: "5px",
+                  cursor: isGeneratingFrames ? "default" : "pointer",
+                  fontWeight: "bold"
+                }}
+              >
+                {isGeneratingFrames ? `Генерація ${loadingProgress}%...` : `🎞️ Розділити на ${framesCount} кадрів`}
+              </button>
+            </>
+          )}
           <button
             onClick={async () => {
               for (const img of sliderImages) {
@@ -4083,11 +4394,13 @@ const FullScreenPlayer = ({
             }}
             disabled={track.id === 2}
             style={{
-              marginTop: "10px",
+              marginTop: "3px",
               width: "100%",
-              background: track.id === 2 ? "#626262" : "orange",
+              background: track.id === 2 ? "#626262" : "#00ae0f",
               color: "white",
               border: "none",
+              fontSize: "11px",
+              padding: "2px",
               borderRadius: "5px",
               cursor: track.id === 2 ? "not-allowed" : "pointer",
               opacity: track.id === 2 ? 0.6 : 1,
@@ -4104,7 +4417,6 @@ const FullScreenPlayer = ({
                   alert("📸 Галерея скріншотів пуста");
                   return;
                 }
-                // Показуємо список скріншотів
                 let html = `<div style="max-height:400px;overflow-y:auto;"><h3>Збережені скріншоти (${screenshots.length}/20)</h3>`;
                 screenshots.forEach((shot, idx) => {
                   html += `<div style="margin:10px 0;padding:10px;border:1px solid #ccc;border-radius:5px;background:#f5f5f5;">
@@ -4125,11 +4437,13 @@ const FullScreenPlayer = ({
               }
             }}
             style={{
-              marginTop: "10px",
+              marginTop: "4px",
               width: "100%",
               background: "#7afcff",
               color: "#333",
               border: "none",
+              padding: "2px",
+              fontSize: "11px",
               borderRadius: "5px",
               cursor: "pointer",
               fontWeight: "bold",
@@ -4154,14 +4468,15 @@ const FullScreenPlayer = ({
               }
             }}
             style={{
-              marginTop: "5px",
+              marginTop: "3px",
+               padding: "2px",
               width: "100%",
-              background: "#ff6b6b",
+              background: "#ae0000",
               color: "white",
               border: "none",
               borderRadius: "5px",
               cursor: "pointer",
-              fontSize: "12px",
+              fontSize: "11px",
             }}
           >
             🗑️ Очистити галерею
@@ -4169,16 +4484,78 @@ const FullScreenPlayer = ({
           <button
             onClick={() => setShowSettings(false)}
             style={{
-              marginTop: "10px",
+              marginTop: "4px",
               width: "100%",
               background: "transparent",
+               padding: "2px",
               border: "1px solid white",
+              borderRadius: "5px",
+              fontSize: "11px",
               color: "white",
             }}
           >
             Закрити
           </button>
         </GearModal>
+      )}
+
+      {showFramesGallery && (
+        <ModalOverlay onClick={() => setShowFramesGallery(false)}>
+          <PlaylistModalContent onClick={e => e.stopPropagation()} style={{ maxWidth: '1200px', background: '#1a1a1a', border: '1px solid orange' }}>
+            <PlaylistCloseButton onClick={() => setShowFramesGallery(false)} style={{ color: 'white' }}>&times;</PlaylistCloseButton>
+            <h3 style={{ color: 'orange', textAlign: 'center', marginBottom: '20px' }}>Кадри з відео ({videoFrames.length} зображень)</h3>
+            
+            <div style={{ 
+              display: 'grid', 
+              gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', 
+              gap: '5px', 
+              padding: '10px',
+              maxHeight: '70vh',
+              overflowY: 'auto'
+            }}>
+              {videoFrames.map((frame, idx) => (
+                <div key={idx} style={{ 
+                  background: '#333', 
+                  borderRadius: '8px', 
+                  overflow: 'hidden', 
+                  border: '1px solid #444',
+                  display: 'flex',
+                  flexDirection: 'column'
+                }}>
+                  <img src={frame} alt={`Frame ${idx}`} style={{ width: '100%', aspectRatio: '16/9', objectFit: 'cover' }} />
+                  <div style={{ display: 'flex', gap: '2px', padding: '5px' }}>
+                    <button 
+                      onClick={() => {
+                        const a = document.createElement("a");
+                        a.href = frame;
+                        a.download = `frame-${idx + 1}.jpg`;
+                        a.click();
+                      }}
+                      style={{ flex: 1, padding: '4px', fontSize: '10px', background: 'orange', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+                    >
+                      Скачати
+                    </button>
+                    <button 
+                      onClick={() => {
+                        const printWindow = window.open("", "_blank");
+                        printWindow.document.write(
+                          `<html><head><title>Print Frame</title></head><body style="text-align:center;"><img src="${frame}" style="max-width:100%;" onload="window.print();window.close()" /></body></html>`
+                        );
+                        printWindow.document.close();
+                      }}
+                      style={{ flex: 1, padding: '4px', fontSize: '10px', background: '#555', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+                    >
+                      Друк
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div style={{ textAlign: 'center', marginTop: '20px' }}>
+              <button onClick={() => setShowFramesGallery(false)} style={{ padding: '10px 30px', borderRadius: '20px', background: 'orange', border: 'none', cursor: 'pointer', fontWeight: 'bold' }}>Закрити галерею</button>
+            </div>
+          </PlaylistModalContent>
+        </ModalOverlay>
       )}
 
       {showScreenshotMenu && (
@@ -4482,7 +4859,7 @@ const FullScreenPlayer = ({
   );
 };
 
-const MusicCard = ({ cardData, onOpenModal, rating, onOpenPlayer, onRate, checkpoint }) => {
+const MusicCard = ({ cardData, onOpenModal, rating, onOpenPlayer, onRate, checkpoint, checkpointsEnabled }) => {
   const { id, image, text, deezerLink } = cardData;
 
   const handleDownloadTrack = (e) => {
@@ -4504,8 +4881,13 @@ const MusicCard = ({ cardData, onOpenModal, rating, onOpenPlayer, onRate, checkp
   return (
     <CardWrapper $isFavorite={rating > 0} $rating={rating}>
       <MusicImageContainer>
-        {checkpoint > 0 && (
-          <CheckpointBadge>🚩 {Math.floor(checkpoint / 60)}:{(Math.floor(checkpoint % 60)).toString().padStart(2, '0')}</CheckpointBadge>
+        {checkpointsEnabled && checkpoint > 0 && (
+          <CheckpointBadge 
+            title="Ви зупинилися тут"
+            onClick={(e) => { e.stopPropagation(); onOpenPlayer(id, checkpoint); }}
+          >
+            🚩 {Math.floor(checkpoint / 60)}:{(Math.floor(checkpoint % 60)).toString().padStart(2, '0')}
+          </CheckpointBadge>
         )}
         <HeartButton
           $rating={rating}
@@ -6138,6 +6520,11 @@ const PlaylistModal = ({
   customPlaylistName,
   initialFullScreenTrack,
   onUpdateUser,
+  checkpoints,
+  checkpointsEnabled,
+  onSaveCheckpoint,
+  onClearCheckpoint,
+  onToggleCheckpoints,
 }) => {
   const [isClosing, setIsClosing] = useState(false);
   const [visibleCount, setVisibleCount] = useState(8);
@@ -6147,17 +6534,11 @@ const PlaylistModal = ({
   const [playHistory, setPlayHistory] = useState([]); // Історія на 10 треків
   const [fullScreenTrack, setFullScreenTrack] = useState(null);
   const [isLyricsClosing, setIsLyricsClosing] = useState(false);
-  const [checkpoints, setCheckpoints] = useState({});
-  const [checkpointsEnabled, setCheckpointsEnabled] = useState(true);
   const [backgroundMode, setBackgroundMode] = useState(true);
 
   useEffect(() => {
     const loadCheckpoints = async () => {
       try {
-        const saved = await localforage.getItem("music_checkpoints");
-        if (saved) setCheckpoints(saved);
-        const enabled = await localforage.getItem("checkpoints_enabled");
-        if (enabled !== null) setCheckpointsEnabled(enabled);
         const bgMode = await localforage.getItem("background_mode_enabled");
         if (bgMode !== null) setBackgroundMode(bgMode);
       } catch (e) { console.error(e); }
@@ -6165,35 +6546,11 @@ const PlaylistModal = ({
     loadCheckpoints();
   }, []);
 
-  const handleSaveCheckpoint = useCallback(async (id, time) => {
-    if (!checkpointsEnabled) return;
-    setCheckpoints(prev => {
-      const next = { ...prev, [id]: time };
-      localforage.setItem("music_checkpoints", next);
-      return next;
-    });
-  }, [checkpointsEnabled]);
-
-  const handleClearCheckpoint = useCallback(async (id) => {
-    setCheckpoints(prev => {
-      const next = { ...prev };
-      delete next[id];
-      localforage.setItem("music_checkpoints", next);
-      return next;
-    });
-  }, []);
-
   const handleToggleBackgroundMode = useCallback(async () => {
     const val = !backgroundMode;
     setBackgroundMode(val);
     await localforage.setItem("background_mode_enabled", val);
   }, [backgroundMode]);
-
-  const handleToggleCheckpoints = useCallback(async () => {
-    const val = !checkpointsEnabled;
-    setCheckpointsEnabled(val);
-    await localforage.setItem("checkpoints_enabled", val);
-  }, [checkpointsEnabled]);
 
   const voiceActingMode = user?.voiceActingMode || "malyatko";
 
@@ -6470,11 +6827,13 @@ const PlaylistModal = ({
                 user={user}
                 rating={getRating(card.id)}
                 onOpenModal={setLyricsModalData}
-                onOpenPlayer={(id) =>
-                  setFullScreenTrack(processedCards.find((c) => c.id === id))
-                }
+              onOpenPlayer={(id, startTime) => {
+                const t = processedCards.find((c) => c.id === id);
+                handleSetFullScreenTrack({ ...t, initialTime: startTime || 0 });
+              }}
                 onRate={handleToggleFavorite}
-                checkpoint={checkpointsEnabled ? checkpoints[card.id] : null}
+              checkpoint={checkpoints[card.id]}
+              checkpointsEnabled={checkpointsEnabled}
               />
               {playlistKey === "custom" && (
                 <button
@@ -6792,14 +7151,14 @@ const PlaylistModal = ({
         {visibleCount < processedCards.length && (
           <LoadMoreButton
             onClick={() => {
-              if (visibleCount === 8) {
-                setVisibleCount(16);
+              if (visibleCount === 10) {
+                setVisibleCount(20);
               } else {
                 setVisibleCount(processedCards.length);
               }
             }}
           >
-            {visibleCount === 8 ? "︾" : "︾"}
+            {visibleCount === 10 ? "︾" : "︾"}
           </LoadMoreButton>
         )}
 
@@ -6869,10 +7228,10 @@ const PlaylistModal = ({
           onSelectTrack={setFullScreenTrack}
           onUpdateUser={onUpdateUser}
           checkpoint={checkpoints[fullScreenTrack.id]}
-          onSaveCheckpoint={handleSaveCheckpoint}
-          onClearCheckpoint={handleClearCheckpoint}
+          onSaveCheckpoint={onSaveCheckpoint}
+          onClearCheckpoint={onClearCheckpoint}
           checkpointsEnabled={checkpointsEnabled}
-          onToggleCheckpoints={handleToggleCheckpoints}
+          onToggleCheckpoints={onToggleCheckpoints}
           backgroundMode={backgroundMode}
           onToggleBackgroundMode={handleToggleBackgroundMode}
         />
@@ -6932,6 +7291,39 @@ const MusicPhoto = ({ user, onOpenRegister, isAnyModalOpen, onUpdateUser }) => {
   const [miniPlayerInitialSpeed, setMiniPlayerInitialSpeed] = useState(1);
   const [audioBarTrack, setAudioBarTrack] = useState(null);
   const [restoreTrack, setRestoreTrack] = useState(null);
+
+  const [checkpoints, setCheckpoints] = useState({});
+  const [checkpointsEnabled, setCheckpointsEnabled] = useState(true);
+
+  useEffect(() => {
+    const loadCheckpoints = async () => {
+      try {
+        const saved = await localforage.getItem("music_checkpoints");
+        if (saved) setCheckpoints(saved);
+        const enabled = await localforage.getItem("checkpoints_enabled");
+        if (enabled !== null) setCheckpointsEnabled(enabled);
+      } catch (e) { console.error(e); }
+    };
+    loadCheckpoints();
+  }, []);
+
+  const handleSaveCheckpoint = useCallback(async (id, time) => {
+    if (!checkpointsEnabled) return;
+    setCheckpoints(prev => {
+      const next = { ...prev, [id]: time };
+      localforage.setItem("music_checkpoints", next);
+      return next;
+    });
+  }, [checkpointsEnabled]);
+
+  const handleClearCheckpoint = useCallback(async (id) => {
+    setCheckpoints(prev => {
+      const next = { ...prev };
+      delete next[id];
+      localforage.setItem("music_checkpoints", next);
+      return next;
+    });
+  }, []);
 
   const [customPlaylist, setCustomPlaylist] = useState(null);
 
@@ -7098,6 +7490,15 @@ const MusicPhoto = ({ user, onOpenRegister, isAnyModalOpen, onUpdateUser }) => {
           }
           initialFullScreenTrack={restoreTrack}
           onUpdateUser={onUpdateUser}
+          checkpoints={checkpoints}
+          checkpointsEnabled={checkpointsEnabled}
+          onSaveCheckpoint={handleSaveCheckpoint}
+          onClearCheckpoint={handleClearCheckpoint}
+          onToggleCheckpoints={async () => {
+            const val = !checkpointsEnabled;
+            setCheckpointsEnabled(val);
+            await localforage.setItem("checkpoints_enabled", val);
+          }}
         />
       )}
 
@@ -7109,6 +7510,10 @@ const MusicPhoto = ({ user, onOpenRegister, isAnyModalOpen, onUpdateUser }) => {
             isPlaying={miniPlayerInitialIsPlaying}
             speed={miniPlayerInitialSpeed}
             volume={miniPlayerInitialVolume}
+            checkpoint={checkpoints[miniPlayerTrack.id]}
+            checkpointsEnabled={checkpointsEnabled}
+            onSaveCheckpoint={handleSaveCheckpoint}
+            onClearCheckpoint={handleClearCheckpoint}
             onClose={() => setMiniPlayerTrack(null)}
             onRestore={(time, isPlaying, volume, speed) => {
               const track = miniPlayerTrack;
@@ -7145,6 +7550,10 @@ const MusicPhoto = ({ user, onOpenRegister, isAnyModalOpen, onUpdateUser }) => {
               setAudioBarTrack(null);
               setCurrentPlaylist(track.category === "custom" ? "custom" : track.category);
             }}
+            checkpoint={checkpoints[audioBarTrack.id]}
+            checkpointsEnabled={checkpointsEnabled}
+            onSaveCheckpoint={handleSaveCheckpoint}
+            onClearCheckpoint={handleClearCheckpoint}
           />
         )}
       </AnimatePresence>

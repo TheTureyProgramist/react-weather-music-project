@@ -147,3 +147,32 @@ span {
 label {
   color: #000000;
 }
+/* 1. Налаштування для Firefox */
+html, .your-block-class {
+  scrollbar-width: thin; /* Робить скролбар тонким */
+  scrollbar-color: #00a2ff transparent; /* Блакитний повзунок та прозорий трек */
+}
+
+/* 2. Налаштування для Chrome, Edge, Safari, Opera */
+/* Весь скролбар: робимо його тонким */
+::-webkit-scrollbar {
+  width: 5px;           /* Ширина вертикального скролбару */
+  height: 5px;          /* Висота горизонтального скролбару */
+  background: transparent; /* Повністю прозора основа */
+}
+
+/* Доріжка, по якій рухається повзунок (прибираємо білу порожнечу) */
+::-webkit-scrollbar-track {
+  background: transparent; /* Абсолютна прозорість */
+}
+
+/* Сам повзунок: тонкий та блакитний */
+::-webkit-scrollbar-thumb {
+  background-color: #00a2ff; /* Яскраво-блакитний колір */
+  border-radius: 10px;       /* Округлені краї */
+}
+
+/* Зміна кольору повзунка при наведенні миші (опціонально) */
+::-webkit-scrollbar-thumb:hover {
+  background-color: #ff7b00; /* Трохи темніший блакитний */
+}
