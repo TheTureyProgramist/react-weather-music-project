@@ -285,7 +285,12 @@ const BgLayerStyled = styled.div`
     )
     rotate(${(props) => props.$rotation || 0}deg);
   transform-origin: ${(props) => props.$focalX}% ${(props) => props.$focalY}%;
-  filter: blur(${(props) => props.$blur || 0}px);
+  filter: ${(props) => {
+    if (props.$blurType === "pixelated") {
+      return props.$pixelation > 0.5 ? `url(#pixelate-hero)` : "none";
+    }
+    return `blur(${props.$blur || 0}px)`;
+  }};
   z-index: -2;
   animation: ${(props) =>
     props.$panEnabled && props.$zoom > 1
@@ -299,7 +304,7 @@ const BgLayer = (props) => {
   const { $image, $active, $focalX, $focalY } = props;
   const [url, setUrl] = useState(typeof $image === 'string' ? $image : "");
   const videoRef = useRef(null);
-
+  const isPixelated = props.$blurType === "pixelated";
   useEffect(() => {
     let objectUrl = null;
     if ($image instanceof Blob) {
@@ -344,6 +349,7 @@ const BgLayer = (props) => {
             height: "100%",
             objectFit: "cover",
             objectPosition: `${$focalX}% ${$focalY}%`,
+            imageRendering: isPixelated ? 'pixelated' : 'auto',
           }}
         />
       ) : (
@@ -355,6 +361,7 @@ const BgLayer = (props) => {
             backgroundSize: "cover",
             backgroundPosition: `${$focalX}% ${$focalY}%`,
             backgroundRepeat: "no-repeat",
+            imageRendering: isPixelated ? 'pixelated' : 'auto',
           }}
         />
       )}
@@ -1447,6 +1454,10 @@ const Hero = ({
   setHeroBgRotation,
   heroBgBlur,
   setHeroBgBlur,
+  heroBgPixelation,
+  setHeroBgPixelation,
+  heroBgBlurType,
+  setHeroBgBlurType,
   heroBgFocal1,
   setHeroBgFocal1,
   heroBgFocal2,
@@ -1978,6 +1989,21 @@ const Hero = ({
 
   return (
     <HeroDiv>
+      {/* SVG Фільтр для пікселізації */}
+      <svg width="0" height="0" style={{ position: "absolute", pointerEvents: "none", visibility: "hidden" }}>
+        <filter id="pixelate-hero" x="0" y="0" width="100%" height="100%">
+          {/* Ефект Minecraft: створюємо сітку точок і розтягуємо їх у блоки без змішування */}
+          <feFlood x="0" y="0" height="1" width="1" />
+          <feComposite 
+            width={Math.max(1, heroBgPixelation * 2)} 
+            height={Math.max(1, heroBgPixelation * 2)} 
+          />
+          <feTile result="tiles" />
+          <feComposite in="SourceGraphic" in2="tiles" operator="in" />
+          <feMorphology operator="dilate" radius={heroBgPixelation} />
+        </filter>
+      </svg>
+
       {isTodayHoliday && (
         <>
           <FestiveOverlay
@@ -2009,6 +2035,8 @@ const Hero = ({
         $rotation={heroBgRotation}
         $rotationScale={rotationScale}
         $blur={heroBgBlur}
+        $pixelation={heroBgPixelation}
+        $blurType={heroBgBlurType}
         $focalX={heroBgFocal1?.x || 50}
         $focalY={heroBgFocal1?.y || 50}
         $panEnabled={heroBgPanEnabled && heroBgZoom > 1}
@@ -2027,6 +2055,8 @@ const Hero = ({
         $rotation={heroBgRotation}
         $rotationScale={rotationScale}
         $blur={heroBgBlur}
+        $pixelation={heroBgPixelation}
+        $blurType={heroBgBlurType}
         $focalX={heroBgFocal2?.x || 50}
         $focalY={heroBgFocal2?.y || 50}
         $panEnabled={heroBgPanEnabled && heroBgZoom > 1}
@@ -2043,6 +2073,8 @@ const Hero = ({
         $rotation={heroBgRotation}
         $rotationScale={rotationScale}
         $blur={heroBgBlur}
+        $pixelation={heroBgPixelation}
+        $blurType={heroBgBlurType}
         $focalX={heroBgFocal3?.x || 50}
         $focalY={heroBgFocal3?.y || 50}
         $panEnabled={heroBgPanEnabled && heroBgZoom > 1}
@@ -2056,6 +2088,8 @@ const Hero = ({
         $rotation={heroBgRotation}
         $rotationScale={rotationScale}
         $blur={heroBgBlur}
+        $pixelation={heroBgPixelation}
+        $blurType={heroBgBlurType}
         $focalX={heroBgFocal4?.x || 50}
         $focalY={heroBgFocal4?.y || 50}
         $panEnabled={heroBgPanEnabled && heroBgZoom > 1}
@@ -2515,7 +2549,7 @@ const Hero = ({
             <ModalSectionTitle>🎨 Налаштування вигляду</ModalSectionTitle>
             <ModalConfigGrid>
               <ConfigRow>
-                <label>Режим фону:</label>
+                <label>🎞️ Режим зміни фону:</label>
                 <select
                   value={heroBgMode}
                   onChange={(e) => {
@@ -2561,7 +2595,22 @@ const Hero = ({
                 />
               </ConfigRow>
               <ConfigRow>
-                <label>Розворот: {heroBgRotation}°</label>
+                <label>🎭 Ефект фокусу:</label>
+                <div style={{ display: 'flex', gap: '10px' }}>
+                  <ModeButton 
+                    $active={heroBgBlurType === "smooth"} 
+                    onClick={() => { setHeroBgBlurType("smooth"); setHeroBgPixelation(0); }}
+                    style={{ flex: 1, fontSize: '10px', padding: '5px' }}
+                  >Плавне</ModeButton>
+                  <ModeButton 
+                    $active={heroBgBlurType === "pixelated"} 
+                    onClick={() => setHeroBgBlurType("pixelated")}
+                    style={{ flex: 1, fontSize: '10px', padding: '5px' }}
+                  >Піксельне</ModeButton>
+                </div>
+              </ConfigRow>
+              <ConfigRow>
+                <label>🔄 Розворот: {heroBgRotation}°</label>
                 <input
                   type="range"
                   min="-180"
@@ -2572,7 +2621,7 @@ const Hero = ({
                 />
               </ConfigRow>
               <ConfigRow>
-                <label>Розмиття: {heroBgBlur.toFixed(1)}px</label>
+                <label>☁️ Плавне розмиття: {heroBgBlur.toFixed(1)}px</label>
                 <input
                   type="range"
                   min="0"
@@ -2581,6 +2630,21 @@ const Hero = ({
                   value={heroBgBlur}
                   onChange={(e) => setHeroBgBlur(parseFloat(e.target.value))}
                 />
+              </ConfigRow>
+              <ConfigRow style={{ opacity: heroBgBlurType === "pixelated" ? 1 : 0.4 }}>
+                <label>👾 Пікселізація (сила): {heroBgPixelation.toFixed(1)}</label>
+                <input
+                  type="range"
+                  min="0"
+                  max="20"
+                  step="0.2"
+                  value={heroBgPixelation}
+                  disabled={heroBgBlurType !== "pixelated"}
+                  onChange={(e) => setHeroBgPixelation(parseFloat(e.target.value))}
+                />
+                {heroBgBlurType !== "pixelated" && (
+                  <span style={{ fontSize: '8px', color: '#aaa' }}>Увімкніть тип "Піксельне" вище</span>
+                )}
               </ConfigRow>
             </ModalConfigGrid>
 

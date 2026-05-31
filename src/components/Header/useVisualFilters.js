@@ -12,6 +12,8 @@ export const FILTERS = [
   { id: "saturate", label: "Насиченість" },
   { id: "blur", label: "Розмиття" },
   { id: "hue", label: "Веселка" },
+  { id: "chaos", label: "Хаос 🎲" },
+  { id: "ultrachaos", label: "Ультрахаос 🌌" },
 ];
 
 export const PRESETS = [
@@ -27,12 +29,37 @@ const DEFAULT_CONFIG = {
   filterIntensity: 50,
 };
 
+// Впровадження CSS анімацій для спеціальних ефектів
+if (typeof document !== "undefined") {
+  const style = document.createElement("style");
+  style.id = "visual-filters-animations";
+  style.innerHTML = `
+    @keyframes ultrachaos-anim {
+      0% { filter: brightness(var(--v-bright)) contrast(130%) saturate(180%) hue-rotate(0deg); }
+      50% { filter: brightness(var(--v-bright)) contrast(200%) saturate(350%) hue-rotate(180deg) blur(1px); }
+      100% { filter: brightness(var(--v-bright)) contrast(130%) saturate(180%) hue-rotate(360deg); }
+    }
+  `;
+  if (!document.getElementById(style.id)) {
+    document.head.appendChild(style);
+  }
+}
+
 export const applyFilterEffect = (config) => {
   if (!config) return;
   document.documentElement.style.transition = "filter 0.4s ease-in-out";
   const brightness = 100 - (config.darkIntensity || 0) * 0.6;
   let filters = `brightness(${brightness}%)`;
   const { filterType, filterIntensity = 50 } = config;
+
+  // Обробка спеціальних анімованих фільтрів
+  if (filterType === "ultrachaos") {
+    document.documentElement.style.setProperty("--v-bright", `${brightness}%`);
+    document.documentElement.style.animation = "ultrachaos-anim 4s infinite linear";
+    return;
+  }
+
+  document.documentElement.style.animation = "none";
 
   if (filterType === "grayscale") {
     filters += ` grayscale(${filterIntensity}%)`;
@@ -82,7 +109,21 @@ export const useVisualFilters = (user) => {
   }, [storageKey, presetsKey]);
 
   useEffect(() => {
-    applyFilterEffect(visualConfig);
+    let interval;
+    if (visualConfig.filterType === "chaos") {
+      const triggerChaos = () => {
+        const pool = FILTERS.filter(f => !["none", "chaos", "ultrachaos"].includes(f.id));
+        const randomFilter = pool[Math.floor(Math.random() * pool.length)];
+        const randomIntensity = Math.floor(Math.random() * 80) + 20;
+        applyFilterEffect({ ...visualConfig, filterType: randomFilter.id, filterIntensity: randomIntensity });
+      };
+      triggerChaos();
+      // Встановлюємо випадковий інтервал від 1с до 3с
+      interval = setInterval(triggerChaos, Math.floor(Math.random() * 2000) + 1000);
+    } else {
+      applyFilterEffect(visualConfig);
+    }
+    return () => clearInterval(interval);
   }, [visualConfig]);
 
   const setVisualConfig = useCallback((updater) => {

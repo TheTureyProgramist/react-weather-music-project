@@ -369,6 +369,8 @@ const App = () => {
   const [heroBgFilterCategory, setHeroBgFilterCategory] = useState("all");
   const [heroBgZoom, setHeroBgZoom] = useState(1);
   const [heroBgBlur, setHeroBgBlur] = useState(0);
+  const [heroBgPixelation, setHeroBgPixelation] = useState(0);
+  const [heroBgBlurType, setHeroBgBlurType] = useState("smooth"); // "smooth" або "pixelated"
   const [heroBgRotation, setHeroBgRotation] = useState(0);
   const [heroBgFocal1, setHeroBgFocal1] = useState({ x: 50, y: 50 });
   const [heroBgFocal2, setHeroBgFocal2] = useState({ x: 50, y: 50 });
@@ -485,6 +487,10 @@ const App = () => {
         if (savedRotation !== null) setHeroBgRotation(savedRotation);
         const savedBlur = await localforage.getItem("hero_bg_blur");
         if (savedBlur !== null) setHeroBgBlur(savedBlur);
+        const savedBlurType = await localforage.getItem("hero_bg_blur_type");
+        if (savedBlurType) setHeroBgBlurType(savedBlurType);
+        const savedPixelation = await localforage.getItem("hero_bg_pixelation");
+        if (savedPixelation !== null) setHeroBgPixelation(savedPixelation);
 
         const savedFocal1 = await localforage.getItem("hero_bg_focal1");
         if (savedFocal1) setHeroBgFocal1(savedFocal1);
@@ -685,6 +691,8 @@ const App = () => {
       localforage.setItem("hero_bg_zoom", heroBgZoom);
       localforage.setItem("hero_bg_rotation", heroBgRotation);
       localforage.setItem("hero_bg_blur", heroBgBlur);
+      localforage.setItem("hero_bg_blur_type", heroBgBlurType);
+      localforage.setItem("hero_bg_pixelation", heroBgPixelation);
       localforage.setItem("hero_bg_focal1", heroBgFocal1);
       localforage.setItem("hero_bg_focal2", heroBgFocal2);
       localforage.setItem("hero_bg_focal3", heroBgFocal3);
@@ -710,6 +718,8 @@ const App = () => {
     heroBgZoom,
     heroBgRotation,
     heroBgBlur,
+    heroBgBlurType,
+    heroBgPixelation,
     heroBgFocal1,
     heroBgFocal2,
     heroBgFocal3,
@@ -1325,6 +1335,10 @@ const App = () => {
           setHeroBgRotation={setHeroBgRotation}
           heroBgBlur={heroBgBlur}
           setHeroBgBlur={setHeroBgBlur}
+          heroBgBlurType={heroBgBlurType}
+          heroBgPixelation={heroBgPixelation}
+          setHeroBgPixelation={setHeroBgPixelation}
+          setHeroBgBlurType={setHeroBgBlurType}
           heroBgFocal1={heroBgFocal1}
           setHeroBgFocal1={setHeroBgFocal1}
           heroBgFocal2={heroBgFocal2}
@@ -1415,6 +1429,10 @@ const App = () => {
           setHeroBgRotation={setHeroBgRotation}
           heroBgBlur={heroBgBlur}
           setHeroBgBlur={setHeroBgBlur}
+          heroBgBlurType={heroBgBlurType}
+          heroBgPixelation={heroBgPixelation}
+          setHeroBgPixelation={setHeroBgPixelation}
+          setHeroBgBlurType={setHeroBgBlurType}
           heroBgFocal1={heroBgFocal1}
           setHeroBgFocal1={setHeroBgFocal1}
           heroBgFocal2={heroBgFocal2}
@@ -1585,6 +1603,10 @@ const App = () => {
                             setHeroBgRotation={setHeroBgRotation}
                             heroBgBlur={heroBgBlur}
                             setHeroBgBlur={setHeroBgBlur}
+                            heroBgBlurType={heroBgBlurType}
+                            heroBgPixelation={heroBgPixelation}
+                            setHeroBgPixelation={setHeroBgPixelation}
+                            setHeroBgBlurType={setHeroBgBlurType}
                             heroBgFocal1={heroBgFocal1}
                             setHeroBgFocal1={setHeroBgFocal1}
                             heroBgFocal2={heroBgFocal2}
