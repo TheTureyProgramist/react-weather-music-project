@@ -3,6 +3,8 @@ import styled, { keyframes, css } from "styled-components";
 import localforage from "localforage";
 import InfoModal from "./UserSearchModal.jsx";
 import KatSceneModal from "./KatSceneModal";
+import { auth, googleProvider, signInWithPopup } from "../../firebase";
+
 const slideIn = keyframes`
   0% { 
     transform: translateY(100%) scale(0.5);
@@ -348,6 +350,26 @@ const SubmitButton = styled.button`
     grid-column: 1 / -1; /* Span across all columns in horizontal layout */
   }
 `;
+
+const GoogleButton = styled.button`
+  background: #4285f4;
+  color: white;
+  font-weight: bold;
+  padding: 12px;
+  border-radius: 8px;
+  border: 2px solid transparent;
+  cursor: pointer;
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  font-size: 16px;
+  &:hover {
+    background: #3367d6;
+  }
+`;
 const COLORS = [
   { name: "Сірий", value: "grey" },
   { name: "Помаранчевий", value: "orange" },
@@ -482,6 +504,34 @@ const Modal = ({ onClose, onRegister, availableAvatars = [] }) => {
     }
 
     setShowKatScene(true);
+  };
+
+  const handleGoogleAuth = async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    try {
+      const result = await signInWithPopup(auth, googleProvider);
+      const firebaseUser = result.user;
+      
+      const registrationData = {
+        uid: firebaseUser.uid,
+        id: firebaseUser.uid,
+        account: firebaseUser.email || "",
+        firstName: firebaseUser.displayName || firebaseUser.email || "Користувач",
+        password: "", // Google auth uses OAuth
+        avatar: firebaseUser.photoURL || (availableAvatars.length ? availableAvatars[formData.avatarIndex] : ""),
+        textColor: formData.textColor || "grey",
+        borderColor: formData.borderColor || "grey",
+        birthDate: "2000-01-01", // Default for Google users
+      };
+      
+      await localforage.setItem("registered_user", registrationData);
+      onRegister(registrationData);
+      handleClose(e);
+    } catch (err) {
+      console.error("Google Auth Error:", err);
+      setError("Помилка Google: " + (err.message || err.toString()));
+    }
   };
 
   const completeRegistration = async () => {
@@ -668,13 +718,17 @@ const Modal = ({ onClose, onRegister, availableAvatars = [] }) => {
                     <TermsBtn $isDarkMode={isDarkMode} onClick={() => setShowTerms(true)}>Угодою</TermsBtn>
                   </label>
                 </CheckboxRow>
-                   <SubmitButton
+              <SubmitButton
                 onClick={handleSubmit}
                 disabled={!accepted || isInvalidDate}
                 $isDarkMode={isDarkMode}
               >
                 Зареєструватися
               </SubmitButton>
+              <div style={{ textAlign: "center", marginTop: "10px", fontSize: "14px", fontWeight: "bold", color: isDarkMode ? "#ccc" : "#555" }}>АБО</div>
+              <GoogleButton type="button" onClick={handleGoogleAuth}>
+                🔑 Увійти через Google
+              </GoogleButton>
               </FormColumn>
               <FormColumn>
                 <ColorSection>

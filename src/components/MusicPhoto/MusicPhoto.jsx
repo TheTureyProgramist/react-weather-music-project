@@ -6,6 +6,30 @@ import localforage from "localforage";
 import { motion, AnimatePresence } from "framer-motion";
 import { pipeline } from "@huggingface/transformers";
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import {
+  collection,
+  doc,
+  getDoc,
+  limit,
+  onSnapshot,
+  orderBy,
+  query,
+  serverTimestamp,
+  setDoc,
+  updateDoc,
+  where,
+} from "firebase/firestore";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth, db, signInWithPopup, googleProvider } from "../../firebase";
+import {
+  buildCommentPayload,
+  getDailyCommentQuotaLeft,
+  getInitialCommentStats,
+  MAX_DAILY_COMMENTS,
+  MAX_TOTAL_COMMENTS,
+  MAX_VISIBLE_COMMENTS,
+  normalizeLikeValue,
+} from "./socialUtils";
 //Desert
 // import christmas from "../../photos/vip-images/christmas.webp";
 //Horses
@@ -1533,6 +1557,7 @@ const FullScreenPlayer = ({
   onAudioBar,
   onMiniPlayer,
   onOpenAi,
+  onOpenSocial,
   user,
   playlist,
   onSelectTrack,
@@ -1690,6 +1715,46 @@ const FullScreenPlayer = ({
   const [showDownload, setShowDownload] = useState(false);
   const [showScreenshotMenu, setShowScreenshotMenu] = useState(false);
   const [showPlaylist, setShowPlaylist] = useState(false);
+  const [showSocialModal, setShowSocialModal] = useState(false);
+  const [socialTargetTrack, setSocialTargetTrack] = useState(null);
+  const [socialStats, setSocialStats] = useState(getInitialCommentStats());
+  const [socialComments, setSocialComments] = useState([]);
+  const [socialGlobalComments, setSocialGlobalComments] = useState([]);
+  const [socialGlobalCommentCount, setSocialGlobalCommentCount] = useState(0);
+  const [socialCommentText, setSocialCommentText] = useState("");
+  const [socialLoading, setSocialLoading] = useState(false);
+  const [socialAuthUser, setSocialAuthUser] = useState(null);
+  const [socialCommentQuotaUsed, setSocialCommentQuotaUsed] = useState(0);
+  const [socialCommentError, setSocialCommentError] = useState("");
+  const [socialReactionState, setSocialReactionState] = useState(0);
+  const [socialCommentCount, setSocialCommentCount] = useState(0);
+  const activeSocialTrack = socialTargetTrack || track;
+    // Normalize various shapes into a consistent social target object
+    const toSocialTarget = (t) => {
+      if (!t) return null;
+      if (typeof t === "string") return { id: String(t), author: "", text: "", isGeneral: String(t) === "general" };
+      const id = t.id || t.trackId || (t && t.id === 0 ? 0 : undefined);
+      if (id !== undefined) return { ...t, id: String(id), isGeneral: t.isGeneral || String(id) === "general" };
+      return { id: String(t), author: t.author || "", text: t.text || "", isGeneral: false };
+    };
+
+    const getAvatarSrc = (a) => {
+      if (!a) return null;
+      if (typeof a === "string") return a;
+      if (typeof a === "object") return a.default || a.url || null;
+      return null;
+    };
+
+    const canCommentUser = (u) => {
+      if (!u) return false;
+      const role = u.role || u.userRole || u.accountRole || "";
+      return !(role === "anonymous" || role === "guest" || role === "banned");
+    };
+  const getSocialQuotaKey = useCallback((trackId, currentUser) => {
+    const day = new Date().toISOString().slice(0, 10);
+    const uid = currentUser?.uid || currentUser?.id || currentUser?.account || "guest";
+    return `music_comment_quota_${trackId}_${uid}_${day}`;
+  }, []);
   const [loop, setLoop] = useState(false);
   const [progressMode, setProgressMode] = useState("linear");
   const [currentImgIdx, setCurrentImgIdx] = useState(0);
@@ -1722,6 +1787,211 @@ const FullScreenPlayer = ({
     };
     loadQuality();
   }, []);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+      if (firebaseUser) {
+        setSocialAuthUser({
+          uid: firebaseUser.uid,
+          account: firebaseUser.email || "",
+          firstName: firebaseUser.displayName || firebaseUser.email || "Користувач",
+          avatar: firebaseUser.photoURL || "",
+          email: firebaseUser.email || "",
+        });
+      } else {
+        setSocialAuthUser(null);
+      }
+    });
+    return () => unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    if (!showSocialModal || !activeSocialTrack?.id) return undefined;
+
+    const statsRef = doc(db, "music_social_stats", String(activeSocialTrack.id));
+    const commentsRef = query(
+      collection(db, "music_social_comments"),
+      where("trackId", "==", String(activeSocialTrack.id)),
+      orderBy("createdAt", "desc"),
+      limit(MAX_TOTAL_COMMENTS),
+    );
+    const globalCommentsRef = query(
+      collection(db, "music_social_comments"),
+      orderBy("createdAt", "desc"),
+      limit(MAX_TOTAL_COMMENTS * 10),
+    );
+
+    const unsubscribeStats = onSnapshot(statsRef, (snapshot) => {
+      if (snapshot.exists()) {
+        const data = snapshot.data();
+        setSocialStats({
+          views: data.views || 0,
+          likes: data.likes || 0,
+          dislikes: data.dislikes || 0,
+          comments: data.comments || 0,
+        });
+      } else {
+        setSocialStats(getInitialCommentStats());
+      }
+    });
+
+    const unsubscribeComments = onSnapshot(commentsRef, (snapshot) => {
+      const next = snapshot.docs.map((docSnap) => ({ id: docSnap.id, ...docSnap.data() }));
+      setSocialComments(next);
+      setSocialCommentCount(next.length);
+    });
+
+    const unsubscribeGlobalComments = onSnapshot(globalCommentsRef, (snapshot) => {
+      const next = snapshot.docs.map((docSnap) => ({ id: docSnap.id, ...docSnap.data() }));
+      setSocialGlobalComments(next.slice(0, MAX_TOTAL_COMMENTS));
+      setSocialGlobalCommentCount(next.length);
+    });
+
+    const updateView = async () => {
+      try {
+        const current = await getDoc(statsRef);
+        const data = current.exists() ? current.data() : getInitialCommentStats();
+        await setDoc(statsRef, { ...data, views: (data.views || 0) + 1 }, { merge: true });
+      } catch (error) {
+        console.error("Social view update failed", error);
+      }
+    };
+
+    updateView();
+    return () => {
+      unsubscribeStats();
+      unsubscribeComments();
+      unsubscribeGlobalComments();
+    };
+  }, [showSocialModal, activeSocialTrack?.id]);
+
+  useEffect(() => {
+    if (!showSocialModal || !activeSocialTrack?.id) return;
+    const currentUser = socialAuthUser || user;
+    if (!currentUser) {
+      setSocialCommentQuotaUsed(0);
+      return;
+    }
+    const quotaKey = getSocialQuotaKey(String(activeSocialTrack.id), currentUser);
+    localforage.getItem(quotaKey).then((value) => {
+      setSocialCommentQuotaUsed(Number(value) || 0);
+    }).catch(() => {
+      setSocialCommentQuotaUsed(0);
+    });
+  }, [activeSocialTrack?.id, getSocialQuotaKey, showSocialModal, socialAuthUser, user]);
+
+  useEffect(() => {
+    if (!user?.uid && !socialAuthUser?.uid) return;
+    const key = `${activeSocialTrack?.id || "track"}:${user?.uid || socialAuthUser?.uid}`;
+    const savedState = localforage.getItem(key).then((value) => {
+      if (value !== null) setSocialReactionState(normalizeLikeValue(value));
+    }).catch(() => {});
+    return () => {
+      savedState.catch(() => {});
+    };
+  }, [socialAuthUser, activeSocialTrack?.id, user]);
+
+  const handleGoogleSignIn = useCallback(async () => {
+    try {
+      const result = await signInWithPopup(auth, googleProvider);
+      const firebaseUser = result.user;
+      setSocialAuthUser({
+        uid: firebaseUser.uid,
+        account: firebaseUser.email || "",
+        firstName: firebaseUser.displayName || firebaseUser.email || "Користувач",
+        avatar: firebaseUser.photoURL || "",
+        email: firebaseUser.email || "",
+      });
+      setSocialCommentError("");
+    } catch (error) {
+      setSocialCommentError("Не вдалося увійти через Google");
+      console.error(error);
+    }
+  }, []);
+
+  const handleSocialCommentSubmit = useCallback(async () => {
+    if (!activeSocialTrack?.id) return;
+    const currentUser = socialAuthUser || user;
+    if (!currentUser) {
+      setSocialCommentError("Спочатку увійдіть, щоб залишити коментар");
+      return;
+    }
+
+    const text = socialCommentText.trim();
+    if (!text) {
+      setSocialCommentError("Коментар не може бути порожнім");
+      return;
+    }
+    if (text.length > 1000) {
+      setSocialCommentError("Коментар не може перевищувати 1000 символів");
+      return;
+    }
+
+    setSocialLoading(true);
+    setSocialCommentError("");
+
+    try {
+      const quotaKey = getSocialQuotaKey(String(activeSocialTrack.id), currentUser);
+      const storedQuota = (await localforage.getItem(quotaKey)) || 0;
+      if (storedQuota >= MAX_DAILY_COMMENTS) {
+        setSocialCommentError("Сьогодні ви вже використали 4 коментарі");
+        setSocialLoading(false);
+        return;
+      }
+
+      const payload = buildCommentPayload({
+        trackId: String(activeSocialTrack.id),
+        user: currentUser,
+        text,
+        avatar: currentUser.avatar || currentUser.photoURL || "",
+        color: currentUser.borderColor || currentUser.textColor || currentUser.color || "#ffb36c",
+        supporterName: currentUser.firstName || currentUser.name || currentUser.displayName || currentUser.account,
+      });
+      await setDoc(doc(db, "music_social_comments", payload.id), payload);
+      await updateDoc(doc(db, "music_social_stats", String(activeSocialTrack.id)), {
+        comments: (socialStats.comments || 0) + 1,
+        updatedAt: serverTimestamp(),
+      }).catch(async () => {
+        await setDoc(doc(db, "music_social_stats", String(activeSocialTrack.id)), { comments: 1, likes: 0, dislikes: 0, views: 0 }, { merge: true });
+      });
+      await localforage.setItem(quotaKey, storedQuota + 1);
+      setSocialCommentQuotaUsed(storedQuota + 1);
+      setSocialCommentText("");
+    } catch (error) {
+      console.error("Comment submit failed", error);
+      setSocialCommentError("Не вдалося зберегти коментар");
+    } finally {
+      setSocialLoading(false);
+    }
+  }, [activeSocialTrack?.id, getSocialQuotaKey, socialAuthUser, socialCommentText, socialStats.comments, user]);
+
+  const handleSocialReaction = useCallback(async (nextValue) => {
+    if (!activeSocialTrack?.id) return;
+    const currentUser = socialAuthUser || user;
+    if (!currentUser) {
+      setSocialCommentError("Увійдіть, щоб ставити реакції");
+      return;
+    }
+
+    const normalized = normalizeLikeValue(nextValue);
+    const reactionKey = `${String(activeSocialTrack.id)}:${currentUser.uid || currentUser.id || currentUser.account}`;
+    const previous = socialReactionState;
+    const statsRef = doc(db, "music_social_stats", String(activeSocialTrack.id));
+    const currentState = previous === normalized ? 0 : normalized;
+    setSocialReactionState(currentState);
+    await localforage.setItem(reactionKey, currentState);
+
+    try {
+      const snapshot = await getDoc(statsRef);
+      const data = snapshot.exists() ? snapshot.data() : getInitialCommentStats();
+      const likes = (data.likes || 0) + (currentState === 1 ? 1 : previous === 1 ? -1 : 0);
+      const dislikes = (data.dislikes || 0) + (currentState === -1 ? 1 : previous === -1 ? -1 : 0);
+      await setDoc(statsRef, { ...data, likes, dislikes }, { merge: true });
+      setSocialStats((prev) => ({ ...prev, likes, dislikes }));
+    } catch (error) {
+      console.error("Reaction update failed", error);
+    }
+  }, [activeSocialTrack?.id, socialAuthUser, socialReactionState, user]);
 
   useEffect(() => {
     localforage.setItem("video_quality", videoQuality);
@@ -2855,19 +3125,17 @@ const FullScreenPlayer = ({
               if (canPerformAction()) onRate(track.id);
             }}
             title={(() => {
-              if (rating === 2) return "2 бали (макс)";
-              if (rating === 1) return "1 бал";
-              if (rating === -1) return "Дизлайк";
-              return "Оцінити";
+              if (rating === 2) return "2 бали — ❤️ Лайк";
+              if (rating === 1) return "1 бал — ❤️ Лайк";
+              if (rating === -1) return "💔 Дизлайк";
+              return "🤍 Оцінити";
             })()}
           >
-            {rating === 2
-              ? "💛"
-              : rating === 1
-                ? "❤️"
-                : rating === -1
-                  ? "👎"
-                  : "🤍"}
+            {rating === 2 || rating === 1
+              ? "❤️"
+              : rating === -1
+                ? "💔"
+                : "🤍"}
           </ActButton>
           <ActButton
             onClick={() => setIsLocked(true)}
@@ -2899,6 +3167,9 @@ const FullScreenPlayer = ({
             title="Список відтворення"
           >
             📑
+          </ActButton>
+          <ActButton onClick={() => { setSocialTargetTrack(toSocialTarget(track)); setShowSocialModal(true); }} title="Чат та статистика">
+            💬
           </ActButton>
           <ActButton onClick={() => onOpenAi(track)} title="ШІ Помічник">
             ✨
@@ -3413,6 +3684,9 @@ const FullScreenPlayer = ({
           </div>
 
           <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+            <ActButton onClick={() => onOpenSocial && onOpenSocial()} title="Чат і статистика">
+              💬
+            </ActButton>
             <LoopButton
               $active={isCached}
               onClick={() => {
@@ -4187,6 +4461,107 @@ const FullScreenPlayer = ({
         </DownloadModal>
       )}
 
+      {showSocialModal && (
+        <ModalOverlay onClick={() => setShowSocialModal(false)}>
+          <PlaylistModalContent onClick={(e) => e.stopPropagation()} style={{ maxWidth: 760, width: "92%", padding: 20, maxHeight: "85vh", overflowY: "auto", background: isDarkMode ? "#1f2335" : "#fffaf4", color: isDarkMode ? "#f2f2f2" : "#111" }}>
+            <PlaylistCloseButton onClick={() => setShowSocialModal(false)} style={{ color: isDarkMode ? "#fff" : "#111" }}>
+              &times;
+            </PlaylistCloseButton>
+            <h3 style={{ marginTop: 0, marginBottom: 12 }}>
+        {socialTargetTrack?.isGeneral ? "🌐 Загальний чат" : `🎵 ${socialTargetTrack?.author || ""} — ${socialTargetTrack?.text || ""}`}
+      </h3>
+            <div style={{ display: "grid", gap: 12, marginBottom: 16 }}>
+              <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+                <span style={{ background: "rgba(255,179,108,0.2)", padding: "6px 10px", borderRadius: 999 }}>Тривалість: {Math.floor(duration || 0)}с</span>
+                <span style={{ background: "rgba(122,252,255,0.15)", padding: "6px 10px", borderRadius: 999 }}>Перегляди: {socialStats.views}</span>
+                <span style={{ background: "rgba(255,107,107,0.15)", padding: "6px 10px", borderRadius: 999 }}>Лайки: {socialStats.likes}</span>
+                <span style={{ background: "rgba(90,90,255,0.15)", padding: "6px 10px", borderRadius: 999 }}>Дизлайки: {socialStats.dislikes}</span>
+                <span style={{ background: "rgba(255,255,255,0.15)", padding: "6px 10px", borderRadius: 999 }}>Коментарі: {socialCommentCount}</span>
+              </div>
+              <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                <button onClick={() => handleSocialReaction(1)} style={{ border: "none", borderRadius: 999, padding: "8px 12px", cursor: "pointer", background: socialReactionState === 1 ? "#ff4d6d" : "#e8e8e8", color: socialReactionState === 1 ? "#fff" : "#111" }}>❤ Лайк</button>
+                <button onClick={() => handleSocialReaction(-1)} style={{ border: "none", borderRadius: 999, padding: "8px 12px", cursor: "pointer", background: socialReactionState === -1 ? "#4c78ff" : "#e8e8e8", color: socialReactionState === -1 ? "#fff" : "#111" }}>👎 Дизлайк</button>
+              </div>
+            </div>
+            <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap", marginBottom: 12 }}>
+              {!socialAuthUser && !user ? (
+                <button onClick={handleGoogleSignIn} style={{ border: "none", borderRadius: 999, padding: "8px 12px", cursor: "pointer", background: "#4285f4", color: "#fff" }}>🔑 Увійти з Google</button>
+              ) : (
+                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                  {(socialAuthUser?.avatar || user?.avatar) && (
+                    <img
+                      src={socialAuthUser?.avatar || user?.avatar}
+                      alt="avatar"
+                      style={{ width: 30, height: 30, borderRadius: "50%", objectFit: "cover", border: "2px solid #ffb36c" }}
+                    />
+                  )}
+                  <span style={{ fontSize: 13, opacity: 0.8 }}>Увійшли як {socialAuthUser?.firstName || user?.firstName || user?.account || "користувач"}</span>
+                </div>
+              )}
+              <span style={{ fontSize: 12, opacity: 0.7 }}>Залишилось коментарів сьогодні: {getDailyCommentQuotaLeft(MAX_DAILY_COMMENTS, socialCommentQuotaUsed)}</span>
+            </div>
+            <div style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
+              {(socialAuthUser?.avatar || user?.avatar) && (
+                <img
+                  src={socialAuthUser?.avatar || user?.avatar}
+                  alt="avatar"
+                  style={{ width: 38, height: 38, borderRadius: "50%", objectFit: "cover", border: "2px solid #ffb36c", flexShrink: 0, marginTop: 2 }}
+                />
+              )}
+              <textarea value={socialCommentText} onChange={(e) => setSocialCommentText(e.target.value)} maxLength={1000} placeholder={!socialAuthUser && !user ? "Увійдіть щоб написати коментар..." : "Залиште коментар..."} disabled={!socialAuthUser && !user} style={{ flex: 1, minHeight: 90, borderRadius: 12, padding: 10, border: "1px solid rgba(0,0,0,0.15)", resize: "vertical", opacity: !socialAuthUser && !user ? 0.6 : 1 }} />
+            </div>
+            {socialCommentError && <div style={{ color: "#ff4d6d", fontSize: 12, marginTop: 6 }}>{socialCommentError}</div>}
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 8 }}>
+              <span style={{ fontSize: 12, opacity: 0.7 }}>{socialCommentText.length}/1000</span>
+              <button onClick={handleSocialCommentSubmit} disabled={socialLoading} style={{ border: "none", borderRadius: 999, padding: "8px 12px", cursor: "pointer", background: "#ffb36c", color: "#111", opacity: socialLoading ? 0.6 : 1 }}>{socialLoading ? "Надсилаю..." : "Надіслати"}</button>
+            </div>
+            <div style={{ marginTop: 16, display: "grid", gap: 14 }}>
+              {!socialTargetTrack.isGeneral && (
+                <div>
+                  <div style={{ fontWeight: 700, marginBottom: 8 }}>Коментарі до цієї пісні</div>
+                  <div style={{ display: "grid", gap: 10 }}>
+                    {socialComments.slice(0, MAX_VISIBLE_COMMENTS).map((comment) => (
+                      <div key={comment.id} style={{ background: isDarkMode ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.04)", borderRadius: 14, padding: 10, border: "1px solid rgba(255,179,108,0.2)" }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                          <div style={{ width: 38, height: 38, borderRadius: "50%", border: `2px solid ${comment.user?.color || "#ffb36c"}`, overflow: "hidden", background: "#fff" }}>
+                            {getAvatarSrc(comment.user?.avatar) ? <img src={getAvatarSrc(comment.user?.avatar)} alt={comment.user?.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16 }}>👤</div>}
+                          </div>
+                          <div>
+                            <div style={{ fontWeight: 700 }}>{comment.user?.name || "Гість"}</div>
+                            <div style={{ fontSize: 11, opacity: 0.7 }}>{new Date(comment.createdAt || Date.now()).toLocaleString("uk-UA")}</div>
+                          </div>
+                        </div>
+                        <div style={{ marginTop: 8, whiteSpace: "pre-wrap", wordBreak: "break-word" }}>{comment.text}</div>
+                      </div>
+                    ))}
+                    {!socialComments.length && <div style={{ opacity: 0.7, fontSize: 13 }}>Ще немає коментарів до цієї пісні.</div>}
+                  </div>
+                </div>
+              )}
+              <div>
+                <div style={{ fontWeight: 700, marginBottom: 8 }}>Загальні коментарі ({socialGlobalCommentCount})</div>
+                <div style={{ display: "grid", gap: 10 }}>
+                  {socialGlobalComments.map((comment) => (
+                    <div key={comment.id} style={{ background: isDarkMode ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.03)", borderRadius: 14, padding: 10, border: "1px solid rgba(122,252,255,0.2)" }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                        <div style={{ width: 38, height: 38, borderRadius: "50%", border: `2px solid ${comment.user?.color || "#ffb36c"}`, overflow: "hidden", background: "#fff" }}>
+                          {getAvatarSrc(comment.user?.avatar) ? <img src={getAvatarSrc(comment.user?.avatar)} alt={comment.user?.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16 }}>👤</div>}
+                        </div>
+                        <div>
+                          <div style={{ fontWeight: 700 }}>{comment.user?.name || "Гість"}</div>
+                          <div style={{ fontSize: 11, opacity: 0.7 }}>{comment.trackId ? `Пісня #${comment.trackId}` : "Усі пісні"}</div>
+                        </div>
+                      </div>
+                      <div style={{ marginTop: 8, whiteSpace: "pre-wrap", wordBreak: "break-word" }}>{comment.text}</div>
+                    </div>
+                  ))}
+                  {!socialGlobalComments.length && <div style={{ opacity: 0.7, fontSize: 13 }}>Ще немає загальних коментарів.</div>}
+                </div>
+              </div>
+            </div>
+          </PlaylistModalContent>
+        </ModalOverlay>
+      )}
       {showPlaylist && (
         <PlaylistOverlay>
           <div
@@ -4380,10 +4755,12 @@ const FullScreenPlayer = ({
 const MusicCard = ({
   cardData,
   onOpenModal,
-  rating, // Added isDarkMode prop
+  rating,
   onOpenPlayer,
   onRate,
   onOpenAi = () => {},
+  onOpenSocial = () => {},
+  onOpenInfo = () => {},
   checkpoint,
   checkpointsEnabled,
 }) => {
@@ -4426,23 +4803,21 @@ const MusicCard = ({
         <HeartButton
           $rating={rating}
           title={(() => {
-            if (rating === 2) return "2 бали (макс)";
-            if (rating === 1) return "1 бал";
-            if (rating === -1) return "Дизлайк";
-            return "Оцінити";
+            if (rating === 2) return "2 бали — ❤️ Лайк";
+            if (rating === 1) return "1 бал — ❤️ Лайк";
+            if (rating === -1) return "💔 Дизлайк";
+            return "🤍 Оцінити";
           })()}
           onClick={(e) => {
             e.stopPropagation();
             onRate && onRate(id);
           }}
         >
-          {rating === 2
-            ? "💛"
-            : rating === 1
-              ? "❤️"
-              : rating === -1
-                ? "👎"
-                : "🤍"}
+          {rating === 2 || rating === 1
+            ? "❤️"
+            : rating === -1
+              ? "💔"
+              : "🤍"}
         </HeartButton>
         <MusicImage src={image} alt="Music" onClick={() => onOpenPlayer(id)} />
 
@@ -4472,6 +4847,24 @@ const MusicCard = ({
             }}
           >
             ✨
+          </ActionButton>
+          <ActionButton
+            title="Чат і статистика"
+            onClick={(e) => {
+              e.stopPropagation();
+              onOpenSocial && onOpenSocial(cardData);
+            }}
+          >
+            💬
+          </ActionButton>
+          <ActionButton
+            title="Інформація про трек"
+            onClick={(e) => {
+              e.stopPropagation();
+              onOpenInfo && onOpenInfo(cardData);
+            }}
+          >
+            ℹ️
           </ActionButton>
           <ActionButton title="Завантажити" onClick={handleDownloadTrack}>
             ⇩
@@ -5175,6 +5568,19 @@ const PlaylistModal = ({
   const [backgroundMode, setBackgroundMode] = useState(true);
   const [selectedAuthor, setSelectedAuthor] = useState(null); // Стан для вибраного автора
   const [authorModalInfo, setAuthorModalInfo] = useState(null);
+  const [showSocialModal, setShowSocialModal] = useState(false);
+  const [socialTargetTrack, setSocialTargetTrack] = useState(null);
+  const [socialStats, setSocialStats] = useState(getInitialCommentStats());
+  const [socialComments, setSocialComments] = useState([]);
+  const [socialGlobalComments, setSocialGlobalComments] = useState([]);
+  const [socialGlobalCommentCount, setSocialGlobalCommentCount] = useState(0);
+  const [socialCommentText, setSocialCommentText] = useState("");
+  const [socialLoading, setSocialLoading] = useState(false);
+  const [socialAuthUser, setSocialAuthUser] = useState(null);
+  const [socialCommentQuotaUsed, setSocialCommentQuotaUsed] = useState(0);
+  const [socialCommentError, setSocialCommentError] = useState("");
+  const [socialReactionState, setSocialReactionState] = useState(0);
+  const [socialCommentCount, setSocialCommentCount] = useState(0);
 
   useEffect(() => {
     setSelectedAuthor(null);
@@ -5197,6 +5603,217 @@ const PlaylistModal = ({
     setBackgroundMode(val);
     await localforage.setItem("background_mode_enabled", val);
   }, [backgroundMode]);
+
+  const getSocialQuotaKey = useCallback((trackId, currentUser) => {
+    const day = new Date().toISOString().slice(0, 10);
+    const uid = currentUser?.uid || currentUser?.id || currentUser?.account || "guest";
+    return `music_comment_quota_${trackId}_${uid}_${day}`;
+  }, []);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+      if (firebaseUser) {
+        setSocialAuthUser({
+          uid: firebaseUser.uid,
+          account: firebaseUser.email || "",
+          firstName: firebaseUser.displayName || firebaseUser.email || "Користувач",
+          avatar: firebaseUser.photoURL || "",
+          email: firebaseUser.email || "",
+        });
+      } else {
+        setSocialAuthUser(null);
+      }
+    });
+    return () => unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    if (!showSocialModal || !socialTargetTrack?.id) return undefined;
+
+    const statsRef = doc(db, "music_social_stats", String(socialTargetTrack.id));
+    const trackCommentsRef = query(
+      collection(db, "music_social_comments"),
+      where("trackId", "==", String(socialTargetTrack.id)),
+      orderBy("createdAt", "desc"),
+      limit(MAX_TOTAL_COMMENTS),
+    );
+    const globalCommentsRef = query(
+      collection(db, "music_social_comments"),
+      orderBy("createdAt", "desc"),
+      limit(MAX_TOTAL_COMMENTS * 10),
+    );
+
+    const unsubscribeStats = onSnapshot(statsRef, (snapshot) => {
+      if (snapshot.exists()) {
+        const data = snapshot.data();
+        setSocialStats({
+          views: data.views || 0,
+          likes: data.likes || 0,
+          dislikes: data.dislikes || 0,
+          comments: data.comments || 0,
+        });
+      } else {
+        setSocialStats(getInitialCommentStats());
+      }
+    });
+
+    const unsubscribeTrackComments = onSnapshot(trackCommentsRef, (snapshot) => {
+      const next = snapshot.docs.map((docSnap) => ({ id: docSnap.id, ...docSnap.data() }));
+      setSocialComments(next);
+      setSocialCommentCount(next.length);
+    });
+
+    const unsubscribeGlobalComments = onSnapshot(globalCommentsRef, (snapshot) => {
+      const next = snapshot.docs.map((docSnap) => ({ id: docSnap.id, ...docSnap.data() }));
+      setSocialGlobalComments(next.slice(0, MAX_TOTAL_COMMENTS));
+      setSocialGlobalCommentCount(next.length);
+    });
+
+    const updateView = async () => {
+      try {
+        const current = await getDoc(statsRef);
+        const data = current.exists() ? current.data() : getInitialCommentStats();
+        await setDoc(statsRef, { ...data, views: (data.views || 0) + 1 }, { merge: true });
+      } catch (error) {
+        console.error("Social view update failed", error);
+      }
+    };
+
+    updateView();
+    return () => {
+      unsubscribeStats();
+      unsubscribeTrackComments();
+      unsubscribeGlobalComments();
+    };
+  }, [showSocialModal, socialTargetTrack?.id]);
+
+  useEffect(() => {
+    if (!showSocialModal || !socialTargetTrack?.id) return;
+    const currentUser = socialAuthUser || user;
+    if (!currentUser) {
+      setSocialCommentQuotaUsed(0);
+      return;
+    }
+    const quotaKey = getSocialQuotaKey(String(socialTargetTrack.id), currentUser);
+    localforage.getItem(quotaKey).then((value) => {
+      setSocialCommentQuotaUsed(Number(value) || 0);
+    }).catch(() => {
+      setSocialCommentQuotaUsed(0);
+    });
+  }, [getSocialQuotaKey, showSocialModal, socialAuthUser, socialTargetTrack?.id, user]);
+
+  useEffect(() => {
+    if (!user?.uid && !socialAuthUser?.uid) return;
+    const key = `${socialTargetTrack?.id || "track"}:${user?.uid || socialAuthUser?.uid}`;
+    const savedState = localforage.getItem(key).then((value) => {
+      if (value !== null) setSocialReactionState(normalizeLikeValue(value));
+    }).catch(() => {});
+    return () => {
+      savedState.catch(() => {});
+    };
+  }, [socialAuthUser, socialTargetTrack?.id, user]);
+
+  const handleGoogleSignIn = useCallback(async () => {
+    try {
+      const result = await signInWithPopup(auth, googleProvider);
+      const firebaseUser = result.user;
+      setSocialAuthUser({
+        uid: firebaseUser.uid,
+        account: firebaseUser.email || "",
+        firstName: firebaseUser.displayName || firebaseUser.email || "Користувач",
+        avatar: firebaseUser.photoURL || "",
+        email: firebaseUser.email || "",
+      });
+      setSocialCommentError("");
+    } catch (error) {
+      setSocialCommentError("Не вдалося увійти через Google");
+      console.error(error);
+    }
+  }, []);
+
+  const handleSocialCommentSubmit = useCallback(async () => {
+    if (!socialTargetTrack?.id) return;
+    const currentUser = socialAuthUser || user;
+    if (!currentUser) {
+      setSocialCommentError("Спочатку увійдіть, щоб залишити коментар");
+      return;
+    }
+
+    const text = socialCommentText.trim();
+    if (!text) {
+      setSocialCommentError("Коментар не може бути порожнім");
+      return;
+    }
+    if (text.length > 1000) {
+      setSocialCommentError("Коментар не може перевищувати 1000 символів");
+      return;
+    }
+
+    setSocialLoading(true);
+    setSocialCommentError("");
+
+    try {
+      const quotaKey = getSocialQuotaKey(String(socialTargetTrack.id), currentUser);
+      const storedQuota = (await localforage.getItem(quotaKey)) || 0;
+      if (storedQuota >= MAX_DAILY_COMMENTS) {
+        setSocialCommentError("Сьогодні ви вже використали 4 коментарі");
+        setSocialLoading(false);
+        return;
+      }
+
+      const payload = buildCommentPayload({
+        trackId: String(socialTargetTrack.id),
+        user: currentUser,
+        text,
+        avatar: currentUser.avatar || currentUser.photoURL || "",
+        color: currentUser.borderColor || currentUser.textColor || currentUser.color || "#ffb36c",
+        supporterName: currentUser.firstName || currentUser.name || currentUser.displayName || currentUser.account,
+      });
+      await setDoc(doc(db, "music_social_comments", payload.id), payload);
+      await updateDoc(doc(db, "music_social_stats", String(socialTargetTrack.id)), {
+        comments: (socialStats.comments || 0) + 1,
+        updatedAt: serverTimestamp(),
+      }).catch(async () => {
+        await setDoc(doc(db, "music_social_stats", String(socialTargetTrack.id)), { comments: 1, likes: 0, dislikes: 0, views: 0 }, { merge: true });
+      });
+      await localforage.setItem(quotaKey, storedQuota + 1);
+      setSocialCommentQuotaUsed(storedQuota + 1);
+      setSocialCommentText("");
+    } catch (error) {
+      console.error("Comment submit failed", error);
+      setSocialCommentError("Не вдалося зберегти коментар");
+    } finally {
+      setSocialLoading(false);
+    }
+  }, [getSocialQuotaKey, socialCommentText, socialStats.comments, socialTargetTrack?.id, socialAuthUser, user]);
+
+  const handleSocialReaction = useCallback(async (nextValue) => {
+    if (!socialTargetTrack?.id) return;
+    const currentUser = socialAuthUser || user;
+    if (!currentUser) {
+      setSocialCommentError("Увійдіть, щоб ставити реакції");
+      return;
+    }
+
+    const normalized = normalizeLikeValue(nextValue);
+    const reactionKey = `${String(socialTargetTrack.id)}:${currentUser.uid || currentUser.id || currentUser.account}`;
+    const previous = socialReactionState;
+    const statsRef = doc(db, "music_social_stats", String(socialTargetTrack.id));
+    const currentState = previous === normalized ? 0 : normalized;
+    setSocialReactionState(currentState);
+    await localforage.setItem(reactionKey, currentState);
+
+    try {
+      const snapshot = await getDoc(statsRef);
+      const data = snapshot.exists() ? snapshot.data() : getInitialCommentStats();
+      const likes = (data.likes || 0) + (currentState === 1 ? 1 : previous === 1 ? -1 : 0);
+      const dislikes = (data.dislikes || 0) + (currentState === -1 ? 1 : previous === -1 ? -1 : 0);
+      await setDoc(statsRef, { ...data, likes, dislikes }, { merge: true });
+      setSocialStats((prev) => ({ ...prev, likes, dislikes }));
+    } catch (error) {
+      console.error("Reaction update failed", error);
+    }
+  }, [socialAuthUser, socialReactionState, socialTargetTrack?.id, user]);
 
   const voiceActingMode = user?.voiceActingMode || "malyatko";
 
@@ -5286,14 +5903,7 @@ const PlaylistModal = ({
     else if (currentRating === 2) nextRating = -1;
     else nextRating = 0;
 
-    const ratedCount = Array.isArray(favorites)
-      ? favorites.length
-      : Object.values(favorites).filter((v) => v > 0).length;
-
-    if (nextRating > 0 && currentRating <= 0 && ratedCount >= 4) {
-      alert("Ліміт: можна оцінити лише 4 пісні!");
-      return;
-    }
+    // Ліміт знятий — можна оцінювати скільки завгодно пісень
     setFavorites((prev) => {
       if (Array.isArray(prev)) {
         const newObj = {};
@@ -5477,6 +6087,25 @@ const PlaylistModal = ({
           >
             Стати творцем
           </button>
+          <button 
+            onClick={() => {
+              setSocialTargetTrack(toSocialTarget({ id: "general", text: "Усі пісні", isGeneral: true }));
+              setShowSocialModal(true);
+            }}
+            style={{
+              background: "#4c78ff",
+              color: "white",
+              border: "none",
+              borderRadius: "20px",
+              padding: "5px 10px",
+              fontWeight: "bold",
+              cursor: "pointer",
+              fontSize: "13px",
+              marginLeft: "10px",
+            }}
+          >
+            Загальний Чат 💬
+          </button>
           <SearchInput $isDarkMode={isDarkMode}
             type="text"
             placeholder="Пошук пісні за описом..."
@@ -5590,34 +6219,58 @@ const PlaylistModal = ({
                       }} // Pass player open handler
                       onRate={handleToggleFavorite} // Pass rating handler
                       onOpenAi={onOpenAi} // Pass AI handler
+                      onOpenSocial={(selectedCard) => {
+                        setSocialTargetTrack(toSocialTarget(selectedCard));
+                        setShowSocialModal(true);
+                      }}
+                      onOpenInfo={(selectedCard) => {
+                        setSocialTargetTrack(toSocialTarget(selectedCard));
+                        setShowSocialModal(true);
+                      }}
                       checkpoint={checkpoints[card.id]}
                       checkpointsEnabled={checkpointsEnabled}
                     />
                     {playlistKey === "custom" && (
-                      <button
-                        style={{
-                          position: "absolute",
-                          top: 10, /* Changed for dark mode */
-                          right: 10,
-                          zIndex: 2,
-                          background: "#7afcff",
-                          color: "#222",
-                          border: "none",
-                          borderRadius: 8,
-                          padding: "4px 10px",
-                          fontSize: 12,
-                          cursor: "pointer",
-                        }}
-                        onClick={() => setLevelEditorTrack(card)}
-                      >
-                        Налаштувати
-                      </button>
+                      <div style={{ position: "absolute", top: 10, right: 10, zIndex: 2, display: 'flex', gap: 8 }}>
+                        <button
+                          style={{
+                            background: "#7afcff",
+                            color: "#222",
+                            border: "none",
+                            borderRadius: 8,
+                            padding: "4px 10px",
+                            fontSize: 12,
+                            cursor: "pointer",
+                          }}
+                          onClick={() => setLevelEditorTrack(card)}
+                        >
+                          Налаштувати
+                        </button>
+                        <button
+                          title="Відкрити загальний чат"
+                          style={{
+                            background: "#4c78ff",
+                            color: "white",
+                            border: "none",
+                            borderRadius: 8,
+                            padding: "4px 8px",
+                            fontSize: 12,
+                            cursor: "pointer",
+                          }}
+                          onClick={() => {
+                            setSocialTargetTrack(toSocialTarget({ id: "general", text: "Усі пісні", isGeneral: true }));
+                            setShowSocialModal(true);
+                          }}
+                        >
+                          💬
+</button>
+                      </div>
                     )}
                   </div>
-                ))}
+                ))}   {}
             </>
           )}
-        </MusicPhotoFix>
+                  </MusicPhotoFix>
         {levelEditorTrack && ( /* Changed for dark mode */
           <ModalOverlay onClick={handleCloseLevelEditor}>
             <PlaylistModalContent onClick={(e) => e.stopPropagation()}>
@@ -5970,6 +6623,128 @@ const PlaylistModal = ({
           </ModalOverlay>
         )}
       </div>
+      {showSocialModal && socialTargetTrack && (
+        <ModalOverlay onClick={() => setShowSocialModal(false)}>
+          <PlaylistModalContent onClick={(e) => e.stopPropagation()} style={{ maxWidth: 760, width: "92%", padding: 20, maxHeight: "85vh", overflowY: "auto", background: isDarkMode ? "#1f2335" : "#fffaf4", color: isDarkMode ? "#f2f2f2" : "#111" }}>
+            <PlaylistCloseButton onClick={() => setShowSocialModal(false)} style={{ color: isDarkMode ? "#fff" : "#111" }}>
+              &times;
+            </PlaylistCloseButton>
+            <h3>
+        {socialTargetTrack?.isGeneral ? "🌐 Загальний чат" : `🎵 ${socialTargetTrack?.author || ""} — ${socialTargetTrack?.text || ""}`}
+      </h3>
+            <div style={{ display: "grid", gap: 12, marginBottom: 16 }}>
+              <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+                <span style={{ background: "rgba(255,179,108,0.2)", padding: "6px 10px", borderRadius: 999 }}>Тривалість: {Math.floor(socialTargetTrack.duration || 0)}с</span>
+                <span style={{ background: "rgba(122,252,255,0.15)", padding: "6px 10px", borderRadius: 999 }}>Перегляди: {socialStats.views}</span>
+                <span style={{ background: "rgba(255,107,107,0.15)", padding: "6px 10px", borderRadius: 999 }}>Лайки: {socialStats.likes}</span>
+                <span style={{ background: "rgba(90,90,255,0.15)", padding: "6px 10px", borderRadius: 999 }}>Дизлайки: {socialStats.dislikes}</span>
+                <span style={{ background: "rgba(255,255,255,0.15)", padding: "6px 10px", borderRadius: 999 }}>Коментарі: {socialCommentCount}</span>
+              </div>
+              <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                <button onClick={() => handleSocialReaction(1)} style={{ border: "none", borderRadius: 999, padding: "8px 12px", cursor: "pointer", background: socialReactionState === 1 ? "#ff4d6d" : "#e8e8e8", color: socialReactionState === 1 ? "#fff" : "#111" }}>❤ Лайк</button>
+                <button onClick={() => handleSocialReaction(-1)} style={{ border: "none", borderRadius: 999, padding: "8px 12px", cursor: "pointer", background: socialReactionState === -1 ? "#4c78ff" : "#e8e8e8", color: socialReactionState === -1 ? "#fff" : "#111" }}>👎 Дизлайк</button>
+              </div>
+            </div>
+            
+            <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap", marginBottom: 12 }}>
+              {/* ТУТ ВИПРАВЛЕНО: Додано початок тернарного оператора перевірки юзера */}
+              {!(socialAuthUser || user) ? (
+                <button onClick={handleGoogleSignIn} style={{ border: "none", borderRadius: 999, padding: "8px 12px", cursor: "pointer", background: "#4285f4", color: "#fff" }}>🔑 Увійти з Google</button>
+              ) : (
+                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                  {(getAvatarSrc(socialAuthUser?.avatar) || getAvatarSrc(user?.avatar)) && (
+                    <img
+                      src={getAvatarSrc(socialAuthUser?.avatar) || getAvatarSrc(user?.avatar)}
+                      alt="avatar"
+                      style={{ width: 30, height: 30, borderRadius: "50%", objectFit: "cover", border: "2px solid #ffb36c" }}
+                    />
+                  )}
+                  <span style={{ fontSize: 13, opacity: 0.8 }}>Увійшли як {socialAuthUser?.firstName || user?.firstName || user?.account || "користувач"}</span>
+                </div>
+              )}
+              <span style={{ fontSize: 12, opacity: 0.7 }}>Залишилось коментарів сьогодні: {getDailyCommentQuotaLeft(MAX_DAILY_COMMENTS, socialCommentQuotaUsed)}</span>
+            </div>
+            {socialTargetTrack?.isGeneral && (
+              <div style={{ background: "rgba(76,120,255,0.12)", borderRadius: 12, padding: "8px 14px", fontSize: 13, color: isDarkMode ? "#aac4ff" : "#2244aa", border: "1px solid rgba(76,120,255,0.25)", marginBottom: 8 }}>
+                💬 Повідомлення будуть видимі всім у загальному чаті
+              </div>
+            )}
+            <div style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
+              {(getAvatarSrc(socialAuthUser?.avatar) || getAvatarSrc(user?.avatar)) && (
+                <img
+                  src={getAvatarSrc(socialAuthUser?.avatar) || getAvatarSrc(user?.avatar)}
+                  alt="avatar"
+                  style={{ width: 38, height: 38, borderRadius: "50%", objectFit: "cover", border: "2px solid #ffb36c", flexShrink: 0, marginTop: 2 }}
+                />
+              )}
+              {(() => {
+                const currentUser = socialAuthUser || user;
+                const canComment = canCommentUser(currentUser);
+                return (
+                  <textarea
+                    value={socialCommentText}
+                    onChange={(e) => setSocialCommentText(e.target.value)}
+                    maxLength={1000}
+                    placeholder={!currentUser ? "Увійдіть щоб написати коментар..." : !canComment ? "Вам заборонено залишати коментарі" : "Залиште коментар..."}
+                    disabled={!canComment}
+                    style={{ flex: 1, minHeight: 90, borderRadius: 12, padding: 10, border: "1px solid rgba(0,0,0,0.15)", resize: "vertical", opacity: !canComment ? 0.6 : 1 }}
+                  />
+                );
+              })()}
+            </div>
+            {socialCommentError && <div style={{ color: "#ff4d6d", fontSize: 12, marginTop: 6 }}>{socialCommentError}</div>}
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 8 }}>
+              <span style={{ fontSize: 12, opacity: 0.7 }}>{socialCommentText.length}/1000</span>
+              <button onClick={handleSocialCommentSubmit} disabled={socialLoading} style={{ border: "none", borderRadius: 999, padding: "8px 12px", cursor: "pointer", background: "#ffb36c", color: "#111", opacity: socialLoading ? 0.6 : 1 }}>{socialLoading ? "Надсилаю..." : "Надіслати"}</button>
+            </div>
+            <div style={{ marginTop: 16, display: "grid", gap: 14 }}>
+              {!socialTargetTrack?.isGeneral && (
+                <div>
+                  <div style={{ fontWeight: 700, marginBottom: 8 }}>Коментарі до цієї пісні</div>
+                  <div style={{ display: "grid", gap: 10 }}>
+                    {socialComments.slice(0, MAX_VISIBLE_COMMENTS).map((comment) => (
+                      <div key={comment.id} style={{ background: isDarkMode ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.04)", borderRadius: 14, padding: 10, border: "1px solid rgba(255,179,108,0.2)" }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                          <div style={{ width: 38, height: 38, borderRadius: "50%", border: `2px solid ${comment.user?.color || "#ffb36c"}`, overflow: "hidden", background: "#fff" }}>
+                            {getAvatarSrc(comment.user?.avatar) ? <img src={getAvatarSrc(comment.user?.avatar)} alt={comment.user?.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16 }}>👤</div>}
+                          </div>
+                          <div>
+                            <div style={{ fontWeight: 700 }}>{comment.user?.name || "Гість"}</div>
+                            <div style={{ fontSize: 11, opacity: 0.7 }}>{new Date(comment.createdAt || Date.now()).toLocaleString("uk-UA")}</div>
+                          </div>
+                        </div>
+                        <div style={{ marginTop: 8, whiteSpace: "pre-wrap", wordBreak: "break-word" }}>{comment.text}</div>
+                      </div>
+                    ))}
+                    {!socialComments.length && <div style={{ opacity: 0.7, fontSize: 13 }}>Ще немає коментарів до цієї пісні.</div>}
+                  </div>
+                </div>
+              )}
+              <div>
+                <div style={{ fontWeight: 700, marginBottom: 8 }}>Загальні коментарі ({socialGlobalCommentCount})</div>
+                <div style={{ display: "grid", gap: 10 }}>
+                  {socialGlobalComments.map((comment) => (
+                    <div key={comment.id} style={{ background: isDarkMode ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.03)", borderRadius: 14, padding: 10, border: "1px solid rgba(122,252,255,0.2)" }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                        <div style={{ width: 38, height: 38, borderRadius: "50%", border: `2px solid ${comment.user?.color || "#ffb36c"}`, overflow: "hidden", background: "#fff" }}>
+                          {getAvatarSrc(comment.user?.avatar) ? <img src={getAvatarSrc(comment.user?.avatar)} alt={comment.user?.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16 }}>👤</div>}
+                        </div>
+                        <div>
+                          <div style={{ fontWeight: 700 }}>{comment.user?.name || "Гість"}</div>
+                          <div style={{ fontSize: 11, opacity: 0.7 }}>{comment.trackId ? `Пісня #${comment.trackId}` : "Усі пісні"}</div>
+                        </div>
+                      </div>
+                      <div style={{ marginTop: 8, whiteSpace: "pre-wrap", wordBreak: "break-word" }}>{comment.text}</div>
+                    </div>
+                  ))}
+                  {!socialGlobalComments.length && <div style={{ opacity: 0.7, fontSize: 13 }}>Ще немає загальних коментарів.</div>}
+                </div>
+              </div>
+            </div>
+          </PlaylistModalContent>
+        </ModalOverlay>
+      )}
+
       {fullScreenTrack && (
         <FullScreenPlayer
           track={fullScreenTrack}
@@ -5990,6 +6765,10 @@ const PlaylistModal = ({
             onAudioBar(fullScreenTrack, time, isPlaying, vol, spd);
           }}
           onOpenAi={onOpenAi}
+          onOpenSocial={() => {
+            setSocialTargetTrack(toSocialTarget(fullScreenTrack));
+            setShowSocialModal(true);
+          }}
           playlist={selectedAuthor
             ? processedCards : []} // Playlist should be the currently filtered songs
           onSelectTrack={setFullScreenTrack}

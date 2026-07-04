@@ -3,6 +3,7 @@ import styled, { keyframes } from "styled-components";
 import { motion, AnimatePresence } from "framer-motion";
 import localforage from "localforage";
 import rainbow from "../../photos/vip-images/stars.webp";
+import NewsAiModal from "./NewsAiModal";
 
 const fadeIn = keyframes`
   from { opacity: 0; }
@@ -162,7 +163,28 @@ const NewBadge = styled.span`
   animation: ${fadeIn} 0.5s ease;
 `;
 
-const NewsCard = ({ item, $isDarkMode, showImage, showTitle, showDescription }) => {
+const AiSummaryBtn = styled.button`
+  position: absolute;
+  top: 10px;
+  right: ${(props) => (props.$hasNewBadge ? '60px' : '10px')};
+  background: rgba(255, 179, 108, 0.9);
+  color: black;
+  border: none;
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  z-index: 6;
+  cursor: pointer;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+  transition: all 0.2s;
+  &:hover {
+    background: #ffb36c;
+    transform: scale(1.05);
+  }
+`;
+
+const NewsCard = ({ item, $isDarkMode, showImage, showTitle, showDescription, onAiSummaryClick }) => {
   const cardRef = useRef(null);
   const [isVisible, setIsVisible] = useState(item.isNew);
 
@@ -213,6 +235,17 @@ const NewsCard = ({ item, $isDarkMode, showImage, showTitle, showDescription }) 
         >
           {item.sourceFlag} {item.sourceName}
         </SourceFlag>
+        <AiSummaryBtn 
+          $hasNewBadge={isVisible}
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            if (onAiSummaryClick) onAiSummaryClick(item);
+          }}
+          title="Отримати ШІ виклад новини"
+        >
+          ✨ ШІ Виклад
+        </AiSummaryBtn>
         {showImage && (
           <NewsImg
             src={item.displayImage}
@@ -333,6 +366,9 @@ const News = ({ $isDarkMode, user }) => {
   const [filterSource, setFilterSource] = useState("all");
   const [lastUpdated, setLastUpdated] = useState(null);
   const [cooldown, setCooldown] = useState(0);
+  
+  const [isAiModalOpen, setIsAiModalOpen] = useState(false);
+  const [selectedNews, setSelectedNews] = useState(null);
   
   // 1. Стан розмонтування для Memory Leak Protection
   const isMounted = useRef(true);
@@ -629,6 +665,10 @@ const News = ({ $isDarkMode, user }) => {
                     showImage={showImage}
                     showTitle={showTitle}
                     showDescription={showDescription}
+                    onAiSummaryClick={(news) => {
+                      setSelectedNews(news);
+                      setIsAiModalOpen(true);
+                    }}
                   />
                 ))}
               </Grid>
@@ -664,6 +704,15 @@ const News = ({ $isDarkMode, user }) => {
         <div style={{ textAlign: "center", color: "gray", padding: "20px" }}>
           Новини тимчасово відпочивають. Зазирніть за хвилину!
         </div>
+      )}
+
+      {selectedNews && (
+        <NewsAiModal 
+          isOpen={isAiModalOpen} 
+          onClose={() => setIsAiModalOpen(false)} 
+          newsItem={selectedNews} 
+          isDarkMode={$isDarkMode} 
+        />
       )}
     </NewsDiv>
   );

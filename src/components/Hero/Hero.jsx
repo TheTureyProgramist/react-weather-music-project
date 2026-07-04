@@ -89,7 +89,7 @@ import nicerone from "../../photos/vip-images/dinofroz/nicerone.webp";
 import mia from "../../photos/vip-images/mia/miaandme.webp";
 import volcano from "../../photos/vip-images/fire.webp";
 import clubstepVideo from "../../mp4/clubstep.mp4";
-const DEFAULT_BGS = [
+export const DEFAULT_BGS = [
   // Основні / Головні
   { src: hills, name: "Туманний ліс", category: "Стихія" },
   { src: volcano, name: "Вулкан", category: "Стихія" },

@@ -117,20 +117,6 @@ const SectionsContainer = styled.div`
     grid-template-columns: repeat(2, 1fr);
   }
 `;
-
-const OrderContainer = styled.div`
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 8px;
-
-  @media (min-width: 768px) {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  @media (min-width: 1024px) {
-    grid-template-columns: repeat(3, 1fr);
-  }
-`;
-
 const CloseButton = styled.button`
   position: absolute;
   top: -3px;
@@ -155,6 +141,14 @@ const Section = styled.div`
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
   min-width: 0;
   color: ${(props) => (props.$isDarkMode ? "#ffffff" : "inherit")};
+`;
+
+const SectionHeader = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 6px;
 `;
 
 const Input = styled.input`
@@ -454,22 +448,6 @@ const DEFAULT_SECTIONS = [
   "weatherLayout",
   "newsLayout",
 ];
-
-const SECTION_LABELS = {
-  name: "Ім'я",
-  birthDate: "Дата народження",
-  security: "Безпека",
-  textColor: "Колір тексту",
-  borderColor: "Колір рамки",
-  avatar: "Аватар",
-  customCalendar: "Мої важливі дні",
-  voiceActing: "Версія озвучки (Текст)",
-  dateDisplay: "Відображення часу",
-  weatherLayout: "Елементи картки погоди",
-  interfaceSettings: "Налаштування інтерфейсу", // New section label
-  newsLayout: "Елементи новин",
-};
-
 const WEATHER_BLOCK_LABELS = {
   current: "Температура та іконка",
   details: "Деталі (Вологість, Вітер...)",
@@ -510,7 +488,7 @@ const UserSettingsModal = ({
     avatarIndex:
       availableAvatars.indexOf(user?.avatar) !== -1
         ? availableAvatars.indexOf(user?.avatar)
-        : 0,
+        : (user?.avatar && typeof user.avatar === 'string' && user.avatar.startsWith('http') && availableAvatars.indexOf(user.avatar) === -1) ? -1 : 0,
     textColor: user?.textColor || "grey",
     borderColor: user?.borderColor || "grey",
     showSeconds: user?.showSeconds !== false,
@@ -579,7 +557,7 @@ const UserSettingsModal = ({
     onUpdate({
       ...user,
       firstName: newFormData.name,
-      avatar: availableAvatars[newFormData.avatarIndex],
+      avatar: newFormData.avatarIndex === -1 ? user?.avatar : availableAvatars[newFormData.avatarIndex],
       birthDate: `${newFormData.year}-${newFormData.month.toString().padStart(2, "0")}-${newFormData.day.toString().padStart(2, "0")}`,
       textColor: newFormData.textColor,
       borderColor: newFormData.borderColor,
@@ -636,7 +614,7 @@ const UserSettingsModal = ({
     onUpdate({
       account: user?.account || formData.name,
       firstName: formData.name,
-      avatar: availableAvatars[formData.avatarIndex],
+      avatar: formData.avatarIndex === -1 ? user?.avatar : availableAvatars[formData.avatarIndex],
       birthDate: `${formData.year}-${formData.month.toString().padStart(2, "0")}-${formData.day.toString().padStart(2, "0")}`,
       textColor: formData.textColor,
       borderColor: formData.borderColor,
@@ -715,6 +693,33 @@ const UserSettingsModal = ({
     setShowKatScene(false);
     finishClosing();
   };
+  const hasExternalAvatar = user?.avatar && typeof user.avatar === 'string' && user.avatar.startsWith('http') && availableAvatars.indexOf(user.avatar) === -1;
+  const isGoogleAccount = Boolean(user?.email && !user?.password);
+
+  const renderSectionHeader = (sectionKey, idx, label) => (
+    <SectionHeader>
+      <Label style={{ fontSize: "13px", fontWeight: "bold" }}>{label}</Label>
+      <div style={{ display: "flex", gap: "2px" }}>
+        <OrderButton
+          disabled={idx === 0}
+          onClick={() => moveSection(idx, -1)}
+          title="Вище"
+          style={{ width: "22px", height: "22px", fontSize: "12px" }}
+        >
+          ↑
+        </OrderButton>
+        <OrderButton
+          disabled={idx === sectionsOrder.length - 1}
+          onClick={() => moveSection(idx, 1)}
+          title="Нижче"
+          style={{ width: "22px", height: "22px", fontSize: "12px" }}
+        >
+          ↓
+        </OrderButton>
+      </div>
+    </SectionHeader>
+  );
+
   return (
     <>
       {showKatScene && <KatSceneModal onClose={handleKatSceneClose} />}
@@ -734,7 +739,10 @@ const UserSettingsModal = ({
               gap: "10px",
             }}
           >
-            <Title style={{ margin: 0 }}>Налаштування</Title>
+            <div style={{ display: 'flex', flexDirection: 'column' }}>
+              <Title style={{ margin: 0 }}>Налаштування</Title>
+              <div style={{ fontSize: 12, color: '#666' }}>{user?.email || user?.account}</div>
+            </div>
             <button
               style={{
                 background: "#ffb36c",
@@ -749,19 +757,17 @@ const UserSettingsModal = ({
               }}
               onClick={() => setShowKatScene(true)}
             >
-              Невелика кат-сцена
+              📹︎ 
             </button>
           </div>
           {/* ВСІ секції */}
           <SectionsContainer>
-          {sectionsOrder.map((section) => {
+          {sectionsOrder.map((section, idx) => {
             let content = null;
             if (section === "name") {
               content = (
                 <Section key="name">
-                  <Label style={{ fontSize: "13px", fontWeight: "bold" }}>
-                    Ім'я
-                  </Label>
+                  {renderSectionHeader(section, idx, "Ім'я")}
                   <NameInput
                     $textColor={formData.textColor}
                     value={formData.name}
@@ -774,9 +780,7 @@ const UserSettingsModal = ({
             } else if (section === "birthDate") {
               content = (
                 <Section key="birthDate">
-                  <Label>
-                    Дата народження
-                  </Label>
+                  {renderSectionHeader(section, idx, "Дата народження")}
                   <DateRow>
                     <Select
                       value={formData.day}
@@ -828,62 +832,64 @@ const UserSettingsModal = ({
             } else if (section === "security") {
               content = (
                 <Section key="security">
-                  <Label>
-                    Безпека
-                  </Label>
-                  <Input
-                    type="password"
-                    placeholder="Поточний пароль"
-                    disabled
-                    readOnly
-                    value="********"
-                    style={{
-                      marginBottom: "8px",
-                      opacity: 0.6,
-                      cursor: "not-allowed",
-                    }}
-                  />
-                  <Input
-                    type="password"
-                    placeholder="Новий пароль"
-                    onChange={(e) =>
-                      setFormData({ ...formData, newPassword: e.target.value })
-                    }
-                    style={{
-                      marginBottom: formData.newPassword ? "4px" : "8px",
-                    }}
-                  />
-                  {formData.newPassword && (
-                    <>
-                      <PasswordStrengthContainer>
-                        <PasswordStrengthBar
-                          $width={pwStrength.width}
-                          $color={pwStrength.color}
-                        />
-                      </PasswordStrengthContainer>
-                      <PasswordStrengthLabel $color={pwStrength.color}>
-                        Надійність: {pwStrength.label}
-                      </PasswordStrengthLabel>
-                    </>
-                  )}
-                  <Input
-                    type="password"
-                    placeholder="Підтвердіть новий пароль"
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        confirmPassword: e.target.value,
-                      })
-                    }
-                  />
+                  {renderSectionHeader(section, idx, "Безпека")}
+                        {isGoogleAccount ? (
+                          <div style={{ fontSize: 13, color: '#444' }}>Google-акаунт — змінюйте пароль у налаштуваннях Google.</div>
+                        ) : (
+                          <> 
+                            <Input
+                              type="password"
+                              placeholder="Поточний пароль"
+                              disabled
+                              readOnly
+                              value="********"
+                              style={{
+                                marginBottom: "8px",
+                                opacity: 0.6,
+                                cursor: "not-allowed",
+                              }}
+                            />
+                            <Input
+                              type="password"
+                              placeholder="Новий пароль"
+                              onChange={(e) =>
+                                setFormData({ ...formData, newPassword: e.target.value })
+                              }
+                              style={{
+                                marginBottom: formData.newPassword ? "4px" : "8px",
+                              }}
+                            />
+                            {formData.newPassword && (
+                              <>
+                                <PasswordStrengthContainer>
+                                  <PasswordStrengthBar
+                                    $width={pwStrength.width}
+                                    $color={pwStrength.color}
+                                  />
+                                </PasswordStrengthContainer>
+                                <PasswordStrengthLabel $color={pwStrength.color}>
+                                  Надійність: {pwStrength.label}
+                                </PasswordStrengthLabel>
+                              </>
+                            )}
+                            <Input
+                              type="password"
+                              placeholder="Підтвердіть новий пароль"
+                              onChange={(e) =>
+                                setFormData({
+                                  ...formData,
+                                  confirmPassword: e.target.value,
+                                })
+                              }
+                            />
+                          </>
+                        )}
                 </Section>
               );
             } else if (section === "textColor") {
               content = (
                 <Section key="textColor">
-                  <Label>
-                    Колір тексту
-                  </Label>
+                  {renderSectionHeader(section, idx, "Колір тексту")}
                   <ColorContainer>
                     {COLORS.map((color, i) => (
                       <ColorCircle
@@ -902,9 +908,7 @@ const UserSettingsModal = ({
             } else if (section === "borderColor") {
               content = (
                 <Section key="borderColor">
-                  <Label>
-                    Колір рамки аватара
-                  </Label>
+                  {renderSectionHeader(section, idx, "Колір рамки аватара")}
                   <ColorContainer>
                     {COLORS.map((color, i) => (
                       <ColorCircle
@@ -923,6 +927,7 @@ const UserSettingsModal = ({
             } else if (section === "avatar") {
               content = (
                 <Section key="avatar">
+                  {renderSectionHeader(section, idx, "Аватар")}
                   <div
                     style={{
                       fontSize: "12px",
@@ -946,15 +951,24 @@ const UserSettingsModal = ({
                         <img src={img} alt="avatar" />
                       </AvatarOption>
                     ))}
+                    {hasExternalAvatar && (
+                      <AvatarOption
+                        key="external"
+                        $isSelected={formData.avatarIndex === -1}
+                        $borderColor={formData.borderColor}
+                        title="Google аватарка"
+                        onClick={() => setFormData({ ...formData, avatarIndex: -1 })}
+                      >
+                        <img src={user.avatar} alt="google-avatar" />
+                      </AvatarOption>
+                    )}
                   </AvatarSlider>
                 </Section>
               );
             } else if (section === "dateDisplay") {
               content = (
                 <Section key="dateDisplay">
-                  <Label style={{ fontSize: "13px", fontWeight: "bold" }}>
-                    Налаштування годинника
-                  </Label>
+                  {renderSectionHeader(section, idx, "Налаштування годинника")}
                   <CheckboxRow>
                     <input
                       type="checkbox"
@@ -1121,9 +1135,7 @@ const UserSettingsModal = ({
             } else if (section === "interfaceSettings") { // New section for interface settings
               content = (
                 <Section key="interfaceSettings">
-                  <label style={{ fontSize: "13px", fontWeight: "bold" }}>
-                    Налаштування інтерфейсу
-                  </label>
+                  {renderSectionHeader(section, idx, "Налаштування інтерфейсу")}
                   <CheckboxRow>
                     <input
                       type="checkbox"
@@ -1139,9 +1151,7 @@ const UserSettingsModal = ({
             }  else if (section === "weatherLayout") {
               content = (
                 <Section key="weatherLayout">
-                  <label style={{ fontSize: "13px", fontWeight: "bold" }}>
-                    Налаштування картки погоди
-                  </label>
+                  {renderSectionHeader(section, idx, "Налаштування картки погоди")}
                   <p style={{ fontSize: "11px", color: "#666", margin: "0 0 5px 0" }}>
                     Виберіть, які блоки відображати та в якому порядку.
                   </p>
@@ -1178,9 +1188,7 @@ const UserSettingsModal = ({
             } else if (section === "newsLayout") {
               content = (
                 <Section key="newsLayout">
-                  <label style={{ fontSize: "13px", fontWeight: "bold" }}>
-                    Налаштування новин
-                  </label>
+                  {renderSectionHeader(section, idx, "Налаштування новин")}
                   <p style={{ fontSize: "11px", color: "#666", margin: "0 0 5px 0" }}>
                     Виберіть, які елементи новин відображати.
                   </p>
@@ -1202,55 +1210,7 @@ const UserSettingsModal = ({
             return content;
           })}
           </SectionsContainer>
-          <div
-            style={{
-              marginTop: 5,
-              marginBottom: 5,
-              padding: "5px",
-              background: "rgba(255,255,255,0.4)",
-              borderRadius: "12px",
-              border: "1px solid rgba(255, 255, 255, 0.5)",
-              boxShadow: "0 4px 15px rgba(0, 0, 0, 0.05)",
-            }}
-          >
-            <h4 style={{ fontWeight: 700, fontSize: 16, marginBottom: 5, marginTop: 0, color: "black" }}>
-              Порядок секцій:
-            </h4>
-            <OrderContainer>
-              {sectionsOrder.map((section, idx) => (
-                <div
-                  key={section}
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                    background: "rgba(255,255,255,0.6)",
-                    padding: "3px 4px",
-                    borderRadius: "8px",
-                  }}
-                >
-                  <span style={{ fontWeight: 500, fontSize: "13px", color: "black" }}>
-                    {SECTION_LABELS[section]}
-                  </span>
-                  <div style={{ display: "flex" }}>
-                    <OrderButton
-                      disabled={idx === 0}
-                      onClick={() => moveSection(idx, -1)}
-                      title="Вище"
-                    >
-                      ↑
-                    </OrderButton>
-                    <OrderButton
-                      disabled={idx === sectionsOrder.length - 1}
-                      onClick={() => moveSection(idx, 1)}
-                      title="Нижче"
-                    >
-                      ↓
-                    </OrderButton>
-                  </div>
-                </div>
-              ))}
-            </OrderContainer>
+          <div style={{ display: "flex", justifyContent: "flex-end", marginTop: 4 }}>
             <ResetOrderButton onClick={resetSectionsOrder}>
               Скинути порядок
             </ResetOrderButton>

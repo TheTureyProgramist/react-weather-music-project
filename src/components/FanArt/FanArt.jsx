@@ -3,60 +3,41 @@ import styled from "styled-components";
 import { motion, AnimatePresence } from "framer-motion";
 import localforage from "localforage";
 import * as fabric from "fabric";
-import turkeys from "../../photos/vip-images/turkeys/ultra-vip-turkeys.webp";
-import dragons from "../../photos/vip-images/dinofroz/vip-dragons.webp";
-import horse from "../../photos/vip-images/horse/horse.webp";
-import lebid from "../../photos/vip-images/vip-lebid.webp";
-import rooster from "../../photos/vip-images/vip-rooster.webp";
-import nicerone from "../../photos/vip-images/dinofroz/vip-dinofroz.webp";
-import soloveyko from "../../photos/vip-images/vip-soloveyko.webp";
 import monody from "../../photos/vip-images/asium/vip-forest.webp";
-import volcano from "../../photos/vip-images/fire.webp";
-import christmas from "../../photos/vip-images/christmas.webp";
-import horror from "../../photos/vip-images/horror/horror.webp";
-import flame from "../../photos/vip-images/flame.webp";
-import dizel from "../../photos/vip-images/dizel.webp";
+import { DEFAULT_BGS } from "../Hero/Hero";
+
+const isVideoSource = (src) => {
+  if (typeof src !== "string") return false;
+  return src.includes(".mp4") || src.startsWith("data:video/");
+};
+
 const FanArtDiv = styled.div`
   margin-top: 35px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  @media (min-width: 768px) {
-    margin-top: 50px;
-  }
-  @media (min-width: 1200px) {
-    margin-top: 80px;
-  }
 `;
 
 const FanArtTitle = styled.div`
-  font-size: 10px;
+  font-size: 15px;
   text-align: center;
   font-family: var(--font-family);
   font-weight: 600;
   color: ${(props) => (props.$isDarkMode ? "white" : "black")};
   margin-bottom: 35px;
   @media (min-width: 768px) {
-    font-size: 15px;
-    margin-bottom: 50px;
-  }
-  @media (min-width: 1200px) {
-    font-size: 20px;
-    margin-bottom: 80px;
-  }
-  @media (min-width: 1920px) {
     font-size: 25px;
-    margin-bottom: 100px;
   }
 `;
 
 const PlaylistContainer = styled.div`
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   justify-content: center;
-  gap: 20px;
-  margin-bottom: 50px;
+  gap: 5px;
+  margin-bottom: 20px;
   width: 100%;
+  overflow-x: auto;
 `;
 
 const PlaylistItem = styled.div`
@@ -65,6 +46,7 @@ const PlaylistItem = styled.div`
   align-items: center;
   cursor: pointer;
   transition: transform 0.3s ease;
+  flex: 0 0 auto;
   &:hover {
     transform: scale(1.05);
   }
@@ -72,13 +54,11 @@ const PlaylistItem = styled.div`
 
 const PlaylistImageWrapper = styled.div`
   position: relative;
-  width: 312px;
-  height: 208px;
+  width: 170px;
+  height: 100px;
   border-radius: 15px;
   overflow: hidden;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-  @media (min-width: 768px) {
-  }
 `;
 
 const PlaylistImage = styled.img`
@@ -92,12 +72,22 @@ const PlaylistImage = styled.img`
   transition: opacity 1s ease-in-out;
 `;
 
-const PlaylistText = styled.div`
-  margin-top: 10px;
-  font-size: 16px;
+const PlaylistTextOverlay = styled.div`
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  color: white;
+  text-align: center;
+  font-size: 10px;
+  padding: 5px 0;
   font-weight: 600;
-  color: ${(props) => (props.$isDarkMode ? "white" : "black")};
   text-transform: capitalize;
+  z-index: 2;
+  @media (min-width: 768px) {
+    font-size: 12px;
+  }
 `;
 
 const ModalOverlay = styled.div`
@@ -115,7 +105,7 @@ const ModalOverlay = styled.div`
 
 const ModalContent = styled.div`
   background: ${(props) => (props.$isDarkMode ? "#1e1e1e" : "#f9f9f9")};
-  padding: 30px;
+  padding: 5px;
   border-radius: 20px;
   width: 90%;
   max-width: 1200px;
@@ -129,8 +119,8 @@ const ModalContent = styled.div`
 
 const CloseButton = styled.button`
   position: absolute;
-  top: 15px;
-  right: 20px;
+  top: 5px;
+  right: 10px;
   background: transparent;
   border: none;
   font-size: 30px;
@@ -144,7 +134,8 @@ const CloseButton = styled.button`
 const ModalTitle = styled.h2`
   color: ${(props) => (props.$isDarkMode ? "white" : "black")};
   text-align: center;
-  margin-bottom: 20px;
+  font-size: 20px;
+  margin-bottom:5px;
   text-transform: capitalize;
 `;
 
@@ -152,14 +143,9 @@ const FanBlock = styled.div`
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 15px;
-  padding: 10px;
+  gap: 5px;
   width: 100%;
   max-width: 100%;
-
-  @media (min-width: 1920px) {
-    gap: 30px;
-  }
 `;
 
 const FanArtCard = styled(motion.div)`
@@ -173,46 +159,74 @@ const FanArtCard = styled(motion.div)`
 `;
 
 const BenefitImage = styled.img`
-  width: 140px;
-  border-radius: 15px;
+  width: 100%;
+  height: 100%;
   object-fit: cover;
-  height: auto;
-  transition:
-    transform 0.3s ease,
-    opacity 0.3s ease;
-  &:hover {
+  transition: transform 0.3s ease, opacity 0.3s ease;
+`;
+
+const FanArtImageContainer = styled.div`
+  position: relative;
+  width: 270px;
+  height: 170px;
+  border-radius: 15px;
+  overflow: hidden;
+
+  &:hover .image-overlay {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  &:hover img {
     transform: scale(1.05);
     opacity: 0.9;
   }
-  @media (min-width: 768px) {
-    width: 210px;
-  }
-  @media (min-width: 1200px) {
-    width: 270px;
-  }
-  @media (min-width: 1920px) {
-    width: 310px;
-    border-radius: 25px;
-  }
+`;
+
+const ImageTitleStrip = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  text-align: center;
+  font-size: 12px;
+  padding: 8px 5px;
+  font-weight: bold;
+  z-index: 2;
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 `;
 
 const ActionButtonsContainer = styled.div`
-  display: flex;
-  gap: 10px;
+  position: absolute;
+  bottom: 10px;
+  left: 0;
   width: 100%;
+  display: flex;
+  gap: 2px;
   justify-content: center;
+  z-index: 2;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: all 0.3s ease;
 `;
 
 const ActionButton = styled.button`
-  background: #ffb36c;
+  background: #000000;
   border: none;
   border-radius: 8px;
-  padding: 8px 25px;
+  padding: 4px 5px;
+  width: 50px;
   cursor: pointer;
-  font-size: 16px;
+  font-size: 20px;
   transition: background 0.2s;
   &:hover {
-    background: #ffa04d;
+    background: #00539b;
   }
 `;
 
@@ -225,19 +239,20 @@ const SearchContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 15px;
-  margin-bottom: 30px;
+  gap: 4px;
+  margin-bottom: 10px;
   width: 100%;
 `;
 
 const SearchInput = styled.input`
-  padding: 12px 20px;
+  padding: 6px 13px;
   border-radius: 25px;
   border: 1px solid ${(props) => (props.$isDarkMode ? "#444" : "#ccc")};
   background: ${(props) => (props.$isDarkMode ? "#333" : "#fff")};
   color: ${(props) => (props.$isDarkMode ? "white" : "black")};
   width: 100%;
-  max-width: 400px;
+  max-width: 900px;
+  flex: 1;
   font-size: 16px;
   outline: none;
   &:focus {
@@ -246,8 +261,9 @@ const SearchInput = styled.input`
 `;
 
 const SearchButton = styled(ActionButton)`
-  padding: 10px 40px;
+  padding: 6px 12px;
   width: auto;
+    background: "#ffffff00";
 `;
 
 const SearchResultsGrid = styled.div`
@@ -270,7 +286,6 @@ const SearchResultItem = styled.div`
 
 const SourceSelector = styled.div`
   display: flex;
-  gap: 10px;
   margin-bottom: 10px;
 `;
 
@@ -749,27 +764,7 @@ const FanArt = ({
   const [cooldownTime, setCooldownTime] = useState(0);
   const [fullscreenIndex, setFullscreenIndex] = useState(null);
 
-  const allImagesData = [
-    { src: turkeys, category: "тварини" },
-    { src: nicerone, category: "мультиплікація" },
-    { src: dragons, category: "мультиплікація" },
-    { src: horse, category: "тварини" },
-    { src: lebid, category: "тварини" },
-    { src: monody, category: "природа" },
-    { src: rooster, category: "тварини" },
-    { src: soloveyko, category: "тварини" },
-    { src: volcano, category: "природа" },
-    { src: christmas, category: "ікони" },
-    { src: horror, category: "хоррор" },
-    { src: flame, category: "природа" },
-    { src: dizel, category: "мультиплікація" },
-    { src: turkeys, category: "тварини" },
-    { src: nicerone, category: "мультиплікація" },
-    { src: nicerone, category: "мультиплікація" },
-    { src: flame, category: "природа" },
-    { src: flame, category: "природа" },
-    { src: flame, category: "природа" },
-  ];
+  const allImagesData = DEFAULT_BGS;
   const combinedImages = [...allImagesData, ...customImages];
 
   useEffect(() => {
@@ -796,19 +791,19 @@ const FanArt = ({
   const [selectedPlaylist, setSelectedPlaylist] = useState(null);
 
   const playlists = [
+    "Динофроз",
+    "Тварини",
+    "Локації",
+    "Фентезі",
+    "Хоррор",
+    "Аркада",
     "ваші картинки",
-    "ікони",
-    "хоррор",
-    "мультиплікація",
-    "давні часи",
-    "тварини",
-    "природа",
   ];
 
   useEffect(() => {
     const interval = setInterval(() => {
       setPlaylistTick((prev) => prev + 1);
-    }, 2000);
+    }, 1000);
     return () => clearInterval(interval);
   }, []);
 
@@ -1074,8 +1069,7 @@ const FanArt = ({
   return (
     <FanArtDiv>
       <FanArtTitle $isDarkMode={isDarkMode}>
-        Плейлисти фан-артів(натисніть на список, отриматийте базу картин і
-        скачуйте, друкуйте їх)
+        Друкарня
       </FanArtTitle>
       <PlaylistContainer>
         {playlists.map((category) => {
@@ -1089,15 +1083,18 @@ const FanArt = ({
               ? catImages
               : [{ src: monody, category: "ваші картинки" }];
 
+          const thumbnailImages = displayImages.filter(img => !isVideoSource(img.src));
+          const finalThumbnails = thumbnailImages.length > 0 ? thumbnailImages : displayImages;
+
           return (
             <PlaylistItem
               key={category}
               onClick={() => openPlaylistModal(category)}
             >
               <PlaylistImageWrapper>
-                {displayImages.map((img, index) => {
+                {finalThumbnails.map((img, index) => {
                   const isActive =
-                    index === playlistTick % displayImages.length;
+                    index === playlistTick % finalThumbnails.length;
                   return (
                     <PlaylistImage
                       key={index}
@@ -1107,8 +1104,8 @@ const FanArt = ({
                     />
                   );
                 })}
+                <PlaylistTextOverlay>{category}</PlaylistTextOverlay>
               </PlaylistImageWrapper>
-              <PlaylistText $isDarkMode={isDarkMode}>{category}</PlaylistText>
             </PlaylistItem>
           );
         })}
@@ -1175,7 +1172,7 @@ const FanArt = ({
                         🎬 TVMaze (Кіно)
                       </SourceButton>
                     </SourceSelector>
-
+<SourceSelector>
                     <SearchInput
                       $isDarkMode={isDarkMode}
                       type="text"
@@ -1191,7 +1188,7 @@ const FanArt = ({
                     >
                       {isCooldown ? `Зачекайте ${cooldownTime}с` : "Знайти"}
                     </SearchButton>
-
+</SourceSelector>
                     {searchStatus === "loading" && (
                       <SearchStatusText $isDarkMode={isDarkMode}>
                         Завантаження...
@@ -1279,12 +1276,61 @@ const FanArt = ({
                       exit={{ opacity: 0, scale: 0.5, y: 50 }}
                       transition={{ duration: 0.3 }}
                     >
-                      <BenefitImage
-                        src={imgData.src}
-                        alt={`Fan art - ${imgData.category}`}
-                        onClick={() => setFullscreenIndex(idx)}
-                        style={{ cursor: "zoom-in" }}
-                      />
+                      <FanArtImageContainer>
+                        <BenefitImage
+                          src={imgData.src}
+                          alt={`Fan art - ${imgData.category}`}
+                          title={imgData.name || imgData.title || "Фанарт"}
+                          onClick={() => setFullscreenIndex(idx)}
+                          style={{ cursor: "zoom-in" }}
+                        />
+                        <ImageTitleStrip className="image-overlay">
+                          {imgData.name || imgData.title || "Фанарт"}
+                        </ImageTitleStrip>
+                        <ActionButtonsContainer className="image-overlay">
+                          <ActionButton
+                            onClick={() => handleDownload(imgData.src)}
+                            title="Скачати"
+                          >
+                            ⇩
+                          </ActionButton>
+                          <ActionButton
+                            onClick={() => handlePrint(imgData.src)}
+                            title="Роздрукувати"
+                          >
+                            ⎙
+                          </ActionButton>
+                          <ActionButton
+                            onClick={() => {
+                              setHeroBg(imgData.src);
+                              setCustomHeroBgs((prev) => {
+                                if (prev.some((bg) => bg.src === imgData.src))
+                                  return prev;
+                                return [
+                                  {
+                                    src: imgData.src,
+                                    name: imgData.title || "Фанарт",
+                                  },
+                                  ...prev,
+                                ];
+                              });
+                            }}
+                            title="Встановити на шпалери"
+                            style={{ background: "#4caf50", color: "white" }}
+                          >
+                            🖼️
+                          </ActionButton>
+                          {selectedPlaylist === "ваші картинки" && (
+                            <ActionButton
+                              onClick={() => handleRemoveCustomImage(imgData.id)}
+                              title="Видалити"
+                              style={{ background: "#ff6961" }}
+                            >
+                              🗑️
+                            </ActionButton>
+                          )}
+                        </ActionButtonsContainer>
+                      </FanArtImageContainer>
                       {imgData.summary && (
                         <ShowInfo $isDarkMode={isDarkMode}>
                           <p
@@ -1324,49 +1370,6 @@ const FanArt = ({
                           )}
                         </ShowInfo>
                       )}
-                      <ActionButtonsContainer>
-                        <ActionButton
-                          onClick={() => handleDownload(imgData.src)}
-                          title="Скачати"
-                        >
-                          ⇩
-                        </ActionButton>
-                        <ActionButton
-                          onClick={() => handlePrint(imgData.src)}
-                          title="Роздрукувати"
-                        >
-                          ⎙
-                        </ActionButton>
-                        <ActionButton
-                          onClick={() => {
-                            setHeroBg(imgData.src);
-                            setCustomHeroBgs((prev) => {
-                              if (prev.some((bg) => bg.src === imgData.src))
-                                return prev;
-                              return [
-                                {
-                                  src: imgData.src,
-                                  name: imgData.title || "Фанарт",
-                                },
-                                ...prev,
-                              ];
-                            });
-                          }}
-                          title="Встановити на шпалери"
-                          style={{ background: "#4caf50", color: "white" }}
-                        >
-                          🖼️
-                        </ActionButton>
-                        {selectedPlaylist === "ваші картинки" && (
-                          <ActionButton
-                            onClick={() => handleRemoveCustomImage(imgData.id)}
-                            title="Видалити"
-                            style={{ background: "#ff6961" }}
-                          >
-                            🗑️
-                          </ActionButton>
-                        )}
-                      </ActionButtonsContainer>
                     </FanArtCard>
                   ))}
               </AnimatePresence>

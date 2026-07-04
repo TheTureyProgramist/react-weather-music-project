@@ -88,7 +88,8 @@ import theoryAudio from "../../mp3/theory-of-everyting.mp3";
 import deadlockedAudio from "../../mp3/deadlocked.mp3";
 import mechaAudio from "../../mp3/mechanik-kindom.mp3";
 import miaAudio from "../../mp3/mia-and-me.mp3";
-
+import nonono from "../../photos/no-no-no.webp";
+import nononoAudio from "../../mp3/thefatrat-no-no-no.mp3"
 export const assetMap = {
   faded, fadedAudio, dinofrozVideo, soloveyko, harmony, horse, theorytwo, fingerdash, humorVideo,
   humorAudio, electrodynamix, desert, deserttwo, desertthree, desertfour, desertone, unity,
@@ -101,7 +102,7 @@ export const assetMap = {
   dinofrozeight, dinofroztwo, dinofroznine, domino, hunger, mia, dinofrozAudio, turkeyAudio,
   monodyAudio, windAudio, unityAudio, horseAudio, hungerAudio, dragonoraAudio, soloveykoAudio,
   harmonyAudio, electrodynamixAudio, clubstepAudio, fingerbang, theorytwoAudio, theoryAudio,
-  deadlockedAudio, mechaAudio, miaAudio
+  deadlockedAudio, mechaAudio, miaAudio, nonono, nononoAudio
 };
 
 export const musicCards = songAiKnowledge.map(card => ({
