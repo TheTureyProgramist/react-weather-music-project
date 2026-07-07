@@ -3,10 +3,18 @@ import styled, { keyframes } from "styled-components";
 import loadimage from "../../photos/hero-header/start-image.webp";
 import loadtwo from "../../photos/hero-header/fogtwo.webp";
 
-// Анімація появи та розширення
 const expandEntrance = keyframes`
   0% { transform: scale(1.1); opacity: 0; }
   100% { transform: scale(1); opacity: 1; }
+`;
+
+const dotFade = keyframes`
+  0% { opacity: 1; }
+  12.5% { opacity: 0; }
+  62.5% { opacity: 0.25; }
+  75% { opacity: 0.5; }
+  87.5% { opacity: 0.75; }
+  100% { opacity: 1; }
 `;
 
 const LoaderWrapper = styled.div`
@@ -24,7 +32,7 @@ const LoaderWrapper = styled.div`
   visibility: ${(props) => (props.$isFadingOut ? "hidden" : "visible")};
   transition:
     opacity 0.8s ease-in-out,
-    visibility 1.5s ease-in-out;
+    visibility 0.8s ease-in-out;
   overflow: hidden;
 `;
 
@@ -37,6 +45,7 @@ const LoaderContent = styled.div`
   justify-content: center;
   align-items: center;
 `;
+
 const ImageContainer = styled.div`
   position: absolute;
   top: 0;
@@ -45,7 +54,7 @@ const ImageContainer = styled.div`
   height: 100%;
   z-index: 1;
   overflow: hidden;
-  animation: ${expandEntrance} 1.5s ease-out forwards;
+  animation: ${expandEntrance} 0.8s ease-out forwards;
 `;
 
 const LoaderImage = styled.img`
@@ -57,9 +66,10 @@ const LoaderImage = styled.img`
   transform: translate(-50%, -50%);
   object-fit: cover;
   object-position: center;
-  transition: opacity 1.5s ease-in-out;
+  transition: opacity 0.8s ease-in-out;
   opacity: ${(props) => (props.$active ? 1 : 0)};
 `;
+
 const UIOverlay = styled.div`
   position: relative;
   z-index: 2;
@@ -72,37 +82,12 @@ const UIOverlay = styled.div`
   margin-bottom: 0.5vh;
   text-align: center;
 `;
-
-const ProgressContainer = styled.div`
-  width: 100%;
-  height: 6px;
-  background: rgba(255, 255, 255, 0.3);
-  border-radius: 10px;
-  overflow: hidden;
-  backdrop-filter: blur(5px);
-  border: 1px solid rgba(255, 255, 255, 0.03);
-`;
-
-const ProgressBar = styled.div`
-  height: 100%;
-  background: linear-gradient(90deg, #00c6ff 0%, #0072ff 50%, #ff8c00 100%);
-  width: 0%;
-  animation: load 4s forwards cubic-bezier(0.42, 0, 0.58, 1);
-  @keyframes load {
-    0% {
-      width: 0%;
-    }
-    100% {
-      width: 100%;
-    }
-  }
-`;
-
 const InfoText = styled.div`
   margin-top: 14px;
   color: #fff;
   font-family: "Inter", sans-serif;
 `;
+
 const TopLeftInfo = styled.div`
   position: absolute;
   top: -9px;
@@ -123,21 +108,110 @@ const VersionText = styled.p`
   margin: 0;
   font-family: "Inter", sans-serif;
 `;
+
 const PhraseText = styled.p`
   font-size: 13px;
   color: #00c6ff;
   line-height: 1.5;
-  max-width: 500px;
+  max-width: 1200px;
   font-style: italic;
+    border-radius: 20px;
+  background: rgba(0, 0, 0, 0.61);
   text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
 `;
+
+const TopRightContainer = styled.div`
+  position: absolute;
+  top: 6px;
+  right: 15px;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  background: rgba(0, 0, 0, 0.5);
+  padding: 12px 20px;
+  border-radius: 20px;
+  backdrop-filter: blur(5px);
+  border: 1px solid rgba(255, 255, 255, 0.03);
+`;
+
+const StatusText = styled.span`
+  font-size: 12px;
+  color: #fff;
+  font-family: "Inter", sans-serif;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-align: right;
+  min-width: 170px; 
+`;
+
+const DotGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(3, 10px);
+  grid-template-rows: repeat(3, 10px);
+  gap: 5px;
+`;
+
+const Dot = styled.div`
+  width: 5px;
+  height: 5px;
+  background-color: #ffffff;
+  animation: ${dotFade} 0.8s infinite linear;
+  &:nth-child(1) { grid-row: 1; grid-column: 1; animation-delay: 0s; }
+  &:nth-child(2) { grid-row: 1; grid-column: 2; animation-delay: 0.1s; }
+  &:nth-child(3) { grid-row: 1; grid-column: 3; animation-delay: 0.2s; }
+  &:nth-child(4) { grid-row: 2; grid-column: 3; animation-delay: 0.3s; }
+  &:nth-child(5) { grid-row: 3; grid-column: 3; animation-delay: 0.4s; }
+  &:nth-child(6) { grid-row: 3; grid-column: 2; animation-delay: 0.5s; }
+  &:nth-child(7) { grid-row: 3; grid-column: 1; animation-delay: 0.6s; }
+  &:nth-child(8) { grid-row: 2; grid-column: 1; animation-delay: 0.7s; }
+`;
+
 export default function Loader({ isLoading, isFadingOut, randomPhrase }) {
   const [showSecondImage, setShowSecondImage] = useState(false);
-
+  const [statusText, setStatusText] = useState("Готую новини");
   useEffect(() => {
     if (isLoading) {
       const timer = setTimeout(() => setShowSecondImage(true), 2000);
-      return () => clearTimeout(timer);
+      const phase1Phrases = [
+        "Готую новини",
+        "Цей сайт це реальна містика :)",
+        "Древніус і Даркніс",
+        "Що це було?",
+        "Доміно у мене питання.",
+        "Індики схожі?",
+        "На кого?",
+        "Індики схожі?",
+        "Аякже, на когось",
+        "Ніцеронівські правила",
+        "Темрява та полум'я",
+        "Решта підвантажень",
+      ];
+
+      let currentStep = 0;
+      const interval = setInterval(() => {
+        if (currentStep < phase1Phrases.length - 1) {
+          currentStep++;
+          setStatusText(phase1Phrases[currentStep]);
+        }
+      }, 100);
+      const phase2Phrases = [
+        "Доміно бажає гарної погоди :)",
+        "??? - Я знаю його",
+        "Він скоро повернеться" 
+      ];
+      const randomFinalPhrase = phase2Phrases[Math.floor(Math.random() * phase2Phrases.length)];
+
+      const finalTimeout = setTimeout(() => {
+        clearInterval(interval);
+        setStatusText(randomFinalPhrase);
+      }, 2000);
+
+      return () => {
+        clearTimeout(timer);
+        clearInterval(interval);
+        clearTimeout(finalTimeout);
+      };
     }
   }, [isLoading]);
 
@@ -145,10 +219,22 @@ export default function Loader({ isLoading, isFadingOut, randomPhrase }) {
 
   return (
     <LoaderWrapper $isFadingOut={isFadingOut}>
-      {/* Переміщена версія в лівий верхній кут */}
       <TopLeftInfo>
         <VersionText>Версія 0.9.9 Конотоп-Україна</VersionText>
       </TopLeftInfo>
+      <TopRightContainer>
+        <StatusText>{statusText}</StatusText>
+        <DotGrid>
+          <Dot />
+          <Dot />
+          <Dot />
+          <Dot />
+          <Dot />
+          <Dot />
+          <Dot />
+          <Dot />
+        </DotGrid>
+      </TopRightContainer>
 
       <LoaderContent>
         <ImageContainer>
@@ -165,12 +251,7 @@ export default function Loader({ isLoading, isFadingOut, randomPhrase }) {
         </ImageContainer>
 
         <UIOverlay>
-          <ProgressContainer>
-            <ProgressBar />
-          </ProgressContainer>
-
           <InfoText>
-            {/* PhraseText залишився внизу, як ви і хотіли */}
             <PhraseText>{randomPhrase}</PhraseText>
           </InfoText>
         </UIOverlay>

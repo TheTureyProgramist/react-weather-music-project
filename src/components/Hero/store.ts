@@ -25,4 +25,9 @@ export const store = configureStore({
 });
 
 export const persistor = persistStore(store);
+
+// Експорт типів для використання в додатку
+export type RootState = ReturnType<typeof rootReducer>;
+export type AppDispatch = typeof store.dispatch;
+
 export default store;

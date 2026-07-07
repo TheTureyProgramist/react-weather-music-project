@@ -653,8 +653,6 @@ const Aihelp = ({ isDarkMode }) => {
   return (
     <AihelpDiv>
       <AihelpTitle $isDarkMode={isDarkMode}>Допомога ШІ</AihelpTitle>
-
-      {/* НОВА ПАНЕЛЬ НАЛАШТУВАНЬ */}
       <SettingsPanel $isDarkMode={isDarkMode}>
         <ProviderRow $isDarkMode={isDarkMode}>
           <label>

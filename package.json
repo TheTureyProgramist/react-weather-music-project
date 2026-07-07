@@ -48,6 +48,7 @@
     "standardized-audio-context": "^25.3.77",
     "styled-components": "^6.4.2",
     "tone": "^15.1.22",
+    "typescript": "^6.0.3",
     "wavesurfer.js": "^7.12.8",
     "web-vitals": "^5.2.0"
   },

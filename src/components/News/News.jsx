@@ -58,7 +58,7 @@ const Grid = styled.div`
   display: grid;
   grid-template-columns: repeat(1, 1fr);
   gap: 5px;
-  max-width: 1100px;
+  max-width: 1200px;
   margin: 0 auto;
   @media (min-width: 576px) {
     grid-template-columns: repeat(2, 1fr);
@@ -116,25 +116,16 @@ const SourceFlag = styled.span`
 `;
 
 const PaginationSide = styled.div`
-  position: absolute;
-  right: -10px;
-  top: 50%;
-  transform: translateY(-50%);
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 12px;
+  gap: 4px;
+  width: 135px;
   background: ${(props) => (props.$isDarkMode ? "rgba(255,255,255,0.15)" : "rgba(0,0,0,0.4)")};
-  padding: 8px 8px;
+  padding: 4px;
   border-radius: 30px;
   backdrop-filter: blur(10px);
   border: 1px solid #ffb36c;
   box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-  @media (max-width: 576px) {
-    right: -5px;
-    padding: 10px 5px;
-    transform: translateY(-50%) scale(0.8);
-  }
 `;
 
 const PageArrow = styled.button`
@@ -295,8 +286,9 @@ const CardContent = styled.div`
 const FilterContainer = styled.div`
   display: flex;
   justify-content: center;
-  gap: 10px;
+  gap: 4px;
   margin-bottom: 25px;
+  flex-wrap: wrap;
 `;
 
 const FilterBtn = styled.button`
@@ -304,7 +296,7 @@ const FilterBtn = styled.button`
   color: ${(props) => (props.$active ? "#000" : props.$isDarkMode ? "#666" : "#ccc")};
   border: 1px solid #ffb36c;
   border-radius: 20px;
-  padding: 4px 15px;
+  padding: 4px 10px;
   font-size: 12px;
   cursor: pointer;
   transition: all 0.2s;
@@ -369,12 +361,21 @@ const News = ({ $isDarkMode, user }) => {
   
   const [isAiModalOpen, setIsAiModalOpen] = useState(false);
   const [selectedNews, setSelectedNews] = useState(null);
+
+  const [customSources, setCustomSources] = useState([]);
+  const [newUrl, setNewUrl] = useState("");
+  const [isAddingSource, setIsAddingSource] = useState(false);
   
   // 1. Стан розмонтування для Memory Leak Protection
   const isMounted = useRef(true);
 
   useEffect(() => {
     isMounted.current = true;
+    const loadCustomSources = async () => {
+      const saved = await localforage.getItem("custom_news_sources");
+      if (saved) setCustomSources(saved);
+    };
+    loadCustomSources();
     return () => {
       isMounted.current = false;
     };
@@ -388,7 +389,9 @@ const News = ({ $isDarkMode, user }) => {
     }
     try {
       let allItems = [];
-      for (const source of SOURCES) {
+      const savedCustom = (await localforage.getItem("custom_news_sources")) || [];
+      const allSources = [...SOURCES, ...savedCustom];
+      for (const source of allSources) {
         try {
           const res = await fetch(
             `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(source.url)}`,
@@ -445,7 +448,7 @@ const News = ({ $isDarkMode, user }) => {
           const cleanDesc = (item.description || "")
             .replace(/<[^>]*>?/gm, "")
             .trim()
-            .substring(0, 220);
+            .substring(0, 290);
 
           toTranslateIndices.push(i);
           stringsToTranslate.push(item.title);
@@ -588,6 +591,54 @@ const News = ({ $isDarkMode, user }) => {
     setCooldown(60); // Встановлюємо 60 секунд обмеження
   };
 
+  const handleAddSource = async () => {
+    if (!newUrl) return;
+    if (customSources.length >= 2) {
+      alert("Ви досягли ліміту! Можна додати не більше 2 власних джерел.");
+      return;
+    }
+    try {
+      const urlObj = new URL(newUrl);
+      const domain = urlObj.hostname.replace('www.', '');
+      const newSource = {
+        url: newUrl,
+        name: domain,
+        flag: "🌐",
+        home: urlObj.origin
+      };
+
+      const saved = (await localforage.getItem("custom_news_sources")) || [];
+      if (!saved.find(s => s.url === newUrl)) {
+        if (saved.length >= 2) {
+          alert("Ви досягли ліміту! Можна додати не більше 2 власних джерел.");
+          return;
+        }
+        const updated = [...saved, newSource];
+        await localforage.setItem("custom_news_sources", updated);
+        setCustomSources(updated);
+        setNewUrl("");
+        setIsAddingSource(false);
+        getData(true);
+      } else {
+        alert("Це джерело вже додано.");
+      }
+    } catch (e) {
+      alert("Невірний формат URL. Введіть правильне посилання (наприклад, https://example.com/rss)");
+    }
+  };
+
+  const handleRemoveSource = async (urlToRemove) => {
+    if (!window.confirm("Видалити це джерело новин?")) return;
+    const saved = (await localforage.getItem("custom_news_sources")) || [];
+    const updated = saved.filter(s => s.url !== urlToRemove);
+    await localforage.setItem("custom_news_sources", updated);
+    setCustomSources(updated);
+    if (filterSource === saved.find(s => s.url === urlToRemove)?.name) {
+      setFilterSource("all");
+    }
+    getData(true);
+  };
+
   const filteredItems = items.filter((item) => {
     return filterSource === "all" || item.sourceName === filterSource;
   });
@@ -620,7 +671,6 @@ const News = ({ $isDarkMode, user }) => {
           {loading ? "⌛ Оновлення..." : cooldown > 0 ? `⏳ ${cooldown}с` : "🔄 Оновити"}
         </RefreshBtn>
       </AihelpTitle>
-
       <FilterContainer>
         <FilterBtn 
           $isDarkMode={$isDarkMode} 
@@ -635,7 +685,89 @@ const News = ({ $isDarkMode, user }) => {
             onClick={() => setFilterSource(s.name)}
           >{s.name}</FilterBtn>
         ))}
+        {customSources.map(s => (
+          <FilterBtn 
+            key={s.url}
+            $isDarkMode={$isDarkMode} 
+            $active={filterSource === s.name} 
+            onClick={() => setFilterSource(s.name)}
+          >
+            {s.name} 
+            <span 
+              onClick={(e) => { e.stopPropagation(); handleRemoveSource(s.url); }} 
+              style={{ marginLeft: '6px', color: '#ff4d4d', fontWeight: 'bold' }}
+              title="Видалити джерело"
+            >
+              ×
+            </span>
+          </FilterBtn>
+        ))}
+        {customSources.length < 2 && (
+          <FilterBtn 
+            $isDarkMode={$isDarkMode} 
+            onClick={() => setIsAddingSource(!isAddingSource)}
+            style={{ borderStyle: 'dashed' }}
+          >
+            {isAddingSource ? 'Скасувати' : '+ Додати джерело'}
+          </FilterBtn>
+        )}
+          <PaginationSide $isDarkMode={$isDarkMode}>
+              <PageArrow 
+                disabled={currentPage === 1} 
+                onClick={() => setCurrentPage(p => p - 1)}
+              >◄</PageArrow>
+            {[1, 2, 3].map(num => (
+              <FilterBtn
+                key={num}
+                $active={currentPage === num}
+                $isDarkMode={$isDarkMode}
+                onClick={() => setCurrentPage(num)}
+                style={{ padding: '5px', minWidth: '25px', borderRadius: '50%' }}
+                disabled={filteredItems.length < (num - 1) * 3 + 1}
+              >
+                {num}
+              </FilterBtn>
+            ))}
+                          <PageArrow 
+                disabled={currentPage === 3 || filteredItems.length <= currentPage * 3} 
+                onClick={() => setCurrentPage(p => p + 1)}
+              >► </PageArrow>
+          </PaginationSide>
       </FilterContainer>
+
+      <AnimatePresence>
+        {isAddingSource && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            style={{ overflow: 'hidden' }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'center', gap: '8px', marginBottom: '20px', flexWrap: 'wrap' }}>
+              <input 
+                type="text" 
+                value={newUrl} 
+                onChange={e => setNewUrl(e.target.value)}
+                placeholder="Введіть URL RSS (напр. https://rss.com/feed)"
+                style={{ 
+                  padding: '8px 16px', 
+                  borderRadius: '20px', 
+                  border: `1px solid ${$isDarkMode ? 'rgba(0,0,0,0.2)' : 'rgba(255,255,255,0.2)'}`, 
+                  background: $isDarkMode ? '#f5f5f5' : '#1a1a1a', 
+                  color: $isDarkMode ? '#000' : '#fff', 
+                  outline: 'none',
+                  minWidth: '250px',
+                  fontFamily: 'var(--font-family)',
+                  fontSize: '14px'
+                }}
+              />
+              <FilterBtn $isDarkMode={$isDarkMode} onClick={handleAddSource} style={{ background: '#ffb36c', color: '#000' }}>
+                Зберегти
+              </FilterBtn>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {loading ? (
         <div style={{ textAlign: "center", color: "gray", padding: "60px 20px" }}>
@@ -674,31 +806,6 @@ const News = ({ $isDarkMode, user }) => {
               </Grid>
             </motion.div>
           </AnimatePresence>
-          
-          <PaginationSide $isDarkMode={$isDarkMode}>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginBottom: '5px' }}>
-              <PageArrow 
-                disabled={currentPage === 1} 
-                onClick={() => setCurrentPage(p => p - 1)}
-              >▲</PageArrow>
-              <PageArrow 
-                disabled={currentPage === 3 || filteredItems.length <= currentPage * 3} 
-                onClick={() => setCurrentPage(p => p + 1)}
-              >▼</PageArrow>
-            </div>
-            {[1, 2, 3].map(num => (
-              <FilterBtn
-                key={num}
-                $active={currentPage === num}
-                $isDarkMode={$isDarkMode}
-                onClick={() => setCurrentPage(num)}
-                style={{ padding: '8px', minWidth: '35px', borderRadius: '50%' }}
-                disabled={filteredItems.length < (num - 1) * 3 + 1}
-              >
-                {num}
-              </FilterBtn>
-            ))}
-          </PaginationSide>
         </div>
       ) : (
         <div style={{ textAlign: "center", color: "gray", padding: "20px" }}>

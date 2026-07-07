@@ -93,6 +93,28 @@ const Content = styled.div`
   }
 `;
 
+const TabsContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-bottom: 20px;
+`;
+
+const TabButton = styled.button`
+  background: ${(props) => (props.$active ? "#8a2be2" : "rgba(0, 0, 0, 0.1)")};
+  color: ${(props) => (props.$active ? "white" : "#333")};
+  border: none;
+  border-radius: 20px;
+  padding: 8px 20px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  &:hover {
+    background: ${(props) => (props.$active ? "#8a2be2" : "rgba(0, 0, 0, 0.2)")};
+  }
+`;
+
 const CloseBtn = styled.button`
   position: absolute;
   top: 10px;
@@ -133,7 +155,9 @@ const Question = styled.div`
   cursor: pointer;
   font-weight: 700;
   font-size: 14px;
-  color: #111;
+  color: ${(props) => (props.$rating === 1 ? "#8a2be2" : "#111")};
+  opacity: ${(props) => (props.$rating === -1 ? 0.4 : 1)};
+  transition: all 0.3s ease;
 
   &:hover {
     color: #8a2be2;
@@ -143,7 +167,7 @@ const Question = styled.div`
     content: "";
     width: 4px;
     height: 20px;
-    background: #8a2be2;
+    background: ${(props) => (props.$rating === -1 ? "#ccc" : "#8a2be2")};
     margin-right: 12px;
     display: inline-block;
   }
@@ -317,17 +341,6 @@ const AcceptBtn = styled.button`
   }
 `;
 
-const PointsCounter = styled.div`
-  text-align: center;
-  margin: 20px 0;
-  font-weight: 700;
-  font-size: 14px;
-  color: #111;
-  padding: 10px;
-  background: rgba(138, 43, 226, 0.1);
-  border-radius: 10px;
-`;
-
 const SearchInput = styled.input`
   width: 100%;
   padding: 6px 10px;
@@ -435,9 +448,9 @@ const InfoModal = ({ onClose, isOpen }) => {
   const [activeIndex, setActiveIndex] = useState(null);
   const [ratings, setRatings] = useState({});
   const [searchQuery, setSearchQuery] = useState("");
-  const MAX_POINTS = 15;
-  const RED_HEART = 1;
-  const GOLD_HEART = 2;
+  const [activeTab, setActiveTab] = useState("faq");
+  const LIKE = 1;
+  const DISLIKE = -1;
 
   // Load pinned state
   useEffect(() => {
@@ -478,7 +491,6 @@ const InfoModal = ({ onClose, isOpen }) => {
     await localforage.setItem("user_help_session", history.slice(-15));
   };
 
-  const [totalPoints, setTotalPoints] = useState(0);
   const [hoveredImage, setHoveredImage] = useState(null);
   const [isActionsPinned, setIsActionsPinned] = useState(false);
   const [previewImage, setPreviewImage] = useState(null);
@@ -547,22 +559,7 @@ const InfoModal = ({ onClose, isOpen }) => {
 
   const handleLike = (index, points) => {
     const currentRating = ratings[index] || 0;
-    let newRating;
-    if (currentRating === points) {
-      newRating = 0;
-      setTotalPoints(totalPoints - currentRating);
-    } else {
-      const pointsNeeded = points - currentRating;
-      if (totalPoints + pointsNeeded > MAX_POINTS) {
-        alert(
-          `❌ Лімітовано! Ви можете додати максимум ${MAX_POINTS} балів. Залишилось: ${MAX_POINTS - totalPoints}`,
-        );
-        return;
-      }
-      newRating = points;
-      setTotalPoints(totalPoints - currentRating + points);
-    }
-
+    const newRating = currentRating === points ? 0 : points;
     setRatings({ ...ratings, [index]: newRating });
   };
 
@@ -902,129 +899,141 @@ Clubstep: рандомні фільтри.
         >
           Останнє оновлення: 6 травня 2026 року
         </p>
-        <PointsCounter>
-          💛 Використано балів: {totalPoints} / {MAX_POINTS}
-        </PointsCounter>
 
-        <ChatWrapper ref={scrollRef}>
-          {chatHistory.map((m, i) => (
-            <Message key={i} $isUser={!m.isBot}>
-              {renderTextWithLinks(m.text)}
-              {!m.isBot && i === chatHistory.length - 1 && !isAiLoading && (
-                <EditBtn onClick={() => handleEditMessage(i)}>редагувати</EditBtn>
+        <TabsContainer>
+          <TabButton $active={activeTab === "faq"} onClick={() => setActiveTab("faq")}>
+            Питання (FAQ)
+          </TabButton>
+          <TabButton $active={activeTab === "ai"} onClick={() => setActiveTab("ai")}>
+            ШІ Асистент
+          </TabButton>
+        </TabsContainer>
+
+        {activeTab === "ai" && (
+          <div>
+            <ChatWrapper ref={scrollRef}>
+              {chatHistory.map((m, i) => (
+                <Message key={i} $isUser={!m.isBot}>
+                  {renderTextWithLinks(m.text)}
+                  {!m.isBot && i === chatHistory.length - 1 && !isAiLoading && (
+                    <EditBtn onClick={() => handleEditMessage(i)}>редагувати</EditBtn>
+                  )}
+                </Message>
+              ))}
+              {isAiLoading && <Message $isUser={false}>Думаю...</Message>}
+            </ChatWrapper>
+
+            <InputRow>
+              <SearchInput
+                type="text"
+                placeholder="Запитай ШІ або шукай у FAQ..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && handleAskAi()}
+              />
+              <ClearBtn onClick={handleClearHistory} title="Очистити чат">🗑️</ClearBtn>
+              {isAiLoading ? (
+                <StopBtn onClick={handleStopGeneration} title="Зупинити">🛑</StopBtn>
+              ) : (
+                <AcceptBtn style={{ marginTop: 0, padding: '0 15px' }} onClick={handleAskAi}>
+                  Запитати
+                </AcceptBtn>
               )}
-            </Message>
-          ))}
-          {isAiLoading && <Message $isUser={false}>Думаю...</Message>}
-        </ChatWrapper>
+            </InputRow>
+          </div>
+        )}
 
-        <InputRow>
-          <SearchInput
-            type="text"
-            placeholder="Запитай ШІ або шукай у FAQ..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && handleAskAi()}
-          />
-          <ClearBtn onClick={handleClearHistory} title="Очистити чат">🗑️</ClearBtn>
-          {isAiLoading ? (
-            <StopBtn onClick={handleStopGeneration} title="Зупинити">🛑</StopBtn>
-          ) : (
-            <AcceptBtn style={{ marginTop: 0, padding: '0 15px' }} onClick={handleAskAi}>
-              Запитати
-            </AcceptBtn>
-          )}
-        </InputRow>
+        {activeTab === "faq" && (
+          <AccordionWrapper style={{ marginTop: 0 }}>
+            {sortedFaqData.map((item, displayIndex) => {
+              const originalIndex = item.originalIndex;
+              const rating = ratings[originalIndex] || 0;
 
-        <AccordionWrapper>
-          {sortedFaqData.map((item, displayIndex) => {
-            const originalIndex = item.originalIndex;
-            const rating = ratings[originalIndex] || 0;
-
-            return (
-              <AccordionItem key={originalIndex} $index={displayIndex + 1}>
-                <Question onClick={() => toggleAccordion(originalIndex)}>
-                  <QuestionContent>
-                    <QuestionText>{item.q}</QuestionText>
-                    <ArrowContainer>
-                      <LikeButton
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleLike(originalIndex, RED_HEART);
-                        }}
-                        title="1 бал"
-                      >
-                        {rating === RED_HEART ? "❤️" : "🤍"}
-                      </LikeButton>
-                      <LikeButton
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleLike(originalIndex, GOLD_HEART);
-                        }}
-                        title="2 бали"
-                      >
-                        {rating === GOLD_HEART ? "💛" : "🤎"}
-                      </LikeButton>
-                      <Arrow $isOpen={activeIndex === originalIndex}>▼</Arrow>
-                    </ArrowContainer>
-                  </QuestionContent>
-                </Question>
-                <Answer $isOpen={activeIndex === originalIndex}>
-                  <AnswerContent>
-                    {item.image && (
-                      <>
-                        <AnswerImage
-                          src={item.image}
-                          alt={item.q}
-                          $isHovered={hoveredImage === item.image}
-                          $isPinned={isActionsPinned}
-                          onClick={() => setPreviewImage(item.image)}
-                          onMouseEnter={() => setHoveredImage(item.image)}
-                          onMouseLeave={() => setHoveredImage(null)}
-                        />
-                        <ImageActionsContainer
-                          $isHovered={hoveredImage === item.image}
-                          $isPinned={isActionsPinned}
-                          onMouseEnter={() => setHoveredImage(item.image)}
-                          onMouseLeave={() => setHoveredImage(null)}
+              return (
+                <AccordionItem key={originalIndex} $index={displayIndex + 1}>
+                  <Question $rating={rating} onClick={() => toggleAccordion(originalIndex)}>
+                    <QuestionContent>
+                      <QuestionText>{item.q}</QuestionText>
+                      <ArrowContainer>
+                        <LikeButton
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleLike(originalIndex, LIKE);
+                          }}
+                          title="Корисно"
                         >
-                          <AnswerActionButton
-                            onClick={togglePin}
-                            title={
-                              isActionsPinned
-                                ? "Відкріпити кнопки"
-                                : "Закріпити кнопки"
-                            }
+                          {rating === LIKE ? "❤️" : "🤍"}
+                        </LikeButton>
+                        <LikeButton
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleLike(originalIndex, DISLIKE);
+                          }}
+                          title="Не корисно"
+                        >
+                          {rating === DISLIKE ? "👎" : "👎🏻"}
+                        </LikeButton>
+                        <Arrow $isOpen={activeIndex === originalIndex}>▼</Arrow>
+                      </ArrowContainer>
+                    </QuestionContent>
+                  </Question>
+                  <Answer $isOpen={activeIndex === originalIndex}>
+                    <AnswerContent>
+                      {item.image && (
+                        <>
+                          <AnswerImage
+                            src={item.image}
+                            alt={item.q}
+                            $isHovered={hoveredImage === item.image}
+                            $isPinned={isActionsPinned}
+                            onClick={() => setPreviewImage(item.image)}
+                            onMouseEnter={() => setHoveredImage(item.image)}
+                            onMouseLeave={() => setHoveredImage(null)}
+                          />
+                          <ImageActionsContainer
+                            $isHovered={hoveredImage === item.image}
+                            $isPinned={isActionsPinned}
+                            onMouseEnter={() => setHoveredImage(item.image)}
+                            onMouseLeave={() => setHoveredImage(null)}
                           >
-                            {isActionsPinned ? "📌" : "📍"}
-                          </AnswerActionButton>
-                          <AnswerActionButton
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleDownloadImage(item.image);
-                            }}
-                          >
-                            ⇩ Скачати
-                          </AnswerActionButton>
-                          <AnswerActionButton
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handlePrintImage(item.image);
-                            }}
-                          >
-                            🖨️ Друкувати
-                          </AnswerActionButton>
-                        </ImageActionsContainer>
-                      </>
-                    )}
-                    {/* Вставляємо як HTML, якщо потрібно підтримувати теги */}
-                    <div dangerouslySetInnerHTML={{ __html: item.a.replace(/\n/g, '<br/>') }} />
-                  </AnswerContent>
-                </Answer>
-              </AccordionItem>
-            );
-          })}
-        </AccordionWrapper>
+                            <AnswerActionButton
+                              onClick={togglePin}
+                              title={
+                                isActionsPinned
+                                  ? "Відкріпити кнопки"
+                                  : "Закріпити кнопки"
+                              }
+                            >
+                              {isActionsPinned ? "📌" : "📍"}
+                            </AnswerActionButton>
+                            <AnswerActionButton
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleDownloadImage(item.image);
+                              }}
+                            >
+                              ⇩ Скачати
+                            </AnswerActionButton>
+                            <AnswerActionButton
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handlePrintImage(item.image);
+                              }}
+                            >
+                              🖨️ Друкувати
+                            </AnswerActionButton>
+                          </ImageActionsContainer>
+                        </>
+                      )}
+                      {/* Вставляємо як HTML, якщо потрібно підтримувати теги */}
+                      <div dangerouslySetInnerHTML={{ __html: item.a.replace(/\n/g, '<br/>') }} />
+                    </AnswerContent>
+                  </Answer>
+                </AccordionItem>
+              );
+            })}
+          </AccordionWrapper>
+        )}
         <div style={{ textAlign: "center" }}>
           <AcceptBtn $index={faqData.length + 2} onClick={handleClose}>
             Дякую, зрозуміло!

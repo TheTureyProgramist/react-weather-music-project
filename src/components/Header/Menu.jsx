@@ -61,12 +61,6 @@ const MiniLogoButton = styled.button`
     color: #1a1a1a;
     border-color: #ffb36c;
   }
-
-  @media (min-width: 1920px) {
-    font-size: 32px;
-    padding: 15px;
-    border-radius: 15px;
-  }
 `;
 
 const SubsMenuItem = styled.button`
@@ -92,12 +86,6 @@ const SubsMenuItem = styled.button`
       ${(props) =>
         props.$isUltra ? "rgba(113, 0, 151, 0.2)" : "rgba(255, 179, 108, 0.2)"};
   }
-
-  @media (min-width: 1920px) {
-    padding: 15px 20px;
-    gap: 25px;
-    border-radius: 20px;
-  }
 `;
 
 const SubsIconBox = styled.div`
@@ -110,10 +98,6 @@ const SubsIconBox = styled.div`
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  @media (min-width: 1920px) {
-    width: 60px;
-    height: 60px;
-  }
 `;
 
 const SubsTextWrapper = styled.div`
@@ -163,10 +147,6 @@ const SubsAnimatedPart = styled.span`
       -webkit-text-fill-color: transparent;
       background-clip: text;
     `}
-
-  @media (min-width: 1920px) {
-    font-size: ${(props) => (props.$isSymbol ? "38px" : "32px")};
-  }
 `;
 
 const ModeToggle = styled.div`
@@ -184,11 +164,6 @@ const ModeToggle = styled.div`
   &:hover {
     background: ${(props) =>
       props.$isDarkMode ? "rgba(255, 255, 255, 0.1)" : "rgba(0, 0, 0, 0.05)"};
-  }
-
-  @media (min-width: 1920px) {
-    padding: 15px 20px;
-    gap: 20px;
   }
 `;
 
@@ -257,11 +232,6 @@ const BurgerMenuPanel = styled.div`
   @media (min-width: 768px) {
     padding: 40px;
   }
-  @media (min-width: 1920px) {
-    padding: 60px;
-    border-bottom-left-radius: 40px;
-    border-bottom-right-radius: 40px;
-  }
 `;
 
 const BurgerCloseBtn = styled.button`
@@ -274,11 +244,6 @@ const BurgerCloseBtn = styled.button`
   position: absolute;
   top: 15px;
   right: 20px;
-  @media (min-width: 1920px) {
-    font-size: 50px;
-    top: 30px;
-    right: 40px;
-  }
 `;
 
 const BurgerContentGrid = styled.div`
@@ -296,10 +261,6 @@ const MenuSectionTitle = styled.h3`
   border-bottom: 2px solid #ff005d;
   padding-bottom: 5px;
   display: inline-block;
-  @media (min-width: 1920px) {
-    font-size: 36px;
-    margin-bottom: 25px;
-  }
 `;
 
 const LegendList = styled.ul`
@@ -330,18 +291,8 @@ const ActionButton = styled.button`
       props.$isDarkMode ? "rgba(255, 255, 255, 0.1)" : "rgba(0, 0, 0, 0.05)"};
   }
 
-  @media (min-width: 1920px) {
-    font-size: 26px;
-    margin-bottom: 15px;
-    gap: 25px;
-    padding: 15px 20px;
-  }
-
   span.icon {
     font-size: 20px;
-    @media (min-width: 1920px) {
-      font-size: 40px;
-    }
   }
 `;
 
@@ -354,12 +305,6 @@ const NavItem = styled.div`
   background: ${(props) =>
     props.$isDarkMode ? "rgba(255, 255, 255, 0.05)" : "rgba(0, 0, 0, 0.03)"};
   border-radius: 10px;
-
-  @media (min-width: 1920px) {
-    padding: 15px 25px;
-    margin-bottom: 15px;
-    border-radius: 20px;
-  }
 `;
 const NavButton = styled.button`
   background: transparent;
@@ -374,9 +319,6 @@ const NavButton = styled.button`
 
   &:hover {
     opacity: 0.8;
-  }
-  @media (min-width: 1920px) {
-    font-size: 30px;
   }
 `;
 
@@ -402,10 +344,6 @@ const OrderButton = styled.button`
     color: white;
     border-color: #ff005d;
   }
-  @media (min-width: 1920px) {
-    padding: 8px 16px;
-    font-size: 24px;
-  }
 `;
 
 const FilterGridInMenu = styled.div`
@@ -429,11 +367,6 @@ const FilterButtonInMenu = styled.button`
 
   &:hover {
     background: rgba(255, 179, 108, 0.3);
-  }
-
-  @media (min-width: 1920px) {
-    padding: 12px;
-    font-size: 16px;
   }
 `;
 

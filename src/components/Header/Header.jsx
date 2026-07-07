@@ -3,7 +3,6 @@ import styled, { keyframes, css } from "styled-components";
 import logo from "../../photos/hero-header/logo.webp";
 import BurgerMenu from "./Menu.jsx";
 import bell from "../../mp3/modals/bell.mp3";
-import money from "../../photos/fan-art/money.webp";
 import logofix from "../../photos/hero-header/logo-fix.webp";
 import { useVisualFilters } from "./useVisualFilters";
 const flow = keyframes`
@@ -12,89 +11,9 @@ const flow = keyframes`
   100% { background-position: 0% 50%; }
 `;
 
-const vibrate = keyframes`
-  0% { transform: translateX(-50%) translate(0,0); }
-  10% { transform: translateX(-50%) translate(-2px, -2px) rotate(-1deg); }
-  20% { transform: translateX(-50%) translate(2px, -2px) rotate(1deg); }
-  30% { transform: translateX(-50%) translate(-2px, 2px) rotate(-1deg); }
-  40% { transform: translateX(-50%) translate(2px, 2px) rotate(1deg); }
-  50% { transform: translateX(-50%) translate(-2px, -2px); }
-  100% { transform: translateX(-50%) translate(0,0); }
-`;
-
-const fadeShowHide = keyframes`
-  0% { opacity: 0; transform: translateX(-50%) translateY(-20px); }
-  15% { opacity: 1; transform: translateX(-50%) translateY(0); }
-  85% { opacity: 1; transform: translateX(-50%) translateY(0); }
-  100% { opacity: 0; transform: translateX(-50%) translateY(-20px); }
-`;
-
 const fadeInHeader = keyframes`
   from { opacity: 0; transform: translateY(-100%); }
   to { opacity: 1; transform: translateY(0); }
-`;
-
-const NotificationCard = styled.div`
-  position: absolute;
-  top: 60px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: rgba(128, 128, 128, 0.1);
-  border: 1px solid grey;
-  border-radius: 14px;
-  padding: 10px;
-  display: flex;
-  align-items: center;
-  gap: 15px;
-  z-index: 1001;
-  width: 90%;
-  max-width: 350px;
-  cursor: pointer;
-  filter: grayscale(1);
-  animation:
-    ${fadeShowHide} 3s forwards,
-    ${vibrate} 0.2s infinite;
-
-`;
-
-const CardImg = styled.img`
-  width: 50px;
-  height: 35px;
-  border-radius: 8px;
-  object-fit: cover;
-  border: 1px solid #2eb813;
-`;
-
-const CardText = styled.div`
-  flex-grow: 1;
-  text-align: left;
-`;
-
-const CardName = styled.h3`
-  margin: 0;
-  font-size: 12px;
-  color: #ffb36c;
-`;
-
-const CardGoal = styled.p`
-  margin: 2px 0 0;
-  font-size: 10px;
-  color: #a2ff6c;
-`;
-
-const CardReward = styled.div`
-  width: 45px;
-  height: 25px;
-  background: rgba(46, 184, 19, 0.2);
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: bold;
-  font-size: 10px;
-  border: 1px dashed #ffb36c;
-  color: #ffb36c;
-  flex-shrink: 0;
 `;
 
 const HeaderDiv = styled.div`
@@ -119,10 +38,6 @@ const HeaderDiv = styled.div`
     height: 45px;
     padding: 0 20px;
   }
-  @media (min-width: 1920px) {
-    height: 100px;
-    padding: 0 60px;
-  }
 `;
 
 const HeaderFix = styled.div`
@@ -133,9 +48,6 @@ const HeaderFix = styled.div`
 
   @media (min-width: 768px) {
     gap: 10px;
-  }
-  @media (min-width: 1920px) {
-    gap: 20px;
   }
 `;
 
@@ -154,9 +66,6 @@ const IconButton = styled.button`
   @media (min-width: 768px) {
     font-size: 22px;
   }
-  @media (min-width: 1920px) {
-    font-size: 44px;
-  }
 `;
 
 const EmojiWrapper = styled.span`
@@ -164,9 +73,6 @@ const EmojiWrapper = styled.span`
   font-size: 12px;
   @media (min-width: 720px) {
     font-size: 24px;
-  }
-  @media (min-width: 1920px) {
-    font-size: 44px;
   }
 `;
 
@@ -186,10 +92,6 @@ const UserName = styled.span`
   @media (min-width: 768px) {
     font-size: 16px;
     max-width: 250px;
-  }
-  @media (min-width: 1920px) {
-    font-size: 28px;
-    max-width: 500px;
   }
 
   ${(props) => {
@@ -231,11 +133,6 @@ const HeaderAvatar = styled.img`
   @media (min-width: 768px) {
     width: 42px;
     height: 42px;
-  }
-  @media (min-width: 1920px) {
-    width: 85px;
-    height: 85px;
-    border-width: 4px;
   }
 `;
 
@@ -285,9 +182,6 @@ const RainbowText = styled.h1`
   @media (min-width: 768px) {
     font-size: 15px;
   }
-  @media (min-width: 1920px) {
-    font-size: 32px;
-  }
 `;
 
 const UltraText = styled.h1`
@@ -328,9 +222,6 @@ const UltraText = styled.h1`
   @media (min-width: 768px) {
     font-size: 15px;
   }
-  @media (min-width: 1920px) {
-    font-size: 32px;
-  }
 `;
 
 const HeaderLogo = styled.img`
@@ -340,18 +231,11 @@ const HeaderLogo = styled.img`
     height: 42px;
     width: 42px;
   }
-  @media (min-width: 1920px) {
-    height: 85px;
-    width: 85px;
-  }
 `;
 const Spa = styled.span`
   font-size: 9px;
   @media (min-width: 768px) {
     font-size: 18px;
-  }
-  @media (min-width: 1920px) {
-    font-size: 32px;
   }
 `;
 const ButtonsGroup = styled.div`
@@ -363,9 +247,6 @@ const ButtonsGroup = styled.div`
     gap: 12px;
   }
 
-  @media (min-width: 1920px) {
-    gap: 25px;
-  }
 `;
 
 const VisualSettingsPanel = styled.div`
@@ -390,11 +271,6 @@ const VisualSettingsPanel = styled.div`
     width: 280px;
     right: 20px;
   }
-  @media (min-width: 1920px) {
-    top: 135px;
-    width: 400px;
-    padding: 25px;
-  }
 `;
 
 const VisualLabel = styled.label`
@@ -406,9 +282,6 @@ const VisualLabel = styled.label`
   margin-bottom: 5px;
   @media (min-width: 768px) {
     font-size: 14px;
-  }
-  @media (min-width: 1920px) {
-    font-size: 24px;
   }
 `;
 
@@ -479,11 +352,6 @@ const LogoActionBtn = styled.button`
     font-size: 12px;
     padding: 2px 5px;
   }
-
-  @media (min-width: 1920px) {
-    font-size: 18px;
-    padding: 4px 10px;
-  }
 `;
 
 const PrintBtn = styled(LogoActionBtn)`
@@ -538,7 +406,6 @@ const Header = ({
   const [showUltra, setShowUltra] = useState(false);
   const [isBurgerOpen, setIsBurgerOpen] = useState(false);
   const [showVisualSettings, setShowVisualSettings] = useState(false);
-  const [showTurkeyNotify, setShowTurkeyNotify] = useState(false);
   const logoRef = useRef(null);
 
   const handleDownloadLogo = (e) => {
@@ -567,17 +434,6 @@ const Header = ({
     else if (elem.msRequestFullscreen) elem.msRequestFullscreen();
   };
 
-  useEffect(() => {
-    const status = localStorage.getItem("turkeyStudioStatus");
-    if (!status || status === "idle") {
-      const timer = setTimeout(() => {
-        setShowTurkeyNotify(true);
-        setTimeout(() => setShowTurkeyNotify(false), 3000);
-      }, 2000);
-      return () => clearTimeout(timer);
-    }
-  }, []);
-
   const {
     visualConfig,
     setVisualConfig,
@@ -604,21 +460,6 @@ const Header = ({
   return (
     <>
       <HeaderDiv $isDarkMode={isDarkMode}>
-        {showTurkeyNotify && (
-          <NotificationCard
-            onClick={() => {
-              onOpenAchievements();
-              setShowTurkeyNotify(false);
-            }}
-          >
-            <CardImg src={money} alt="TheTurkeyStudio" />
-            <CardText>
-              <CardName>TheTurkeyStudio</CardName>
-              <CardGoal>Ціль: підпишіться на мій фейсбук канал.</CardGoal>
-            </CardText>
-            <CardReward>40 🧧</CardReward>
-          </NotificationCard>
-        )}
         <HeaderFix>
           <LogoContainer>
             <PrintBtn

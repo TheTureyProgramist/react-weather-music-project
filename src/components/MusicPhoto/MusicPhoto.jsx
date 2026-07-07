@@ -1,6 +1,6 @@
 import { musicCards, songAiKnowledge, dinofrozVideo } from "./MusicPhoto.assets";
 import authorsData from "./authors.json";
-import { SeekIndicator, LongPressBadge, MusicPhotoDiv, ActButton, MusicPhotoFix, ControlsContainer, SearchInput, SortSelect, AuthorCardWrapper, AuthorInfoOverlay, CardWrapper, LyricsModalImage, MusicImageContainer, MusicImage, HeartButton, MusicText, SliderRow, VolumeSlider, LoadMoreButton, FilterOverlay, StyledSymbol, SeekBar, StereoSeekBar, StereoChannel, SpeedSlider, UnlockContainer, SeekAmountSlider, LoopButton, ActionButtonsContainer, ActionButton, ModalOverlay, LyricsModalContent, PlaylistModalContent, LyricsCloseButton, FullScreenOverlay, MiniPlayerContainer, MiniPlayerHeader, MiniControlBtn, MiniResizeHandle, AudioBarContainer, AudioBarBtn, FSHeader, FSContent, FSVisualWrapper, FSVideo, FSImage, FSControls, FSSliderContainer, FSSliderImage, FSTitle, GearModal, SubtitleOverlay, DownloadModal, PlaylistCloseButton, LyricsContainer, LyricsLine, InputGroup, StorageIndicatorContainer, StorageBar, StorageBarFill, SliderItemWrapper, CheckpointBadge, CheckpointMarker, SliderOverlay, SliderBtn, PlaylistOverlay, SeekBarWrapper, SeekTooltip, LoadingContainer, ProgressBar, ProgressBarFill, AiChatContainer, MessageList, Message, ChatInputRow, AuthorPreviewCard, AuthorPreviewImage, AuthorPreviewName, AuthorPreviewBody, AuthorPreviewSection, AuthorPreviewActions, AuthorPreviewBtn } from "./MusicPhoto.styled";
+import { SeekIndicator, LongPressBadge, AihelpTitle, MusicPhotoDiv, ActButton, MusicPhotoFix, ControlsContainer, SearchInput, SortSelect, AuthorCardWrapper, AuthorInfoOverlay, CardWrapper, LyricsModalImage, MusicImageContainer, MusicImage, HeartButton, MusicText, SliderRow, VolumeSlider, LoadMoreButton, FilterOverlay, StyledSymbol, SeekBar, StereoSeekBar, StereoChannel, SpeedSlider, UnlockContainer, SeekAmountSlider, LoopButton, ActionButtonsContainer, ActionButton, ModalOverlay, LyricsModalContent, PlaylistModalContent, LyricsCloseButton, FullScreenOverlay, MiniPlayerContainer, MiniPlayerHeader, MiniControlBtn, MiniResizeHandle, AudioBarContainer, AudioBarBtn, FSHeader, FSContent, FSVisualWrapper, FSVideo, FSImage, FSControls, FSSliderContainer, FSSliderImage, FSTitle, GearModal, SubtitleOverlay, DownloadModal, PlaylistCloseButton, LyricsContainer, LyricsLine, InputGroup, StorageIndicatorContainer, StorageBar, StorageBarFill, SliderItemWrapper, CheckpointBadge, CheckpointMarker, SliderOverlay, SliderBtn, PlaylistOverlay, SeekBarWrapper, SeekTooltip, LoadingContainer, ProgressBar, ProgressBarFill, AiChatContainer, MessageList, Message, ChatInputRow, AuthorPreviewCard, AuthorPreviewImage, AuthorPreviewName, AuthorPreviewBody, AuthorPreviewSection, AuthorPreviewActions, AuthorPreviewBtn } from "./MusicPhoto.styled";
 import { useState, useRef, useEffect, useMemo, useCallback } from "react";
 import localforage from "localforage";
 import { motion, AnimatePresence } from "framer-motion";
@@ -641,6 +641,10 @@ const MiniPlayer = ({
     mediaRef.current?.pause();
   }, []);
 
+  const handleRestore = useCallback(() => {
+    onRestore?.(currentTime, isPlaying, volume, speed);
+  }, [currentTime, isPlaying, onRestore, speed, volume]);
+
   useEffect(() => {
     setPos(getDefaultPos());
   }, [track.id]);
@@ -872,6 +876,7 @@ const MiniPlayer = ({
       animate={{ opacity: 1, scale: 1, y: 0 }} /* Changed for dark mode */
       exit={{ opacity: 0, scale: 0.5, y: 50 }}
       transition={{ duration: 0.3 }}
+      onDoubleClick={handleRestore}
       style={{
         left: pos.x,
         top: pos.y,
@@ -879,12 +884,12 @@ const MiniPlayer = ({
         height: size.height,
       }}
     >
-      <MiniPlayerHeader onMouseDown={handleDrag}>
+      <MiniPlayerHeader onMouseDown={handleDrag} onDoubleClick={handleRestore}>
         <MiniControlBtn
-          onClick={() => onRestore(currentTime, isPlaying, volume, speed)}
-          title="Повернути у повний екран"
+          onClick={handleRestore}
+          title="Повернутися на сайт / у повний перегляд"
         >
-          🔙 Відновити
+          ⛶ Відновити
         </MiniControlBtn>
         <MiniControlBtn
           onClick={handlePiP}
@@ -892,7 +897,7 @@ const MiniPlayer = ({
         >
           🖼️ PiP
         </MiniControlBtn>
-        <MiniControlBtn onClick={onClose} title="Закрити">
+        <MiniControlBtn onClick={onClose} title="Закрити плеєр">
           ✕
         </MiniControlBtn>
       </MiniPlayerHeader>
@@ -1748,11 +1753,7 @@ const FullScreenPlayer = ({
       return null;
     };
 
-    const canCommentUser = (u) => {
-      if (!u) return false;
-      const role = u.role || u.userRole || u.accountRole || "";
-      return !(role === "anonymous" || role === "guest" || role === "banned");
-    };
+
   const getSocialQuotaKey = useCallback((trackId, currentUser) => {
     const day = new Date().toISOString().slice(0, 10);
     const uid = currentUser?.uid || currentUser?.id || currentUser?.account || "guest";
@@ -2267,7 +2268,7 @@ const FullScreenPlayer = ({
       }
       return track.images;
     }
-    return [track.image, track.image, track.image];
+    return [track.image];
   }, [track]); // No direct change needed here, but its usage will be conditional
 
   const handleClose = useCallback(() => {
@@ -6066,7 +6067,8 @@ const PlaylistModal = ({
   
   return (
     <div style={{ width: "100%" }}>
-      <div /* Changed for dark mode */
+            <AihelpTitle $isDarkMode={isDarkMode}>Музика</AihelpTitle>
+      <div 
         style={{
           background: "transparent",
           padding: "10px",
@@ -6075,7 +6077,7 @@ const PlaylistModal = ({
         }}
       >
         <ControlsContainer>
-                    <button 
+            <button 
             onClick={() => onEdit && onEdit()}
             style={{
               background: "black",

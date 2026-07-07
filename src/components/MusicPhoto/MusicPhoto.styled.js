@@ -836,6 +836,17 @@ export const ActionButton = styled.button`
   }
 `;
 
+export const AihelpTitle = styled.div`
+  font-size: 14px;
+  text-align: center;
+  font-family: var(--font-family);
+  font-weight: 600;
+  color: ${(props) => (props.$isDarkMode ? "black" : "white")};
+  margin-bottom: 10px;
+  @media (min-width: 768px) {
+    font-size: 25px;
+  }
+`;
 export const ActButton = styled.button`
   background: rgba(0, 0, 0, 0.43);
   backdrop-filter: blur(6px);
@@ -976,6 +987,7 @@ export const MiniPlayerContainer = styled.div`
   min-width: 100px;
   min-height: 80px;
   touch-action: none;
+  user-select: none;
 `;
 
 export const MiniPlayerHeader = styled.div`

@@ -1,19 +1,26 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+
+export interface Item {
+  id: number;
+  text: string;
+}
+
+const initialState: Item[] = [];
 
 const itemsSlice = createSlice({
   name: 'items',
-  initialState: [],
+  initialState,
   reducers: {
     // Дія збереження (додавання)
-    addItem: (state, action) => {
+    addItem: (state, action: PayloadAction<Item>) => {
       state.push(action.payload);
     },
     // Дія видалення
-    removeItem: (state, action) => {
+    removeItem: (state, action: PayloadAction<number>) => {
       return state.filter(item => item.id !== action.payload);
     },
     // Дія оновлення
-    updateItem: (state, action) => {
+    updateItem: (state, action: PayloadAction<{ id: number; text: string }>) => {
       const index = state.findIndex(item => item.id === action.payload.id);
       if (index !== -1) {
         state[index] = { ...state[index], ...action.payload };
@@ -23,5 +30,5 @@ const itemsSlice = createSlice({
 });
 
 export const { addItem, removeItem, updateItem } = itemsSlice.actions;
-export const selectItems = (state) => state.items;
+export const selectItems = (state: { items: Item[] }) => state.items;
 export default itemsSlice.reducer;
