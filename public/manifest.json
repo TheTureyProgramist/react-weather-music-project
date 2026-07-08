@@ -1,21 +1,16 @@
 {
   "short_name": "Стихія",
   "name": "Стихія: Прогноз погоди",
-  "icons": [
+"icons": [
     {
-      "src": "realultra.jpg",
-      "sizes": "64x64 32x32 24x24 16x16",
-      "type": "image/jpeg"
-    },
-    {
-      "src": "realultra.jpg",
-      "type": "image/jpeg",
+      "src": "icon-192.png",
+      "type": "image/png",
       "sizes": "192x192",
       "purpose": "any maskable"
     },
     {
-      "src": "realultra.jpg",
-      "type": "image/jpeg",
+      "src": "icon-512.png",
+      "type": "image/png",
       "sizes": "512x512"
     }
   ],

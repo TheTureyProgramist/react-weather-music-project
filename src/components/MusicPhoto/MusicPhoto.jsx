@@ -4861,15 +4861,6 @@ const MusicCard = ({
           >
             💬
           </ActionButton>
-          <ActionButton
-            title="Інформація про трек"
-            onClick={(e) => {
-              e.stopPropagation();
-              onOpenInfo && onOpenInfo(cardData);
-            }}
-          >
-            ℹ️
-          </ActionButton>
           <ActionButton title="Завантажити" onClick={handleDownloadTrack}>
             ⇩
           </ActionButton>
@@ -6156,6 +6147,14 @@ const PlaylistModal = ({
 <AuthorPreviewCard>
   <AuthorPreviewImage>
     {previewImage && <img src={previewImage} alt={selectedAuthor} />}
+    <AuthorPreviewActions style={{ position: 'absolute', bottom: 50, left: 24, zIndex: 4 }}>
+      <AuthorPreviewBtn $variant="back" onClick={() => setSelectedAuthor(null)}>
+        ← Назад до авторів
+      </AuthorPreviewBtn>
+      {links.map((linkObj, i) => (
+        <RotatingLinkButton key={i} href={linkObj.url} names={linkObj.names} />
+      ))}
+    </AuthorPreviewActions>
     <AuthorPreviewName>{selectedAuthor}</AuthorPreviewName>
   </AuthorPreviewImage>
   <AuthorPreviewBody>
@@ -6186,15 +6185,8 @@ const PlaylistModal = ({
         <span className="section-text">{authorMeta["Примітка"]}</span>
       </AuthorPreviewSection>
     )}
-    <AuthorPreviewActions>
-      <AuthorPreviewBtn $variant="back" onClick={() => setSelectedAuthor(null)}>
-        ← Назад до авторів
-      </AuthorPreviewBtn>
-      {links.map((linkObj, i) => (
-        <RotatingLinkButton key={i} href={linkObj.url} names={linkObj.names} />
-      ))}
-    </AuthorPreviewActions>
   </AuthorPreviewBody>
+  
 </AuthorPreviewCard>
                   );
                 }
@@ -6862,11 +6854,13 @@ const RotatingLinkButton = ({ href, names }) => {
 
   useEffect(() => {
     if (!names || names.length <= 1) return;
+    const len = names.length;
     const interval = setInterval(() => {
-      setIndex((prev) => (prev + 1) % names.length);
+      setIndex((prev) => (prev + 1) % len);
     }, 3000);
     return () => clearInterval(interval);
-  }, [namesStr, names?.length, names]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [namesStr]);
 
   const currentName = names && names.length > 0 ? names[index] : "Посилання";
 

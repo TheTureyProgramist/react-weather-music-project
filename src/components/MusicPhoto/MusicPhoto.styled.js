@@ -800,7 +800,7 @@ export const LoopButton = styled.button`
 export const ActionButtonsContainer = styled.div`
   position: absolute;
   top: 50%;
-  left: 16%;
+  left: 11%;
   transform: translate(-50%, -50%) translateY(8px);
   display: flex;
   gap: 6px;
@@ -1612,7 +1612,7 @@ export const AuthorPreviewCard = styled.div`
   display: flex;
   flex-direction: row;
   align-items: stretch;
-  min-height: 240px; /* Збільшили висоту, щоб контент гарно влізав */
+  min-height: 200px;
 
   @media (max-width: 768px) {
     flex-direction: column;
@@ -1631,7 +1631,7 @@ export const AuthorPreviewImage = styled.div`
 
   @media (max-width: 768px) {
     position: relative;
-    height: 300px;
+    height: 180px;
   }
 
   img {
