@@ -1,9 +1,9 @@
 {
   "short_name": "Стихія",
-  "name": "Стихія: Прогноз погоди",
+  "name": "Стихія: Прогноз погоди, музика і... відсилки",
   "icons": [
     {
-      "src": "realultra.webp",
+      "src": "realultra.png",
       "type": "image/webp",
       "sizes": "192x192 512x512",
       "purpose": "any maskable"

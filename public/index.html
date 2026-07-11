@@ -1,50 +1,42 @@
 <!doctype html>
 <html lang="uk">
-  <head>
-    <meta charset="utf-8" />
-    <link rel="icon" href="%PUBLIC_URL%/realultra.webp" />
-    <link
-      rel="preload"
-      href="https://embed.windy.com/v/41.1.0.emb.4d73/iconfont.woff"
-      as="font"
-      type="font/woff"
-      crossorigin
-    />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#000000" />
-    <meta
-      name="mylead-verification"
-      content="281633146c4aa6f0a07337009385bc1d"
-    />
-    <meta
-      name="description"
-      content="Стихія — точний прогноз погоди в містах України та світу. Дізнавайтеся про температуру, опади та вітер у реальному часі."
-    />
-    <link rel="apple-touch-icon" href="%PUBLIC_URL%/realultra.webp" />
-    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
-    <title>
-      Стихія: Погода надійніша з нами! Прогноз погоди по містах України та світу
-    </title>
-    <link
-      rel="sitemap"
-      type="application/xml"
-      title="Sitemap"
-      href="sitemap.xml"
-    />
-  </head>
-  <body>
-    <noscript>Для роботи цього додатка потрібно увімкнути JavaScript.</noscript>
-    <div id="root"></div>
-    <script>
-      if ('serviceWorker' in navigator) {
-        window.addEventListener('load', function() {
-          navigator.serviceWorker.register('%PUBLIC_URL%/sw.js').then(function(registration) {
-            console.log('ServiceWorker registration successful');
-          }).catch(function(error) {
-            console.log('ServiceWorker registration failed: ', error);
-          });
+
+<head>
+  <meta charset="utf-8" />
+  <link rel="icon" href="%PUBLIC_URL%/realultra.png" />
+  <link rel="preload" href="https://embed.windy.com/v/41.1.0.emb.4d73/iconfont.woff" as="font" type="font/woff"
+    crossorigin />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#000000" />
+  <meta name="mylead-verification" content="281633146c4aa6f0a07337009385bc1d" />
+  <meta name="description"
+    content="Стихія — точний прогноз погоди в містах України та світу. Дізнавайтеся про температуру, опади та вітер у реальному часі. Ностальгуюча музика, і багато чого ще..." />
+  <link rel="apple-touch-icon" href="%PUBLIC_URL%/realultra.png" />
+  <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+  <title>
+    Стихія: Погода всюди чудова || Музика завжди прекрасна. Turkeys hide there ^/\^. Violeta Nebesna is not a psychic.
+    Step by step the story grows. Domino like this. He says: "Nicerone is waiting for you". Time is running out. New
+    day, new secret. Interest dragon village 3(God dragon&Darknix). Weather is the most strange secret in my live. I
+    hate the current situation in the world. But I can't stop time. Z..... True adventure. Day, evening, night, morning.
+  My time is up. Who am I?
+  </title>
+  <link rel="sitemap" type="application/xml" title="Sitemap" href="sitemap.xml" />
+</head>
+
+<body>
+  <noscript>Для роботи цього додатка потрібно увімкнути JavaScript.</noscript>
+  <div id="root"></div>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function () {
+        navigator.serviceWorker.register('%PUBLIC_URL%/sw.js').then(function (registration) {
+          console.log('ServiceWorker registration successful');
+        }).catch(function (error) {
+          console.log('ServiceWorker registration failed: ', error);
         });
-      }
-    </script>
-  </body>
+      });
+    }
+  </script>
+</body>
+
 </html>
