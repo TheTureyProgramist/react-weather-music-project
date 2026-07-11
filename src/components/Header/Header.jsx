@@ -439,7 +439,7 @@ const Header = ({
 
   return (
     <>
-      <HeaderDiv $isDarkMode={isDarkMode}>
+      <HeaderDiv $isDarkMode={isDarkMode} data-decorator-ignore="true">
         <HeaderFix>
           <LogoContainer>
             <PrintBtn

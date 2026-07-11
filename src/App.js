@@ -55,6 +55,8 @@ import axios from "axios";
 import "./App.css";
 import Header from "./components/Header/Header.jsx";
 import Hero from "./components/Hero/Hero.jsx";
+import { DecoratorProvider } from "./components/Decorator/DecoratorContext.jsx";
+import DecoratorOverlay from "./components/Decorator/DecoratorOverlay.jsx";
 
 const Prison = lazy(() => import("./components/Prison/Prison.jsx"));
 const Aihelp = lazy(() => import("./components/Aihelp/Aihelp.jsx"));
@@ -1905,7 +1907,7 @@ const App = () => {
   );
 
   return (
-    <>
+    <DecoratorProvider isDarkMode={isDarkMode}>
       <GlobalFilterLock $locked={isFsActive && lockFiltersInFs} />
       <Loader
         isLoading={isLoading}
@@ -2203,9 +2205,10 @@ const App = () => {
               {(secondsUntilUpdate % 60).toString().padStart(2, "0")}
             </UpdateTimerBadge>
           )}
+          <DecoratorOverlay />
         </div>
       </ThemeWrapper>
-    </>
+    </DecoratorProvider>
   );
 };
 

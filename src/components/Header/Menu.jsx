@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import styled, { keyframes, css } from "styled-components";
 import { useNavigate } from "react-router-dom";
 import { FILTERS, PRESETS } from "./useVisualFilters";
+import { useDecorator } from "../Decorator/DecoratorContext.jsx";
 export const DEFAULT_SITE_SECTIONS = [
   { key: "hero", label: "🏠 Головна", path: "hero" },
   { key: "weather", label: "🌤️ Погода", path: "weather" },
@@ -532,6 +533,7 @@ const Menu = ({
   loadingStrategy,
   onSetLoadingStrategy,
 }) => {
+  const { isDecoratorMode, setIsDecoratorMode, changeLog, undoChange, resetAll, isPersistent, setIsPersistent } = useDecorator();
   const [isRendered, setIsRendered] = useState(false);
   const [newPresetName, setNewPresetName] = useState("");
   const [draggedIndex, setDraggedIndex] = useState(null);
@@ -601,11 +603,13 @@ const Menu = ({
         $isOpen={isOpen}
         $isRendered={isRendered}
         onClick={onClose}
+        data-decorator-ignore="true"
       />
       <BurgerMenuPanel
         $isOpen={isOpen}
         $isRendered={isRendered}
         $isDarkMode={isDarkMode}
+        data-decorator-ignore="true"
       >
         <BurgerCloseBtn onClick={onClose} $isDarkMode={isDarkMode}>
           ✕
@@ -828,6 +832,72 @@ const Menu = ({
                   </div>
                   <Switch $active={isRoutingMode} />
                 </ModeToggle>
+              </li>
+              <li>
+                <ModeToggle
+                  $isDarkMode={isDarkMode}
+                  onClick={() => setIsDecoratorMode(!isDecoratorMode)}
+                >
+                  <span className="icon">🎨</span>
+                  <div style={{ flexGrow: 1 }}>
+                    <div style={{ fontSize: "14px", fontWeight: "bold" }}>
+                      Режим Декоратора
+                    </div>
+                    <div style={{ fontSize: "10px", opacity: 0.7 }}>
+                      Редагування стилів сторінки
+                    </div>
+                  </div>
+                  <Switch $active={isDecoratorMode} />
+                </ModeToggle>
+                
+                {isDecoratorMode && (
+                  <div style={{ padding: "10px", background: isDarkMode ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.05)", borderRadius: "10px", marginTop: "5px", marginBottom: "15px" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
+                      <span style={{ fontSize: "12px", fontWeight: "bold", color: isDarkMode ? "#ffb36c" : "#ff005d" }}>Зберігати після перезавантаження:</span>
+                      <Switch $active={isPersistent} onClick={() => setIsPersistent(!isPersistent)} style={{ transform: "scale(0.8)", cursor: "pointer" }} />
+                    </div>
+                    
+                    <div style={{ fontSize: "12px", fontWeight: "bold", marginBottom: "10px", color: isDarkMode ? "#ffb36c" : "#ff005d" }}>Журнал змін ({changeLog.length})</div>
+                    
+                    {changeLog.length > 0 ? (
+                      <div style={{ maxHeight: "150px", overflowY: "auto", display: "flex", flexDirection: "column", gap: "5px" }}>
+                        {changeLog.map((log) => {
+                          let modeLabel = "";
+                          if (log.mode === "light_default") modeLabel = "☀️ ";
+                          else if (log.mode === "light_hover") modeLabel = "☀️👆 ";
+                          else if (log.mode === "dark_default") modeLabel = "🌙 ";
+                          else if (log.mode === "dark_hover") modeLabel = "🌙👆 ";
+                          
+                          return (
+                          <div key={log.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "11px", background: isDarkMode ? "rgba(0,0,0,0.3)" : "rgba(255,255,255,0.5)", padding: "5px", borderRadius: "5px" }}>
+                            <div>
+                              <span style={{ opacity: 0.8, marginRight: "4px" }}>{modeLabel}</span>
+                              <span style={{ color: "#ffb36c" }}>{log.tagName}</span> {log.property}: <span style={{ opacity: 0.7 }}>{log.originalValue || "none"}</span> ➔ <b>{log.newValue}</b>
+                            </div>
+                            <button 
+                              onClick={() => undoChange(log.id)}
+                              style={{ background: "#ff4d4d", color: "#fff", border: "none", borderRadius: "4px", cursor: "pointer", padding: "2px 6px", fontSize: "10px", marginLeft: "5px" }}
+                            >
+                              Відмінити
+                            </button>
+                          </div>
+                          );
+                        })}
+                      </div>
+                    ) : (
+                      <div style={{ fontSize: "11px", opacity: 0.7, fontStyle: "italic" }}>Змін ще немає</div>
+                    )}
+                    
+                    {changeLog.length > 0 && (
+                      <button 
+                        onClick={resetAll}
+                        style={{ width: "100%", background: "transparent", color: "#ff4d4d", border: "1px solid #ff4d4d", borderRadius: "5px", marginTop: "10px", padding: "5px", fontSize: "11px", cursor: "pointer" }}
+                      >
+                        Скинути всі зміни
+                      </button>
+                    )}
+                  </div>
+                )}
               </li>
               <li>
                 <div style={{ marginTop: "15px", marginBottom: "10px" }}>
